@@ -1,0 +1,31 @@
+.designer-form-field {
+  width: 290px;
+  margin-top: 0.25rem;
+  .mat-form-field-wrapper {
+    padding-bottom: 0;
+    .mat-form-field-infix {
+      border-top: 0;
+      padding: 10px 0;
+    }
+  }
+  .mat-form-field-label {
+    margin-top: 3px;
+  }
+}
+
+.property-save {
+  background-color: #19beda;
+}
+
+.selected-section {
+  padding: 1.5rem 20px 0 0;
+}
+
+
+.dialog-input-container {
+  margin-bottom: 0;
+}
+
+::ng-deep .mat-tab-body-content {
+  overflow: hidden !important;
+}

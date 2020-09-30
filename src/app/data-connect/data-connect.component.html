@@ -1,0 +1,121 @@
+<form class="diagram-select-form">
+    <div fxLayout="row wrap" fxLayout.lt-sm="column">
+        <div fxFlex="50" class="data-connect-container pr-1 pt-1">
+            <div class="mb-24">
+                <div class="mat-elevation-z1 rounded overflow-hidden">
+                    <mat-accordion multi="true" displayMode="flat" class="egret-example-viewer-accordion">
+                        <mat-expansion-panel [expanded]="true">
+                            <mat-expansion-panel-header collapsedHeight="48px" expandedHeight="48px" class="light-gray">
+                                <mat-panel-title>
+                                    DIAGRAM
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div fxLayout="row" fxLayout.lt-sm="column" class="pt-1">
+                                <div class="pr-1">
+                                    <h4>Select Diagram</h4>
+                                    <mat-form-field>
+                                        <mat-select [(ngModel)]="selectedDiagramId" name="select=diagram"
+                                            (selectionChange)="onDiagramChanged($event.value)" >
+                                            <mat-option *ngFor="let option of diagrams" [value]="option.diagramId">
+                                                {{option.name}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                                <div class="pr-1">
+                                    <h4>Select Graph Item</h4>
+                                    <mat-form-field>
+                                        <mat-select [(ngModel)]="selectedGraphItemId" name="selete-item"
+                                            (selectionChange)="onGrapItemChanged($event.value)">
+                                            <mat-option *ngFor="let option of graphItems"
+                                                [value]="option.id">
+                                                {{option.name}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>                                    
+                                </div>                                
+                            </div>
+                            <div class="pb-1" style="height:83px;">
+                                <button mat-raised-button color="primary" (click)="updateDiagram()" *ngIf="selectedDiagramId && selectedGraphItemId">Save</button>
+                            </div>
+                            <div cdkDropList #currentPointsList="cdkDropList" [cdkDropListData]="currentPoints"
+                                class="data-connect-list" (cdkDropListDropped)="drop($event)">
+                                <div class="data-connect-box" *ngFor="let item of currentPoints" cdkDrag>
+                                    <div>
+                                        <div class="data-header">{{item.attributes.name}}</div>
+                                        <div class="data-detail">{{item.attributes.path}}</div>
+                                        <div class="data-detail">
+                                            <mat-form-field class="example-full-width pr-1">
+                                                <mat-label>Custom Label</mat-label>
+                                                <input matInput [value]="item.attributes.label" (input)="item.attributes.label = $event.target.value" />
+                                            </mat-form-field>
+                                            <mat-form-field class="example-full-width">
+                                                <mat-label>Unit</mat-label>
+                                                <input matInput [value]="item.attributes.measurement" (input)="item.attributes.measurement = $event.target.value" />
+                                            </mat-form-field>
+                                        </div>
+                                    </div>                                    
+                                    <button mat-icon-button aria-label="Delete" style="cursor: pointer;" (click)="removePoint(item.attributes.id)"><mat-icon>delete</mat-icon></button>
+                                </div>
+                            </div>
+                        </mat-expansion-panel>                                               
+                    </mat-accordion>
+                </div>
+            </div>
+        </div>
+        <div fxFlex="50" class="data-connect-container pr-1 pt-1">
+            <div class="mb-24">
+                <div class="mat-elevation-z1 rounded overflow-hidden">
+                    <mat-accordion multi="true" displayMode="flat" class="egret-example-viewer-accordion">
+                        <mat-expansion-panel [expanded]="true">
+                            <mat-expansion-panel-header collapsedHeight="48px" expandedHeight="48px"
+                                class="light-gray">
+                                <mat-panel-title>
+                                    OpenFMB
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div fxLayout="row" fxLayout.lt-sm="column" class="pt-1">
+                                <div class="pr-1">
+                                    <h4>Select Module</h4>
+                                    <mat-form-field>
+                                        <mat-select [(ngModel)]="selectedModule" name="select-module"
+                                            (selectionChange)="onModuleChanged($event.value)">
+                                            <mat-option *ngFor="let option of modules" [value]="option">
+                                                {{option}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                                <div class="pr-1">
+                                    <h4>Select Profile</h4>
+                                    <mat-form-field>
+                                        <mat-select [(ngModel)]="selectedProfile" name="select-profile"
+                                            (selectionChange)="onProfileChanged($event.value)">
+                                            <mat-option *ngFor="let option of profiles" [value]="option.name">
+                                                {{option.name}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                            <div class="pb-1">
+                                <mat-form-field class="margin-333" style="width: 100%">
+                                    <input matInput placeholder="Type to filter" [(ngModel)]='filter' (keyup)='updateFilter($event)' name="filter">
+                                </mat-form-field>
+                            </div>                            
+                            <div cdkDropList #availablePointsList="cdkDropList" [cdkDropListData]="availablePoints" [cdkDropListConnectedTo]="[currentPointsList]"
+                                class="data-connect-list" (cdkDropListDropped)="drop($event)">
+                                <div class="data-connect-box" *ngFor="let item of availablePoints" cdkDrag>
+                                    <div>
+                                        <div class="data-header">{{item.attributes.name}}</div>
+                                        <div class="data-detail">{{item.attributes.path}}</div>
+                                    </div>                                    
+                                </div>
+                            </div>
+                        </mat-expansion-panel>                                            
+                    </mat-accordion>
+                </div>
+            </div>                        
+        </div> 
+    </div>
+</form>

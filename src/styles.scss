@@ -1,0 +1,113 @@
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@import "~@angular/material/theming";
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat-core();
+
+$mat-designergray: (
+  50: #e5e7e9,
+  100: #bfc2c8,
+  200: #9499a3,
+  300: #69707e,
+  400: #485263,
+  500: #283347,
+  600: #242e40,
+  700: #1e2737,
+  800: #18202f,
+  900: #0f1420,
+  A100: #6292ff,
+  A200: #2f6fff,
+  A400: #004dfb,
+  A700: #0045e1,
+  contrast: (
+    50: $light-primary-text,
+    100: $light-primary-text,
+    200: $light-primary-text,
+    A100: $light-primary-text,
+    300: $light-primary-text,
+    400: $light-primary-text,
+    500: $light-primary-text,
+    600: $light-primary-text,
+    700: $light-primary-text,
+    800: $light-primary-text,
+    900: $light-primary-text,
+    A200: $light-primary-text,
+    A400: $light-primary-text,
+    A700: $light-primary-text
+  )
+);
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$oes-sld-primary: mat-palette($mat-designergray);
+$oes-sld-accent: mat-palette($mat-pink, A200, A100, A400);
+
+// The warn palette is optional (defaults to red).
+$oes-sld-warn: mat-palette($mat-red);
+
+// Create the theme object (a Sass map containing all of the palettes).
+$oes-sld-theme: mat-light-theme($oes-sld-primary, $oes-sld-accent, $oes-sld-warn);
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include angular-material-theme($oes-sld-theme);
+
+/* You can add global styles to this file, and also import other style files */
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.toolbar-wrapper {
+  width: 40px;
+  max-width: 45px;
+  min-height: 40px;
+  align-items: center;
+  margin: 5px;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 40px;
+  z-index: 10;
+  cursor: grab;
+  .toolbar-image {
+    width: 40px;
+    height: 40px;
+  }
+  .toolbar-title {
+    margin-top: 0.25rem;
+    text-align: center;
+    color: white;
+    font-size: 8px;
+  }
+  &:hover {
+    background-color: #3f475a;
+  }
+}
+
+.mat-dialog-container {
+  padding: 16px !important;
+  overflow: hidden !important;
+  .mat-dialog-actions {
+    padding-top: 14px;
+    padding-bottom: 34px;
+  }
+}
+
+foreignObject > div {
+  align-items: unset!important;
+}

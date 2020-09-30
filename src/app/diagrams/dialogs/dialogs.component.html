@@ -1,0 +1,46 @@
+<h1 matDialogTitle>{{data.title}}</h1>
+<form [formGroup]="itemForm" (ngSubmit)="submit()">
+  <mat-tab-group mat-align-tabs="start">
+    <mat-tab label="Properties">
+      <div fxLayout="row wrap" fxLayout.lt-sm="column" class="pt-1">
+        <div fxFlex="50" class="pr-1">
+          <mat-form-field class="full-width">
+            <input matInput name="name" [formControl]="itemForm.controls['name']" placeholder="Name">
+          </mat-form-field>
+        </div>
+
+        <div fxFlex="50" class="pr-1">
+          <mat-form-field class="full-width">
+            <input matInput name="description" [formControl]="itemForm.controls['description']"
+              placeholder="Description">
+          </mat-form-field>
+        </div>
+
+        <div fxFlex="50" class="pr-1">
+          <mat-form-field class="full-width">
+            <input matInput name="location" [formControl]="itemForm.controls['location']" placeholder="Location">
+          </mat-form-field>
+        </div>
+        
+      </div>
+    </mat-tab>
+    <mat-tab label="Style">
+      <div fxLayout="row wrap" fxLayout.lt-sm="column" class="pt-1">        
+        <div fxFlex="50" class="pr-1">
+          <label>Background Color</label><br/>
+          <mat-form-field class="full-width">
+            <input matInput [ngxMatColorPicker]="picker2" [formControl]="itemForm.controls['backgroundColor']" name="back-color">
+            <ngx-mat-color-toggle matSuffix [for]="picker2"></ngx-mat-color-toggle>
+            <ngx-mat-color-picker #picker2 [touchUi]="touchUi2" [color]="color2"></ngx-mat-color-picker>
+          </mat-form-field>
+        </div>
+        
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+  <div mat-dialog-actions>
+    <button mat-raised-button color="primary" [disabled]="itemForm.invalid">SAVE</button>
+    <span fxFlex></span>
+    <button mat-button color="warn" type="button" (click)="dialogRef.close(false)">Cancel</button>
+  </div>
+</form>

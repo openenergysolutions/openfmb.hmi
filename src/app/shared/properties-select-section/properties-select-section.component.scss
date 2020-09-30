@@ -1,0 +1,77 @@
+.select-section-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  .select-all-btn {
+    font-weight: 400;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: underline;
+    color: #247688;
+  }
+}
+
+.hidden-box {
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+  opacity: 0;
+}
+
+.check--label {
+  font-size: 14px;
+  margin: 0;
+  font-weight: 300;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.check--label-box {
+  display: flex;
+  align-self: center;
+  position: relative;
+  height: 12px;
+  width: 12px;
+  border: 2px solid #2c8ba0;
+  border-radius: 1px;
+  cursor: pointer;
+  margin-right: 7px;
+}
+.check--label-text {
+  display: flex;
+  align-self: center;
+  position: relative;
+  cursor: pointer;
+}
+
+// the magic
+.hidden-box:checked + .check--label {
+  .check--label-box {
+    background-color: #3fbdd9;
+    &:after {
+      content: '';
+      display: block;
+    }
+  }
+  .check--label-text {
+    &:after {
+      width: 85%;
+    }
+  }
+}
+
+.checkbox-container {
+  margin-top: 10px;
+  &--row {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  &--item {
+    width: 50%;
+    margin-bottom: 7px;
+  }
+}

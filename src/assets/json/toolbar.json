@@ -1,0 +1,489 @@
+[  
+  {
+    "shape": "image",
+    "image": "../../assets/images/toolbar/switch-horizontal-open.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Switch horizontal",
+    "left": 0,
+    "top": 0,
+    "type": "switch-horizontal"
+  },
+  {
+    "shape": "image",
+    "image": "../../assets/images/toolbar/switch-vertical-open.svg",
+    "points": [
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Switch vertical",
+    "left": 0,
+    "top": 0,
+    "type": "switch-vertical"
+  },
+  {
+    "shape": "image",
+    "image": "../../assets/images/toolbar/transformer-vertical.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Transformer horizontal",
+    "left": 0,
+    "top": 0
+  },
+  {
+    "shape": "image",
+    "image": "../../assets/images/toolbar/transformer-horizontal.svg",
+    "points": [
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Transformer vertical",
+    "left": 0,
+    "top": 0
+  },
+  {
+    "shape": "image",
+    "image": "../../assets/images/toolbar/voltage-regulator-vertical.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Voltage Regulator horizontal",
+    "left": 0,
+    "top": 0
+  },
+  {
+    "shape": "image",
+    "image": "../../assets/images/toolbar/voltage-regulator-horizontal.svg",
+    "points": [
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Voltage Regulator vertical",
+    "left": 0,
+    "top": 0
+  },
+  {
+    "shape": "image",
+    "image": "../../assets/images/toolbar/solar-pv-horizontal1.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Solar PV horizontal",
+    "left": 0,
+    "top": 0
+  },
+  {
+    "shape": "image",
+    "image": "../../assets/images/toolbar/solar-pv-horizontal2.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Solar PV horizontal",
+    "left": 0,
+    "top": 0
+  },
+  {
+    "shape": "image",
+    "image": "../../assets/images/toolbar/solar-pv-vertical1.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Solar PV vertical",
+    "left": 0,
+    "top": 0
+  },
+  {
+    "shape": "image",
+    "image": "../../assets/images/toolbar/solarpv-vertical2.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Solar PV vertical",
+    "left": 0,
+    "top": 0
+  },
+  {
+    "shape": "image",
+    "image": "../../assets/images/toolbar/battery-ess-horizontal1.svg",
+    "points": [
+      [0, 0.5]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Battery Energy Storage System (ESS) horizontal",
+    "left": 0,
+    "top": 0
+  },
+  {
+    "shape": "image",
+    "image": "../../assets/images/toolbar/battery-ess-horizontal2.svg",
+    "points": [      
+      [1, 0.5]      
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Battery Energy Storage System (ESS) horizontal",
+    "left": 0,
+    "top": 0
+  },
+  {
+    "shape": "image",
+    "image": "../../assets/images/toolbar/battery-ess-vertical1.svg",
+    "points": [
+      [0.5, 0]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Battery Energy Storage System (ESS) vertical",
+    "left": 0,
+    "top": 0
+  },
+  {
+    "shape": "image",
+    "image": "../../assets/images/toolbar/battery-ess-vertical2.svg",
+    "points": [
+      [0.5, 1]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Battery Energy Storage System (ESS) vertical",
+    "left": 0,
+    "top": 0
+  },
+  {
+    "shape": "image",
+    "image": "../../assets/images/toolbar/ground.svg",
+    "points": [
+      [0.5, 0]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Ground",
+    "left": 0,
+    "top": 0
+  },
+  {
+    "shape": "image",
+    "image": "../../assets/images/toolbar/generator.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Generator",
+    "left": 0,
+    "top": 0
+  },
+  {
+    "shape": "image",
+    "image": "../../assets/images/toolbar/uncontrolled-load.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Uncontrolled Load",
+    "left": 0,
+    "top": 0
+  },
+  {
+    "shape": "image",
+    "image": "../../assets/images/toolbar/controllable-load.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Controllable Load",
+    "left": 0,
+    "top": 0
+  },
+  {
+    "shape": "image",
+    "image": "../../assets/images/toolbar/circuit-breaker-horizontal.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Circuit Breaker horizontal",
+    "left": 0,
+    "top": 0
+  },
+  {
+    "shape": "image",
+    "image": "../../assets/images/toolbar/circuit-breaker-vertical.svg",
+    "points": [
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Circuit Breaker vertical",
+    "left": 0,
+    "top": 0
+  },
+  {
+    "shape": "image",
+    "image": "../../assets/images/toolbar/recloser-horizontal.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Recloser horizontal",
+    "left": 0,
+    "top": 0
+  },
+  {
+    "shape": "image",
+    "image": "../../assets/images/toolbar/recloser-vertical.svg",
+    "points": [
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Recloser vertical",
+    "left": 0,
+    "top": 0
+  },
+  {
+    "shape": "image",
+    "image": "../../assets/images/toolbar/capacitor-bank-horizontal.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Capacitor Bank horizontal",
+    "left": 0,
+    "top": 0
+  },
+  {
+    "shape": "image",
+    "image": "../../assets/images/toolbar/capacitor-bank-vertical.svg",
+    "points": [
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Capacitor Bank vertical",
+    "left": 0,
+    "top": 0
+  },
+  {
+    "shape": "image",
+    "image": "../../assets/images/toolbar/horizontal-line-svgrepo-com.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5]     
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Connection Line Horizontal",
+    "left": 0,
+    "top": 0    
+  },
+  {
+    "shape": "image",
+    "image": "../../assets/images/toolbar/vertical-line-svgrepo-com.svg",
+    "points": [
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Connection Line Vertical",
+    "left": 0,
+    "top": 0
+  },
+  {
+    "shape": "image",
+    "image": "../../assets/images/toolbar/dot.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "pointPerimeter": false,
+    "title": "Line Connector Point",
+    "width": 5,
+    "height": 5,
+    "label": false,
+    "left": -2,
+    "top": -2.4
+  },
+  {
+    "shape": "image",
+    "image": "../../assets/images/toolbar/measure-box.svg",
+    "points": [
+    ],
+    "pointPerimeter": false,
+    "title": "Measure Box",
+    "width": 1,
+    "height": 1,    
+    "left": 0,
+    "top": 0,
+    "type": "measure-box",
+    "isEditable": false
+  },
+  {
+    "shape": "image",
+    "image": "../../assets/images/toolbar/feeder.svg",
+    "points": [
+      [0.5, 0]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Feeder",
+    "left": 0,
+    "top": 0
+  },
+  {
+    "shape": "image",
+    "image": "../../assets/images/toolbar/breaker-open.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Breaker",
+    "left": 0,
+    "top": 0,
+    "type": "breaker"
+  },
+  {
+    "shape": "image",
+    "image": "../../assets/images/toolbar/converter.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Converter",
+    "left": 0,
+    "top": 0,
+    "type": "converter"
+  },
+  {
+    "shape": "image",
+    "image": "../../assets/images/toolbar/solar-farm.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Solar Farm",
+    "left": 0,
+    "top": 0    
+  },
+  {
+    "shape": "text",
+    "image": "../../assets/images/toolbar/text.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Label",
+    "left": 0,
+    "top": 0,
+    "type": "label"  
+  },
+  {
+    "shape": "button",
+    "image": "../../assets/images/toolbar/button.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Button",
+    "left": 0,
+    "top": 0,
+    "type": "button"  
+  },
+  {
+    "shape": "two-state-button",
+    "image": "../../assets/images/toolbar/button.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 120,
+    "height": 40,
+    "title": "2-State Button",
+    "left": 0,
+    "top": 0,
+    "type": "two-state-button"  
+  }
+]

@@ -1,0 +1,127 @@
+.mat-toolbar {
+  border-bottom: 1px solid #0d0e20;
+  background: #283347 !important;
+  .back-to-link {
+    color: #3492a9 !important;
+    text-decoration: none;
+    font-size: 12px;
+  }
+  .logo {    
+    min-width: 36px;
+    width: 36px;
+    height: 36px;    
+    overflow: hidden;    
+    white-space: pre-wrap;    
+  }
+  .logo-branding {  
+    padding-left: 8px;     
+    overflow: hidden;
+    white-space: pre-wrap; 
+    width: auto;    
+    line-height: 64px;     
+  }
+  .mode-button {
+    margin-left: 10px;
+    min-width: 40px;
+    width: 40px;
+    height: 40px;
+    padding: 5px;
+    overflow: hidden;
+    white-space: pre-wrap;
+    line-height: 8px;
+    text-align: center;
+    background-color: #0e0f1f;
+    border-radius: 5px;
+    cursor: pointer;
+    &.active {
+      background-color: #19beda;
+    }
+    .mat-icon {
+      height: 20px;
+      width: 20px;
+    }
+    .title {
+      font-size: 8px;
+      line-height: 8px;
+    }
+  }
+  .mode-button-move {
+    margin-right: 10px;
+  }
+  .connect-color-wrapper {
+    .connect-color {
+      margin-left: 5px;
+      cursor: pointer;
+      width: 17px;
+      height: 17px;
+      &.selected {
+        border: 1px solid #19beda;
+      }
+      > * {
+        margin: 1px;
+        width: 15px;
+        height: 15px;
+      }
+      .orange-line {
+        background-color: #ff7f23;
+      }
+      .yellow-line {
+        background-color: #fdd202;
+      }
+      .red-line {
+        background-color: #f81342;
+      }
+    }
+  }
+
+  .header-button {
+    background-color: #0e0f21;
+    color: white;
+    margin: 0 5px;
+    font-size: 12px;
+    min-width: 75px;
+  }
+
+  .zoom-control {
+    font-size: 12px;
+  }
+}
+.zoom-control {
+  .zoom-button {
+    cursor: pointer;
+    color: #d3d3d3;
+    text-decoration: none;
+  }
+  .zoom-slider {
+    margin: 0 5px;
+  }
+  .value {
+    margin-left: 8px;
+    color: #d3d3d3;
+  }
+}
+
+::ng-deep .zoom-control .mat-accent .mat-slider-track-fill {
+  background-color: #888888;
+}
+
+::ng-deep .zoom-control .mat-accent .mat-slider-track-fill,
+::ng-deep .zoom-control .mat-accent .mat-slider-thumb,
+::ng-deep .zoom-control .mat-accent .mat-slider-thumb-label {
+  background-color: #d3d3d3;
+}
+
+::ng-deep .zoom-control .mat-slider-min-value:not(.mat-slider-thumb-label-showing) .mat-slider-thumb {
+  border-color: rgba(0, 0, 0, 0.26);
+  background-color: #d3d3d3;
+}
+
+::ng-deep .zoom-control .mat-accent .mat-slider-track-fill,
+::ng-deep .zoom-control .mat-accent .mat-slider-thumb,
+::ng-deep .zoom-control .mat-accent .mat-slider-thumb-label {
+  background-color: #888888;
+}
+
+.file-input-hidden {
+  display: none;
+}

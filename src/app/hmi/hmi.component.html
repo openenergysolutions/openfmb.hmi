@@ -1,0 +1,50 @@
+<div class="designer-wrapper" fxLayout="column" fxFlexFill>
+  <header fxLayout="row">
+    <app-header-tool
+      fxFlex
+      fxFill
+      (saveGraph)="saveGraph()"
+      (zoomGraph)="zoomGraph($event)"
+      (exportGraph)="exportGraph()"
+      (loadGraph)="loadGraphFromFile($event)"
+      (runGraph)="runGraph()"
+    ></app-header-tool>
+  </header>
+  <section fxLayout="column" fxFlex fxFill>
+    <mat-drawer-container class="designer-drawer-container" fxFlex fxFill>
+      <!--<mat-drawer mode="side" color="primary" opened></mat-drawer>-->
+      <mat-drawer-content fxLayout="column">
+        <div class="editable-area-container" fxLayout="row" fxFlex fxFill>
+          <!-- <div
+            class="toolbar-container-wrapper scrollbar"
+            fxLayout="column"
+            flex
+          >
+            <div
+              #toolbarContainer
+              id="toolbarContainer"
+              fxLayout="row wrap"
+              fxLayoutGap="15px"
+              [class.remove-drag-styles]="mode !== DESIGNER_CONST.SELECT_MODE"
+            ></div>
+          </div> -->
+          <div
+            class="canvas-area-wrapper"
+            fxLayout="column"
+            fxFlexFill
+            fxFlex
+            fxFill
+          >
+            <div
+              #graphContainer
+              id="graphContainer"
+              fxLayout="column"
+              fxFlex
+              fxFill
+            ></div>
+          </div>
+        </div>
+      </mat-drawer-content>
+    </mat-drawer-container>
+  </section>
+</div>

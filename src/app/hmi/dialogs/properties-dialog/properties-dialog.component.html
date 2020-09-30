@@ -1,0 +1,36 @@
+<form #f="ngForm">
+  <mat-tab-group mat-align-tabs="start">
+    <mat-tab label="Properties">
+      <div mat-dialog-content class="dialog-input-container pt-1">
+        <strong>Name</strong><br/>
+        <mat-form-field class="designer-form-field" floatLabel='never'>
+          <input matInput [(ngModel)]="name" placeholder="Enter Name (required)" [disabled]="true" name="symbol-name"/>
+        </mat-form-field>
+      </div>
+      <div mat-dialog-content class="dialog-input-container">
+        <strong>mRID</strong><br/>
+        <mat-form-field class="designer-form-field" floatLabel='never'>
+          <input matInput [(ngModel)]="mRID" placeholder="Enter Device mRID" [disabled]="true" name="symbol-mrid"/> 
+        </mat-form-field>  
+      </div>
+      <div mat-dialog-content class="dialog-input-container pt-1">
+        <strong>Label</strong><br/>
+        <mat-form-field class="designer-form-field" floatLabel='never'>
+          <input matInput [(ngModel)]="label" placeholder="Enter label" [disabled]="true" name="symbol-label"/>
+        </mat-form-field>
+      </div>   
+      <div class="selected-section" *ngIf="deviceTypeMapping">
+        <app-properties-select-section
+          [fields]="defaultFields"
+          [selectedFields]="selectedFields"
+          (emitter)="changeSelectedFields($event)">
+        </app-properties-select-section>
+      </div>
+    </mat-tab>    
+  </mat-tab-group>
+  <div mat-dialog-actions>
+    <button mat-raised-button color="primary" (click)="onClose()" cdkFocusInitial class="pr-1">
+      CLOSE
+    </button>         
+  </div>
+</form>

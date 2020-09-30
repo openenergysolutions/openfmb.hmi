@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="8px" height="5px" viewBox="0 0 8 5" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 58 (84663) - https://sketch.com -->
+    <title>chevron_left-24px</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-2-DarkTheme" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="4.0-OES-Diagrams-Designer-Components" transform="translate(-933.000000, -28.000000)">
+            <g id="Group-3" transform="translate(815.000000, 13.000000)">
+                <g id="chevron_left-24px" transform="translate(121.500000, 17.500000) rotate(-90.000000) translate(-121.500000, -17.500000) translate(115.000000, 11.000000)">
+                    <polygon id="Path" fill="#FFFFFF" fill-rule="nonzero" points="8.5 4.3225 7.7388664 3.5 4.5 7 7.7388664 10.5 8.5 9.6775 6.02766532 7"></polygon>
+                    <polygon id="Path" points="0 0 13 0 13 13 0 13"></polygon>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

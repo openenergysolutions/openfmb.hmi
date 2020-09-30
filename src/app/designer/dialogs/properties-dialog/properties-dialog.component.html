@@ -1,0 +1,93 @@
+<form #f="ngForm">
+  <mat-tab-group mat-align-tabs="start">
+    <mat-tab label="Properties">
+      <div mat-dialog-content class="dialog-input-container pt-1">
+        <strong>Name</strong><br />
+        <mat-form-field class="designer-form-field" floatLabel='never'>
+          <input matInput [(ngModel)]="name" placeholder="Enter Name (required)" name="symbol-name" required />
+        </mat-form-field>
+      </div>
+      <div mat-dialog-content class="dialog-input-container">
+        <strong>mRID</strong><br />
+        <mat-form-field class="designer-form-field" floatLabel='never'>
+          <input matInput [(ngModel)]="mRID" placeholder="Enter Device mRID" name="symbol-mrid" />
+        </mat-form-field>
+      </div>
+      <div mat-dialog-content class="dialog-input-container pt-1">
+        <strong>Label</strong><br />
+        <mat-form-field class="designer-form-field" floatLabel='never'>
+          <input matInput [(ngModel)]="label" placeholder="Enter label" name="symbol-label" />
+        </mat-form-field>
+      </div>
+      <div class="selected-section" *ngIf="deviceTypeMapping">
+        <app-properties-select-section [fields]="defaultFields" [selectedFields]="selectedFields"
+          (emitter)="changeSelectedFields($event)">
+        </app-properties-select-section>
+      </div>
+    </mat-tab>
+    <mat-tab label="Link" *ngIf="linkAllowed">
+      <div mat-dialog-content class="dialog-input-container pt-1">
+        <strong>Navigator Link</strong><br />
+        <mat-form-field class="designer-form-field" floatLabel='never'>
+          <mat-select [(ngModel)]="selectedDiagramId" name="selectDiagram">
+            <mat-option *ngFor="let option of diagrams" [value]="option.diagramId">
+              {{option.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div mat-dialog-content class="dialog-input-container pt-1">
+        <strong>Target</strong><br />
+        <mat-form-field class="designer-form-field" floatLabel='never'>
+          <mat-select [(ngModel)]="selectedLinkTarget" name="select=diagram">
+            <mat-option *ngFor="let option of linkTargetOptions" [value]="option">
+              {{option}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </mat-tab>
+    <mat-tab label="Styles" *ngIf="changeStyleAllowed">
+      <div mat-dialog-content class="dialog-input-container pt-1" *ngIf="changeWidthAllowed">
+        <strong>Container Width</strong><br />
+        <mat-form-field class="designer-form-field" floatLabel='never'>
+          <input type="number" [(ngModel)]="containerWidth" class="form-control" min="0" max="500" matInput
+            name="container-width" placeholder="width (in px)">
+        </mat-form-field>
+      </div>
+      <div mat-dialog-content class="dialog-input-container pt-1">
+        <strong>Font Size</strong><br />
+        <mat-form-field class="designer-form-field" floatLabel='never'>
+          <input type="number" [(ngModel)]="fontSize" class="form-control" min="0" max="30" matInput name="font-size"
+            placeholder="font-size (in px)">
+        </mat-form-field>
+      </div>
+      <div mat-dialog-content class="dialog-input-container pt-1">
+        <strong>Fore Color</strong><br />
+        <mat-form-field class="designer-form-field" floatLabel='never'>
+          <input matInput [ngxMatColorPicker]="picker" [(ngModel)]="foreColor" [disabled]="disabled" name="fore-color">
+          <ngx-mat-color-toggle matSuffix [for]="picker"></ngx-mat-color-toggle>
+          <ngx-mat-color-picker #picker [touchUi]="touchUi" [color]="color"></ngx-mat-color-picker>
+        </mat-form-field>
+      </div>
+      <div mat-dialog-content class="dialog-input-container pt-1" *ngIf="changeBackgroundAllowed">
+        <strong>Background Color</strong><br />
+        <mat-form-field class="designer-form-field" floatLabel='never'>
+          <input matInput [ngxMatColorPicker]="picker2" [(ngModel)]="backgroundColor" [disabled]="disabled"
+            name="back-color">
+          <ngx-mat-color-toggle matSuffix [for]="picker2"></ngx-mat-color-toggle>
+          <ngx-mat-color-picker #picker2 [touchUi]="touchUi2" [color]="color2"></ngx-mat-color-picker>
+        </mat-form-field>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+  <div mat-dialog-actions>
+    <button mat-raised-button color="primary" (click)="onSave()" cdkFocusInitial class="pr-1" [disabled]="!f.valid">
+      Done
+    </button>
+    <button mat-raised-button color="primary" type="button" (click)="dataConnect()" [disabled]="!f.valid" *ngIf="dataConnectAllowed">Data
+      Connection</button>
+    <span fxFlex></span>
+    <button mat-button color="warn" type="button" (click)="dialogRef.close(false)">Cancel</button>
+  </div>
+</form>

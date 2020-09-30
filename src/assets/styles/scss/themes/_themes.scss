@@ -1,0 +1,8 @@
+@import '~@angular/material/theming';
+@include mat-core();
+
+// Keep atleast one file
+@import "egret-navy";
+
+$background: map-get($egret-theme, background);
+$foreground: map-get($egret-theme, foreground);
