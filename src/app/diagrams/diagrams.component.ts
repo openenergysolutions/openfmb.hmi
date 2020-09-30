@@ -70,7 +70,7 @@ export class DiagramsComponent implements OnInit, OnDestroy {
 
   open(id: string) {
     console.log("open diagram: " + id);
-    this.router.navigateByUrl('/designer?id=' + id);
+    this.router.navigateByUrl('/designer?id=' + id, { skipLocationChange: false, replaceUrl: true });
   }
 
   run(id: string) {

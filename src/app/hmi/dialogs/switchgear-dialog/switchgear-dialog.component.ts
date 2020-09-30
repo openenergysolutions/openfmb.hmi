@@ -13,6 +13,7 @@ export class SwitchgearDialogComponent implements OnInit {
   name: string;
   actionColor: string;
   actionText: string;
+  actionEnabled: boolean = true;
   diagramId: string;
   mRID: string;    
 
@@ -35,11 +36,16 @@ export class SwitchgearDialogComponent implements OnInit {
     
     if (this.status && this.status.toLowerCase() === "open") {
       this.actionText = "CLOSE";
-      this.actionColor = "grey";
+      this.actionColor = "red";
+    }
+    else if (this.status && this.status.toLowerCase() === "closed"){
+      this.actionText = "OPEN";
+      this.actionColor = "green";
     }
     else {
-      this.actionText = "OPEN";
-      this.actionColor = "red";
+      this.actionText = "INVALID";
+      this.actionColor = "gray";
+      this.actionEnabled = false;
     }
   }
   

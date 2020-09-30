@@ -44,7 +44,9 @@ const {
   mxLog,
   mxConnectionConstraint,
   mxCodec,
-  mxKeyHandler
+  mxKeyHandler,
+  mxUndoManager,
+  mxClient
 } = mxgraphFactory({
   mxLoadResources: false,
   mxLoadStylesheets: false,
@@ -77,6 +79,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
   };
   diagramId: string = null;
   currentDiagram: Diagram;
+  undoManager: mxgraph.mxUndoManager;
 
   private destroy$ = new Subject();
 
@@ -125,17 +128,17 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
         const edgeStyle = this.graph.getStylesheet().getDefaultEdgeStyle();
         edgeStyle[mxConstants.STYLE_STROKECOLOR] = data;
       }
-    });
+    });    
+
+    this.sessionId = uuidv4();
 
     // load graph
-    if (this.diagramId) {
+    if (this.diagramId) {      
       this.loadGraphFromServer(this.diagramId);
     }
     else {
       this.naviator.navigateByUrl("**");
     }
-
-    this.sessionId = uuidv4();
   }
 
   // init graph.
@@ -151,7 +154,16 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.graph.isHtmlLabel = (cell) => {
       return !this.graph.isSwimlane(cell);
     };    
-      
+     
+    // undo manager
+    this.undoManager = new mxUndoManager(20);
+    
+    this.graph.getModel().addListener(mxEvent.UNDO, (sender, evt) => {
+      this.undoManager?.undoableEditHappened(evt.getProperty('edit'));
+    });
+    this.graph.getView().addListener(mxEvent.UNDO, (sender, evt) => {
+      this.undoManager?.undoableEditHappened(evt.getProperty('edit'));
+    });
 
     // Open popup in double click.
     this.graph.dblClick = (evt: MouseEvent, cell: mxgraph.mxCell) => {
@@ -186,7 +198,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.graph.getModel().addListener(mxEvent.CHANGE, (evt: Event) => {
-      console.log("Graph model has changed!");  
+      //console.log("Graph model has changed!");  
     });
 
     const rubberband = new mxRubberband(this.graph);
@@ -456,10 +468,40 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
     };
 
     const keyHandler = new mxKeyHandler(this.graph);
-    keyHandler.bindKey(46, (evt: Event) => {
+
+    keyHandler.getFunction = function(evt)
+    {
+      if (evt != null)
+      {
+        return (mxEvent.isControlDown(evt) || (mxClient.IS_MAC && evt.metaKey)) ? this.controlKeys[evt.keyCode] : this.normalKeys[evt.keyCode];
+      }
+      return null;
+    };
+
+    // Handle delete key
+    keyHandler.bindKey(46, (evt: Event) => {      
       if (this.graph.isEnabled()) {
+        const selectedCells = this.graph.getModel().getRoot();
+        console.log(selectedCells);
         this.graph.removeCells();
       }
+      else {
+        console.log("Key pressed by graph is NOT enabled???");
+      }
+    });
+
+    // Handle undo (ctrl-z)
+    keyHandler.bindControlKey(90, (evt: Event) => {            
+      if (this.graph.isEnabled()) {
+        this.undoManager.undo();
+      }      
+    });
+
+    // Handle redo (ctrl-y)
+    keyHandler.bindControlKey(89, (evt: Event) => {           
+      if (this.graph.isEnabled()) {
+        this.undoManager.redo();
+      }      
     });
 
     try {
@@ -468,7 +510,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
       this.graph.getStylesheet().getDefaultEdgeStyle().endArrow = 'none';
     } finally {
       this.graph.getModel().endUpdate();
-    }
+    }    
   }
 
   private openMeasureBoxDialog(cell: mxgraph.mxCell, x: number, y: number) {
@@ -872,7 +914,13 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
           if (this.currentDiagram.data && this.currentDiagram.data != "") {
             var xml = mxUtils.parseXml(this.currentDiagram.data);
             var dec = new mxCodec(xml);
-            dec.decode(xml.documentElement, this.graph.getModel());
+            try {
+              this.graph.getModel().beginUpdate();
+              dec.decode(xml.documentElement, this.graph.getModel());
+            }
+            finally {
+              this.graph.getModel().endUpdate();              
+            }
           }
         }
         catch (e) {

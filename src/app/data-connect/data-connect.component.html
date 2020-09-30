@@ -26,7 +26,7 @@
                                     <h4>Select Graph Item</h4>
                                     <mat-form-field>
                                         <mat-select [(ngModel)]="selectedGraphItemId" name="selete-item"
-                                            (selectionChange)="onGrapItemChanged($event.value)">
+                                            (selectionChange)="onGraphItemChanged($event.value)">
                                             <mat-option *ngFor="let option of graphItems"
                                                 [value]="option.id">
                                                 {{option.name}}
@@ -55,7 +55,7 @@
                                             </mat-form-field>
                                         </div>
                                     </div>                                    
-                                    <button mat-icon-button aria-label="Delete" style="cursor: pointer;" (click)="removePoint(item.attributes.id)"><mat-icon>delete</mat-icon></button>
+                                    <button mat-icon-button aria-label="Delete" style="cursor: pointer;" (click)="removePoint(item)"><mat-icon>delete</mat-icon></button>
                                 </div>
                             </div>
                         </mat-expansion-panel>                                               
@@ -108,8 +108,9 @@
                                 <div class="data-connect-box" *ngFor="let item of availablePoints" cdkDrag>
                                     <div>
                                         <div class="data-header">{{item.attributes.name}}</div>
-                                        <div class="data-detail">{{item.attributes.path}}</div>
-                                    </div>                                    
+                                        <div class="data-detail">{{item.attributes.path}}</div>                                        
+                                    </div>  
+                                    <button mat-icon-button aria-label="Add" style="cursor: pointer;" (click)="addPoint(item)"><mat-icon>add</mat-icon></button>                                  
                                 </div>
                             </div>
                         </mat-expansion-panel>                                            

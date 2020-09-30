@@ -5,7 +5,6 @@ import { DiagramsService } from '../shared/services/diagrams.service';
 import { Diagram } from '../shared/models/diagram.model';
 import { Subscription } from 'rxjs';
 import * as converter from 'xml-js';
-import { v4 as uuidv4 } from 'uuid';
 import { getProfilesByModule, getModules } from '../shared/models/openfmb.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router'
@@ -92,7 +91,7 @@ export class DataConnectComponent implements OnInit {
         if (this.requestDiagramId) {
           this.selectedDiagramId = this.requestDiagramId;
           this.onDiagramChanged(this.selectedDiagramId);
-        }
+        }         
       })
   }
 
@@ -148,16 +147,7 @@ export class DataConnectComponent implements OnInit {
                           this.selectedGraphItemId = this.requestCellId;
                           this.selectedGraphItem = vertex;
                         }
-                        this.graphItems.push(vertex);   
-                        // add vertex id if not exists                                       
-                        for(var m = 0; m < displayData.elements?.length; ++m) {
-                          var data = displayData.elements[m];
-                          if (data.attributes) {
-                            if (!data.attributes.id) {                            
-                              data.attributes.id = uuidv4();
-                            }
-                          }
-                        }
+                        this.graphItems.push(vertex);                           
                       }                    
                     }
                   }
@@ -166,11 +156,18 @@ export class DataConnectComponent implements OnInit {
             }
           }        
         }
-      }  
+      } 
+      
+      if (this.requestCellId) {
+        
+        this.selectedGraphItemId = this.requestCellId;
+        this.requestCellId = null;
+        this.onGraphItemChanged(this.selectedGraphItemId);
+      }
     });      
   }
 
-  onGrapItemChanged(id: string) {    
+  onGraphItemChanged(id: string) {    
     this.currentPoints = [];
     for(var i = 0; i < this.graphItems.length; ++i) {
       if (this.graphItems[i].id === id) {
@@ -179,15 +176,15 @@ export class DataConnectComponent implements OnInit {
         break;
       }
     }
-  }
+  }  
 
-  removePoint(id: string) {
-    console.log("remove data:: " + id);
+  removePoint(item) {
+    console.log("remove data:: " + item);
 
-    if (id) {
+    if (item) {
       for(let index = this.currentPoints.length - 1; index >=0; --index) {
         var obj = this.currentPoints[index];
-        if (obj.attributes.id === id) {        
+        if (obj === item) {        
           this.currentPoints.splice(index, 1);
         }
       }
@@ -195,6 +192,11 @@ export class DataConnectComponent implements OnInit {
     else {
       console.error("Unable to delete connected data point.  ID=" + id);
     }
+  }
+
+  addPoint(item: any) {
+    console.log("add data:: " + item);
+    this.currentPoints.push(item);
   }
 
   onModuleChanged(name: string) {    
@@ -257,6 +259,7 @@ export class DataConnectComponent implements OnInit {
           var item = this.graphItems[i];
           if (item.id === this.selectedGraphItemId) {                             
             var xml = converter.js2xml(this.graphModel);
+            console.log(xml);
             this.diagram.data = xml;                        
             this.service.update(this.diagram).subscribe(
               response => {

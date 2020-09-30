@@ -12,34 +12,6 @@
       &nbsp;
     </div>
     <div fxLayout="row" fxLayoutAlign="end center" fxFlex="40" fxFlexAlign="center">
-      <!-- <div class="mode-button active" [ngClass]="{
-      active: (selectedMode$ | async) === DesignerConstant.SELECT_MODE
-    }" fxLayout="column" fxLayoutAlign="center center" (click)="onModeSelect(DesignerConstant.SELECT_MODE)">
-        <mat-icon svgIcon="select-icon" aria-hidden="false" aria-label="Example thumbs up SVG icon"></mat-icon>
-        <span class="title">Select</span>
-      </div>
-      <div class="mode-button" [ngClass]="{
-      active: (selectedMode$ | async) === DesignerConstant.CONNECT_MODE
-    }" fxLayout="column" fxLayoutAlign="center center" (click)="onModeSelect(DesignerConstant.CONNECT_MODE)">
-        <mat-icon svgIcon="connect-icon" aria-hidden="false" aria-label="Example thumbs up SVG icon"></mat-icon>
-        <span class="title">Connect</span>
-      </div>
-      <div class="connect-color-wrapper" fxLayout="row"
-        *ngIf="(selectedMode$ | async) === DesignerConstant.CONNECT_MODE">
-        <div class="connect-color" *ngFor="let color of DesignerConstant.CONNECT_COLORS" [ngClass]="{
-        selected: (selectedConnectColor$ | async) === color
-      }" (click)="onColorSelect(color)">
-          <div [ngStyle]="{
-          'background-color': color
-        }"></div>
-        </div>
-      </div> -->
-      <!-- <div class="mode-button mode-button-move" [ngClass]="{
-          active: (selectedMode$ | async) === DesignerConstant.MOVE_MODE
-        }" fxLayout="column" fxLayoutAlign="center center" (click)="onModeSelect(DesignerConstant.MOVE_MODE)">
-        <mat-icon svgIcon="move-icon" aria-hidden="false" aria-label="Example thumbs up SVG icon"></mat-icon>
-        <span class="title">Move</span>
-      </div>
       <div fxItemAlign="center" class="zoom-control">
         Zoom:&nbsp;&nbsp;&nbsp;&nbsp;
         <a [routerLink]="" class="zoom-button zoom-out" (click)="zoomOut()">
@@ -50,14 +22,6 @@
         <a [routerLink]="" class="zoom-button zoom-in" (click)="zoomIn()">+</a>
         <span class="value"> {{ value | percent: 0 }}</span>
       </div>
-      <input type="file" class="file-input-hidden" (change)="onLoadGraph($event.target.files[0])" accept=".xml"
-        #fileInput />
-      <button type="button" mat-flat-button class="header-button" (click)="fileInput.click()">
-        LOAD
-      </button>
-      <button type="button" mat-flat-button class="header-button" (click)="onSaveGraph()">
-        SAVE
-      </button> -->
     </div>
   </mat-toolbar-row>
 </mat-toolbar>

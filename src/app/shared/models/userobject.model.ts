@@ -13,7 +13,9 @@ export interface DiagramData {
     containerWidth?: number,
     changeStyleAllowed?: boolean,
     linkData?: LinkData,
-    displayData: []
+    tag?: any,
+    displayData?: [],
+    controlData?: []
 };
 
 export interface LinkData {

@@ -27,6 +27,7 @@ import { ActivatedRoute } from '@angular/router'
 import { DiagramsService } from '../shared/services/diagrams.service';
 import { Diagram } from '../shared/models/diagram.model';
 import { DiagramData } from '../shared/models/userobject.model'
+import { Pos, PosString, Helpers } from '../../openfmb.constants'
 
 const {
   mxGraph,
@@ -73,7 +74,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     height: 0
   };
   diagramId: string = null;
-  currentDiagram: Diagram;
+  currentDiagram: Diagram;  
 
   private destroy$ = new Subject();
 
@@ -150,7 +151,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
           // Edit label (when?)
           this.graph.startEditingAtCell(cell);
         } 
-        else if (currentCellData.type == "breaker") {
+        else if (this.isControllable(currentCellData.type)) {
          
           const centerX = window.innerWidth / 2; 
           const centerY = window.innerHeight / 2;          
@@ -380,7 +381,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
           if (displayData && displayData.length > 0) {
             // write mrid to the wraper
             this.renderer.setAttribute(wrapper, 'svg-id', cell.id);
-            this.renderer.setAttribute(wrapper, 'mrid', userObject.mRID);
+            this.renderer.setAttribute(wrapper, 'mrid', userObject.mRID);            
             
             displayData.forEach(elem => {
               const field = this.renderer.createElement('span');
@@ -499,6 +500,13 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     edgeStyle[mxConstants.STYLE_STROKEWIDTH] = '2';
   }
 
+  private isControllable(type: string) {
+    if (type === 'breaker' || type === 'switch-vertical' || type == 'switch-horizontal') {
+      return true;
+    }
+    return false;
+  }
+
   // open property popup
   openDialog(x: number, y: number, cell: mxgraph.mxCell): void {
     const currentCellData = this.graph.model.getValue(cell).userObject;
@@ -548,7 +556,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
       top: y,
       left: x,
       diagramId: this.diagramId,
-      status: "CLOSED",
+      status: currentCellData.tag,
       name: currentCellData.name,      
       mRID: currentCellData.mRID
     };
@@ -578,7 +586,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     this.wsService.wsMessages$ 
       .subscribe((message) => {
-        //console.log(message);
+        const baseImagePath = '../../assets/images/toolbar/';
         const domElement = document.querySelectorAll('span[mrid]');
 
         if (domElement.length > 0) {
@@ -589,24 +597,27 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
                 const svgId = domElement[i].getAttribute('svg-id');
                 if (svgId) {
                   try {
+                    var objType = domElement[i].getAttribute('obj-type');
+                    console.log(objType);
                     var cell = this.graph.getModel().getCell(svgId);
                     if (cell) {
-                      var state = this.graph.view.getState(cell, false);
-                      if (state) {
-                        var node = state.shape.node;                                            
-                        var image = node.getElementsByTagName("image")[0];                        
-                        var ref = image.getAttribute('href');
-                        if (!ref) {
-                          ref = image.getAttribute('xlink:href');
-                          image.removeAttribute('xlink:href');
+                      var diagramData = cell.value.userObject;
+                      if (this.isControllable(diagramData.type)) {
+                        var state = this.graph.view.getState(cell, false);
+                        if (state) {
+                          var node = state.shape.node;                                            
+                          var image = node.getElementsByTagName("image")[0];                        
+                          var ref = image.getAttribute('href');
+                          if (!ref) {
+                            ref = image.getAttribute('xlink:href');
+                            image.removeAttribute('xlink:href');
+                          }
+
+                          const val = Helpers.convertPos(update.topic.value);
+                          cell.value.userObject.tag = val;
+
+                          image.setAttribute("href", baseImagePath + objType + '-' + val + '.svg');                                      
                         }
-                        
-                        if (update.topic.value > 0 || update.topic.value == true) {
-                          image.setAttribute("href", '../../assets/images/toolbar/breaker-closed.svg');        
-                        }
-                        else {
-                          image.setAttribute("href", '../../assets/images/toolbar/breaker-open.svg');  
-                        }              
                       }
                     }
                   }
