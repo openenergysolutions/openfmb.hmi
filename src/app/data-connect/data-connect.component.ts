@@ -8,6 +8,7 @@ import * as converter from 'xml-js';
 import { getProfilesByModule, getModules } from '../shared/models/openfmb.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router'
+import { Hmi } from '../shared/hmi.constants'
 
 @Component({
   selector: 'app-data-connect',
@@ -41,6 +42,10 @@ export class DataConnectComponent implements OnInit {
 
   availablePoints = [];   
   currentPoints = [];
+  currentControlPoints = [];
+
+  graphItemControllable: boolean = false;
+  graphItemDataConnectable: boolean = false;
 
   constructor(
     private service: DiagramsService,
@@ -70,8 +75,10 @@ export class DataConnectComponent implements OnInit {
 
         if (this.selectedGraphItem.type !== 'measure-box' && event.container.data.length > 0) {
           this.snack.open('Only one mapping is allowed.', 'OK', { duration: 4000 });
+         
         }
-        else {
+        else 
+        {
           transferArrayItem(event.previousContainer.data,
                           event.container.data,
                           event.previousIndex,
@@ -115,6 +122,7 @@ export class DataConnectComponent implements OnInit {
       this.graphItems = [];
       this.selectedGraphItemId = null;
       this.currentPoints = [];
+      this.currentControlPoints = [];
   
       for(var i = 0; i < elem.elements.length; ++i) {
         var e = elem.elements[i];
@@ -128,18 +136,35 @@ export class DataConnectComponent implements OnInit {
                   if (objElement.attributes) {
                     if (objElement.attributes.as === "userObject") { // found "userObject"
                       // User object
-                      if (objElement.elements && objElement.elements.length > 0)
+                      if (objElement.elements)
                       {
-                        var displayData = objElement.elements[0];
-                        if (!displayData.elements) {
-                          displayData.elements = [];
-                        }                      
+                        var displayData = null;
+                        var controlData = null;
+
+                        for(var j = 0; j < objElement.elements.length; ++j) {
+                          if (objElement.elements[j].attributes.as == "displayData")
+                          {
+                            displayData = objElement.elements[j];
+                            if (!displayData.elements) {
+                              displayData.elements = [];
+                            }  
+                          }
+                          else if (objElement.elements[j].attributes.as == "controlData")
+                          {
+                            controlData = objElement.elements[j];
+                            if (!controlData.elements) {
+                              controlData.elements = [];
+                            }  
+                          }
+                        }                        
+                        
                         var vertex = {
                           id: e.attributes.id,
                           name: objElement.attributes.name || "name",
                           label: objElement.attributes.label || "label", 
                           mRID: objElement.attributes.mRID,                        
-                          displayData: displayData,
+                          displayData: displayData,  
+                          controlData: controlData,                         
                           type: objElement.attributes.type
                         };
   
@@ -169,10 +194,14 @@ export class DataConnectComponent implements OnInit {
 
   onGraphItemChanged(id: string) {    
     this.currentPoints = [];
+    this.currentControlPoints = [];
     for(var i = 0; i < this.graphItems.length; ++i) {
       if (this.graphItems[i].id === id) {
         this.selectedGraphItem = this.graphItems[i];
         this.currentPoints = this.graphItems[i].displayData.elements;
+        this.currentControlPoints = this.graphItems[i].controlData.elements; 
+        this.graphItemControllable = Hmi.isControllable(this.graphItems[i].type);
+        this.graphItemDataConnectable = Hmi.isDataConnectable(this.graphItems[i].type);
         break;
       }
     }
@@ -190,13 +219,44 @@ export class DataConnectComponent implements OnInit {
       }
     }
     else {
-      console.error("Unable to delete connected data point.  ID=" + id);
+      console.error("Unable to delete connected data point.  item=" + item);
+    }
+  }
+
+  removeControlPoint(item) {
+    console.log("remove data:: " + item);
+
+    if (item) {
+      for(let index = this.currentControlPoints.length - 1; index >=0; --index) {
+        var obj = this.currentControlPoints[index];
+        if (obj === item) {        
+          this.currentControlPoints.splice(index, 1);
+        }
+      }
+    }
+    else {
+      console.error("Unable to delete connected control data point.  item=" + item);
     }
   }
 
   addPoint(item: any) {
     console.log("add data:: " + item);
-    this.currentPoints.push(item);
+    if (this.selectedGraphItem.type !== 'measure-box' && this.currentPoints.length > 0) {
+      this.snack.open('Only one mapping is allowed.', 'OK', { duration: 4000 });
+    }
+    else {
+      this.currentPoints.push(item);
+    }
+  }
+
+  addControlPoint(item: any) {
+    console.log("add control data:: " + item);
+    if (this.selectedGraphItem.type !== 'measure-box' && this.currentControlPoints.length > 0) {
+      this.snack.open('Only one mapping is allowed.', 'OK', { duration: 4000 });
+    }
+    else {
+      this.currentControlPoints.push(item);
+    }
   }
 
   onModuleChanged(name: string) {    

@@ -9,7 +9,7 @@ export class PropertiesSelectSectionComponent implements OnInit {
   @Input() fields = [];
   @Input() selectedFields = [];
   @Output() emitter = new EventEmitter();
-
+  @Input() sectionLabel: string = "Data";
   constructor() { }
 
   ngOnInit() {
@@ -28,16 +28,5 @@ export class PropertiesSelectSectionComponent implements OnInit {
     }
     this.emitter.emit(this.selectedFields);
   }
-
-  // select all fields
-  selectAllFields() {
-    this.selectedFields = [];
-    this.fields.forEach( field => {
-      field.selected = true;
-      const selectedElem = {...field};
-      delete selectedElem.selected;
-      this.selectedFields.push(selectedElem);
-    });
-    this.emitter.emit(this.selectedFields);
-  }
+  
 }

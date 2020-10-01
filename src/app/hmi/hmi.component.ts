@@ -27,7 +27,8 @@ import { ActivatedRoute } from '@angular/router'
 import { DiagramsService } from '../shared/services/diagrams.service';
 import { Diagram } from '../shared/models/diagram.model';
 import { DiagramData } from '../shared/models/userobject.model'
-import { Pos, PosString, Helpers } from '../../openfmb.constants'
+import { Helpers } from '../shared/openfmb.constants'
+import { Hmi } from '../shared/hmi.constants'
 
 const {
   mxGraph,
@@ -151,7 +152,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
           // Edit label (when?)
           this.graph.startEditingAtCell(cell);
         } 
-        else if (this.isControllable(currentCellData.type)) {
+        else if (Hmi.isControllable(currentCellData.type)) {
          
           const centerX = window.innerWidth / 2; 
           const centerY = window.innerHeight / 2;          
@@ -500,13 +501,6 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     edgeStyle[mxConstants.STYLE_STROKEWIDTH] = '2';
   }
 
-  private isControllable(type: string) {
-    if (type === 'breaker' || type === 'switch-vertical' || type == 'switch-horizontal') {
-      return true;
-    }
-    return false;
-  }
-
   // open property popup
   openDialog(x: number, y: number, cell: mxgraph.mxCell): void {
     const currentCellData = this.graph.model.getValue(cell).userObject;
@@ -518,6 +512,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
       label: currentCellData.label,
       name: currentCellData.name,
       displayData: currentCellData.displayData,
+      controlData: currentCellData.controlData,
       mRID: currentCellData.mRID,
       fontSize: currentCellData.fontSize,
       containerWidth: currentCellData.containerWidth,
@@ -570,8 +565,8 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
-      if (result && result.proceed) {        
-        var action = result.action;
+      if (result && result.proceed) {                
+        this.sendCommand(currentCellData, result.action);
       }
     });
   }
@@ -602,7 +597,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
                     var cell = this.graph.getModel().getCell(svgId);
                     if (cell) {
                       var diagramData = cell.value.userObject;
-                      if (this.isControllable(diagramData.type)) {
+                      if (Hmi.isControllable(diagramData.type)) {
                         var state = this.graph.view.getState(cell, false);
                         if (state) {
                           var node = state.shape.node;                                            
@@ -637,6 +632,11 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
 
   sendWsData(data: any) {    
     this.wsService.sendWsData(data);
+  }
+
+  sendCommand(userObject: DiagramData, action: string) {
+    console.log("Sending command with action " + action + " for item mRID: " + userObject.mRID);
+        
   }
 
   // zoom graph

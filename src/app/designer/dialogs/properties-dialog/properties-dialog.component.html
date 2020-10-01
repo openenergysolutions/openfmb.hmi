@@ -18,10 +18,15 @@
         <mat-form-field class="designer-form-field" floatLabel='never'>
           <input matInput [(ngModel)]="label" placeholder="Enter label" name="symbol-label" />
         </mat-form-field>
+      </div>      
+    </mat-tab>
+    <mat-tab label="Data Connection" *ngIf="dataConnectAllowed">
+      <div class="selected-section">
+        <app-properties-select-section [sectionLabel]="displayDataLabel" [fields]="displayData">
+        </app-properties-select-section>
       </div>
-      <div class="selected-section" *ngIf="deviceTypeMapping">
-        <app-properties-select-section [fields]="defaultFields" [selectedFields]="selectedFields"
-          (emitter)="changeSelectedFields($event)">
+      <div class="selected-section">
+        <app-properties-select-section [sectionLabel]="controlDataLabel" [fields]="controlData">
         </app-properties-select-section>
       </div>
     </mat-tab>

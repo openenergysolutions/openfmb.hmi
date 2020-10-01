@@ -555,7 +555,8 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
           type: data.type,                    
           foreColor: '',
           backgroundColor: '',
-          displayData: []
+          displayData: [],
+          controlData: []
         };
         model.beginUpdate();
         try {
@@ -795,6 +796,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
       label: currentCellData.label,
       name: currentCellData.name,
       displayData: currentCellData.displayData,
+      controlData: currentCellData.controlData,
       mRID: currentCellData.mRID,
       fontSize: currentCellData.fontSize,
       containerWidth: currentCellData.containerWidth,
@@ -823,6 +825,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
           label: result.label, 
           name: result.name,         
           displayData: result.displayData,
+          controlData: result.controlData,
           mRID: result.mRID,
           fontSize: result.fontSize,
           containerWidth: result.containerWidth,

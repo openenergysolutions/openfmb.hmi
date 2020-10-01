@@ -1,10 +1,5 @@
 import { Observable } from 'rxjs';
-
-export interface Topic {
-  name: string,
-  mrid: string,
-  value?: any
-}
+import { Topic } from '../../shared/models/topic.model'
 
 export interface UpdateMessage {
   session_id: string,

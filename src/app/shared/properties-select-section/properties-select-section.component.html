@@ -1,14 +1,12 @@
 <div class="select-section-container">
-  <strong *ngIf="fields && fields.length > 0">Display Data</strong>
-  <!-- <a class="select-all-btn" (click)="selectAllFields()">Select All</a> -->
+  <strong *ngIf="fields && fields.length > 0">{{sectionLabel}}</strong>  
 </div>
 
 <div class="checkbox-container checkbox-container--row">
   <div class="checkbox-container--item" *ngFor="let field of fields; let index = index">
-    <input type="checkbox" class="hidden-box" [id]="field?.value" [(ngModel)]="field.selected"  (change)="selectField(field)"/>
-    <label [for]="field?.value" class="check--label">
-      <!-- <span class="check--label-box"></span> -->
-      <span class="check--label-text">{{field?.label}}</span>
+    <input type="checkbox" class="hidden-box" [id]="field?.value" [(ngModel)]="field.selected" />
+    <label [for]="field?.value" class="check--label">      
+      <span class="check--label-text" title="{{field?.path}}">{{field?.label}}</span>
     </label>
   </div>
 </div>

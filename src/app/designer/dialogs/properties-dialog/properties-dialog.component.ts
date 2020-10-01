@@ -15,6 +15,8 @@ export class PropertiesDialogComponent implements OnInit {
   filterData: any;
   label: string;
   name: string;
+  displayDataLabel = "Reading/Status";
+  controlDataLabel = "Control";
   diagramId: string;
   mRID: string;
   fontSize: number;
@@ -26,7 +28,8 @@ export class PropertiesDialogComponent implements OnInit {
   changeBackgroundAllowed: boolean;
   linkAllowed: boolean;
   deviceTypeMapping: string;
-  selectedFields: string[] = [];
+  displayData: any[];
+  controlData: any[];
   defaultFields = [];
   deviceTypeOptions = [];
   mRIdOptions: string[] = [];
@@ -80,12 +83,11 @@ export class PropertiesDialogComponent implements OnInit {
       left: `${this.filterData.left}px`
     });
     if (this.filterData.displayData) {
-      this.selectedFields = [...this.filterData.displayData];
-    }
-    if (this.deviceTypeMapping && this.deviceTypeOptions.length) {
-      this.setDefaultFields(this.deviceTypeMapping);
-    }
-
+      this.displayData = [...this.filterData.displayData];
+    } 
+    if (this.filterData.controlData) {
+      this.controlData = [...this.filterData.controlData];
+    } 
   }
 
   getDiagrams() {
@@ -137,7 +139,8 @@ export class PropertiesDialogComponent implements OnInit {
     this.dialogRef.close({
       label: this.label,
       name: this.name,
-      displayData: this.selectedFields,
+      displayData: this.displayData,
+      controlData: this.controlData,
       mRID: this.mRID,
       fontSize: this.fontSize,
       containerWidth: this.containerWidth,
@@ -153,13 +156,8 @@ export class PropertiesDialogComponent implements OnInit {
   onNoClick(): void {
     this.dialogRef.close();
   }
-  // sets display fields options regarding device type
-  setDefaultFields(type: string) {
-    const currentDeviceType = this.deviceTypeOptions.find((elem) => elem.type === type);
-    if (currentDeviceType) {
-      this.defaultFields = this.setSelectedFields(JSON.parse(JSON.stringify(currentDeviceType.displayData)), this.selectedFields);
-    }
-  }
+  
+
 
   setSelectedFields(allFields: any[], selectedFields: any[]): any[] {
     if (selectedFields.length) {
@@ -173,13 +171,8 @@ export class PropertiesDialogComponent implements OnInit {
       });
     }
     return allFields;
-  }  
+  }    
   
-  // triggers when device data fields  changes
-  changeSelectedFields(fields: string[]) {
-    this.selectedFields = fields;
-  }
-
   // navigate to data connect screen
   dataConnect() { 
     this.navigateToDataConnection = true;   

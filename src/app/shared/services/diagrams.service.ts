@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { config } from '../../../config'
 import { Diagram } from '../models/diagram.model'
+import { Topic } from '../models/topic.model'
 import { catchError } from 'rxjs/internal/operators';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
@@ -46,11 +47,7 @@ export class DiagramsService {
   }
 
   update(diagram: Diagram) : Observable<any> {    
-    console.log("Updating diagram!");
-    // return this.httpClient.post<Diagram>(this.endpoint + 'save', diagram).pipe(
-    //   catchError(this.handleError)      
-    // ); 
-    
+    console.log("Updating diagram!");        
     return this.httpClient.post<Diagram>(this.endpoint + 'save', diagram);
   }
 
@@ -61,6 +58,12 @@ export class DiagramsService {
 
   create(diagram: Diagram) {
     return this.httpClient.post<Diagram>(this.endpoint + 'save', diagram).pipe(
+      catchError(this.handleError)
+    );  
+  }
+
+  updateData(topic: Topic) {
+    return this.httpClient.post<Topic>(this.endpoint + 'update-data', topic).pipe(
       catchError(this.handleError)
     );  
   }
