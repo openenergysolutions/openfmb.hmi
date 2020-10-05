@@ -99,7 +99,10 @@ export class DataConnectComponent implements OnInit {
           this.selectedDiagramId = this.requestDiagramId;
           this.onDiagramChanged(this.selectedDiagramId);
         }         
-      })
+      }, error => {
+        console.error(error);
+        this.snack.open(error, 'OK', { duration: 4000 });
+      });
   }
 
   onDiagramChanged(id: string) {
@@ -161,7 +164,8 @@ export class DataConnectComponent implements OnInit {
                         var vertex = {
                           id: e.attributes.id,
                           name: objElement.attributes.name || "name",
-                          label: objElement.attributes.label || "label", 
+                          label: objElement.attributes.label || "label",
+                          dataType:  objElement.attributes.label || "",
                           mRID: objElement.attributes.mRID,                        
                           displayData: displayData,  
                           controlData: controlData,                         

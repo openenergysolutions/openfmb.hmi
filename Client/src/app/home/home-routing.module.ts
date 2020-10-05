@@ -7,7 +7,8 @@ const routes: Routes = [
     path: '',
     children: [{
       path: 'home',
-      component: HomeComponent     
+      component: HomeComponent,
+      data: { title: 'HOME' }   
     }]
   }
 ];

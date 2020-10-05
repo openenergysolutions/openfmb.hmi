@@ -69,12 +69,12 @@ export class DiagramsComponent implements OnInit, OnDestroy {
   }
 
   open(id: string) {
-    console.log("open diagram: " + id);
-    this.router.navigateByUrl('/designer?id=' + id, { skipLocationChange: false, replaceUrl: true });
+    console.log("open diagram: " + id);        
+    this.router.navigateByUrl('/designer?id=' + id);
   }
 
   run(id: string) {
-    console.log("run diagram: " + id);
+    console.log("run diagram: " + id); 
     this.router.navigateByUrl('/hmi?id=' + id);
   }
 
@@ -127,12 +127,18 @@ export class DiagramsComponent implements OnInit, OnDestroy {
               .subscribe(data => {                              
                 this.snack.open('Diagram Added!', 'OK', { duration: 4000 });
                 this.router.navigateByUrl("/designer?id=" + diagram.diagramId);
-              })
+              }, error => {
+                console.error(error);
+                this.snack.open(error, 'OK', { duration: 4000 });
+              });
           } else {
             this.service.update(diagram)
               .subscribe(data => {                              
                 this.snack.open('Diagram Updated!', 'OK', { duration: 4000 })
-              })
+              }, error => {
+                console.error(error);
+                this.snack.open(error, 'OK', { duration: 4000 });
+              });
           }
         }
         catch (e) {

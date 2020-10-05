@@ -30,6 +30,37 @@
         </app-properties-select-section>
       </div>
     </mat-tab>
+    <mat-tab label="Status Definiation" *ngIf="statusDefinitionAllowed">
+      <button mat-raised-button (click)="addStatusDefinition()" style="margin-top:15px;" cdkFocusInitial>
+        Add
+      </button>
+      <div style="min-height: 300px;max-height: 300px;overflow: auto;">
+        <div *ngFor="let item of statusDefinitions; let i = index">          
+          <div fxLayout="row">
+            <mat-form-field class="designer-line-form-field" floatLabel='never'>
+              <div style="padding-right: 10px;">
+                <input type="number" [(ngModel)]="statusDefinitions[i].value" min="0" max="65535" matInput name="input-status{{i}}"
+                  placeholder="Value" />
+              </div>
+            </mat-form-field>
+            <mat-form-field class="designer-line-form-field" floatLabel='never'>
+              <div style="padding-right: 10px;">
+                <mat-select [(value)]="item.color" name="selectColor">
+                  <mat-option *ngFor="let option of statusColors" [value]="option">
+                    {{option}}
+                  </mat-option>
+                </mat-select>  
+              </div>
+            </mat-form-field>    
+            <div fxFlex="5">
+              <button mat-icon-button aria-label="Delete" style="cursor: pointer;padding-top: 10px !important;" (click)="removeStatusDefinition(item)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>          
+          </div>        
+        </div> 
+      </div>           
+    </mat-tab>
     <mat-tab label="Link" *ngIf="linkAllowed">
       <div mat-dialog-content class="dialog-input-container pt-1">
         <strong>Navigator Link</strong><br />

@@ -27,6 +27,7 @@ import { DiagramData } from '../shared/models/userobject.model'
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Diagram } from '../shared/models/diagram.model';
+import { Symbol } from '../shared/hmi.constants'
 
 const {
   mxGraph,
@@ -69,7 +70,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
   sessionId = '';
   defaultLabelStyle = 'text;html=1;strokeColor=none;fontColor=#000000;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=none;';
   defaultButtonStyle = 'html=1;strokeColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fillColor=#0e0f21;fontColor=#a6a6af;';
-  defaultTwoStateButtonStyle = 'html=1;strokeColor=none;align=left;verticalAlign=middle;rounded=0;fillColor=#ffffff;fontColor=#000000;';
+  defaultTwoStateButtonStyle = 'html=1;strokeColor=#000000;align=left;verticalAlign=middle;rounded=1;fillColor=#e7e7e7;fontColor=#000000;';
   gridData = {
     scale: 0,
     gridSize: 0,
@@ -77,7 +78,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
     width: 0,
     height: 0
   };
-  diagramId: string = null;
+  diagramId: string = null;  
   currentDiagram: Diagram;
   undoManager: mxgraph.mxUndoManager;
 
@@ -98,7 +99,6 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {
     this.router.queryParams.subscribe(params => {
       this.diagramId = params['id'];      
-      console.log("Designer:: diagramId = " + this.diagramId);
     });
   }
 
@@ -133,8 +133,8 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.sessionId = uuidv4();
 
     // load graph
-    if (this.diagramId) {      
-      this.loadGraphFromServer(this.diagramId);
+    if (this.diagramId) { 
+      this.loadGraphFromServer(this.diagramId);       
     }
     else {
       this.naviator.navigateByUrl("**");
@@ -243,12 +243,12 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
       if (cellValue && cellValue.userObject) {
         const userObject = cellValue.userObject;
         const displayData = cellValue.userObject.displayData;
-        const isMeasureBox = userObject.type === 'measure-box';
+        
         // Returns a DOM for the label
         const wrapper = this.renderer.createElement('div');
         this.renderer.addClass(wrapper, 'component-label');        
 
-        if (isMeasureBox) {          
+        if (userObject.type === Symbol.measureBox) {          
           if (displayData) {
             const data = this.renderer.createElement('div');
             this.renderer.addClass(data, 'display-data-container');   
@@ -315,7 +315,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
             this.renderer.appendChild(wrapper, data);
           }
         }
-        else if (userObject.type === 'label') {                  
+        else if (userObject.type === Symbol.label) {                  
           var style = '';
           if (userObject.fontSize) {
             style += 'font-size:' + userObject.fontSize + 'px;';
@@ -335,7 +335,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
 
           return span;       
         }
-        else if (userObject.type === 'button') {     
+        else if (userObject.type === Symbol.button) {     
           var style = '';
           if (userObject.fontSize) {
             style += 'font-size:' + userObject.fontSize + 'px;';
@@ -359,7 +359,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
           
           return div;
         }
-        else if (userObject.type === 'two-state-button') {
+        else if (userObject.type === Symbol.twoStateButton) {
           var style = '';
           if (userObject.fontSize) {
             style += 'font-size:' + userObject.fontSize + 'px;';
@@ -456,7 +456,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.graph.popupMenuHandler.factoryMethod = (menu: mxgraph.mxPopupMenu, cell: mxgraph.mxCell, evt: Event) => {
       if (this.mode === this.DESIGNER_CONST.SELECT_MODE) {
         if (cell && cell.vertex) {
-          menu.addItem('Remove', null, () => {
+          menu.addItem('Remove', null, () => {                        
             this.graph.removeCells();
           });
         } else if (cell && cell.edge) {
@@ -480,9 +480,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Handle delete key
     keyHandler.bindKey(46, (evt: Event) => {      
-      if (this.graph.isEnabled()) {
-        const selectedCells = this.graph.getModel().getRoot();
-        console.log(selectedCells);
+      if (this.graph.isEnabled()) {                
         this.graph.removeCells();
       }
       else {
@@ -538,8 +536,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // add toolbar icons.
   private addSidebarIcon(graphItem: mxgraph.mxGraph, sidebar: ElementRef, data: any) {    
-    const imgDropFunction = (graph: mxgraph.mxGraph, evt: Event, cell: mxgraph.mxCell, x: number, y: number) => {
-      console.log("Drop: (x:y) = " + x + ":" + y);
+    const imgDropFunction = (graph: mxgraph.mxGraph, evt: Event, cell: mxgraph.mxCell, x: number, y: number) => {      
       if (this.mode === this.DESIGNER_CONST.SELECT_MODE) {        
         const parent = graph.getDefaultParent();
         const model = graph.getModel();
@@ -561,7 +558,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
         model.beginUpdate();
         try {
 
-          if (data.shape == 'image') {
+          if (data.shape == Symbol.image) {
             const ports = [];
             const pointX = (data.left && Math.round(x) === x) ? x + data.left : x;
             const pointY = (data.top && Math.round(y) === y) ? y + data.top : y;
@@ -583,17 +580,17 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
               this.openMeasureBoxDialog(v1, x, y);
             }
           }
-          else if (data.shape == 'text') {
+          else if (data.shape == Symbol.text) {
             v1 = graph.insertVertex(parent, this.idGenerator(), 'Label', x, y, 80, 40, this.defaultLabelStyle);
             userObject.label = 'Text';
             model.setValue(v1, { ...currentValue, userObject });            
           }
-          else if (data.shape == 'button') {
+          else if (data.shape == Symbol.button) {
             v1 = graph.insertVertex(parent, this.idGenerator(), 'Button', x, y, 120, 40, this.defaultButtonStyle);
             userObject.label = 'Button';
             model.setValue(v1, { ...currentValue, userObject });            
           } 
-          else if (data.shape == 'two-state-button') {
+          else if (data.shape == Symbol.twoStateButton) {
             v1 = graph.insertVertex(parent, this.idGenerator(), 'Button', x, y, 120, 40, this.defaultTwoStateButtonStyle);
             userObject.label = 'Status';
             model.setValue(v1, { ...currentValue, userObject });
@@ -787,7 +784,11 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
   openDialog(x: number, y: number, cell: mxgraph.mxCell): void {
     const currentCellData = this.graph.model.getValue(cell).userObject;
 
-    const changeStyleAllowed = currentCellData.type === 'measure-box' || currentCellData.type === 'label' || currentCellData.type === 'button' || currentCellData.type === 'two-state-button';
+    const changeStyleAllowed = currentCellData.type === Symbol.measureBox 
+      || currentCellData.type === Symbol.label 
+      || currentCellData.type === Symbol.button 
+      || currentCellData.type === Symbol.twoStateButton;
+      
     this.dialog.closeAll();
     const filterData : DiagramData = {
       top: y,
@@ -795,6 +796,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
       diagramId: this.diagramId,
       label: currentCellData.label,
       name: currentCellData.name,
+      statusDefinition: currentCellData.statusDefinition,
       displayData: currentCellData.displayData,
       controlData: currentCellData.controlData,
       mRID: currentCellData.mRID,
@@ -823,7 +825,8 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
         const userObject = {
           ...currentValue.userObject,
           label: result.label, 
-          name: result.name,         
+          name: result.name,   
+          statusDefinition: result.statusDefinition,      
           displayData: result.displayData,
           controlData: result.controlData,
           mRID: result.mRID,
@@ -873,7 +876,10 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
         console.log("Updated diagram:: " + response),
         this.snack.open('Diagram is updated.', 'OK', { duration: 2000 });        
       },
-      err => console.log(err)
+      error => {
+        console.error(error);
+        this.snack.open(error, 'OK', { duration: 4000 });
+      }
     );    
   }
   
@@ -919,7 +925,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
             var dec = new mxCodec(xml);
             try {
               this.graph.getModel().beginUpdate();
-              dec.decode(xml.documentElement, this.graph.getModel());
+              dec.decode(xml.documentElement, this.graph.getModel());                            
             }
             finally {
               this.graph.getModel().endUpdate();              
@@ -929,8 +935,12 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
         catch (e) {
           console.error(e);
         }
+      },
+      error => {
+        console.error(error);
+        this.snack.open(error, 'OK', { duration: 4000 });
       }
-    )    
+    );    
   }
 
   runGraph() {

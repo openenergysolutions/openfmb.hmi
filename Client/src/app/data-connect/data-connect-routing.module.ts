@@ -7,7 +7,8 @@ const routes: Routes = [
     path: '',
     children: [{
       path: 'data-connect',
-      component: DataConnectComponent     
+      component: DataConnectComponent,
+      data: { title: 'DATA' }    
     }]
   }
 ];

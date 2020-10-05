@@ -14,12 +14,18 @@ export interface DiagramData {
     changeStyleAllowed?: boolean,
     linkData?: LinkData,
     tag?: any,
-    displayData: [],
-    controlData: []
+    statusDefinition?: StatusDefinition[],
+    displayData: any[],
+    controlData: any[]    
 };
 
 export interface LinkData {
     url?: string,
     diagramId?: string,
     target?: string
+}
+
+export interface StatusDefinition {
+    value?: any,    
+    color?: string
 }

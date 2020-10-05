@@ -11,15 +11,15 @@ const routes: Routes = [
       {
         path: 'general',
         component: AppSettingsComponent,
-        data: { title: 'GENERAL', breadcrumb: 'GENERAL' }
+        data: { title: 'GENERAL' }
       }, {
         path: 'users',
         component: UsersComponent,
-        data: { title: 'USERS', breadcrumb: 'USERS' }
+        data: { title: 'USERS' }
       }, {
         path: 'tags',
         component: TagsComponent,
-        data: { title: 'TAGS', breadcrumb: 'TAGS' }
+        data: { title: 'TAGS' }
       }
     ]
   }

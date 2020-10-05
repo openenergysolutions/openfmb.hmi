@@ -9,7 +9,7 @@ const routes: Routes = [
     children: [{
       path: 'hmi',
       component: HmiComponent,
-      data: { title: 'HMI', breadcrumb: 'HMI' }
+      data: { title: 'RUN' }
     }]
   }
 ];

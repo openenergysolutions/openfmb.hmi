@@ -13,6 +13,7 @@ import { DesignerConstant } from './../core/constants/designer-constant';
 import { mxgraph, mxgraphFactory } from 'ts-mxgraph';
 import { Store } from '@ngrx/store';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { PropertiesDialogComponent } from './dialogs/properties-dialog/properties-dialog.component';
 import { SwitchgearDialogComponent } from './dialogs/switchgear-dialog/switchgear-dialog.component';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -22,13 +23,13 @@ import { WebSocketService } from '../core/services/web-socket.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
-import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router'
 import { DiagramsService } from '../shared/services/diagrams.service';
 import { Diagram } from '../shared/models/diagram.model';
 import { DiagramData } from '../shared/models/userobject.model'
 import { Helpers } from '../shared/openfmb.constants'
-import { Hmi } from '../shared/hmi.constants'
+import { Hmi, Symbol } from '../shared/hmi.constants'
+import { Topic, UpdateData } from '../shared/models/topic.model'
 
 const {
   mxGraph,
@@ -87,6 +88,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     public dialog: MatDialog,
     private spinner: NgxSpinnerService,
     private wsService: WebSocketService,
+    private snack: MatSnackBar,
     private router : ActivatedRoute,
     private diagramService: DiagramsService
   ) {
@@ -224,10 +226,11 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
       if (cellValue && cellValue.userObject) {
         const userObject = cellValue.userObject;
         const displayData = cellValue.userObject.displayData;
-        const isMeasureBox = userObject.type === 'measure-box';
+        
         // Returns a DOM for the label
         const wrapper = this.renderer.createElement('div');
-        this.renderer.addClass(wrapper, 'component-label');
+        this.renderer.addClass(wrapper, 'component-label');        
+        this.renderer.setAttribute(wrapper, 'cell-id', cell.id);
 
         // override 'display-data-container' class
         var style = '';
@@ -244,7 +247,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
           style += 'width: ' + userObject.containerWidth + 'px;';
         }
         
-        if (isMeasureBox) {          
+        if (userObject.type === Symbol.measureBox) {          
           if (displayData) {
             const data = this.renderer.createElement('div');
             this.renderer.addClass(data, 'display-data-container');            
@@ -296,7 +299,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
             this.renderer.appendChild(wrapper, data);
           }
         }
-        else if (userObject.type === 'label') {                  
+        else if (userObject.type === Symbol.label) {                  
           var style = '';
           if (userObject.fontSize) {
             style += 'font-size:' + userObject.fontSize + 'px;';
@@ -316,7 +319,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
 
           return span;       
         }
-        else if (userObject.type === 'button') {     
+        else if (userObject.type === Symbol.button) {     
           var style = '';
           if (userObject.fontSize) {
             style += 'font-size:' + userObject.fontSize + 'px;';
@@ -327,6 +330,8 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
 
           const span = this.renderer.createElement('span');
           this.renderer.addClass(span, 'button-text');
+          this.renderer.setAttribute(span, 'mrid', userObject.mRID);
+          this.renderer.setAttribute(span, 'cell-id', cell.id);
 
           if (userObject.linkData) {
             if (userObject.linkData.diagramId) {
@@ -343,7 +348,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
 
           return span;
         }
-        else if (userObject.type === 'two-state-button') {
+        else if (userObject.type === Symbol.twoStateButton) {
           var style = '';
           if (userObject.fontSize) {
             style += 'font-size:' + userObject.fontSize + 'px;';
@@ -354,6 +359,15 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
 
           const span = this.renderer.createElement('span');
           this.renderer.addClass(span, 'button-text');
+          this.renderer.setAttribute(span, 'mrid', userObject.mRID);
+          this.renderer.setAttribute(span, 'cell-id', cell.id);
+          
+          if (displayData) {
+            displayData.forEach(elem => {
+              this.renderer.setAttribute(span, 'path', elem.path);
+              this.renderer.setAttribute(span, 'obj-type', userObject.type);              
+            });
+          }
           
           if (style != '') {
             this.renderer.setAttribute(span, "style", style);
@@ -578,10 +592,14 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
         if (msg) {
           this.register();
         }
+        else {
+          this.snack.open('Failed to connect to server.', 'OK', { duration: 4000 });
+        }
       });
     this.wsService.wsMessages$ 
       .subscribe((message) => {
-        const baseImagePath = '../../assets/images/toolbar/';
+        const baseToolbarImagePath = '../../assets/images/toolbar/';
+        const baseImagePath = '../../assets/images/';
         const domElement = document.querySelectorAll('span[mrid]');
 
         if (domElement.length > 0) {
@@ -590,10 +608,9 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
               if (update.topic?.mrid === domElement[i].getAttribute('mrid') && update.topic?.name === domElement[i].getAttribute('path')) {
                 // check if there is 'svg-id' reference
                 const svgId = domElement[i].getAttribute('svg-id');
-                if (svgId) {
-                  try {
-                    var objType = domElement[i].getAttribute('obj-type');
-                    console.log(objType);
+                var objType = domElement[i].getAttribute('obj-type');
+                if (svgId) {  // actual symbol
+                  try {                                        
                     var cell = this.graph.getModel().getCell(svgId);
                     if (cell) {
                       var diagramData = cell.value.userObject;
@@ -611,7 +628,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
                           const val = Helpers.convertPos(update.topic.value);
                           cell.value.userObject.tag = val;
 
-                          image.setAttribute("href", baseImagePath + objType + '-' + val + '.svg');                                      
+                          image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '.svg');                                      
                         }
                       }
                     }
@@ -621,7 +638,29 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
                   }
                 }
                 else {
-                  domElement[i].textContent = this.setDataFieldValue(domElement[i], update.topic?.value);
+                  if (Symbol.twoStateButton === objType) {
+                    const cellId = domElement[i].getAttribute('cell-id');
+
+                    var cell = this.graph.getModel().getCell(cellId);
+                    if (cell) {
+                      var diagramData = cell.value.userObject;
+                      var color = 'gray';
+                      if (diagramData && diagramData.statusDefinition) {
+                        for(var j = 0; j < diagramData.statusDefinition.length; ++j) {
+                          if (diagramData.statusDefinition[j].value === update.topic?.value) {
+                            color = diagramData.statusDefinition[j].color;
+                          }
+                        }
+                      }
+                      // Get img element
+                      var img = domElement[i].firstElementChild;
+                      img.setAttribute('src', baseImagePath + color + '.svg');
+                    }
+                  }
+                  else {
+                    // This is measurement box
+                    domElement[i].textContent = this.setDataFieldValue(domElement[i], update.topic?.value);
+                  }
                 }
               }
             }
@@ -635,8 +674,32 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   sendCommand(userObject: DiagramData, action: string) {
-    console.log("Sending command with action " + action + " for item mRID: " + userObject.mRID);
-        
+    console.log("Sending command with action " + action + " for item: " + userObject);   
+    
+    if (userObject?.controlData?.length > 0) {
+      const control = userObject?.controlData[0];
+
+      const t : Topic = {
+        name: control?.path,
+        mrid: userObject.mRID,
+        value: action === "OPEN" ? 0 : 1
+      };
+
+      const data: UpdateData = {
+        topic: t
+      };
+
+      this.diagramService.updateData( data)
+        .subscribe(data => {                              
+          // success
+        }, error => {
+          console.error(error);
+          this.snack.open(error, 'OK', { duration: 4000 });
+        });
+    }
+    else {
+      this.snack.open('Unable to send command.  No sepcified data connection.', 'OK', { duration: 2000 });
+    }
   }
 
   // zoom graph
@@ -659,8 +722,12 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
         catch (e) {
           console.error(e);
         }
+      },
+      error => {
+        console.error(error);
+        this.snack.open(error, 'OK', { duration: 4000 });
       }
-    ) 
+    ); 
   }
 
   register() {            

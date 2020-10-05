@@ -76,13 +76,7 @@ export class WebSocketService implements WebsocketService, OnDestroy {
           console.log("Lost connection to WS server.  Reconnect...");
           this.reconnect();
         }
-      });
-
-    //this.websocketSub = this.wsMessages$.subscribe(
-      //null, (error: ErrorEvent) => console.error('WebSocket error!', error)
-    //);
-
-    //this.connect();
+      });    
   }
 
   // Makes WebSocket connection
@@ -127,7 +121,7 @@ export class WebSocketService implements WebsocketService, OnDestroy {
   sendWsData(data: any = {}): void {
     if (this.isConnected) {
       var json = JSON.stringify(data);
-      console.log("sendWsData: " + json);
+      //console.log("sendWsData: " + json);
       this.websocket$.next(<any>data);
     } else {
       console.error('Unable to send message.  The websocket is not connected.');

@@ -1,8 +1,9 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DiagramsService } from '../../../shared/services/diagrams.service';
-import { DiagramData, LinkData } from '../../../shared/models/userobject.model'
+import { DiagramData, LinkData, StatusDefinition } from '../../../shared/models/userobject.model'
 import { Diagram } from '../../../shared/models/diagram.model';
+import { Symbol } from '../../../shared/hmi.constants'
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
@@ -35,6 +36,7 @@ export class PropertiesDialogComponent implements OnInit {
   mRIdOptions: string[] = [];
   navigateToDataConnection: boolean = false;
   dataConnectAllowed: boolean;
+  statusDefinitionAllowed: boolean = false;
   
   // For link
   selectedDiagramId: string;
@@ -42,6 +44,10 @@ export class PropertiesDialogComponent implements OnInit {
   diagrams: Diagram[] = [];
   getItemSub: Subscription;
   linkTargetOptions: string[];
+
+  // status definition
+  statusDefinitions: StatusDefinition[];
+  statusColors: string[] = ['gray', 'green', 'yellow', 'red'];
 
   constructor(
     public dialogRef: MatDialogRef<PropertiesDialogComponent>,
@@ -62,10 +68,11 @@ export class PropertiesDialogComponent implements OnInit {
     this.backgroundColor = this.data.backgroundColor;
     this.diagramId = this.data.diagramId;
     this.deviceTypeMapping = this.data.deviceTypeMapping; 
-    this.changeWidthAllowed = this.data.type === "measure-box";
-    this.changeBackgroundAllowed = this.data.type === "measure-box";
-    this.linkAllowed = this.data.type === "button";
-    this.dataConnectAllowed = this.data.type !== "label";
+    this.changeWidthAllowed = this.data.type === Symbol.measureBox;
+    this.changeBackgroundAllowed = this.data.type === Symbol.measureBox;
+    this.linkAllowed = this.data.type === Symbol.button;
+    this.dataConnectAllowed = this.data.type !== Symbol.label;
+    this.statusDefinitionAllowed = this.data.type === Symbol.twoStateButton;
 
     if (this.linkAllowed) {      
       this.linkTargetOptions = ['_blank', '_top',];
@@ -76,6 +83,15 @@ export class PropertiesDialogComponent implements OnInit {
       }
 
       this.getDiagrams();
+    }
+
+    if (this.statusDefinitionAllowed) {
+      if (this.data.statusDefinition) {
+        this.statusDefinitions = this.data.statusDefinition;
+      }
+      else {
+        this.statusDefinitions = [];
+      }
     }
     
     this.dialogRef.updatePosition({
@@ -148,16 +164,15 @@ export class PropertiesDialogComponent implements OnInit {
       backgroundColor: backgroundC,
       linkData: linkData,
       deviceTypeMapping: this.deviceTypeMapping,
-      navigateToDataConnection: this.navigateToDataConnection
+      navigateToDataConnection: this.navigateToDataConnection,
+      statusDefinition: this.statusDefinitions
     });
   }
 
   // close modal window
   onNoClick(): void {
     this.dialogRef.close();
-  }
-  
-
+  }  
 
   setSelectedFields(allFields: any[], selectedFields: any[]): any[] {
     if (selectedFields.length) {
@@ -177,5 +192,27 @@ export class PropertiesDialogComponent implements OnInit {
   dataConnect() { 
     this.navigateToDataConnection = true;   
     this.onSave();    
+  }
+
+  addStatusDefinition() {
+    const def: StatusDefinition = {
+      value: 0,      
+      color: "gray"
+    };
+    this.statusDefinitions.push(def);
+  }
+
+  removeStatusDefinition(item: StatusDefinition) {
+    if (item) {
+      for(let index = this.statusDefinitions.length - 1; index >=0; --index) {
+        var obj = this.statusDefinitions[index];
+        if (obj === item) {        
+          this.statusDefinitions.splice(index, 1);
+        }
+      }
+    }
+    else {
+      console.error("Unable to delete status definition.  item=" + item);
+    }
   }
 }

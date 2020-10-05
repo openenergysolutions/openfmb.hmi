@@ -9,7 +9,7 @@ const routes: Routes = [
     children: [{
       path: 'designer',
       component: DesignerComponent,
-      data: { title: 'DESIGNER', breadcrumb: 'DESIGNER' }
+      data: { title: 'DESIGNER' }
     }]
   }
 ];

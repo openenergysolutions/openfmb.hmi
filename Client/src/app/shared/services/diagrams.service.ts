@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { config } from '../../../config'
 import { Diagram } from '../models/diagram.model'
-import { Topic } from '../models/topic.model'
+import { UpdateData } from '../models/topic.model'
 import { catchError } from 'rxjs/internal/operators';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
@@ -16,7 +16,7 @@ export class DiagramsService {
 
   constructor(private httpClient: HttpClient) { }      
 
-  private handleError(error: HttpErrorResponse): any {
+  private handleError(error: HttpErrorResponse): any {    
     if (error.error instanceof ErrorEvent) {
       console.error('An error occurred:', error.error.message);
     } else {
@@ -24,8 +24,7 @@ export class DiagramsService {
         `Backend returned code ${error.status}, ` +
         `body was: ${error.error}`);
     }
-    return throwError(
-      'Something bad happened; please try again later.');    
+    return throwError('An error occurred.  Check if the server is running and accessible.');    
   }
 
   private extractData(res: Response): any {
@@ -62,8 +61,8 @@ export class DiagramsService {
     );  
   }
 
-  updateData(topic: Topic) {
-    return this.httpClient.post<Topic>(this.endpoint + 'update-data', topic).pipe(
+  updateData(data: UpdateData) {
+    return this.httpClient.post<UpdateData>(this.endpoint + 'update-data', data).pipe(
       catchError(this.handleError)
     );  
   }

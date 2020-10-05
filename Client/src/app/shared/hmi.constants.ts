@@ -5,7 +5,9 @@ export const Symbol = {
     switchHorizontal: "switch-horizontal",
     measureBox: "measure-box",
     label: "label",
-    button: "button"
+    text: "text",
+    button: "button",
+    image: "image"
 }
 
 export const Hmi = {

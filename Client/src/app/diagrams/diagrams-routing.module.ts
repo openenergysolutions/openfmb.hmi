@@ -6,8 +6,9 @@ const routes: Routes = [
   {
     path: '',
     children: [{
-      path: '',
-      component: DiagramsComponent      
+      path: 'diagrams',
+      component: DiagramsComponent,
+      data: { title: 'DIAGRAMS' }    
     }]
   }
 ];

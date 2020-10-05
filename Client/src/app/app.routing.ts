@@ -47,7 +47,7 @@ export const rootRouterConfig: Routes = [
     canActivate: [AuthGuard],
     children: [
       {
-        path: 'diagrams',
+        path: '',
         loadChildren: () => import('./diagrams/diagrams.module').then(m => m.DiagramsModule)        
       }
     ]
