@@ -7,6 +7,7 @@ import { SharedModule } from '../shared/shared.module';
 import { HeaderToolComponent } from './header-tool/header-tool.component';
 import { PropertiesDialogComponent } from './dialogs/properties-dialog/properties-dialog.component';
 import { SwitchgearDialogComponent } from './dialogs/switchgear-dialog/switchgear-dialog.component';
+import { SetPointDialogComponent } from './dialogs/setpoint-dialog/setpoint-dialog.component';
 import { SharedMaterialModule } from '../shared/shared-material.module';
 
 @NgModule({
@@ -14,7 +15,8 @@ import { SharedMaterialModule } from '../shared/shared-material.module';
     HmiComponent,
     HeaderToolComponent,
     PropertiesDialogComponent,
-    SwitchgearDialogComponent    
+    SwitchgearDialogComponent,
+    SetPointDialogComponent    
   ],
   imports: [
     CommonModule,
@@ -24,7 +26,8 @@ import { SharedMaterialModule } from '../shared/shared-material.module';
   ],
   entryComponents: [
     PropertiesDialogComponent,
-    SwitchgearDialogComponent
+    SwitchgearDialogComponent,
+    SetPointDialogComponent
   ]
 })
 export class HmiModule { }

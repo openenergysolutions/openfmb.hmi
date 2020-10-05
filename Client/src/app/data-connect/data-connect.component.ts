@@ -32,7 +32,8 @@ export class DataConnectComponent implements OnInit {
   selectedDiagramId: string;
   requestDiagramId: string;
   requestCellId: string;
-  selectedGraphItemId: string;
+  selectedGraphItemId: string; 
+  selectedGraphItemMRID: string; 
   selectedGraphItem: any;
   selectedModule: string;
   selectedProfile: string;
@@ -123,7 +124,8 @@ export class DataConnectComponent implements OnInit {
       var elem = this.graphModel.elements[0].elements[0];
       
       this.graphItems = [];
-      this.selectedGraphItemId = null;
+      this.selectedGraphItemId = null; 
+      this.selectedGraphItemMRID = null;     
       this.currentPoints = [];
       this.currentControlPoints = [];
   
@@ -173,8 +175,9 @@ export class DataConnectComponent implements OnInit {
                         };
   
                         if (e.attributes.id === this.requestCellId) {
-                          this.selectedGraphItemId = this.requestCellId;
+                          this.selectedGraphItemId = this.requestCellId;                          
                           this.selectedGraphItem = vertex;
+                          this.selectedGraphItemMRID = vertex.mRID;
                         }
                         this.graphItems.push(vertex);                           
                       }                    
@@ -202,6 +205,7 @@ export class DataConnectComponent implements OnInit {
     for(var i = 0; i < this.graphItems.length; ++i) {
       if (this.graphItems[i].id === id) {
         this.selectedGraphItem = this.graphItems[i];
+        this.selectedGraphItemMRID = this.selectedGraphItem.mRID;
         this.currentPoints = this.graphItems[i].displayData.elements;
         this.currentControlPoints = this.graphItems[i].controlData.elements; 
         this.graphItemControllable = Hmi.isControllable(this.graphItems[i].type);

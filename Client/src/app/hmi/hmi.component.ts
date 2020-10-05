@@ -16,6 +16,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PropertiesDialogComponent } from './dialogs/properties-dialog/properties-dialog.component';
 import { SwitchgearDialogComponent } from './dialogs/switchgear-dialog/switchgear-dialog.component';
+import { SetPointDialogComponent } from './dialogs/setpoint-dialog/setpoint-dialog.component'
 import { NgxSpinnerService } from 'ngx-spinner';
 import toolbarItemsData from '../../assets/json/toolbar.json';
 import * as fromRoot from '../store/reducers/index';
@@ -27,7 +28,7 @@ import { ActivatedRoute } from '@angular/router'
 import { DiagramsService } from '../shared/services/diagrams.service';
 import { Diagram } from '../shared/models/diagram.model';
 import { DiagramData } from '../shared/models/userobject.model'
-import { Helpers } from '../shared/openfmb.constants'
+import { CommandAction, Helpers } from '../shared/hmi.constants'
 import { Hmi, Symbol } from '../shared/hmi.constants'
 import { Topic, UpdateData } from '../shared/models/topic.model'
 
@@ -154,7 +155,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
           // Edit label (when?)
           this.graph.startEditingAtCell(cell);
         } 
-        else if (Hmi.isControllable(currentCellData.type)) {
+        else if (Hmi.isSwitchgear(currentCellData.type)) {
          
           const centerX = window.innerWidth / 2; 
           const centerY = window.innerHeight / 2;          
@@ -171,6 +172,14 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
           const y = evt.offsetY;
 
           this.openDialog(x < centerX ? x + cell.getGeometry().width + 250 : x, y - 100 > centerY ? centerY : y, cell);                    
+        }
+        else if (currentCellData.type === Symbol.setPointButton) {
+          const centerX = window.innerWidth / 2; 
+          const centerY = window.innerHeight / 2;          
+          const x = evt.offsetX;
+          const y = evt.offsetY;
+
+          this.openSetpointDialog(x < centerX ? x + cell.getGeometry().width + 250 : x, y - 100 > centerY ? centerY : y, cell);
         }
       } else {
         this.graph.view.setTranslate(0, 0);
@@ -319,7 +328,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
 
           return span;       
         }
-        else if (userObject.type === Symbol.button) {     
+        else if (userObject.type === Symbol.button || userObject.type === Symbol.setPointButton) {     
           var style = '';
           if (userObject.fontSize) {
             style += 'font-size:' + userObject.fontSize + 'px;';
@@ -348,7 +357,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
 
           return span;
         }
-        else if (userObject.type === Symbol.twoStateButton) {
+        else if (userObject.type === Symbol.statusIndicator) {
           var style = '';
           if (userObject.fontSize) {
             style += 'font-size:' + userObject.fontSize + 'px;';
@@ -585,6 +594,33 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  openSetpointDialog(x: number, y: number, cell: mxgraph.mxCell): void {
+    const currentCellData = this.graph.model.getValue(cell).userObject;
+    this.dialog.closeAll();
+    const filterData = {
+      top: y,
+      left: x,
+      diagramId: this.diagramId,
+      value: currentCellData.tag,
+      name: currentCellData.name,      
+      mRID: currentCellData.mRID
+    };
+    const dialogRef = this.dialog.open(SetPointDialogComponent, {
+      width: '355px',
+      data: filterData,
+      hasBackdrop: false,
+      panelClass: 'filter-popup',
+      autoFocus: true,
+      closeOnNavigation: true
+    });
+
+    dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
+      if (result && result.proceed) {                
+        this.sendCommand(currentCellData, result.action);
+      }
+    });
+  }
+
   connect(sessionId: string) {
     this.wsService.connect(sessionId);
     this.wsService.wsConnection$
@@ -638,7 +674,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
                   }
                 }
                 else {
-                  if (Symbol.twoStateButton === objType) {
+                  if (Symbol.statusIndicator === objType) {
                     const cellId = domElement[i].getAttribute('cell-id');
 
                     var cell = this.graph.getModel().getCell(cellId);
@@ -673,16 +709,41 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     this.wsService.sendWsData(data);
   }
 
-  sendCommand(userObject: DiagramData, action: string) {
-    console.log("Sending command with action " + action + " for item: " + userObject);   
+  sendCommand(userObject: DiagramData, action: string, value?: number) {
+    console.log("Sending command with action " + action + " for item: " + userObject); 
+    
+    try {
+
+    }
+    catch (e) {
+      this.snack.open(e, 'OK', { duration: 2000 });
+    }
     
     if (userObject?.controlData?.length > 0) {
       const control = userObject?.controlData[0];
 
+      if (!control.path) {
+        this.snack.open('Unable to send command.  No sepcified data connection.', 'OK', { duration: 2000 });
+      }
+      else if (!userObject.mRID) {
+        this.snack.open('Unable to send command.  No sepcified mRID.', 'OK', { duration: 2000 });
+      }
+
+      let commandValue = value;
+
+      if (!commandValue) {
+        if (action === CommandAction.OPEN) {
+          commandValue = 0;
+        }
+        else if (action === CommandAction.CLOSE) {
+          commandValue = 1;
+        }
+      }
+
       const t : Topic = {
         name: control?.path,
         mrid: userObject.mRID,
-        value: action === "OPEN" ? 0 : 1
+        value: commandValue
       };
 
       const data: UpdateData = {

@@ -72,7 +72,7 @@ export class PropertiesDialogComponent implements OnInit {
     this.changeBackgroundAllowed = this.data.type === Symbol.measureBox;
     this.linkAllowed = this.data.type === Symbol.button;
     this.dataConnectAllowed = this.data.type !== Symbol.label;
-    this.statusDefinitionAllowed = this.data.type === Symbol.twoStateButton;
+    this.statusDefinitionAllowed = this.data.type === Symbol.statusIndicator;
 
     if (this.linkAllowed) {      
       this.linkTargetOptions = ['_blank', '_top',];

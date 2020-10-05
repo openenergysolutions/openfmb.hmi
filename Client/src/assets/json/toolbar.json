@@ -455,6 +455,22 @@
     "type": "label"  
   },
   {
+    "shape": "state-indicator",
+    "image": "../../assets/images/toolbar/indicator.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 120,
+    "height": 40,
+    "title": "State Indicator",
+    "left": 0,
+    "top": 0,
+    "type": "state-indicator"  
+  },
+  {
     "shape": "button",
     "image": "../../assets/images/toolbar/button.svg",
     "points": [
@@ -465,25 +481,26 @@
     ],
     "width": 40,
     "height": 40,
-    "title": "Button",
+    "title": "Link Button",
     "left": 0,
     "top": 0,
     "type": "button"  
   },
   {
-    "shape": "two-state-button",
-    "image": "../../assets/images/toolbar/button.svg",
+    "shape": "set-point-button",
+    "image": "../../assets/images/toolbar/setpoint.svg",
     "points": [
       [1, 0.5],
       [0, 0.5],
       [0.5, 0],
       [0.5, 1]
     ],
-    "width": 120,
+    "width": 40,
     "height": 40,
-    "title": "2-State Button",
+    "title": "Set Point Button",
     "left": 0,
     "top": 0,
-    "type": "two-state-button"  
+    "type": "set-point-button"  
   }
+  
 ]

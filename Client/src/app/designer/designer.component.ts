@@ -70,7 +70,8 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
   sessionId = '';
   defaultLabelStyle = 'text;html=1;strokeColor=none;fontColor=#000000;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=none;';
   defaultButtonStyle = 'html=1;strokeColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fillColor=#0e0f21;fontColor=#a6a6af;';
-  defaultTwoStateButtonStyle = 'html=1;strokeColor=#000000;align=left;verticalAlign=middle;rounded=1;fillColor=#e7e7e7;fontColor=#000000;';
+  defaultSetpointButtonStyle = 'html=1;strokeColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=#a6a6af;fontColor=#0e0e0f;';
+  defaultStatusIndicatorStyle = 'html=1;strokeColor=none;align=left;verticalAlign=middle;rounded=1;fillColor=none;fontColor=#000000;';
   gridData = {
     scale: 0,
     gridSize: 0,
@@ -335,7 +336,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
 
           return span;       
         }
-        else if (userObject.type === Symbol.button) {     
+        else if (userObject.type === Symbol.button || userObject.type === Symbol.setPointButton) {     
           var style = '';
           if (userObject.fontSize) {
             style += 'font-size:' + userObject.fontSize + 'px;';
@@ -359,7 +360,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
           
           return div;
         }
-        else if (userObject.type === Symbol.twoStateButton) {
+        else if (userObject.type === Symbol.statusIndicator) {
           var style = '';
           if (userObject.fontSize) {
             style += 'font-size:' + userObject.fontSize + 'px;';
@@ -590,8 +591,13 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
             userObject.label = 'Button';
             model.setValue(v1, { ...currentValue, userObject });            
           } 
-          else if (data.shape == Symbol.twoStateButton) {
-            v1 = graph.insertVertex(parent, this.idGenerator(), 'Button', x, y, 120, 40, this.defaultTwoStateButtonStyle);
+          else if (data.shape == Symbol.setPointButton) {
+            v1 = graph.insertVertex(parent, this.idGenerator(), 'Button', x, y, 120, 40, this.defaultSetpointButtonStyle);
+            userObject.label = 'Set Point';
+            model.setValue(v1, { ...currentValue, userObject });            
+          } 
+          else if (data.shape == Symbol.statusIndicator) {
+            v1 = graph.insertVertex(parent, this.idGenerator(), 'Button', x, y, 120, 40, this.defaultStatusIndicatorStyle);
             userObject.label = 'Status';
             model.setValue(v1, { ...currentValue, userObject });
           }
@@ -787,7 +793,8 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
     const changeStyleAllowed = currentCellData.type === Symbol.measureBox 
       || currentCellData.type === Symbol.label 
       || currentCellData.type === Symbol.button 
-      || currentCellData.type === Symbol.twoStateButton;
+      || currentCellData.type === Symbol.setPointButton
+      || currentCellData.type === Symbol.statusIndicator;
       
     this.dialog.closeAll();
     const filterData : DiagramData = {

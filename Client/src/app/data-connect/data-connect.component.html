@@ -32,6 +32,12 @@
                                     </mat-select>
                                 </mat-form-field>
                             </div>
+                            <div class="pr-1">
+                                <h4>mRID</h4>
+                                <mat-form-field>
+                                    <input matInput [(ngModel)]="selectedGraphItemMRID" placeholder="Not set" [disabled]="true" name="symbol-mrid"/>
+                                </mat-form-field>
+                            </div>
                         </div>
                         <div class="pb-1">
                             <button mat-raised-button color="primary" (click)="updateDiagram()"

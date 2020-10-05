@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { DiagramData } from '../../../shared/models/userobject.model'
+import { CommandAction, PosString } from '../../../shared/hmi.constants'
 
 @Component({
   selector: 'app-switchgear-dialog',
@@ -34,12 +34,12 @@ export class SwitchgearDialogComponent implements OnInit {
       left: `${this.filterData.left}px`
     });  
     
-    if (this.status && this.status.toLowerCase() === "open") {
-      this.actionText = "CLOSE";
+    if (this.status && this.status.toLowerCase() === PosString.open) {
+      this.actionText = CommandAction.CLOSE;
       this.actionColor = "red";
     }
-    else if (this.status && this.status.toLowerCase() === "closed"){
-      this.actionText = "OPEN";
+    else if (this.status && this.status.toLowerCase() === PosString.closed){
+      this.actionText = CommandAction.OPEN;
       this.actionColor = "green";
     }
     else {

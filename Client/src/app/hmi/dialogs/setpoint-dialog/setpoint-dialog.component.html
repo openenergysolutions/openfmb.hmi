@@ -1,0 +1,34 @@
+<form #f="ngForm">
+  <mat-tab-group mat-align-tabs="start">
+    <mat-tab label="Status">
+      <div mat-dialog-content class="dialog-input-container pt-1">
+        <strong>Name</strong><br/>
+        <mat-form-field class="designer-form-field" floatLabel='never'>
+          <input matInput [(ngModel)]="name" placeholder="Enter Name (required)" [disabled]="true" name="symbol-name"/>
+        </mat-form-field>
+      </div>
+      <div mat-dialog-content class="dialog-input-container">
+        <strong>mRID</strong><br/>
+        <mat-form-field class="designer-form-field" floatLabel='never'>
+          <input matInput [(ngModel)]="mRID" placeholder="Enter Device mRID" [disabled]="true" name="symbol-mrid"/> 
+        </mat-form-field>  
+      </div>
+      <div mat-dialog-content class="dialog-input-container pt-1">
+        <strong>Status</strong><br/>
+        <mat-form-field class="designer-form-field" floatLabel='never'>          
+          <input type="number" [(ngModel)]="setpointValue" min="0" max="65535" matInput name="set-point-vallue"
+                  placeholder="Value" />
+        </mat-form-field>
+      </div>   
+      
+    </mat-tab>    
+  </mat-tab-group>
+  <div mat-dialog-actions>
+    <button mat-raised-button color="primary" (click)="onClose()" cdkFocusInitial class="pr-1" style="width: 120px;">
+      CANCEL
+    </button> 
+    <button mat-raised-button color="red" (click)="onAction()" cdkFocusInitial class="pr-1" style="width: 120px;">
+      SET VALUE
+    </button>        
+  </div>
+</form>
