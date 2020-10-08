@@ -50,9 +50,11 @@ export class DiagramsService {
     return this.httpClient.post<Diagram>(this.endpoint + 'save', diagram);
   }
 
-  delete(id: string) {
-    console.log("TODO:: implement delete diagram in diagram service.");
-    return this.getAll();
+  delete(id: string) : any {
+    var diagram : Diagram = {
+      diagramId: id
+    };
+    return this.httpClient.post<Diagram>(this.endpoint + 'delete', diagram);
   }
 
   create(diagram: Diagram) {

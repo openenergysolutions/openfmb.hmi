@@ -42,7 +42,12 @@ export class DiagramsComponent implements OnInit, OnDestroy {
     this.getItemSub = this.service.getAll()
       .subscribe(data => {
         this.rows = this.temp = data;
-      })
+      },
+      error => {
+        console.error(error);
+        this.rows = this.temp = [];
+        this.snack.open(error, 'OK', { duration: 4000 });
+      });
   }
 
   updateFilter(event) {
@@ -82,11 +87,19 @@ export class DiagramsComponent implements OnInit, OnDestroy {
     console.log("export diagram: " + id);
   }
 
-  delete(id: string) {
-    console.log("delete diagram: " + id);
+  delete(row: any) {
+    console.log("delete diagram: " + row.diagramId);
 
-    if(confirm("Are you sure to delete diagram ID="+id)) {
-      this.service.delete(id);
+    if(confirm("Are you sure to delete diagram name "+row.name)) {           
+      this.service.delete(row.diagramId)
+          .subscribe(data => {                              
+            this.snack.open('Diagram deleted!', 'OK', { duration: 4000 })
+          }, error => {
+            console.error(error);
+            this.snack.open(error, 'OK', { duration: 4000 });
+          });
+
+      this.getData();
     }
   }
 
@@ -126,7 +139,8 @@ export class DiagramsComponent implements OnInit, OnDestroy {
             this.service.create(diagram)
               .subscribe(data => {                              
                 this.snack.open('Diagram Added!', 'OK', { duration: 4000 });
-                this.router.navigateByUrl("/designer?id=" + diagram.diagramId);
+                //this.router.navigateByUrl("/designer?id=" + diagram.diagramId);
+                this.getData();
               }, error => {
                 console.error(error);
                 this.snack.open(error, 'OK', { duration: 4000 });
@@ -135,6 +149,7 @@ export class DiagramsComponent implements OnInit, OnDestroy {
             this.service.update(diagram)
               .subscribe(data => {                              
                 this.snack.open('Diagram Updated!', 'OK', { duration: 4000 })
+                this.getData();
               }, error => {
                 console.error(error);
                 this.snack.open(error, 'OK', { duration: 4000 });

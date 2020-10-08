@@ -23,7 +23,7 @@ export class DialogsComponent implements OnInit {
   }
   buildItemForm(item) {    
     this.itemForm = this.fb.group({
-      diagramId: [item.name || null],
+      diagramId: [item.diagramId || null],
       name: [item.name || '', Validators.required],
       description: [item.description || ''],
       location: [item.location || ''],
