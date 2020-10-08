@@ -12,21 +12,26 @@ use hmi_server::handler::*;
 use static_dir::static_dir;
 use warp::http::Method;
 
-const ASSETS: inpm::Dir = inpm::include_package!("Client/dist/openfmb-hmi/");
+//const ASSETS: inpm::Dir = inpm::include_package!("Client/dist/openfmb-hmi/");
 
 
 
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
-    let static_route = inpm::warp::embedded(ASSETS);
+    use static_dir::static_dir;
+    use warp::Filter;
+    let static_route = warp::path("static").and(static_dir!("../Client/dist/openfmb-hmi/"));
+
+//    let static_route = inpm::warp::embedded(ASSETS);
 
     let clients = Arc::new(RwLock::new(HashMap::new()));
 
-    let cors = warp::cors().allow_methods(&[Method::GET, Method::POST, Method::DELETE]);
 
-
-    let cors = warp::cors().allow_methods(&[Method::GET, Method::POST, Method::DELETE]);
+    let cors = warp::cors()
+        .allow_methods(vec!["POST", "GET"])
+        .allow_any_origin()
+        .allow_headers(vec!["User-Agent", "Sec-Fetch-Mode", "Referer", "Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers", "content-type", "authorization"]);
 
     let save = warp::path("save");
     let save_routes = save
