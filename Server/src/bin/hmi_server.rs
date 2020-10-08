@@ -1,0 +1,75 @@
+
+
+use log::Level;
+
+use std::collections::HashMap;
+use std::convert::Infallible;
+use std::sync::Arc;
+use tokio::sync::{RwLock};
+use warp::{Filter};
+
+use hmi_server::handler::*;
+use static_dir::static_dir;
+use warp::http::Method;
+
+const ASSETS: inpm::Dir = inpm::include_package!("Client/dist/openfmb-hmi/");
+
+
+
+#[tokio::main]
+async fn main() {
+    pretty_env_logger::init();
+    let static_route = inpm::warp::embedded(ASSETS);
+
+    let clients = Arc::new(RwLock::new(HashMap::new()));
+
+    let cors = warp::cors().allow_methods(&[Method::GET, Method::POST, Method::DELETE]);
+
+
+    let cors = warp::cors().allow_methods(&[Method::GET, Method::POST, Method::DELETE]);
+
+    let save = warp::path("save");
+    let save_routes = save
+        .and(warp::post())
+        .and(warp::body::json())
+        .and_then(save_handler).with(cors.clone());;
+
+    let list = warp::path("diagrams");
+    let list_routes = list
+        .and(warp::get())
+        .and_then(list_handler).with(cors.clone());
+
+    let design = warp::path("diagram");
+    let design_routes = design
+        //.and(warp::path::param::<String>())
+        .and(warp::get())
+        .and(warp::post())
+        .and_then(design_handler).with(cors.clone());
+
+    let update = warp::path!("update-data")
+        .and(warp::body::json())
+        .and(with_clients(clients.clone()))
+        .and_then(data_handler).with(cors.clone());
+
+    let hmi_route = warp::path("hmi")
+        .and(warp::ws())
+        .and(warp::path::param())
+        .and(with_clients(clients.clone()))
+        .and_then(hmi_handler).with(cors.clone());
+
+    let routes = save_routes
+        .or(static_route)
+        .or(list_routes)
+        .or(design_routes)
+        .or(hmi_route)
+        .or(update)
+        .with(cors.clone());
+
+
+
+    warp::serve(routes).run(([127, 0, 0, 1], 32771)).await;
+}
+
+fn with_clients(clients: Clients) -> impl Filter<Extract = (Clients,), Error = Infallible> + Clone {
+    warp::any().map(move || clients.clone())
+}
