@@ -1,7 +1,7 @@
 [  
   {
     "shape": "image",
-    "image": "../../assets/images/toolbar/switch-horizontal-open.svg",
+    "image": "assets/images/toolbar/switch-horizontal-open.svg",
     "points": [
       [1, 0.5],
       [0, 0.5]
@@ -15,7 +15,7 @@
   },
   {
     "shape": "image",
-    "image": "../../assets/images/toolbar/switch-vertical-open.svg",
+    "image": "assets/images/toolbar/switch-vertical-open.svg",
     "points": [
       [0.5, 0],
       [0.5, 1]
@@ -29,7 +29,7 @@
   },
   {
     "shape": "image",
-    "image": "../../assets/images/toolbar/transformer-vertical.svg",
+    "image": "assets/images/toolbar/transformer-vertical.svg",
     "points": [
       [1, 0.5],
       [0, 0.5]
@@ -42,7 +42,7 @@
   },
   {
     "shape": "image",
-    "image": "../../assets/images/toolbar/transformer-horizontal.svg",
+    "image": "assets/images/toolbar/transformer-horizontal.svg",
     "points": [
       [0.5, 0],
       [0.5, 1]
@@ -55,7 +55,7 @@
   },
   {
     "shape": "image",
-    "image": "../../assets/images/toolbar/voltage-regulator-vertical.svg",
+    "image": "assets/images/toolbar/voltage-regulator-vertical.svg",
     "points": [
       [1, 0.5],
       [0, 0.5]
@@ -68,7 +68,7 @@
   },
   {
     "shape": "image",
-    "image": "../../assets/images/toolbar/voltage-regulator-horizontal.svg",
+    "image": "assets/images/toolbar/voltage-regulator-horizontal.svg",
     "points": [
       [0.5, 0],
       [0.5, 1]
@@ -81,7 +81,7 @@
   },
   {
     "shape": "image",
-    "image": "../../assets/images/toolbar/solar-pv-horizontal1.svg",
+    "image": "assets/images/toolbar/solar-pv-horizontal1.svg",
     "points": [
       [1, 0.5],
       [0, 0.5],
@@ -96,7 +96,7 @@
   },
   {
     "shape": "image",
-    "image": "../../assets/images/toolbar/solar-pv-horizontal2.svg",
+    "image": "assets/images/toolbar/solar-pv-horizontal2.svg",
     "points": [
       [1, 0.5],
       [0, 0.5],
@@ -111,7 +111,7 @@
   },
   {
     "shape": "image",
-    "image": "../../assets/images/toolbar/solar-pv-vertical1.svg",
+    "image": "assets/images/toolbar/solar-pv-vertical1.svg",
     "points": [
       [1, 0.5],
       [0, 0.5],
@@ -126,7 +126,7 @@
   },
   {
     "shape": "image",
-    "image": "../../assets/images/toolbar/solarpv-vertical2.svg",
+    "image": "assets/images/toolbar/solarpv-vertical2.svg",
     "points": [
       [1, 0.5],
       [0, 0.5],
@@ -141,7 +141,7 @@
   },
   {
     "shape": "image",
-    "image": "../../assets/images/toolbar/battery-ess-horizontal1.svg",
+    "image": "assets/images/toolbar/battery-ess-horizontal1.svg",
     "points": [
       [0, 0.5]
     ],
@@ -153,7 +153,7 @@
   },
   {
     "shape": "image",
-    "image": "../../assets/images/toolbar/battery-ess-horizontal2.svg",
+    "image": "assets/images/toolbar/battery-ess-horizontal2.svg",
     "points": [      
       [1, 0.5]      
     ],
@@ -165,7 +165,7 @@
   },
   {
     "shape": "image",
-    "image": "../../assets/images/toolbar/battery-ess-vertical1.svg",
+    "image": "assets/images/toolbar/battery-ess-vertical1.svg",
     "points": [
       [0.5, 0]
     ],
@@ -177,7 +177,7 @@
   },
   {
     "shape": "image",
-    "image": "../../assets/images/toolbar/battery-ess-vertical2.svg",
+    "image": "assets/images/toolbar/battery-ess-vertical2.svg",
     "points": [
       [0.5, 1]
     ],
@@ -189,7 +189,7 @@
   },
   {
     "shape": "image",
-    "image": "../../assets/images/toolbar/ground.svg",
+    "image": "assets/images/toolbar/ground.svg",
     "points": [
       [0.5, 0]
     ],
@@ -201,7 +201,7 @@
   },
   {
     "shape": "image",
-    "image": "../../assets/images/toolbar/generator.svg",
+    "image": "assets/images/toolbar/generator.svg",
     "points": [
       [1, 0.5],
       [0, 0.5],
@@ -216,7 +216,7 @@
   },
   {
     "shape": "image",
-    "image": "../../assets/images/toolbar/uncontrolled-load.svg",
+    "image": "assets/images/toolbar/uncontrolled-load.svg",
     "points": [
       [1, 0.5],
       [0, 0.5],
@@ -231,7 +231,7 @@
   },
   {
     "shape": "image",
-    "image": "../../assets/images/toolbar/controllable-load.svg",
+    "image": "assets/images/toolbar/controllable-load.svg",
     "points": [
       [1, 0.5],
       [0, 0.5],
@@ -246,7 +246,7 @@
   },
   {
     "shape": "image",
-    "image": "../../assets/images/toolbar/circuit-breaker-horizontal.svg",
+    "image": "assets/images/toolbar/circuit-breaker-horizontal.svg",
     "points": [
       [1, 0.5],
       [0, 0.5]
@@ -259,7 +259,7 @@
   },
   {
     "shape": "image",
-    "image": "../../assets/images/toolbar/circuit-breaker-vertical.svg",
+    "image": "assets/images/toolbar/circuit-breaker-vertical.svg",
     "points": [
       [0.5, 0],
       [0.5, 1]
@@ -272,7 +272,7 @@
   },
   {
     "shape": "image",
-    "image": "../../assets/images/toolbar/recloser-horizontal.svg",
+    "image": "assets/images/toolbar/recloser-horizontal.svg",
     "points": [
       [1, 0.5],
       [0, 0.5]
@@ -285,7 +285,7 @@
   },
   {
     "shape": "image",
-    "image": "../../assets/images/toolbar/recloser-vertical.svg",
+    "image": "assets/images/toolbar/recloser-vertical.svg",
     "points": [
       [0.5, 0],
       [0.5, 1]
@@ -298,7 +298,7 @@
   },
   {
     "shape": "image",
-    "image": "../../assets/images/toolbar/capacitor-bank-horizontal.svg",
+    "image": "assets/images/toolbar/capacitor-bank-horizontal.svg",
     "points": [
       [1, 0.5],
       [0, 0.5]
@@ -311,7 +311,7 @@
   },
   {
     "shape": "image",
-    "image": "../../assets/images/toolbar/capacitor-bank-vertical.svg",
+    "image": "assets/images/toolbar/capacitor-bank-vertical.svg",
     "points": [
       [0.5, 0],
       [0.5, 1]
@@ -324,7 +324,7 @@
   },
   {
     "shape": "image",
-    "image": "../../assets/images/toolbar/horizontal-line-svgrepo-com.svg",
+    "image": "assets/images/toolbar/horizontal-line-svgrepo-com.svg",
     "points": [
       [1, 0.5],
       [0, 0.5]     
@@ -337,7 +337,7 @@
   },
   {
     "shape": "image",
-    "image": "../../assets/images/toolbar/vertical-line-svgrepo-com.svg",
+    "image": "assets/images/toolbar/vertical-line-svgrepo-com.svg",
     "points": [
       [0.5, 0],
       [0.5, 1]
@@ -350,7 +350,7 @@
   },
   {
     "shape": "image",
-    "image": "../../assets/images/toolbar/dot.svg",
+    "image": "assets/images/toolbar/dot.svg",
     "points": [
       [1, 0.5],
       [0, 0.5],
@@ -367,7 +367,7 @@
   },
   {
     "shape": "image",
-    "image": "../../assets/images/toolbar/measure-box.svg",
+    "image": "assets/images/toolbar/measure-box.svg",
     "points": [
     ],
     "pointPerimeter": false,
@@ -381,7 +381,7 @@
   },
   {
     "shape": "image",
-    "image": "../../assets/images/toolbar/feeder.svg",
+    "image": "assets/images/toolbar/feeder.svg",
     "points": [
       [0.5, 0]
     ],
@@ -393,7 +393,7 @@
   },
   {
     "shape": "image",
-    "image": "../../assets/images/toolbar/breaker-open.svg",
+    "image": "assets/images/toolbar/breaker-open.svg",
     "points": [
       [1, 0.5],
       [0, 0.5],
@@ -409,7 +409,7 @@
   },
   {
     "shape": "image",
-    "image": "../../assets/images/toolbar/converter.svg",
+    "image": "assets/images/toolbar/converter.svg",
     "points": [
       [1, 0.5],
       [0, 0.5],
@@ -425,7 +425,7 @@
   },
   {
     "shape": "image",
-    "image": "../../assets/images/toolbar/solar-farm.svg",
+    "image": "assets/images/toolbar/solar-farm.svg",
     "points": [
       [1, 0.5],
       [0, 0.5],
@@ -440,7 +440,7 @@
   },
   {
     "shape": "text",
-    "image": "../../assets/images/toolbar/text.svg",
+    "image": "assets/images/toolbar/text.svg",
     "points": [
       [1, 0.5],
       [0, 0.5],
@@ -456,7 +456,7 @@
   },
   {
     "shape": "state-indicator",
-    "image": "../../assets/images/toolbar/indicator.svg",
+    "image": "assets/images/toolbar/indicator.svg",
     "points": [
       [1, 0.5],
       [0, 0.5],
@@ -472,7 +472,7 @@
   },
   {
     "shape": "button",
-    "image": "../../assets/images/toolbar/button.svg",
+    "image": "assets/images/toolbar/button.svg",
     "points": [
       [1, 0.5],
       [0, 0.5],
@@ -488,7 +488,7 @@
   },
   {
     "shape": "set-point-button",
-    "image": "../../assets/images/toolbar/setpoint.svg",
+    "image": "assets/images/toolbar/setpoint.svg",
     "points": [
       [1, 0.5],
       [0, 0.5],

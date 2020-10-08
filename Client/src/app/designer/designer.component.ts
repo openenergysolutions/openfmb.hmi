@@ -613,7 +613,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
     const img = this.renderer.createElement('img');
     const title = this.renderer.createElement('div');
     const titleText = this.renderer.createText(data.title);
-    this.renderer.setAttribute(img, 'src', data.image.split('.svg')[0] + ' copy.svg');    
+    this.renderer.setAttribute(img, 'src', data.image.split('.svg')[0] + '-copy.svg');    
     this.renderer.addClass(wrapper, 'toolbar-wrapper');
     this.renderer.addClass(img, 'toolbar-image');
     this.renderer.addClass(title, 'toolbar-title');
