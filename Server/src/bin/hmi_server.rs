@@ -19,8 +19,10 @@ const ASSETS: inpm::Dir = inpm::include_package!("Client/dist/openfmb-hmi/");
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
+    use static_dir::static_dir;
+    use warp::Filter;
+    //let static_route = warp::path("static").and(static_dir!("../Client/dist/openfmb-hmi/"));
     let static_route = inpm::warp::embedded(ASSETS);
-
     let clients = Arc::new(RwLock::new(HashMap::new()));    
 
     let cors = warp::cors()        
