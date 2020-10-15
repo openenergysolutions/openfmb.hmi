@@ -202,6 +202,7 @@ async fn client_msg(id: &str, msg: Message, clients: &Clients) {
             let mut topics = vec![];
             for t in register_request.topics.iter() {
                 topics.push(t.to_string());
+                dbg!(t);
             }
             v.topics = topics;
         }

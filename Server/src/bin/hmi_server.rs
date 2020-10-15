@@ -1,5 +1,3 @@
-
-
 use log::Level;
 
 use std::collections::HashMap;
@@ -11,14 +9,19 @@ use warp::{Filter};
 use hmi_server::handler::*;
 use static_dir::static_dir;
 use warp::http::Method;
+use circuit_segment_coordinator::util::init::{microgrid_setup, Error};
+use std::thread::sleep;
+use futures::executor::block_on;
 
 const ASSETS: inpm::Dir = inpm::include_package!("Client/dist/openfmb-hmi/");
 
-
-
 #[tokio::main]
 async fn main() {
-    pretty_env_logger::init();
+    let future = run(); // Nothing is printed
+    block_on(future); // `future` is run and "hello, world!" is printed
+}
+
+async fn run() {
     use static_dir::static_dir;
     use warp::Filter;
     //let static_route = warp::path("static").and(static_dir!("../Client/dist/openfmb-hmi/"));
@@ -67,8 +70,10 @@ async fn main() {
         .with(cors);
 
 
+    microgrid_setup().unwrap();
 
     warp::serve(routes).run(([127, 0, 0, 1], 32771)).await;
+
 }
 
 fn with_clients(clients: Clients) -> impl Filter<Extract = (Clients,), Error = Infallible> + Clone {
