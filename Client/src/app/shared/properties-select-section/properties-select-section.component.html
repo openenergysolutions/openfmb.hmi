@@ -6,7 +6,7 @@
   <div class="checkbox-container--item" *ngFor="let field of fields; let index = index">
     <input type="checkbox" class="hidden-box" [id]="field?.value" [(ngModel)]="field.selected" />
     <label [for]="field?.value" class="check--label">      
-      <span class="check--label-text" title="{{field?.path}}">{{field?.label}}</span>
+      <span class="check--label-text" title="{{field?.path}}">{{field?.label ? field?.label : field?.name}}</span>
     </label>
   </div>
 </div>

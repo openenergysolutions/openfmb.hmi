@@ -3,16 +3,20 @@
     <mat-tab label="Properties">
       <div mat-dialog-content class="dialog-input-container pt-1">
         <strong>Name</strong><br />
-        <mat-form-field class="designer-form-field" floatLabel='never'>
-          <input matInput [(ngModel)]="name" placeholder="Enter Name (required)" name="symbol-name" required />
+        <mat-form-field class="designer-form-field" floatLabel='never'>          
+          <mat-select [(value)]="selectedEquipment" name="select=diagram">
+            <mat-option *ngFor="let option of equipmentList" [value]="option">
+              {{option.name}}
+            </mat-option>
+          </mat-select>
         </mat-form-field>
       </div>
-      <div mat-dialog-content class="dialog-input-container">
+      <!-- <div mat-dialog-content class="dialog-input-container">
         <strong>mRID</strong><br />
         <mat-form-field class="designer-form-field" floatLabel='never'>
-          <input matInput [(ngModel)]="mRID" placeholder="Enter Device mRID" name="symbol-mrid" />
+          <input matInput (value)="selectedEquipment.mrid" placeholder="Enter Device mRID" [disabled]="true" name="symbol-mrid" />          
         </mat-form-field>
-      </div>
+      </div> -->
       <div mat-dialog-content class="dialog-input-container pt-1">
         <strong>Label</strong><br />
         <mat-form-field class="designer-form-field" floatLabel='never'>
@@ -30,7 +34,7 @@
         </app-properties-select-section>
       </div>
     </mat-tab>
-    <mat-tab label="Status Definiation" *ngIf="statusDefinitionAllowed">
+    <mat-tab label="Status Definition" *ngIf="statusDefinitionAllowed">
       <button mat-raised-button (click)="addStatusDefinition()" style="margin-top:15px;" cdkFocusInitial>
         Add
       </button>

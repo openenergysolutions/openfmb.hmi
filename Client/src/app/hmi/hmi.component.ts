@@ -16,7 +16,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PropertiesDialogComponent } from './dialogs/properties-dialog/properties-dialog.component';
 import { SwitchgearDialogComponent } from './dialogs/switchgear-dialog/switchgear-dialog.component';
-import { SetPointDialogComponent } from './dialogs/setpoint-dialog/setpoint-dialog.component'
+import { ControlDialogComponent } from './dialogs/control-dialog/control-dialog.component'
+import { GenericDialogComponent } from './dialogs/generic-dialog/generic-dialog.component'
 import { NgxSpinnerService } from 'ngx-spinner';
 import toolbarItemsData from '../../assets/json/toolbar.json';
 import * as fromRoot from '../store/reducers/index';
@@ -77,7 +78,8 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     height: 0
   };
   diagramId: string = null;
-  currentDiagram: Diagram;  
+  currentDiagram: Diagram;
+  showingLostConnection: boolean = false;  
 
   private destroy$ = new Subject();
 
@@ -144,52 +146,48 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Open popup in double click.
     this.graph.dblClick = (evt: MouseEvent, cell: mxgraph.mxCell) => {
+
+      if (this.showingLostConnection) {
+        return;
+      }
+
       const currentCellData = this.graph.model.getValue(cell).userObject;    
       if (
         this.graph.isEnabled() &&
         !mxEvent.isConsumed(evt) &&
         cell != null &&
         this.graph.isCellEditable(cell)
-      ) {        
-        if (this.graph.getModel().isEdge(cell) || !this.graph.isHtmlLabel(cell)) {
-          // Edit label (when?)
-          this.graph.startEditingAtCell(cell);
-        } 
-        else if (Hmi.isSwitchgear(currentCellData.type)) {
-         
-          const centerX = window.innerWidth / 2; 
-          const centerY = window.innerHeight / 2;          
-          const x = evt.offsetX;
-          const y = evt.offsetY;
-          
+      ) { 
+        
+        const centerX = window.innerWidth / 2; 
+        const centerY = window.innerHeight / 2;          
+        const x = evt.offsetX;
+        const y = evt.offsetY;
+        
+        if (Hmi.isSwitchgear(currentCellData.type)) {                             
           this.openSwitchgearDialog(x < centerX ? x + cell.getGeometry().width + 250 : x, y - 100 > centerY ? centerY : y, cell);
         }
-        else if (currentCellData.type == "measure-box" || (evt.target as HTMLElement).tagName === 'image' || (evt.target as HTMLElement).tagName === 'path') {
-          // Assign MRID, label
-          const centerX = window.innerWidth / 2; 
-          const centerY = window.innerHeight / 2;          
-          const x = evt.offsetX;
-          const y = evt.offsetY;
-
+        else if (currentCellData.type === Symbol.measureBox || (evt.target as HTMLElement).tagName === 'image' || (evt.target as HTMLElement).tagName === 'path') {                   
           this.openDialog(x < centerX ? x + cell.getGeometry().width + 250 : x, y - 100 > centerY ? centerY : y, cell);                    
         }
-        else if (currentCellData.type === Symbol.setPointButton) {
-          const centerX = window.innerWidth / 2; 
-          const centerY = window.innerHeight / 2;          
-          const x = evt.offsetX;
-          const y = evt.offsetY;
-
-          this.openSetpointDialog(x < centerX ? x + cell.getGeometry().width + 250 : x, y - 100 > centerY ? centerY : y, cell);
+        else if (currentCellData.type === Symbol.setPointButton) {          
+          this.openControlDialog(x < centerX ? x + cell.getGeometry().width + 250 : x, y - 100 > centerY ? centerY : y, cell);
         }
-      } else {
+        else if (currentCellData.type === Symbol.statusIndicator) {
+          this.openControlDialog(x < centerX ? x + cell.getGeometry().width + 250 : x, y - 100 > centerY ? centerY : y, cell);
+        }
+      } 
+      else {
         this.graph.view.setTranslate(0, 0);
       }
       mxEvent.consume(evt);
     };
 
     // close popup on empty graph area click.
-    this.graph.addListener(mxEvent.CLICK, (evt: Event) => {      
-      this.dialog.closeAll();
+    this.graph.addListener(mxEvent.CLICK, (evt: Event) => {
+      if (!this.showingLostConnection) {
+        this.dialog.closeAll();
+      }
       mxEvent.consume(evt);
     });
 
@@ -235,6 +233,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
       if (cellValue && cellValue.userObject) {
         const userObject = cellValue.userObject;
         const displayData = cellValue.userObject.displayData;
+        const controlData = cellValue.userObject.controlData;
         
         // Returns a DOM for the label
         const wrapper = this.renderer.createElement('div');
@@ -574,9 +573,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
       top: y,
       left: x,
       diagramId: this.diagramId,
-      status: currentCellData.tag,
-      name: currentCellData.name,      
-      mRID: currentCellData.mRID
+      diagramData: currentCellData
     };
     const dialogRef = this.dialog.open(SwitchgearDialogComponent, {
       width: '355px',
@@ -592,20 +589,18 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
         this.sendCommand(currentCellData, result.action);
       }
     });
-  }
+  }  
 
-  openSetpointDialog(x: number, y: number, cell: mxgraph.mxCell): void {
+  openControlDialog(x: number, y: number, cell: mxgraph.mxCell): void {
     const currentCellData = this.graph.model.getValue(cell).userObject;
     this.dialog.closeAll();
     const filterData = {
       top: y,
       left: x,
-      diagramId: this.diagramId,
-      value: currentCellData.tag,
-      name: currentCellData.name,      
-      mRID: currentCellData.mRID
+      diagramId: this.diagramId,      
+      diagramData: currentCellData
     };
-    const dialogRef = this.dialog.open(SetPointDialogComponent, {
+    const dialogRef = this.dialog.open(ControlDialogComponent, {
       width: '355px',
       data: filterData,
       hasBackdrop: false,
@@ -616,108 +611,144 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
 
     dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
       if (result && result.proceed) {                
-        this.sendCommand(currentCellData, result.action);
+        this.sendCommand(currentCellData, result.action, result.value);
       }
+    });
+  }
+
+  showLostConnection(): void {    
+    this.dialog.closeAll();
+    const filterData = {
+      title: "OpenFMB HMI",
+      message: "Connection to server has lost!"
+    };
+    this.showingLostConnection = true;
+    const dialogRef = this.dialog.open(GenericDialogComponent, {
+      width: '355px',
+      data: filterData,
+      hasBackdrop: false,
+      panelClass: 'filter-popup',
+      autoFocus: true,
+      closeOnNavigation: true
+    });
+
+    dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
+      this.showingLostConnection = false;
     });
   }
 
   connect(sessionId: string) {
     this.wsService.connect(sessionId);
     this.wsService.wsConnection$
-      .subscribe((msg) => {
-        if (msg) {
-          this.register();
+      .subscribe(
+        (msg) => {
+          if (msg) {
+            if (this.showingLostConnection) {
+              this.showingLostConnection = false;
+              this.dialog.closeAll();
+            }
+            this.register();
+          }
+          else {
+            //this.snack.open('Connection to server has lost.', 'OK', { duration: 4000 });                       
+            this.showLostConnection();
+          }
+        },
+        (error) => {
+          console.log(error);
         }
-        else {
-          this.snack.open('Failed to connect to server.', 'OK', { duration: 4000 });
-        }
-      });
+      );
     this.wsService.wsMessages$ 
-      .subscribe((message) => {
-        const baseToolbarImagePath = '../../assets/images/toolbar/';
-        const baseImagePath = '../../assets/images/';
-        const domElement = document.querySelectorAll('span[mrid]');
+      .subscribe(
+        (message) => {
+          this.onReceivedMessage(message);
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+  }
 
-        if (domElement.length > 0) {
-          for(let update of message.updates) {            
-            for(let i = 0; i < domElement.length; ++i) {
-              if (update.topic?.mrid === domElement[i].getAttribute('mrid') && update.topic?.name === domElement[i].getAttribute('path')) {
-                // check if there is 'svg-id' reference
-                const svgId = domElement[i].getAttribute('svg-id');
-                var objType = domElement[i].getAttribute('obj-type');
-                if (svgId) {  // actual symbol
-                  try {                                        
-                    var cell = this.graph.getModel().getCell(svgId);
-                    if (cell) {
-                      var diagramData = cell.value.userObject;
-                      if (Hmi.isControllable(diagramData.type)) {
-                        var state = this.graph.view.getState(cell, false);
-                        if (state) {
-                          var node = state.shape.node;                                            
-                          var image = node.getElementsByTagName("image")[0];                        
-                          var ref = image.getAttribute('href');
-                          if (!ref) {
-                            ref = image.getAttribute('xlink:href');
-                            image.removeAttribute('xlink:href');
-                          }
+  onReceivedMessage(message: any)
+  {
+    const baseToolbarImagePath = '../../assets/images/toolbar/';
+    const baseImagePath = '../../assets/images/';
+    const domElement = document.querySelectorAll('span[mrid]');
 
-                          const val = Helpers.convertPos(update.topic.value);
-                          cell.value.userObject.tag = val;
-
-                          image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '.svg');                                      
+    if (domElement.length > 0) {
+      for(let update of message.updates) {            
+        for(let i = 0; i < domElement.length; ++i) {
+          if (update.topic?.mrid === domElement[i].getAttribute('mrid') && update.topic?.name === domElement[i].getAttribute('path')) {
+            // check if there is 'svg-id' reference
+            const svgId = domElement[i].getAttribute('svg-id');
+            var objType = domElement[i].getAttribute('obj-type');
+            if (svgId) {  // actual symbol
+              try {
+                if (Hmi.isSwitchgear(objType)) {
+                  var cell = this.graph.getModel().getCell(svgId);
+                  if (cell) {
+                    var diagramData = cell.value.userObject;
+                    if (Hmi.isControllable(diagramData.type)) {
+                      var state = this.graph.view.getState(cell, false);
+                      if (state) {
+                        var node = state.shape.node;                                            
+                        var image = node.getElementsByTagName("image")[0];                        
+                        var ref = image.getAttribute('href');
+                        if (!ref) {
+                          ref = image.getAttribute('xlink:href');
+                          image.removeAttribute('xlink:href');
                         }
+
+                        const val = Helpers.convertPos(update.topic.value);
+                        cell.value.userObject.tag = val;
+
+                        image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '.svg');                                      
                       }
                     }
-                  }
-                  catch (e) {
-                    console.error(e);
-                  }
-                }
-                else {
-                  if (Symbol.statusIndicator === objType) {
-                    const cellId = domElement[i].getAttribute('cell-id');
-
-                    var cell = this.graph.getModel().getCell(cellId);
-                    if (cell) {
-                      var diagramData = cell.value.userObject;
-                      var color = 'gray';
-                      if (diagramData && diagramData.statusDefinition) {
-                        for(var j = 0; j < diagramData.statusDefinition.length; ++j) {
-                          if (diagramData.statusDefinition[j].value === update.topic?.value) {
-                            color = diagramData.statusDefinition[j].color;
-                          }
-                        }
-                      }
-                      // Get img element
-                      var img = domElement[i].firstElementChild;
-                      img.setAttribute('src', baseImagePath + color + '.svg');
-                    }
-                  }
-                  else {
-                    // This is measurement box
-                    domElement[i].textContent = this.setDataFieldValue(domElement[i], update.topic?.value);
                   }
                 }
               }
+              catch (e) {
+                console.error(e);
+              }
+            }
+            else {
+              if (Symbol.statusIndicator === objType) {
+                const cellId = domElement[i].getAttribute('cell-id');
+
+                var cell = this.graph.getModel().getCell(cellId);
+                if (cell) {
+                  var diagramData = cell.value.userObject;
+                  var color = 'gray';
+                  if (diagramData && diagramData.statusDefinition) {
+                    for(var j = 0; j < diagramData.statusDefinition.length; ++j) {
+                      if (diagramData.statusDefinition[j].value === update.topic?.value) {
+                        color = diagramData.statusDefinition[j].color;
+                      }
+                    }
+                  }
+                  // Get img element
+                  var img = domElement[i].firstElementChild;
+                  img.setAttribute('src', baseImagePath + color + '.svg');
+                }
+              }
+              else {
+                // This is measurement box
+                domElement[i].textContent = this.setDataFieldValue(domElement[i], update.topic?.value);
+              }
             }
           }
-        }        
-      });
+        }
+      }
+    }        
   }
 
   sendWsData(data: any) {    
     this.wsService.sendWsData(data);
   }
 
-  sendCommand(userObject: DiagramData, action: string, value?: number) {
-    console.log("Sending command with action " + action + " for item: " + userObject); 
-    
-    try {
-
-    }
-    catch (e) {
-      this.snack.open(e, 'OK', { duration: 2000 });
-    }
+  sendCommand(userObject: DiagramData, action: string, value?: any) {
+    console.log("Sending command with action " + action + " with value: " + value);         
     
     if (userObject?.controlData?.length > 0) {
       const control = userObject?.controlData[0];
@@ -740,6 +771,13 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
 
+      if (commandValue == 'true') {
+        commandValue = 1
+      }
+      else if (commandValue == 'false') {
+        commandValue = 0;
+      }
+
       const t : Topic = {
         name: control?.path,
         mrid: userObject.mRID,
@@ -759,7 +797,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
     else {
-      this.snack.open('Unable to send command.  No sepcified data connection.', 'OK', { duration: 2000 });
+      this.snack.open('Unable to send command.  No data is mapped for this control.', 'OK', { duration: 2000 });
     }
   }
 

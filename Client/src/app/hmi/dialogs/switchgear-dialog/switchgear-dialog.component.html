@@ -1,6 +1,6 @@
 <form #f="ngForm">
   <mat-tab-group mat-align-tabs="start">
-    <mat-tab label="Status">
+    <mat-tab label="Control">
       <div mat-dialog-content class="dialog-input-container pt-1">
         <strong>Name</strong><br/>
         <mat-form-field class="designer-form-field" floatLabel='never'>
@@ -14,19 +14,21 @@
         </mat-form-field>  
       </div>
       <div mat-dialog-content class="dialog-input-container pt-1">
-        <strong>Status</strong><br/>
+        <strong>Current Position</strong><br/>
         <mat-form-field class="designer-form-field" floatLabel='never'>
           <input matInput [(ngModel)]="status" style="text-transform: uppercase;" placeholder="Unknown" [disabled]="true" name="current-status"/>
         </mat-form-field>
       </div>   
-      
+      <div mat-dialog-content class="dialog-input-container pt-1" *ngIf="!hasDataMapped">
+        <p style="color:red;">No data mapping is defined</p>
+      </div>
     </mat-tab>    
   </mat-tab-group>
   <div mat-dialog-actions>
     <button mat-raised-button color="primary" (click)="onClose()" cdkFocusInitial class="pr-1" style="width: 120px;">
       CANCEL
     </button> 
-    <button mat-raised-button [(color)]="actionColor" (click)="onAction()" cdkFocusInitial class="pr-1" style="width: 120px;" [disabled]="!actionEnabled">
+    <button mat-raised-button [(color)]="actionColor" (click)="onAction()" cdkFocusInitial class="pr-1" style="width: 120px;" *ngIf="actionEnabled && hasDataMapped">
       {{actionText}}
     </button>        
   </div>

@@ -70,7 +70,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
   sessionId = '';
   defaultLabelStyle = 'text;html=1;strokeColor=none;fontColor=#000000;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=none;';
   defaultButtonStyle = 'html=1;strokeColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fillColor=#0e0f21;fontColor=#a6a6af;';
-  defaultSetpointButtonStyle = 'html=1;strokeColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=#a6a6af;fontColor=#0e0e0f;';
+  defaultSetpointButtonStyle = 'html=1;strokeColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fillColor=#a6a6af;fontColor=#0e0e0f;';
   defaultStatusIndicatorStyle = 'html=1;strokeColor=none;align=left;verticalAlign=middle;rounded=1;fillColor=none;fontColor=#000000;';
   gridData = {
     scale: 0,
@@ -587,17 +587,17 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
             model.setValue(v1, { ...currentValue, userObject });            
           }
           else if (data.shape == Symbol.button) {
-            v1 = graph.insertVertex(parent, this.idGenerator(), 'Button', x, y, 120, 40, this.defaultButtonStyle);
+            v1 = graph.insertVertex(parent, this.idGenerator(), 'Button', x, y, 80, 40, this.defaultButtonStyle);
             userObject.label = 'Button';
             model.setValue(v1, { ...currentValue, userObject });            
           } 
           else if (data.shape == Symbol.setPointButton) {
-            v1 = graph.insertVertex(parent, this.idGenerator(), 'Button', x, y, 120, 40, this.defaultSetpointButtonStyle);
+            v1 = graph.insertVertex(parent, this.idGenerator(), 'Button', x, y, 80, 40, this.defaultSetpointButtonStyle);
             userObject.label = 'Set Point';
             model.setValue(v1, { ...currentValue, userObject });            
           } 
           else if (data.shape == Symbol.statusIndicator) {
-            v1 = graph.insertVertex(parent, this.idGenerator(), 'Button', x, y, 120, 40, this.defaultStatusIndicatorStyle);
+            v1 = graph.insertVertex(parent, this.idGenerator(), 'Button', x, y, 80, 40, this.defaultStatusIndicatorStyle);
             userObject.label = 'Status';
             model.setValue(v1, { ...currentValue, userObject });
           }
@@ -880,7 +880,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.diagramService.update(this.currentDiagram).subscribe(
       response => {
-        console.log("Updated diagram:: " + response),
+        //console.log("Updated diagram:: " + response),
         this.snack.open('Diagram is updated.', 'OK', { duration: 2000 });        
       },
       error => {

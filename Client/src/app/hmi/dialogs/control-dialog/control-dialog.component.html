@@ -1,6 +1,6 @@
 <form #f="ngForm">
   <mat-tab-group mat-align-tabs="start">
-    <mat-tab label="Status">
+    <mat-tab label="Control">
       <div mat-dialog-content class="dialog-input-container pt-1">
         <strong>Name</strong><br/>
         <mat-form-field class="designer-form-field" floatLabel='never'>
@@ -13,22 +13,30 @@
           <input matInput [(ngModel)]="mRID" placeholder="Enter Device mRID" [disabled]="true" name="symbol-mrid"/> 
         </mat-form-field>  
       </div>
-      <div mat-dialog-content class="dialog-input-container pt-1">
-        <strong>Status</strong><br/>
+      <div mat-dialog-content class="dialog-input-container pt-1" *ngIf="isSetPoint && isControllable">
+        <strong>Set Point</strong><br/>
         <mat-form-field class="designer-form-field" floatLabel='never'>          
           <input type="number" [(ngModel)]="setpointValue" min="0" max="65535" matInput name="set-point-vallue"
                   placeholder="Value" />
         </mat-form-field>
-      </div>   
-      
+      </div>
+      <div mat-dialog-content class="dialog-input-container pt-1" *ngIf="!isSetPoint && isControllable">
+        <strong>Control Value</strong><br/>
+        <mat-form-field class="designer-form-field" floatLabel='never'>
+          <input matInput [(ngModel)]="controlValue" [disabled]="isControllable" name="control-value"/> 
+        </mat-form-field>
+      </div>
+      <div mat-dialog-content class="dialog-input-container pt-1" *ngIf="!hasDataMapped">
+        <p style="color:red;">No data mapping is defined</p>
+      </div>        
     </mat-tab>    
   </mat-tab-group>
   <div mat-dialog-actions>
     <button mat-raised-button color="primary" (click)="onClose()" cdkFocusInitial class="pr-1" style="width: 120px;">
       CANCEL
     </button> 
-    <button mat-raised-button color="red" (click)="onAction()" cdkFocusInitial class="pr-1" style="width: 120px;">
-      SET VALUE
-    </button>        
+    <button mat-raised-button color="red" (click)="onAction()" *ngIf="isControllable" cdkFocusInitial class="pr-1" style="width: 120px;">
+      EXECUTE
+    </button>           
   </div>
 </form>

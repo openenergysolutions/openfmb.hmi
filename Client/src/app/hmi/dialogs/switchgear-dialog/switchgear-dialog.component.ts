@@ -1,38 +1,42 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CommandAction, PosString } from '../../../shared/hmi.constants'
+import { DiagramData } from '../../../shared/models/userobject.model';
 
 @Component({
   selector: 'app-switchgear-dialog',
   templateUrl: './switchgear-dialog.component.html',
   styleUrls: ['./switchgear-dialog.component.scss']
 })
-export class SwitchgearDialogComponent implements OnInit {
-  filterData: any;
+export class SwitchgearDialogComponent implements OnInit {  
   status: string;
   name: string;
   actionColor: string;
   actionText: string;
   actionEnabled: boolean = true;
   diagramId: string;
-  mRID: string;    
+  mRID: string;
+  diagramData: DiagramData;  
+  hasDataMapped: boolean = false;    
 
   constructor(
     public dialogRef: MatDialogRef<SwitchgearDialogComponent>,    
     @Inject(MAT_DIALOG_DATA) public data: any
   ) { }
 
-  ngOnInit() {    
-    this.filterData = this.data;
-    this.status = this.data.status;
-    this.name = this.data.name,
-    this.mRID = this.data.mRID;    
-    this.diagramId = this.data.diagramId;    
+  ngOnInit() {                    
+    this.diagramId = this.data.diagramId;   
+    this.diagramData = this.data.diagramData;
+    this.name = this.diagramData.name,
+    this.mRID = this.diagramData.mRID;
+    this.status = this.diagramData.tag;
     
-    this.dialogRef.updatePosition({
-      top: `${this.filterData.top}px`,
-      left: `${this.filterData.left}px`
-    });  
+    if (!this.diagramData.controlData || this.diagramData.controlData.length == 0) {      
+      this.hasDataMapped = false;
+    }
+    else {
+      this.hasDataMapped = true;
+    }    
     
     if (this.status && this.status.toLowerCase() === PosString.open) {
       this.actionText = CommandAction.CLOSE;

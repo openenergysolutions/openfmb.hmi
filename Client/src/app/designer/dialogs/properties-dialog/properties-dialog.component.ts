@@ -37,12 +37,15 @@ export class PropertiesDialogComponent implements OnInit {
   navigateToDataConnection: boolean = false;
   dataConnectAllowed: boolean;
   statusDefinitionAllowed: boolean = false;
+  equipmentList: any[];
+  selectedEquipment: any;
   
   // For link
   selectedDiagramId: string;
   selectedLinkTarget: string;
   diagrams: Diagram[] = [];
   getItemSub: Subscription;
+  getEquipmentSub: Subscription;
   linkTargetOptions: string[];
 
   // status definition
@@ -74,6 +77,8 @@ export class PropertiesDialogComponent implements OnInit {
     this.dataConnectAllowed = this.data.type !== Symbol.label;
     this.statusDefinitionAllowed = this.data.type === Symbol.statusIndicator;
 
+    this.getEquipmentList();
+
     if (this.linkAllowed) {      
       this.linkTargetOptions = ['_blank', '_top',];
 
@@ -82,7 +87,7 @@ export class PropertiesDialogComponent implements OnInit {
         this.selectedLinkTarget = this.data.linkData.target;
       }
 
-      this.getDiagrams();
+      this.getDiagrams();      
     }
 
     if (this.statusDefinitionAllowed) {
@@ -93,11 +98,7 @@ export class PropertiesDialogComponent implements OnInit {
         this.statusDefinitions = [];
       }
     }
-    
-    this.dialogRef.updatePosition({
-      top: `${this.filterData.top}px`,
-      left: `${this.filterData.left}px`
-    });
+  
     if (this.filterData.displayData) {
       this.displayData = [...this.filterData.displayData];
     } 
@@ -110,7 +111,24 @@ export class PropertiesDialogComponent implements OnInit {
     this.getItemSub = this.service.getAll()
       .subscribe(data => {
         this.diagrams = data;        
-      })
+      });
+  }
+
+  getEquipmentList() {
+    this.getEquipmentSub = this.service.getEquipmentList()
+      .subscribe(data => {
+        this.equipmentList = data;
+        if (this.equipmentList)
+        {
+          for(var i = 0; this.equipmentList.length; ++i)
+          {
+            if (this.equipmentList[i].mrid === this.mRID) {
+              this.selectedEquipment = this.equipmentList[i];
+              break;
+            }
+          }
+        }
+      });
   }
 
   // save all grid item data
@@ -154,10 +172,10 @@ export class PropertiesDialogComponent implements OnInit {
 
     this.dialogRef.close({
       label: this.label,
-      name: this.name,
+      name: this.selectedEquipment?.name || this.name,
       displayData: this.displayData,
       controlData: this.controlData,
-      mRID: this.mRID,
+      mRID: this.selectedEquipment?.mrid || this.mRID,
       fontSize: this.fontSize,
       containerWidth: this.containerWidth,
       foreColor: foreC,

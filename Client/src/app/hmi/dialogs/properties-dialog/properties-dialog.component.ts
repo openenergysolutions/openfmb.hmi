@@ -24,12 +24,7 @@ export class PropertiesDialogComponent implements OnInit {
     this.label = this.data.label;
     this.name = this.data.name,
     this.mRID = this.data.mRID;    
-    this.diagramId = this.data.diagramId;    
-    
-    this.dialogRef.updatePosition({
-      top: `${this.filterData.top}px`,
-      left: `${this.filterData.left}px`
-    });     
+    this.diagramId = this.data.diagramId;           
   }
 
   // save all grid item data

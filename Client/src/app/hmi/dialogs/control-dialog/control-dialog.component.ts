@@ -1,0 +1,102 @@
+import { Component, OnInit, Inject } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { CommandAction } from '../../../shared/hmi.constants'
+import { Symbol } from '../../../shared/hmi.constants'
+import { DiagramData } from '../../../shared/models/userobject.model';
+
+@Component({
+  selector: 'app-control-dialog',
+  templateUrl: './control-dialog.component.html',
+  styleUrls: ['./control-dialog.component.scss']
+})
+export class ControlDialogComponent implements OnInit {  
+  setpointValue: number;
+  controlValue: any;
+  isSetPoint: boolean;
+  isFixedCommand: boolean;
+  name: string;  
+  diagramId: string;
+  mRID: string; 
+  type: string;  
+  diagramData: DiagramData;
+  isControllable: boolean = true;
+  hasDataMapped: boolean = false;
+
+  constructor(
+    public dialogRef: MatDialogRef<ControlDialogComponent>,    
+    @Inject(MAT_DIALOG_DATA) public data: any
+  ) { }
+
+  ngOnInit() {        
+    this.diagramId = this.data.diagramId;
+
+    this.diagramData = this.data.diagramData;
+    this.setpointValue = this.diagramData.tag;
+    this.name = this.diagramData.name,
+    this.mRID = this.diagramData.mRID;    
+    
+    this.type = this.diagramData.type;        
+    this.isSetPoint = this.type === Symbol.setPointButton;
+    
+    if (!this.diagramData.controlData || this.diagramData.controlData.length == 0) {
+      this.isControllable = false;
+      this.hasDataMapped = false;
+    }
+    else {
+      this.hasDataMapped = true;
+      if (!this.isSetPoint) {
+        var dataType = this.diagramData.controlData[0].type;
+        if (dataType === 'binary') {
+          this.controlValue = this.diagramData.controlData[0].measurement;
+          if (!this.controlValue || this.controlValue === '') {
+            this.isControllable = false;
+          }
+        }
+        else if (dataType === 'analog') {
+          this.isSetPoint = true;
+          this.setpointValue = this.diagramData.controlData[0].measurement;
+        }
+        else {
+          console.error('Data type for control point is not supported: ' + dataType);
+          this.isControllable = false;
+        }
+      }
+    }     
+  }
+  
+  onClose(): void {    
+    this.dialogRef.close();
+  }  
+
+  isNumeric(num: Number) {
+    if (typeof num != "number") return false // we only process strings!  
+    return !isNaN(num);
+  }
+
+  onAction() : void {
+
+    if (this.isSetPoint) {
+      if (!this.setpointValue) {
+        alert('Please specify setpoint value');
+        return;
+      }
+      else if (!this.isNumeric(this.setpointValue)) {
+        alert('Not a valid value');
+        return;
+      }
+
+      this.dialogRef.close({
+        proceed: true,
+        action: CommandAction.SETVALUE,
+        value: this.setpointValue  
+      });
+    }
+    else {
+      this.dialogRef.close({
+        proceed: true,
+        action: CommandAction.PRECONFIGURED,
+        value: this.controlValue  
+      });
+    }       
+  }
+}

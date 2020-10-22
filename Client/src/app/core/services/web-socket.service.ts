@@ -95,9 +95,9 @@ export class WebSocketService implements WebsocketService, OnDestroy {
   }
 
   // Makes WebSocket reconnection
-  private reconnect(): void {
+  private reconnect(): void {    
     this.reconnection$ = interval(this.reconnectInterval)
-      .pipe(takeWhile((v, index) => index < this.reconnectAttempts && !this.websocket$));
+      .pipe(takeWhile((v, index) => !this.websocket$));
 
     this.reconnection$.subscribe(
       () => this.connect(this.config.url),
@@ -112,16 +112,9 @@ export class WebSocketService implements WebsocketService, OnDestroy {
       });
   }
 
-  // GET WebSocket data
-  //getWsData(): Observable<any> {
-      //return this.wsMessages$.asObservable().pipe(map(data => JSON.parse(data)));
-  //}
-
   // Sends WebSocket message
   sendWsData(data: any = {}): void {
-    if (this.isConnected) {
-      var json = JSON.stringify(data);
-      //console.log("sendWsData: " + json);
+    if (this.isConnected) {      
       this.websocket$.next(<any>data);
     } else {
       console.error('Unable to send message.  The websocket is not connected.');

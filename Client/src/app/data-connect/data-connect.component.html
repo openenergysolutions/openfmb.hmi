@@ -134,16 +134,15 @@
                                             <div>
                                                 <div class="data-header">{{item.attributes.name}}</div>
                                                 <div class="data-detail">{{item.attributes.path}}</div>
-                                                <div class="data-detail">
+                                                <div class="data-detail">                                                    
                                                     <mat-form-field class="example-full-width pr-1">
-                                                        <mat-label>Custom Label</mat-label>
-                                                        <input matInput [value]="item.attributes.label"
-                                                            (input)="item.attributes.label = $event.target.value" />
+                                                        <mat-label>Data Type</mat-label>
+                                                        <input matInput [value]="item.attributes.type" disabled />
                                                     </mat-form-field>
                                                     <mat-form-field class="example-full-width">
-                                                        <mat-label>Unit</mat-label>
-                                                        <input matInput [value]="item.attributes.measurement"
-                                                            (input)="item.attributes.measurement = $event.target.value" />
+                                                        <mat-label>Control Value</mat-label>
+                                                        <input matInput [value]="item.attributes.measurement" name="analog"
+                                                            (input)="item.attributes.measurement = $event.target.value" />                                                        
                                                     </mat-form-field>
                                                 </div>
                                             </div>
@@ -197,7 +196,7 @@
                                                     <div class="data-detail">{{item.attributes.path}}</div>
                                                 </div>
                                                 <button mat-icon-button aria-label="Add" style="cursor: pointer;"
-                                                    (click)="addPoint(item)">
+                                                    (click)="addControlPoint(item)">
                                                     <mat-icon>add</mat-icon>
                                                 </button>
                                             </div>

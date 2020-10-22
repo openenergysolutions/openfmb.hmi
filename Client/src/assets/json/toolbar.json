@@ -393,7 +393,7 @@
   },
   {
     "shape": "image",
-    "image": "assets/images/toolbar/breaker-open.svg",
+    "image": "assets/images/toolbar/breaker.svg",
     "points": [
       [1, 0.5],
       [0, 0.5],
@@ -418,7 +418,23 @@
     ],
     "width": 40,
     "height": 40,
-    "title": "Converter",
+    "title": "Converter DC-DC",
+    "left": 0,
+    "top": 0,
+    "type": "converter"
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/converter-ac.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Converter AC-DC",
     "left": 0,
     "top": 0,
     "type": "converter"
@@ -463,9 +479,9 @@
       [0.5, 0],
       [0.5, 1]
     ],
-    "width": 120,
+    "width": 80,
     "height": 40,
-    "title": "State Indicator",
+    "title": "State Indicator/Control",
     "left": 0,
     "top": 0,
     "type": "state-indicator"  
@@ -479,7 +495,7 @@
       [0.5, 0],
       [0.5, 1]
     ],
-    "width": 40,
+    "width": 80,
     "height": 40,
     "title": "Link Button",
     "left": 0,
@@ -495,7 +511,7 @@
       [0.5, 0],
       [0.5, 1]
     ],
-    "width": 40,
+    "width": 80,
     "height": 40,
     "title": "Set Point Button",
     "left": 0,

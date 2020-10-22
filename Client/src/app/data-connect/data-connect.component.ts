@@ -55,8 +55,6 @@ export class DataConnectComponent implements OnInit {
       this.activateRoute.queryParams.subscribe(params => {
         this.requestDiagramId = params['id'];              
         this.requestCellId = params['cell'];
-
-        console.log("data-connect:: requested cell id = " + this.requestCellId);
       });
     }
 
@@ -331,7 +329,7 @@ export class DataConnectComponent implements OnInit {
             this.diagram.data = xml;                        
             this.service.update(this.diagram).subscribe(
               response => {
-                console.log("Updated diagram:: " + response),
+                //console.log("Updated diagram:: " + response),
                 this.snack.open('Diagram is updated.', 'OK', { duration: 2000 });        
               },
               err => console.log(err)

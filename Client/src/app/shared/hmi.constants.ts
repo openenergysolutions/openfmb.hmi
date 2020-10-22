@@ -14,7 +14,9 @@ export const Symbol = {
 export const CommandAction = {
     OPEN: "OPEN",
     CLOSE: "CLOSE",
-    SETVALUE: "SET-VALUE"
+    SETVALUE: "SET-VALUE",
+    PRECONFIGURED: "PRECONFIGURED",
+    VERB: "VERB"
 }
 
 export const Pos = {
@@ -33,7 +35,7 @@ export const PosString = {
 
 export const Hmi = {
     isControllable: (type: string) => {
-        if (type === Symbol.breaker || type === Symbol.switchVertical || type == Symbol.switchHorizontal || type == Symbol.setPointButton) {
+        if (type === Symbol.breaker || type === Symbol.switchVertical || type == Symbol.switchHorizontal || type == Symbol.setPointButton || type == Symbol.statusIndicator) {
             return true;
         }
         return false;
