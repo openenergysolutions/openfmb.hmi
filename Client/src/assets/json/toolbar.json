@@ -1,4 +1,4 @@
-[  
+[   
   {
     "shape": "image",
     "image": "assets/images/toolbar/switch-horizontal-open.svg",
@@ -211,6 +211,21 @@
     "width": 40,
     "height": 40,
     "title": "Generator",
+    "left": 0,
+    "top": 0
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/motor.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Motor",
     "left": 0,
     "top": 0
   },
@@ -517,6 +532,15 @@
     "left": 0,
     "top": 0,
     "type": "set-point-button"  
-  }
-  
+  },
+  {
+    "shape": "rectangle",
+    "image": "assets/images/toolbar/rectangle2.svg",
+    "points": [],
+    "width": 80,
+    "height": 40,
+    "title": "Rectangle",
+    "left": 0,
+    "top": 0    
+  }  
 ]

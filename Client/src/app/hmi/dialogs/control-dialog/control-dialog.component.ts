@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { CommandAction } from '../../../shared/hmi.constants'
+import { ButtonFunction, CommandAction } from '../../../shared/hmi.constants'
 import { Symbol } from '../../../shared/hmi.constants'
 import { DiagramData } from '../../../shared/models/userobject.model';
 
@@ -21,6 +21,8 @@ export class ControlDialogComponent implements OnInit {
   diagramData: DiagramData;
   isControllable: boolean = true;
   hasDataMapped: boolean = false;
+  lastUpdate: string;
+  hasLastUpdate: boolean = false;
 
   constructor(
     public dialogRef: MatDialogRef<ControlDialogComponent>,    
@@ -33,12 +35,27 @@ export class ControlDialogComponent implements OnInit {
     this.diagramData = this.data.diagramData;
     this.setpointValue = this.diagramData.tag;
     this.name = this.diagramData.name,
-    this.mRID = this.diagramData.mRID;    
+    this.mRID = this.diagramData.mRID; 
+    this.lastUpdate = this.diagramData.lastUpdate;
+    if (this.lastUpdate) {
+      this.hasLastUpdate = true;
+    }   
     
     this.type = this.diagramData.type;        
     this.isSetPoint = this.type === Symbol.setPointButton;
     
-    if (!this.diagramData.controlData || this.diagramData.controlData.length == 0) {
+    if (this.type == Symbol.button) {
+      if (this.diagramData.func === ButtonFunction.command && this.diagramData.verb)
+      {
+        this.hasDataMapped = true; 
+        this.controlValue = this.diagramData.verb;       
+      }
+      else {
+        this.isControllable = false;
+        this.hasDataMapped = false;
+      }
+    }
+    else if (!this.diagramData.controlData || this.diagramData.controlData.length == 0) {
       this.isControllable = false;
       this.hasDataMapped = false;
     }
@@ -91,7 +108,15 @@ export class ControlDialogComponent implements OnInit {
         value: this.setpointValue  
       });
     }
-    else {
+    else if (this.type == Symbol.button)
+    {
+      this.dialogRef.close({
+        proceed: true,
+        action: CommandAction.VERB,
+        value: this.controlValue  
+      });
+    }
+    else {  // status indicator
       this.dialogRef.close({
         proceed: true,
         action: CommandAction.PRECONFIGURED,

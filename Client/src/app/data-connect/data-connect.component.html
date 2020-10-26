@@ -27,7 +27,7 @@
                                     <mat-select [(ngModel)]="selectedGraphItemId" name="selete-item"
                                         (selectionChange)="onGraphItemChanged($event.value)">
                                         <mat-option *ngFor="let option of graphItems" [value]="option.id">
-                                            {{option.name}}
+                                            {{option.name}} ({{option.label}})
                                         </mat-option>
                                     </mat-select>
                                 </mat-form-field>

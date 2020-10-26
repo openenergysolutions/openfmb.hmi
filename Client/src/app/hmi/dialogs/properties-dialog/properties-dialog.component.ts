@@ -7,24 +7,28 @@ import { DiagramData } from '../../../shared/models/userobject.model'
   templateUrl: './properties-dialog.component.html',
   styleUrls: ['./properties-dialog.component.scss']
 })
-export class PropertiesDialogComponent implements OnInit {
-  filterData: any;
+export class PropertiesDialogComponent implements OnInit {  
   label: string;
   name: string;
   diagramId: string;
-  mRID: string;    
+  mRID: string; 
+  lastUpdate: string;
+  hasLastUpdate: boolean = false;    
 
   constructor(
     public dialogRef: MatDialogRef<PropertiesDialogComponent>,    
     @Inject(MAT_DIALOG_DATA) public data: DiagramData
   ) { }
 
-  ngOnInit() {    
-    this.filterData = this.data;
+  ngOnInit() {        
     this.label = this.data.label;
     this.name = this.data.name,
     this.mRID = this.data.mRID;    
-    this.diagramId = this.data.diagramId;           
+    this.diagramId = this.data.diagramId; 
+    this.lastUpdate = this.data.lastUpdate;
+    if (this.lastUpdate) {
+      this.hasLastUpdate = true;
+    }          
   }
 
   // save all grid item data

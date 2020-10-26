@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { config } from '../../../config'
 import { Diagram } from '../models/diagram.model'
 import { Equipment } from '../models/equipment.model';
+import { Command } from '../models/command.model';
 import { UpdateData } from '../models/topic.model'
 import { catchError } from 'rxjs/internal/operators';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
@@ -74,5 +75,17 @@ export class DiagramsService {
     return this.httpClient.get<Equipment>(this.endpoint + 'equipment-list').pipe(
       catchError(this.handleError)
     );
+  }
+
+  getCommandList() : Observable<any> {
+    return this.httpClient.get<Command>(this.endpoint + 'command-list').pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  executeCommand(command: Command) {
+    return this.httpClient.post<Command>(this.endpoint + 'execute-command', command).pipe(
+      catchError(this.handleError)
+    );  
   }
 }

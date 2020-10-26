@@ -17,7 +17,9 @@ export class SwitchgearDialogComponent implements OnInit {
   diagramId: string;
   mRID: string;
   diagramData: DiagramData;  
-  hasDataMapped: boolean = false;    
+  hasDataMapped: boolean = false;
+  lastUpdate: string;
+  hasLastUpdate: boolean = false;    
 
   constructor(
     public dialogRef: MatDialogRef<SwitchgearDialogComponent>,    
@@ -30,6 +32,10 @@ export class SwitchgearDialogComponent implements OnInit {
     this.name = this.diagramData.name,
     this.mRID = this.diagramData.mRID;
     this.status = this.diagramData.tag;
+    this.lastUpdate = this.diagramData.lastUpdate;
+    if (this.lastUpdate) {
+      this.hasLastUpdate = true;
+    }
     
     if (!this.diagramData.controlData || this.diagramData.controlData.length == 0) {      
       this.hasDataMapped = false;

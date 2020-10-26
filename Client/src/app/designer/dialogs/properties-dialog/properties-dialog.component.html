@@ -24,6 +24,44 @@
         </mat-form-field>
       </div>      
     </mat-tab>
+    <mat-tab label="Link" *ngIf="linkAllowed">
+      <div mat-dialog-content class="dialog-input-container pt-1">
+        <mat-radio-group [(value)]="buttonFunction">
+          <mat-radio-button *ngFor="let option of buttonFunctionOptions" [value]="option" (change)="buttonFunctionChanged($event)">{{option}}</mat-radio-button>          
+        </mat-radio-group>
+      </div>
+      <hr/>
+      <div mat-dialog-content class="dialog-input-container pt-1" *ngIf="showLink">
+        <strong>Navigator Link</strong><br />
+        <mat-form-field class="designer-form-field" floatLabel='never'>
+          <mat-select [(ngModel)]="selectedDiagramId" name="selectDiagram">
+            <mat-option *ngFor="let option of diagrams" [value]="option.diagramId">
+              {{option.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div mat-dialog-content class="dialog-input-container pt-1" *ngIf="showLink">
+        <strong>Target</strong><br />
+        <mat-form-field class="designer-form-field" floatLabel='never'>
+          <mat-select [(ngModel)]="selectedLinkTarget" name="select=diagram">
+            <mat-option *ngFor="let option of linkTargetOptions" [value]="option">
+              {{option}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div mat-dialog-content class="dialog-input-container pt-1" *ngIf="!showLink">
+        <strong>Select Command</strong><br />
+        <mat-form-field class="designer-form-field" floatLabel='never'>
+          <mat-select [(value)]="selectedCommand" name="select=diagram">
+            <mat-option *ngFor="let option of commandList" [value]="option.name">
+              {{option.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </mat-tab>
     <mat-tab label="Data Connection" *ngIf="dataConnectAllowed">
       <div class="selected-section">
         <app-properties-select-section [sectionLabel]="displayDataLabel" [fields]="displayData">
@@ -64,29 +102,7 @@
           </div>        
         </div> 
       </div>           
-    </mat-tab>
-    <mat-tab label="Link" *ngIf="linkAllowed">
-      <div mat-dialog-content class="dialog-input-container pt-1">
-        <strong>Navigator Link</strong><br />
-        <mat-form-field class="designer-form-field" floatLabel='never'>
-          <mat-select [(ngModel)]="selectedDiagramId" name="selectDiagram">
-            <mat-option *ngFor="let option of diagrams" [value]="option.diagramId">
-              {{option.name}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div mat-dialog-content class="dialog-input-container pt-1">
-        <strong>Target</strong><br />
-        <mat-form-field class="designer-form-field" floatLabel='never'>
-          <mat-select [(ngModel)]="selectedLinkTarget" name="select=diagram">
-            <mat-option *ngFor="let option of linkTargetOptions" [value]="option">
-              {{option}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-    </mat-tab>
+    </mat-tab>    
     <mat-tab label="Styles" *ngIf="changeStyleAllowed">
       <div mat-dialog-content class="dialog-input-container pt-1" *ngIf="changeWidthAllowed">
         <strong>Container Width</strong><br />
@@ -102,6 +118,27 @@
             placeholder="font-size (in px)">
         </mat-form-field>
       </div>
+      <div mat-dialog-content class="dialog-input-container pt-1" *ngIf="textAlignAllowed">
+        <strong>Font Weight</strong><br />
+        <mat-form-field class="designer-form-field" floatLabel='never'>
+          <mat-select [(ngModel)]="fontStyle" name="weight">
+            <mat-option value="0">Normal</mat-option>
+            <mat-option value="1">Bold</mat-option>
+            <mat-option value="2">Italic</mat-option>
+            <mat-option value="3">Bold+Italic</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div mat-dialog-content class="dialog-input-container pt-1" *ngIf="textAlignAllowed">
+        <strong>Text Align</strong><br />
+        <mat-form-field class="designer-form-field" floatLabel='never'>
+          <mat-select [(ngModel)]="textAlign" name="text-align">
+            <mat-option value="left">Left</mat-option>
+            <mat-option value="center">Center</mat-option>
+            <mat-option value="right">Right</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>      
       <div mat-dialog-content class="dialog-input-container pt-1">
         <strong>Fore Color</strong><br />
         <mat-form-field class="designer-form-field" floatLabel='never'>

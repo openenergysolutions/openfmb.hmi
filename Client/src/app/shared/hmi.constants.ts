@@ -33,6 +33,11 @@ export const PosString = {
     invalid: 'invalid' 
 }
 
+export const ButtonFunction = {
+    link: 'link',
+    command: 'command'
+}
+
 export const Hmi = {
     isControllable: (type: string) => {
         if (type === Symbol.breaker || type === Symbol.switchVertical || type == Symbol.switchHorizontal || type == Symbol.setPointButton || type == Symbol.statusIndicator) {
@@ -41,7 +46,7 @@ export const Hmi = {
         return false;
     },
     isDataConnectable: (type: string) => {
-        return type !== Symbol.label && type !== Symbol.setPointButton && type !== Symbol.button;
+        return type  && type !== Symbol.label && type !== Symbol.setPointButton && type !== Symbol.button;
     },
     isMeasureBox: (type: string) => {
         return type === Symbol.measureBox;
@@ -65,5 +70,14 @@ export const Helpers = {
         else {
             return PosString.invalid;
         }
+    },
+    currentTimestamp: () => {
+        return new Date().toLocaleString();
+    },
+    buttonBackColor: () => {
+        return '#0e0f21';
+    },
+    buttonForeColor: () => {
+        return '#a6a6af';
     }
 }

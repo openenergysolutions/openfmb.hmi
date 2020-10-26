@@ -3,7 +3,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DiagramsService } from '../../../shared/services/diagrams.service';
 import { DiagramData, LinkData, StatusDefinition } from '../../../shared/models/userobject.model'
 import { Diagram } from '../../../shared/models/diagram.model';
-import { Symbol } from '../../../shared/hmi.constants'
+import { Symbol, ButtonFunction } from '../../../shared/hmi.constants'
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
@@ -12,13 +12,11 @@ import { Subscription } from 'rxjs';
   templateUrl: './properties-dialog.component.html',
   styleUrls: ['./properties-dialog.component.scss']
 })
-export class PropertiesDialogComponent implements OnInit {
-  filterData: any;
+export class PropertiesDialogComponent implements OnInit {  
   label: string;
   name: string;
   displayDataLabel = "Reading/Status";
-  controlDataLabel = "Control";
-  diagramId: string;
+  controlDataLabel = "Control";  
   mRID: string;
   fontSize: number;
   containerWidth: number;
@@ -37,8 +35,16 @@ export class PropertiesDialogComponent implements OnInit {
   navigateToDataConnection: boolean = false;
   dataConnectAllowed: boolean;
   statusDefinitionAllowed: boolean = false;
-  equipmentList: any[];
+  equipmentList: any[];  
   selectedEquipment: any;
+  textAlign: string;
+  fontStyle: string;
+  textAlignAllowed: boolean = false;  
+  buttonFunction: string;
+  buttonFunctionOptions: string[] = [ButtonFunction.link, ButtonFunction.command];
+  showLink: boolean = true;
+  selectedCommand: string;  
+  commandList: any[];
   
   // For link
   selectedDiagramId: string;
@@ -46,6 +52,7 @@ export class PropertiesDialogComponent implements OnInit {
   diagrams: Diagram[] = [];
   getItemSub: Subscription;
   getEquipmentSub: Subscription;
+  getCommandSub: Subscription;
   linkTargetOptions: string[];
 
   // status definition
@@ -59,25 +66,48 @@ export class PropertiesDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: DiagramData
   ) { }
 
-  ngOnInit() {    
-    this.filterData = this.data;
+  ngOnInit() {        
     this.label = this.data.label;
     this.name = this.data.name,
     this.mRID = this.data.mRID;
     this.fontSize = this.data.fontSize;
     this.containerWidth = this.data.containerWidth;
-    this.foreColor = this.data.foreColor;
-    this.changeStyleAllowed = this.data.changeStyleAllowed;
-    this.backgroundColor = this.data.backgroundColor;
-    this.diagramId = this.data.diagramId;
+
+    this.changeStyleAllowed = this.data.type === Symbol.measureBox 
+      || this.data.type === Symbol.label 
+      || this.data.type === Symbol.button 
+      || this.data.type === Symbol.setPointButton
+      || this.data.type === Symbol.statusIndicator;
+    
     this.deviceTypeMapping = this.data.deviceTypeMapping; 
     this.changeWidthAllowed = this.data.type === Symbol.measureBox;
-    this.changeBackgroundAllowed = this.data.type === Symbol.measureBox;
+    this.foreColor = this.data.foreColor;  
+    this.backgroundColor = this.data.backgroundColor;      
+    this.changeBackgroundAllowed = this.data.type === Symbol.measureBox || this.data.type === Symbol.button;    
+
     this.linkAllowed = this.data.type === Symbol.button;
-    this.dataConnectAllowed = this.data.type !== Symbol.label;
+    this.dataConnectAllowed = this.data.type !== Symbol.label && this.data.type !== Symbol.button;
     this.statusDefinitionAllowed = this.data.type === Symbol.statusIndicator;
+    if (this.data.type === Symbol.label || this.data.type === Symbol.button) {
+      this.textAlignAllowed = true;
+      this.textAlign = this.data.textAlign || 'center';
+      this.fontStyle = this.data.fontStyle || '0';
+    }
+
+    if (this.data.type == Symbol.button) {
+      this.buttonFunction = this.data.func;
+      if (!this.buttonFunction) {
+        this.buttonFunction = ButtonFunction.link;
+        this.showLink = true;
+      }
+      else {
+        this.showLink = this.buttonFunction === ButtonFunction.link;
+      }
+      this.selectedCommand = this.data.verb;
+    }
 
     this.getEquipmentList();
+    this.getCommandList();
 
     if (this.linkAllowed) {      
       this.linkTargetOptions = ['_blank', '_top',];
@@ -99,11 +129,11 @@ export class PropertiesDialogComponent implements OnInit {
       }
     }
   
-    if (this.filterData.displayData) {
-      this.displayData = [...this.filterData.displayData];
+    if (this.data.displayData) {
+      this.displayData = [...this.data.displayData];
     } 
-    if (this.filterData.controlData) {
-      this.controlData = [...this.filterData.controlData];
+    if (this.data.controlData) {
+      this.controlData = [...this.data.controlData];
     } 
   }
 
@@ -128,6 +158,13 @@ export class PropertiesDialogComponent implements OnInit {
             }
           }
         }
+      });
+  }
+
+  getCommandList() {
+    this.getCommandSub = this.service.getCommandList()
+      .subscribe(data => {
+        this.commandList = data;            
       });
   }
 
@@ -177,13 +214,17 @@ export class PropertiesDialogComponent implements OnInit {
       controlData: this.controlData,
       mRID: this.selectedEquipment?.mrid || this.mRID,
       fontSize: this.fontSize,
+      fontStyle: this.fontStyle,
+      textAlign: this.textAlign,
       containerWidth: this.containerWidth,
       foreColor: foreC,
       backgroundColor: backgroundC,
       linkData: linkData,
       deviceTypeMapping: this.deviceTypeMapping,
       navigateToDataConnection: this.navigateToDataConnection,
-      statusDefinition: this.statusDefinitions
+      statusDefinition: this.statusDefinitions,
+      selectedCommand: this.selectedCommand,
+      func: this.buttonFunction
     });
   }
 
@@ -232,5 +273,10 @@ export class PropertiesDialogComponent implements OnInit {
     else {
       console.error("Unable to delete status definition.  item=" + item);
     }
+  }
+
+  buttonFunctionChanged(event: any) {
+    this.showLink = event.value === ButtonFunction.link;
+    this.buttonFunction = event.value;
   }
 }

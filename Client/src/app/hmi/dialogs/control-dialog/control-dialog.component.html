@@ -28,6 +28,9 @@
       </div>
       <div mat-dialog-content class="dialog-input-container pt-1" *ngIf="!hasDataMapped">
         <p style="color:red;">No data mapping is defined</p>
+      </div>
+      <div *ngIf="hasLastUpdate">
+        <p style="font-size: 8px;">Updated on: {{lastUpdate}}</p>
       </div>        
     </mat-tab>    
   </mat-tab-group>

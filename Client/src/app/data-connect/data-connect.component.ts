@@ -141,6 +141,10 @@ export class DataConnectComponent implements OnInit {
                       // User object
                       if (objElement.elements)
                       {
+                        if (!Hmi.isDataConnectable(objElement.attributes.type)) {
+                          continue;
+                        }
+                        
                         var displayData = null;
                         var controlData = null;
 
@@ -164,8 +168,7 @@ export class DataConnectComponent implements OnInit {
                         var vertex = {
                           id: e.attributes.id,
                           name: objElement.attributes.name || "name",
-                          label: objElement.attributes.label || "label",
-                          dataType:  objElement.attributes.label || "",
+                          label: objElement.attributes.label || "label",                          
                           mRID: objElement.attributes.mRID,                        
                           displayData: displayData,  
                           controlData: controlData,                         

@@ -27,7 +27,7 @@ import { DiagramData } from '../shared/models/userobject.model'
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Diagram } from '../shared/models/diagram.model';
-import { Symbol } from '../shared/hmi.constants'
+import { Helpers, Hmi, Symbol } from '../shared/hmi.constants'
 
 const {
   mxGraph,
@@ -67,9 +67,9 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
   mode = this.DESIGNER_CONST.SELECT_MODE;
   canvas: any;
   toolbarItems = toolbarItemsData;
-  sessionId = '';
-  defaultLabelStyle = 'text;html=1;strokeColor=none;fontColor=#000000;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=none;';
-  defaultButtonStyle = 'html=1;strokeColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fillColor=#0e0f21;fontColor=#a6a6af;';
+  sessionId = '';  
+  defaultLabelStyle = 'text;html=1;strokeColor=none;fontColor=#000000;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=none;';
+  defaultButtonStyle = 'html=1;strokeColor=none;verticalAlign=middle;whiteSpace=wrap;rounded=1;';
   defaultSetpointButtonStyle = 'html=1;strokeColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fillColor=#a6a6af;fontColor=#0e0e0f;';
   defaultStatusIndicatorStyle = 'html=1;strokeColor=none;align=left;verticalAlign=middle;rounded=1;fillColor=none;fontColor=#000000;';
   gridData = {
@@ -239,7 +239,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
     };
 
     // sets label and data fields to grid item
-    this.graph.convertValueToString = (cell) => {      
+    this.graph.convertValueToString = (cell) => {            
       const cellValue = this.graph.model.getValue(cell);
       if (cellValue && cellValue.userObject) {
         const userObject = cellValue.userObject;
@@ -331,10 +331,11 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
           if (style != '') {
             this.renderer.setAttribute(span, "style", style);
           }
+
           const labelText = this.renderer.createText(userObject.label);
           this.renderer.appendChild(span, labelText);          
 
-          return span;       
+          return span;                
         }
         else if (userObject.type === Symbol.button || userObject.type === Symbol.setPointButton) {     
           var style = '';
@@ -587,7 +588,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
             model.setValue(v1, { ...currentValue, userObject });            
           }
           else if (data.shape == Symbol.button) {
-            v1 = graph.insertVertex(parent, this.idGenerator(), 'Button', x, y, 80, 40, this.defaultButtonStyle);
+            v1 = graph.insertVertex(parent, this.idGenerator(), 'Button', x, y, 80, 40, this.defaultButtonStyle + 'align=center;' + 'fillColor=' + Helpers.buttonBackColor() + ';fontColor=' + Helpers.buttonForeColor() + ';');
             userObject.label = 'Button';
             model.setValue(v1, { ...currentValue, userObject });            
           } 
@@ -788,37 +789,29 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // open property popup
   openDialog(x: number, y: number, cell: mxgraph.mxCell): void {
-    const currentCellData = this.graph.model.getValue(cell).userObject;
-
-    const changeStyleAllowed = currentCellData.type === Symbol.measureBox 
-      || currentCellData.type === Symbol.label 
-      || currentCellData.type === Symbol.button 
-      || currentCellData.type === Symbol.setPointButton
-      || currentCellData.type === Symbol.statusIndicator;
-      
+    const currentCellData = this.graph.model.getValue(cell).userObject;      
     this.dialog.closeAll();
-    const filterData : DiagramData = {
-      top: y,
-      left: x,
-      diagramId: this.diagramId,
-      label: currentCellData.label,
-      name: currentCellData.name,
-      statusDefinition: currentCellData.statusDefinition,
-      displayData: currentCellData.displayData,
-      controlData: currentCellData.controlData,
-      mRID: currentCellData.mRID,
-      fontSize: currentCellData.fontSize,
-      containerWidth: currentCellData.containerWidth,
-      foreColor: currentCellData.foreColor,
-      backgroundColor: currentCellData.backgroundColor,
-      changeStyleAllowed: changeStyleAllowed,
-      deviceTypeMapping: currentCellData.deviceTypeMapping,
-      linkData: currentCellData.linkData,
-      type: currentCellData.type
-    };
+
+    if (currentCellData.type === Symbol.button) {
+      if (!currentCellData.backgroundColor) {
+        // get the background color
+        let index = cell.style?.indexOf('fillColor');
+        if (index >= 0) {
+          let substr = cell.style.substring(index);
+          index = substr.indexOf(';');
+          substr = substr.substring(0, index);
+          substr = substr.replace(';', '').replace(';', '');                 
+          let tokens = substr.split("=");
+          if (tokens.length > 1) {
+            currentCellData.backgroundColor = tokens[1].trim();
+          }
+        }
+      }
+    }
+    
     const dialogRef = this.dialog.open(PropertiesDialogComponent, {
-      width: '375px',
-      data: filterData,
+      width: '375px',      
+      data: currentCellData,
       hasBackdrop: false,
       panelClass: 'filter-popup',      
       autoFocus: true,
@@ -838,14 +831,51 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
           controlData: result.controlData,
           mRID: result.mRID,
           fontSize: result.fontSize,
+          fontStyle: result.fontStyle,
+          textAlign: result.textAlign,
           containerWidth: result.containerWidth,
           foreColor: result.foreColor,
           backgroundColor: result.backgroundColor,
           linkData: result.linkData,
-          deviceTypeMapping: result.deviceTypeMapping
+          deviceTypeMapping: result.deviceTypeMapping,
+          func: result.func,
+          verb: result.selectedCommand
         };
         
         this.graph.model.setValue(cell, { ...currentValue, userObject });
+        if (currentCellData.type === Symbol.label) {
+          let style = this.defaultLabelStyle;
+          if (userObject.textAlign) {
+            style = style + 'align=' + userObject.textAlign + ';'            
+          }
+          if (userObject.fontStyle) {
+            style = style + 'fontStyle=' + userObject.fontStyle + ';';
+          }
+          this.graph.setCellStyle(style, [cell]);
+        }
+        else if (currentCellData.type === Symbol.button) {
+          let style = this.defaultButtonStyle;
+          if (userObject.textAlign) {
+            style = style + 'align=' + userObject.textAlign + ';'            
+          }
+          if (userObject.fontStyle) {
+            style = style + 'fontStyle=' + userObject.fontStyle + ';';
+          }
+          if (userObject.backgroundColor) {
+            style = style + 'fillColor=' + userObject.backgroundColor + ';';
+          }
+          else {
+            style = style + 'fillColor=none;';
+          }
+          if (userObject.fontColor) {
+            style = style + 'fontColor=' + userObject.fontColor + ';';
+          }
+          else {
+            style = style + 'fontColor=' + Helpers.buttonForeColor() + ';';
+          }
+          this.graph.setCellStyle(style, [cell]);
+        }
+
 
         if (result.navigateToDataConnection === true) {
           this.saveGraphToServer();
