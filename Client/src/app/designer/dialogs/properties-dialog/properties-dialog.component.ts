@@ -34,7 +34,7 @@ export class PropertiesDialogComponent implements OnInit {
   mRIdOptions: string[] = [];
   navigateToDataConnection: boolean = false;
   dataConnectAllowed: boolean;
-  statusDefinitionAllowed: boolean = false;
+  statusDefinitionAllowed: boolean = false;  
   equipmentList: any[];  
   selectedEquipment: any;
   textAlign: string;
@@ -64,14 +64,18 @@ export class PropertiesDialogComponent implements OnInit {
     private router: Router,
     private service: DiagramsService,
     @Inject(MAT_DIALOG_DATA) public data: DiagramData
-  ) { }
+  ) { 
 
-  ngOnInit() {        
-    this.label = this.data.label;
-    this.name = this.data.name,
-    this.mRID = this.data.mRID;
+    this.mRID = this.data.mRID; 
+    this.getCommandList(); 
+    this.getEquipmentList();               
+  }
+
+  ngOnInit() {            
+    this.label = this.data.label;    
+    this.name = this.data.name,    
     this.fontSize = this.data.fontSize;
-    this.containerWidth = this.data.containerWidth;
+    this.containerWidth = this.data.containerWidth;    
 
     this.changeStyleAllowed = this.data.type === Symbol.measureBox 
       || this.data.type === Symbol.label 
@@ -86,7 +90,7 @@ export class PropertiesDialogComponent implements OnInit {
     this.changeBackgroundAllowed = this.data.type === Symbol.measureBox || this.data.type === Symbol.button;    
 
     this.linkAllowed = this.data.type === Symbol.button;
-    this.dataConnectAllowed = this.data.type !== Symbol.label && this.data.type !== Symbol.button;
+    this.dataConnectAllowed = this.data.type !== Symbol.label && this.data.type !== Symbol.button && this.data.type !== Symbol.rectangle;
     this.statusDefinitionAllowed = this.data.type === Symbol.statusIndicator;
     if (this.data.type === Symbol.label || this.data.type === Symbol.button) {
       this.textAlignAllowed = true;
@@ -105,9 +109,9 @@ export class PropertiesDialogComponent implements OnInit {
       }
       this.selectedCommand = this.data.verb;
     }
-
-    this.getEquipmentList();
-    this.getCommandList();
+    else {
+      this.showLink = false;
+    }            
 
     if (this.linkAllowed) {      
       this.linkTargetOptions = ['_blank', '_top',];
@@ -147,11 +151,12 @@ export class PropertiesDialogComponent implements OnInit {
   getEquipmentList() {
     this.getEquipmentSub = this.service.getEquipmentList()
       .subscribe(data => {
-        this.equipmentList = data;
+        this.equipmentList = data; 
+        this.equipmentList.unshift({name: '', mrid: ''});       
         if (this.equipmentList)
         {
-          for(var i = 0; this.equipmentList.length; ++i)
-          {
+          for(var i = 0; i < this.equipmentList.length; ++i)
+          {            
             if (this.equipmentList[i].mrid === this.mRID) {
               this.selectedEquipment = this.equipmentList[i];
               break;
@@ -212,7 +217,7 @@ export class PropertiesDialogComponent implements OnInit {
       name: this.selectedEquipment?.name || this.name,
       displayData: this.displayData,
       controlData: this.controlData,
-      mRID: this.selectedEquipment?.mrid || this.mRID,
+      mRID: this.selectedEquipment?.mrid,
       fontSize: this.fontSize,
       fontStyle: this.fontStyle,
       textAlign: this.textAlign,

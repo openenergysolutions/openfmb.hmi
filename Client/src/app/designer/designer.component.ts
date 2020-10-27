@@ -72,6 +72,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
   defaultButtonStyle = 'html=1;strokeColor=none;verticalAlign=middle;whiteSpace=wrap;rounded=1;';
   defaultSetpointButtonStyle = 'html=1;strokeColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fillColor=#a6a6af;fontColor=#0e0e0f;';
   defaultStatusIndicatorStyle = 'html=1;strokeColor=none;align=left;verticalAlign=middle;rounded=1;fillColor=none;fontColor=#000000;';
+  defaultRectangleGroupStyle = 'rounded=0;whiteSpace=wrap;html=1;dashed=1;shadow=0;sketch=0;glass=0;fillColor=none;strokeWidth=2;strokeColor=#606060';
   gridData = {
     scale: 0,
     gridSize: 0,
@@ -149,7 +150,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.graph = new mxGraph(this.graphContainer.nativeElement);
     this.graph.setPortsEnabled(false);
     this.graph.graphHandler.scaleGrid = true;
-    this.graph.gridSize = 40;
+    this.graph.gridSize = 10;
     this.graph.multigraph = false;
     this.graph.setAllowDanglingEdges(false);
     this.graph.isHtmlLabel = (cell) => {
@@ -457,13 +458,15 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
     // enable right click popup.
     this.graph.popupMenuHandler.factoryMethod = (menu: mxgraph.mxPopupMenu, cell: mxgraph.mxCell, evt: Event) => {
       if (this.mode === this.DESIGNER_CONST.SELECT_MODE) {
-        if (cell && cell.vertex) {
+        if (cell && (cell.vertex || cell.edge)) {
           menu.addItem('Remove', null, () => {                        
             this.graph.removeCells();
           });
-        } else if (cell && cell.edge) {
-          menu.addItem('Remove', null, () => {
-            this.graph.removeCells();
+          menu.addItem('Send to Front', null, () => {                        
+            this.graph.orderCells(false, [cell]);
+          });
+          menu.addItem('Send to Back', null, () => {                        
+            this.graph.orderCells(true, [cell]);
           });
         }
       }
@@ -602,6 +605,11 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
             userObject.label = 'Status';
             model.setValue(v1, { ...currentValue, userObject });
           }
+          else if (data.shape == Symbol.rectangle) {
+            v1 = graph.insertVertex(parent, this.idGenerator(), '', x, y, 80, 40, this.defaultRectangleGroupStyle);
+            userObject.label = 'Group';
+            model.setValue(v1, { ...currentValue, userObject });
+          }
         } finally {
           model.endUpdate();
         }
@@ -688,25 +696,25 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
         const iys = Math.round(ys);
         const iye = Math.round(ye);
 
-        // Draws the actual grid
-        ctx.strokeStyle = '#c4c4c0';
-        ctx.beginPath();
+        // Draws the actual grid        
+        ctx.strokeStyle = '#f6f6f6';
+        ctx.beginPath();        
 
-        for (let x = xs; x <= xe; x += stepping) {
+        for (let x = xs; x <= xe; x += stepping) {          
           x = Math.round((x - tx) / stepping) * stepping + tx;
           const ix = Math.round(x);
 
           ctx.moveTo(ix + 1, iys + 1);
-          ctx.lineTo(ix + 1, iye + 1);
+          ctx.lineTo(ix + 1, iye + 1);           
         }
 
-        for (let y = ys; y <= ye; y += stepping) {
+        for (let y = ys; y <= ye; y += stepping) {          
           y = Math.round((y - ty) / stepping) * stepping + ty;
           const iy = Math.round(y);
           ctx.moveTo(ixs + 0.5, iy + 0.5);
-          ctx.lineTo(ixe + 0.5, iy + 0.5);
+          ctx.lineTo(ixe + 0.5, iy + 0.5);          
         }
-
+        
         ctx.closePath();
         ctx.stroke();
       }

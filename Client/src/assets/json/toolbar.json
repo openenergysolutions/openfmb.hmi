@@ -541,6 +541,7 @@
     "height": 40,
     "title": "Rectangle",
     "left": 0,
-    "top": 0    
+    "top": 0,
+    "type": "rectangle"   
   }  
 ]

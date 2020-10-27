@@ -8,6 +8,7 @@ export const Symbol = {
     text: "text",
     button: "button",
     setPointButton: "set-point-button",
+    rectangle: "rectangle",
     image: "image"
 }
 
