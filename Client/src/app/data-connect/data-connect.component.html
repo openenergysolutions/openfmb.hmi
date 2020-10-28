@@ -53,7 +53,7 @@
                                         <div class="data-connect-box" *ngFor="let item of currentPoints" cdkDrag>
                                             <div>
                                                 <div class="data-header">{{item.attributes.name}}</div>
-                                                <div class="data-detail">{{item.attributes.path}}</div>
+                                                <div class="data-detail">{{truncateString(item.attributes.path)}}</div>
                                                 <div class="data-detail">
                                                     <mat-form-field class="example-full-width pr-1">
                                                         <mat-label>Custom Label</mat-label>
@@ -114,7 +114,7 @@
                                                 cdkDrag>
                                                 <div>
                                                     <div class="data-header">{{item.attributes.name}}</div>
-                                                    <div class="data-detail">{{item.attributes.path}}</div>
+                                                    <div class="data-detail">{{truncateString(item.attributes.path)}}</div>
                                                 </div>
                                                 <button mat-icon-button aria-label="Add" style="cursor: pointer;"
                                                     (click)="addPoint(item)">
@@ -133,7 +133,7 @@
                                         <div class="data-connect-box" *ngFor="let item of currentControlPoints" cdkDrag>
                                             <div>
                                                 <div class="data-header">{{item.attributes.name}}</div>
-                                                <div class="data-detail">{{item.attributes.path}}</div>
+                                                <div class="data-detail">{{truncateString(item.attributes.path)}}</div>
                                                 <div class="data-detail">                                                    
                                                     <mat-form-field class="example-full-width pr-1">
                                                         <mat-label>Data Type</mat-label>
@@ -193,7 +193,7 @@
                                                 cdkDrag>
                                                 <div>
                                                     <div class="data-header">{{item.attributes.name}}</div>
-                                                    <div class="data-detail">{{item.attributes.path}}</div>
+                                                    <div class="data-detail">{{truncateString(item.attributes.path)}}</div>
                                                 </div>
                                                 <button mat-icon-button aria-label="Add" style="cursor: pointer;"
                                                     (click)="addControlPoint(item)">

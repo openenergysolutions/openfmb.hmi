@@ -350,4 +350,23 @@ export class DataConnectComponent implements OnInit {
       this.snack.open('Error saving diagram.  Check logs for more information.', 'OK', { duration: 4000 });
     }
   }
+
+  truncateString(fullStr: string) : string {
+    const strLen = 100;
+
+    if (fullStr.length <= strLen) {
+      return fullStr;
+    }
+    
+    let separator = '...';
+    
+    var sepLen = separator.length,
+        charsToShow = strLen - sepLen,
+        frontChars = Math.ceil(charsToShow/2),
+        backChars = Math.floor(charsToShow/2);
+    
+    return fullStr.substr(0, frontChars) + 
+           separator + 
+           fullStr.substr(fullStr.length - backChars);
+  }
 }

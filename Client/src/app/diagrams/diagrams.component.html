@@ -8,12 +8,11 @@
 <mat-card class="p-0">
   <mat-card-content class="p-0">
     <ngx-datatable class="material ml-0 mr-0" [rows]="rows" [columnMode]="'force'" [headerHeight]="50"
-      [footerHeight]="50" [scrollbarH]="true" [limit]="10" [rowHeight]="50">
-      >
+      [footerHeight]="50" [scrollbarH]="true" [limit]="10" [rowHeight]="50">      
       <ngx-datatable-column name="name" [flexGrow]="1">
         <ng-template let-column="column" ngx-datatable-header-template> Name </ng-template>
-        <ng-template let-value="value" ngx-datatable-cell-template>
-          {{ value }}
+        <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
+          <a (click)="open(row.diagramId)" title="Go to designer">{{ value }}</a>
         </ng-template>
       </ngx-datatable-column>
       <ngx-datatable-column name="description" [flexGrow]="1">
