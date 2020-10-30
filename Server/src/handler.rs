@@ -9,7 +9,7 @@ use std::fs::File;
 use std::fs;
 use std::io::prelude::*;
 
-type Result<T> = std::result::Result<T, Rejection>;
+pub type Result<T> = std::result::Result<T, Rejection>;
 pub type Clients = Arc<RwLock<HashMap<String, Client>>>;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
