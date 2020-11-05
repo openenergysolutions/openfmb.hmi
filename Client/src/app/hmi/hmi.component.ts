@@ -33,6 +33,7 @@ import { ButtonFunction, CommandAction, Helpers } from '../shared/hmi.constants'
 import { Hmi, Symbol } from '../shared/hmi.constants'
 import { Topic, UpdateData } from '../shared/models/topic.model'
 import { Command } from '../shared/models/command.model';
+import { JwtAuthService } from '../shared/services/auth/jwt-auth.service';
 
 const {
   mxGraph,
@@ -94,8 +95,12 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     private wsService: WebSocketService,
     private snack: MatSnackBar,
     private router : ActivatedRoute,
-    private diagramService: DiagramsService
+    private diagramService: DiagramsService,
+    private jwtAuth: JwtAuthService
   ) {
+    // Check Auth Token is valid
+    this.jwtAuth.checkTokenIsValid().subscribe();
+    
     this.router.queryParams.subscribe(params => {
       this.diagramId = params['id'];
       console.log("Designer:: diagramId = " + this.diagramId);

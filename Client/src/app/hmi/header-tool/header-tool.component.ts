@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 import * as fromRoot from '../../store/reducers/index';
 import * as designerActions from '../../store/actions/designer.actions';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { JwtAuthService } from "../../shared/services/auth/jwt-auth.service";
 
 @Component({
   selector: 'app-header-tool',
@@ -40,7 +41,8 @@ export class HeaderToolComponent implements OnInit {
     private iconRegistry: MatIconRegistry,
     private sanitizer: DomSanitizer,
     private store: Store<fromRoot.State>,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+    public jwtAuth: JwtAuthService
   ) {
     this.iconRegistry.addSvgIcon(
       'select-icon',

@@ -19,7 +19,7 @@ export const rootRouterConfig: Routes = [
         data: { title: 'Session'} 
       }
     ]
-  },
+  },  
   {
     path: '',
     component: MainLayoutComponent,

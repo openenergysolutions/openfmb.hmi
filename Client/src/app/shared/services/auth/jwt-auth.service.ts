@@ -9,12 +9,12 @@ import { environment } from "../../../../environments/environment";
 
 // ================= only for demo purpose ===========
 const DEMO_TOKEN =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1YjhkNDc4MDc4NmM3MjE3MjBkYzU1NzMiLCJlbWFpbCI6InJhZmkuYm9ncmFAZ21haWwuY29tIiwicm9sZSI6IlNBIiwiYWN0aXZlIjp0cnVlLCJpYXQiOjE1ODc3MTc2NTgsImV4cCI6MTU4ODMyMjQ1OH0.dXw0ySun5ex98dOzTEk0lkmXJvxg3Qgz4ed";
+  "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwibmFtZSI6IkNvcnkgTmd1eWVuIiwicm9sZSI6IkFkbWluIiwiZXhwIjoxNjA0NjEyNzIyfQ.kCMlPWBLF4TL7KtO_dp_EYNDZyEw3AYaUdnK8uqxnnfciSoW8s6NbK7J4drOq-pXIvxmEUDLrFSin_-upyQkGw";
 
 const DEMO_USER: User = {
-  id: "5b700c45639d2c0c54b354ba",
-  displayName: "Watson Joyce",
-  role: "SA",
+  id: "1",
+  displayName: "Cory Nguyen",
+  role: "Admin",
 };
 // ================= you will get those data from server =======
 
@@ -24,12 +24,12 @@ const DEMO_USER: User = {
 export class JwtAuthService {
   token;
   isAuthenticated: Boolean;
-  user: User;
+  user: User = {};
   user$ = (new BehaviorSubject<User>(this.user));
   signingIn: Boolean;
   return: string;
   JWT_TOKEN = "JWT_TOKEN";
-  APP_USER = "EGRET_USER";
+  APP_USER = "HMI_USER";
 
   constructor(
     private ls: LocalStoreService,
@@ -58,7 +58,7 @@ export class JwtAuthService {
     // FOLLOWING CODE SENDS SIGNIN REQUEST TO SERVER
 
     // this.signingIn = true;
-    // return this.http.post(`${environment.apiURL}/auth/local`, { username, password })
+    // return this.http.post(`${environment.apiUrl}login`, {"username": username, "pwd": password})
     //   .pipe(
     //     map((res: any) => {
     //       this.setUserAndToken(res.token, res.user, !!res);
@@ -94,7 +94,7 @@ export class JwtAuthService {
       This checks if the existing token is valid when app is reloaded
     */
 
-    // return this.http.get(`${environment.apiURL}/api/users/profile`)
+    // return this.http.get(`${environment.apiUrl}profile`)
     //   .pipe(
     //     map((profile: User) => {
     //       this.setUserAndToken(this.getJwtToken(), profile, true);

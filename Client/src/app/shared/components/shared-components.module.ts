@@ -23,7 +23,6 @@ import { AppComfirmComponent } from '../services/app-confirm/app-confirm.compone
 import { AppLoaderComponent } from '../services/app-loader/app-loader.component';
 import { ButtonLoadingComponent } from './button-loading/button-loading.component';
 import { SidebarComponent, SidebarTogglerDirective } from './sidebar/sidebar.component';
-import { BottomSheetShareComponent } from './bottom-sheet-share/bottom-sheet-share.component';
 
 
 const components = [  
@@ -39,8 +38,7 @@ const components = [
   ButtonLoadingComponent,
   SidebarComponent,
   FooterComponent,
-  SidebarTogglerDirective,
-  BottomSheetShareComponent
+  SidebarTogglerDirective  
 ]
 
 @NgModule({
@@ -55,8 +53,7 @@ const components = [
     SharedDirectivesModule,
     SharedMaterialModule
   ],
-  declarations: components,
-  // entryComponents: [AppComfirmComponent, AppLoaderComponent, BottomSheetShareComponent],
+  declarations: components,  
   exports: components
 })
 export class SharedComponentsModule {}

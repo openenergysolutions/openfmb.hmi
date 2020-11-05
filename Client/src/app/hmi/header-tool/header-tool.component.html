@@ -11,7 +11,7 @@
     <div fxLayout="row" fxLayoutAlign="center center" fxFlexAlign="center">
       &nbsp;
     </div>
-    <div fxLayout="row" fxLayoutAlign="end center" fxFlex="40" fxFlexAlign="center">
+    <div fxLayout="row" fxLayoutAlign="end center" fxFlex="0" fxFlexAlign="center">
       <div fxItemAlign="center" class="zoom-control">
         Zoom:&nbsp;&nbsp;&nbsp;&nbsp;
         <a [routerLink]="" class="zoom-button zoom-out" (click)="zoomOut()">
@@ -22,6 +22,16 @@
         <a [routerLink]="" class="zoom-button zoom-in" (click)="zoomIn()">+</a>
         <span class="value"> {{ value | percent: 0 }}</span>
       </div>
-    </div>
+    </div>    
+    
+    <button mat-icon-button [matMenuTriggerFor]="accountMenu" class="topbar-button-right mr-1 img-button">
+      <mat-icon>lock</mat-icon>
+    </button>
+    <mat-menu #accountMenu="matMenu">      
+      <button mat-menu-item (click)="jwtAuth.signout()">
+        <mat-icon>exit_to_app</mat-icon>
+        <span>Sign out</span>
+      </button>
+    </mat-menu>
   </mat-toolbar-row>
 </mat-toolbar>

@@ -52,7 +52,7 @@ export class NavigationService {
         { name: "Users", state: "users" },
         { name: "Tags", state: "tags" },        
       ]
-    },
+    }
   ]
   // Icon menu TITLE at the very top of navigation.
   // This title will appear if any icon type item is present in menu.

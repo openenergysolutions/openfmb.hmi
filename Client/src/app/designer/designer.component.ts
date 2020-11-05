@@ -28,6 +28,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Diagram } from '../shared/models/diagram.model';
 import { Helpers, Hmi, Symbol } from '../shared/hmi.constants'
+import { JwtAuthService } from '../shared/services/auth/jwt-auth.service';
 
 const {
   mxGraph,
@@ -97,8 +98,12 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
     private router : ActivatedRoute,
     private diagramService: DiagramsService,
     private snack: MatSnackBar,
-    private naviator: Router
+    private naviator: Router,
+    private jwtAuth: JwtAuthService
   ) {
+    // Check Auth Token is valid
+    this.jwtAuth.checkTokenIsValid().subscribe();
+    
     this.router.queryParams.subscribe(params => {
       this.diagramId = params['id'];      
     });
@@ -697,7 +702,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
         const iye = Math.round(ye);
 
         // Draws the actual grid        
-        ctx.strokeStyle = '#f6f6f6';
+        ctx.strokeStyle = '#d1d1d1';
         ctx.beginPath();        
 
         for (let x = xs; x <= xe; x += stepping) {          
