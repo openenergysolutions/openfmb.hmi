@@ -152,55 +152,95 @@
                                             </button>
                                         </div>
                                     </div>
-                                    <div fxFlex="2">&nbsp;</div>
+                                    <div fxFlex="2">&nbsp;</div>                                    
                                     <div fxFlex="48">
-                                        <div fxLayout="row" fxLayout.lt-sm="column" class="pt-1">
-                                            <div class="pr-1">
-                                                <h4>Select Module</h4>
-                                                <mat-form-field>
-                                                    <mat-select [(ngModel)]="selectedModule" name="select-module"
-                                                        (selectionChange)="onModuleChanged($event.value)">
-                                                        <mat-option *ngFor="let option of modules" [value]="option">
-                                                            {{option}}
-                                                        </mat-option>
-                                                    </mat-select>
-                                                </mat-form-field>
-                                            </div>
-                                            <div class="pr-1">
-                                                <h4>Select Profile</h4>
-                                                <mat-form-field>
-                                                    <mat-select [(ngModel)]="selectedProfile" name="select-profile"
-                                                        (selectionChange)="onProfileChanged($event.value)">
-                                                        <mat-option *ngFor="let option of profiles"
-                                                            [value]="option.name">
-                                                            {{option.name}}
-                                                        </mat-option>
-                                                    </mat-select>
-                                                </mat-form-field>
-                                            </div>
-                                        </div>
-                                        <div class="pb-1">
-                                            <mat-form-field class="margin-333" style="width: 100%">
-                                                <input matInput placeholder="Type to filter" [(ngModel)]='filter'
-                                                    (keyup)='updateFilter($event)' name="filter">
-                                            </mat-form-field>
-                                        </div>
-                                        <div cdkDropList #availableControlPointsList="cdkDropList"
-                                            [cdkDropListData]="availablePoints"
-                                            [cdkDropListConnectedTo]="[currentControlPointsList]" class="data-connect-list"
-                                            (cdkDropListDropped)="drop($event)">
-                                            <div class="data-connect-box" *ngFor="let item of availablePoints"
-                                                cdkDrag>
-                                                <div>
-                                                    <div class="data-header">{{item.attributes.name}}</div>
-                                                    <div class="data-detail">{{truncateString(item.attributes.path)}}</div>
+                                        <mat-tab-group mat-align-tabs="start">
+                                            <mat-tab label="OpenFMB">
+                                                <div fxLayout="row" fxLayout.lt-sm="column" class="pt-1">
+                                                    <div class="pr-1">
+                                                        <h4>Select Module</h4>
+                                                        <mat-form-field>
+                                                            <mat-select [(ngModel)]="selectedModule" name="select-module"
+                                                                (selectionChange)="onModuleChanged($event.value)">
+                                                                <mat-option *ngFor="let option of modules" [value]="option">
+                                                                    {{option}}
+                                                                </mat-option>
+                                                            </mat-select>
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <div class="pr-1">
+                                                        <h4>Select Profile</h4>
+                                                        <mat-form-field>
+                                                            <mat-select [(ngModel)]="selectedProfile" name="select-profile"
+                                                                (selectionChange)="onProfileChanged($event.value)">
+                                                                <mat-option *ngFor="let option of profiles"
+                                                                    [value]="option.name">
+                                                                    {{option.name}}
+                                                                </mat-option>
+                                                            </mat-select>
+                                                        </mat-form-field>
+                                                    </div>
                                                 </div>
-                                                <button mat-icon-button aria-label="Add" style="cursor: pointer;"
-                                                    (click)="addControlPoint(item)">
-                                                    <mat-icon>add</mat-icon>
-                                                </button>
-                                            </div>
-                                        </div>
+                                                <div class="pb-1">
+                                                    <mat-form-field class="margin-333" style="width: 95%">
+                                                        <input matInput placeholder="Type to filter" [(ngModel)]='filter'
+                                                            (keyup)='updateFilter($event)' name="filter">
+                                                    </mat-form-field>
+                                                </div>
+                                                <div cdkDropList #availableControlPointsList="cdkDropList"
+                                                    [cdkDropListData]="availablePoints"
+                                                    [cdkDropListConnectedTo]="[currentControlPointsList]" class="data-connect-list"
+                                                    (cdkDropListDropped)="drop($event)">
+                                                    <div class="data-connect-box" *ngFor="let item of availablePoints"
+                                                        cdkDrag>
+                                                        <div>
+                                                            <div class="data-header">{{item.attributes.name}}</div>
+                                                            <div class="data-detail">{{truncateString(item.attributes.path)}}</div>
+                                                        </div>
+                                                        <button mat-icon-button aria-label="Add" style="cursor: pointer;"
+                                                            (click)="addControlPoint(item)">
+                                                            <mat-icon>add</mat-icon>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </mat-tab>
+                                            <mat-tab label="Pre-defined Commands">
+                                                <div fxLayout="row" fxLayout.lt-sm="column" class="pt-1">
+                                                    <div class="pr-1">
+                                                        <h4>Command Type</h4>
+                                                        <mat-form-field>
+                                                            <mat-select [(ngModel)]="selectedCommand" name="command-type"
+                                                                (selectionChange)="onCommandTypeChanged($event.value)">
+                                                                <mat-option *ngFor="let option of commands" [value]="option">
+                                                                    {{option}}
+                                                                </mat-option>
+                                                            </mat-select>
+                                                        </mat-form-field>
+                                                    </div>                                                    
+                                                </div>
+                                                <div class="pb-1">
+                                                    <mat-form-field class="margin-333" style="width: 95%">
+                                                        <input matInput placeholder="Type to filter" [(ngModel)]='filter'
+                                                            (keyup)='updateFilter($event)' name="filter">
+                                                    </mat-form-field>
+                                                </div>
+                                                <div cdkDropList #availableCommandList="cdkDropList"
+                                                    [cdkDropListData]="availableCommands"
+                                                    [cdkDropListConnectedTo]="[currentControlPointsList]" class="data-connect-list"
+                                                    (cdkDropListDropped)="drop($event)">
+                                                    <div class="data-connect-box" *ngFor="let item of availableCommands"
+                                                        cdkDrag>
+                                                        <div>
+                                                            <div class="data-header">{{item.attributes.name}}</div>                                                            
+                                                        </div>
+                                                        <button mat-icon-button aria-label="Add" style="cursor: pointer;"
+                                                            (click)="addControlPoint(item)">
+                                                            <mat-icon>add</mat-icon>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </mat-tab>
+                                        </mat-tab-group>                                                                                
                                     </div>
                                 </div>
                             </mat-tab>

@@ -6,6 +6,7 @@ import { Diagram } from '../shared/models/diagram.model';
 import { Subscription } from 'rxjs';
 import * as converter from 'xml-js';
 import { getProfilesByModule, getModules } from '../shared/models/openfmb.model';
+import { getCommands, getCommandsByType } from '../shared/models/commands.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router'
 import { Hmi } from '../shared/hmi.constants'
@@ -23,6 +24,7 @@ export class DataConnectComponent implements OnInit {
   profiles: any[] = [];
   dataPoints: any[] = [];
   graphModelData: any;
+  commands: any[] = [];
 
   // Filter
   filter: "";
@@ -45,6 +47,9 @@ export class DataConnectComponent implements OnInit {
   currentPoints = [];
   currentControlPoints = [];
 
+  availableCommands = [];
+  selectedCommand: string;
+
   graphItemControllable: boolean = false;
   graphItemDataConnectable: boolean = false;
 
@@ -61,6 +66,7 @@ export class DataConnectComponent implements OnInit {
   ngOnInit(): void {
     this.getDiagrams();
     this.modules = getModules();
+    this.commands = getCommands();
   }
 
   drop(event: CdkDragDrop<string[]>) {    
@@ -273,6 +279,13 @@ export class DataConnectComponent implements OnInit {
     this.filter = "";
     if (name) {
       this.profiles = getProfilesByModule(name);
+    }
+  }
+  
+  onCommandTypeChanged(name: string) {
+    this.availableCommands = [];
+    if (name) {
+      this.availableCommands = getCommandsByType(name);
     }
   }
 

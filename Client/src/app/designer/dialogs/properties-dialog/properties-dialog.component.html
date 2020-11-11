@@ -55,8 +55,8 @@
         <strong>Select Command</strong><br />
         <mat-form-field class="designer-form-field" floatLabel='never'>
           <mat-select [(value)]="selectedCommand" name="select=diagram">
-            <mat-option *ngFor="let option of commandList" [value]="option.name">
-              {{option.name}}
+            <mat-option *ngFor="let option of commandList" [value]="option.attributes.name">
+              {{option.attributes.name}}
             </mat-option>
           </mat-select>
         </mat-form-field>
