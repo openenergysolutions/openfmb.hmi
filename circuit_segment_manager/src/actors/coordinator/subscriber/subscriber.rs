@@ -1,25 +1,14 @@
-//use crate::actors::microgrid::MicrogridMsg;
-use circuit_segment_manager::actors::openfmb_nats_subscriber::OpenFMBNATSSubscriberMsg;
-use circuit_segment_manager::actors::raw_stdin_subscriber::RawStdinSubscriberMsg;
-use circuit_segment_manager::actors::PublisherMsg;
-use circuit_segment_manager::actors::DeviceMsg;
-use circuit_segment_manager::actors::PersistorMsg;
-use circuit_segment_manager::actors::MicrogridMsg;
-use circuit_segment_manager::messages::{PrintTree, ActorStats};
-use circuit_segment_manager::messages::StartProcessing;
-use circuit_segment_manager::messages::RequestActorStats;
-use circuit_segment_manager::actors::openfmb_nats_subscriber::OpenFMBNATSSubscriber;
-use circuit_segment_manager::actors::CoordinatorMsg;
+use crate::actors::microgrid::MicrogridMsg;
 
-// use crate::actors::coordinator::persistor::PersistorMsg;
+use crate::actors::coordinator::persistor::PersistorMsg;
 
-//use super::super::{Device, DeviceMsg, Publisher, PublisherMsg};
+use super::super::{Device, DeviceMsg, Publisher, PublisherMsg};
 
-// use super::{
-//     openfmb_nats_subscriber::{OpenFMBNATSSubscriber, OpenFMBNATSSubscriberMsg},
-//     raw_stdin_subscriber::{RawStdinSubscriber, RawStdinSubscriberMsg},
-// };
-// use crate::{actors::CoordinatorMsg, messages::*};
+use super::{
+    openfmb_nats_subscriber::{OpenFMBNATSSubscriber, OpenFMBNATSSubscriberMsg},
+    raw_stdin_subscriber::{RawStdinSubscriber, RawStdinSubscriberMsg},
+};
+use crate::{actors::CoordinatorMsg, messages::*};
 use log::{info, warn};
 
 use nats::Connection;
@@ -40,13 +29,13 @@ pub struct Subscriber {
     pub persistor: ActorRef<PersistorMsg>, //    pub publisher: Option<ActorRef<PublisherMsg>>,
 }
 impl
-ActorFactoryArgs<(
-    ActorRef<PublisherMsg>,
-    ActorRef<DeviceMsg>,
-    ActorRef<PersistorMsg>,
-    ActorRef<MicrogridMsg>,
-    Connection,
-)> for Subscriber
+    ActorFactoryArgs<(
+        ActorRef<PublisherMsg>,
+        ActorRef<DeviceMsg>,
+        ActorRef<PersistorMsg>,
+        ActorRef<MicrogridMsg>,
+        Connection,
+    )> for Subscriber
 {
     fn create_args(
         args: (
@@ -101,6 +90,23 @@ impl Actor for Subscriber {
         //     )
         //     .unwrap(),
         // );
+        self.openfmb_nats_subscriber = Some(
+            ctx.actor_of_args::<OpenFMBNATSSubscriber, (
+                ActorRef<DeviceMsg>,
+                ActorRef<PublisherMsg>,
+                ActorRef<MicrogridMsg>,
+                Connection,
+            )>(
+                "OpenFMBNATSSubscriber",
+                (
+                    self.processor.clone(),
+                    self.publisher.clone(),
+                    self.microgrid.clone(),
+                    self.nats_client.clone(),
+                ),
+            )
+            .unwrap(),
+        );
     }
 
     fn post_start(&mut self, _ctx: &Context<Self::Msg>) {}
@@ -166,7 +172,7 @@ impl Receive<RequestActorStats> for Subscriber {
             message_count: self.message_count,
             persisted_message_count: None,
         }
-            .into();
+        .into();
         sender
             .clone()
             .unwrap()

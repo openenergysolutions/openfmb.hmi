@@ -1,0 +1,81 @@
+// Protocol for microgrid control and monitoring
+
+syntax = "proto3";
+
+package openfmb.microgrid;
+
+message MicrogridControl
+{
+    oneof control_message
+    {
+        string ResetDevices = 1;
+        string Shutdown = 2;
+        string InitiateIsland = 3;
+        string InitiateGridConnect = 4;
+        string EnableNetZero = 5;
+        string DisableNetZero = 6;
+        string ReconnectPretestOne = 7;
+        string ReconnectPretestTwo = 8;
+        string ReconnectTest = 9;
+    }
+}
+
+message DeviceControl
+{
+    DeviceControlMessage msg = 1;
+    enum DeviceControlMessage {
+        EnableSolarInverter = 0;
+        DisableSolarInverter = 1;
+        EnableLoadbank = 2;
+        DisableLoadbank = 3;
+        EssStart = 4;
+        EssDischarge = 5;
+        EssSocManage = 6;
+        EssSocLimits = 7;
+        EssStop = 8;
+        GeneratorOn = 9;
+        GeneratorDisabled = 10;
+        GeneratorEnabled = 11;
+        GeneratorOff = 12;
+        SwitchOneOpen = 13;
+        SwitchOneClosed = 14;
+        SwitchTwoOpen = 15;
+        SwitchTwoClosed = 16;
+        BreakerThreeOpen = 17;
+        BreakerThreeClosed = 18;
+        SwitchFourOpen = 19;
+        SwitchFourClosed = 20;
+    }
+}
+
+message DeviceStatus
+{
+    string name = 1;
+    string state = 2;
+}
+
+message CoordinatorConfig {
+    string environment = 1;
+}
+
+message BatteryConfig {
+    float min_soc_soft = 1;
+    float min_soc_hard = 2;
+    float max_soc_soft = 3;
+    float max_soc_hard = 4;
+}
+
+message Config
+{
+    CoordinatorConfig coordinator = 1;
+    BatteryConfig battery = 2;
+}
+
+message CoordinationStatus
+{
+    string segmentState = 1;
+    string controllerState = 2;
+    string algorithmState = 3;
+    repeated DeviceStatus deviceStates = 4;
+    Config config = 5;
+}
