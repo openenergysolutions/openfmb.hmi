@@ -1,3 +1,2 @@
 [workspace]
-members = ["Server"]
-# exclude = ["crates/foo", "path/to/other"] 
+members = ["Server",  "microgrid-protobuf","circuit_segment_manager"]
