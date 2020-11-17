@@ -38,7 +38,6 @@ sled = "0.31.0"
 dimensioned = "0.7.0"
 prost-types = "0.6.1"
 microgrid-protobuf = {path = "../microgrid-protobuf"}
-# openfmb_protobuf_ext = {git = "https://github.com/openenergysolutions/openfmb_ext_rs.git"}
 
 
 [dev-dependencies.cargo-husky]

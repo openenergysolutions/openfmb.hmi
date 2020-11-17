@@ -21,4 +21,6 @@ pretty_env_logger = "0.4.0"
 circuit_segment_manager = {path = "../circuit_segment_manager"}
 riker = {git="https://github.com/bfrog/riker", branch="0.4.1_stable_dashmap"}
 nats = "0.7"
+snafu = "0.6.9"
+snafu-derive = "0.6.9"
 config = "0.10.1"
