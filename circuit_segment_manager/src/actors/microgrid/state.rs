@@ -1,9 +1,9 @@
 use config::Config;
-use openfmb_ops_protobuf::openfmb::commonmodule::{
+use openfmb_messages::commonmodule::{
     DbPosKind, EngGridConnectModeKind, GridConnectModeKind, StateKind,
 };
-use openfmb_ops_protobuf::openfmb::essmodule::EssStatus;
-use openfmb_ops_protobuf::openfmb::switchmodule::SwitchStatus;
+use openfmb_messages::essmodule::EssStatus;
+use openfmb_messages::switchmodule::SwitchStatus;
 use std::{
     fmt::{Display, Formatter},
     time::SystemTime,
@@ -213,7 +213,7 @@ pub struct BatteryState {
 #[derive(Debug, Default)]
 pub struct LoadbankState {
     pub state: Option<StateKind>,
-    pub load_reading: f32,
+    pub load_reading: f64,
 }
 
 impl Display for LoadbankState {

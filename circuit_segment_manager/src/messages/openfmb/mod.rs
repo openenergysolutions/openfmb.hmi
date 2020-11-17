@@ -1,7 +1,8 @@
+use openfmb_messages::commonmodule::StatusDps;
 use chrono::{offset::TimeZone, DateTime, NaiveDateTime, Utc};
 use enum_as_inner::EnumAsInner;
 
-use openfmb_ops_protobuf::openfmb::{
+use openfmb_messages::{
     breakermodule::{BreakerDiscreteControlProfile, BreakerReadingProfile, BreakerStatusProfile},
     commonmodule::{
         ControlValue, DbPosKind, DynamicTestKind, EnsDynamicTestKind, IdentifiedObject, Timestamp,
@@ -13,9 +14,8 @@ use openfmb_ops_protobuf::openfmb::{
     loadmodule::{LoadControlProfile, LoadReadingProfile, LoadStatusProfile},
     metermodule::MeterReadingProfile,
     regulatormodule::{RegulatorReadingProfile, RegulatorStatusProfile},
-    shuntmodule::{ShuntReadingProfile, ShuntStatusProfile},
     solarmodule::{SolarControlProfile, SolarReadingProfile, SolarStatusProfile},
-    switchmodule::{SwitchControlProfile, SwitchReadingProfile, SwitchStatusProfile},
+    switchmodule::{SwitchDiscreteControlProfile, SwitchReadingProfile, SwitchStatusProfile},
 };
 use prost::Message;
 
@@ -66,8 +66,8 @@ pub enum OpenFMBMessage {
     ESSStatus(Box<EssStatusProfile>),
     LoadReading(Box<LoadReadingProfile>),
     LoadStatus(Box<LoadStatusProfile>),
-    ShuntReading(Box<ShuntReadingProfile>),
-    ShuntStatus(Box<ShuntStatusProfile>),
+//    ShuntReading(Box<ShuntReadingProfile>),
+//    ShuntStatus(Box<ShuntStatusProfile>),
     RecloserReading(Box<RecloserReadingProfile>),
     RecloserStatus(Box<RecloserStatusProfile>),
     BreakerReading(Box<BreakerReadingProfile>),
@@ -75,12 +75,12 @@ pub enum OpenFMBMessage {
     RegulatorReading(Box<RegulatorReadingProfile>),
     RegulatorStatus(Box<RegulatorStatusProfile>),
     LoadControl(Box<LoadControlProfile>),
-    SwitchControl(Box<SwitchControlProfile>),
+    SwitchControl(Box<SwitchDiscreteControlProfile>),
     EssControl(Box<EssControlProfile>),
     SolarControl(Box<SolarControlProfile>),
     GeneratorControl(Box<GenerationControlProfile>),
     BreakerControl(Box<BreakerDiscreteControlProfile>),
-    ResourceStatus(Box<ResourceStatusProfile>),
+    // ResourceStatus(Box<ResourceStatusProfile>),
 }
 
 impl OpenFMBMessage {
@@ -122,8 +122,8 @@ impl OpenFMBMessage {
             ESSStatus(_) => "ESSStatus",
             LoadReading(_) => "LoadReading",
             LoadStatus(_) => "LoadStatus",
-            ShuntReading(_) => "ShuntReading",
-            ShuntStatus(_) => "ShuntStatus",
+            // ShuntReading(_) => "ShuntReading",
+            // ShuntStatus(_) => "ShuntStatus",
             RecloserReading(_) => "RecloserReading",
             RecloserStatus(_) => "RecloserStatus",
             BreakerReading(_) => "BreakerReading",
@@ -136,7 +136,7 @@ impl OpenFMBMessage {
             SolarControl(_) => "SolarControl",
             GeneratorControl(_) => "GeneratorControl",
             BreakerControl(_) => "BreakerControl",
-            ResourceStatus(_) => "ResourceStatus",
+            // ResourceStatus(_) => "ResourceStatus",
         }
     }
 }
@@ -155,8 +155,8 @@ impl OpenFMBCommon for OpenFMBMessage {
             ESSStatus(s) => s.device_mrid(),
             LoadReading(r) => r.device_mrid(),
             LoadStatus(s) => s.device_mrid(),
-            ShuntReading(r) => r.device_mrid(),
-            ShuntStatus(s) => s.device_mrid(),
+            // ShuntReading(r) => r.device_mrid(),
+            // ShuntStatus(s) => s.device_mrid(),
             RecloserReading(r) => r.device_mrid(),
             RecloserStatus(s) => s.device_mrid(),
             BreakerReading(r) => r.device_mrid(),
@@ -169,7 +169,7 @@ impl OpenFMBCommon for OpenFMBMessage {
             SolarControl(c) => c.device_mrid(),
             GeneratorControl(c) => c.device_mrid(),
             BreakerControl(c) => c.device_mrid(),
-            ResourceStatus(c) => c.device_mrid(),
+            // ResourceStatus(c) => c.device_mrid(),
         }
     }
 
@@ -186,8 +186,8 @@ impl OpenFMBCommon for OpenFMBMessage {
             ESSStatus(s) => s.device_name(),
             LoadReading(r) => r.device_name(),
             LoadStatus(s) => s.device_name(),
-            ShuntReading(r) => r.device_name(),
-            ShuntStatus(s) => s.device_name(),
+            // ShuntReading(r) => r.device_name(),
+            // ShuntStatus(s) => s.device_name(),
             RecloserReading(r) => r.device_name(),
             RecloserStatus(s) => s.device_name(),
             BreakerReading(r) => r.device_name(),
@@ -200,7 +200,7 @@ impl OpenFMBCommon for OpenFMBMessage {
             SolarControl(c) => c.device_name(),
             GeneratorControl(c) => c.device_name(),
             BreakerControl(c) => c.device_name(),
-            ResourceStatus(c) => c.device_name(),
+            // ResourceStatus(c) => c.device_name(),
         }
     }
 
@@ -217,8 +217,8 @@ impl OpenFMBCommon for OpenFMBMessage {
             ESSStatus(s) => s.message_mrid(),
             LoadReading(r) => r.message_mrid(),
             LoadStatus(s) => s.message_mrid(),
-            ShuntReading(r) => r.message_mrid(),
-            ShuntStatus(s) => s.message_mrid(),
+            // ShuntReading(r) => r.message_mrid(),
+            // ShuntStatus(s) => s.message_mrid(),
             RecloserReading(r) => r.message_mrid(),
             RecloserStatus(s) => s.message_mrid(),
             BreakerReading(r) => r.message_mrid(),
@@ -231,7 +231,7 @@ impl OpenFMBCommon for OpenFMBMessage {
             SolarControl(c) => c.message_mrid(),
             GeneratorControl(c) => c.message_mrid(),
             BreakerControl(c) => c.message_mrid(),
-            ResourceStatus(c) => c.message_mrid(),
+            // ResourceStatus(c) => c.message_mrid(),
         }
     }
 
@@ -248,8 +248,8 @@ impl OpenFMBCommon for OpenFMBMessage {
             ESSStatus(s) => s.message_timestamp(),
             LoadReading(r) => r.message_timestamp(),
             LoadStatus(s) => s.message_timestamp(),
-            ShuntReading(r) => r.message_timestamp(),
-            ShuntStatus(s) => s.message_timestamp(),
+            // ShuntReading(r) => r.message_timestamp(),
+            // ShuntStatus(s) => s.message_timestamp(),
             RecloserReading(r) => r.message_timestamp(),
             RecloserStatus(s) => s.message_timestamp(),
             BreakerReading(r) => r.message_timestamp(),
@@ -262,7 +262,7 @@ impl OpenFMBCommon for OpenFMBMessage {
             SolarControl(c) => c.message_timestamp(),
             GeneratorControl(c) => c.message_timestamp(),
             BreakerControl(c) => c.message_timestamp(),
-            ResourceStatus(c) => c.message_timestamp(),
+            // ResourceStatus(c) => c.message_timestamp(),
         }
     }
 }
@@ -311,7 +311,7 @@ impl BreakerStatusExt for BreakerStatusProfile {
             .unwrap()
             .pos
             .unwrap()
-            .st_val;
+            .phs3.unwrap().st_val;
         match st_val {
             0 => DbPosKind::Transient,
             1 => DbPosKind::Closed,
@@ -347,7 +347,7 @@ impl SwitchStatusExt for SwitchStatusProfile {
             .unwrap()
             .pos
             .unwrap()
-            .st_val;
+            .phs3.unwrap().st_val;
         match st_val {
             0 => DbPosKind::Transient,
             1 => DbPosKind::Closed,
@@ -412,7 +412,7 @@ impl OpenFMBCommon for GenerationReadingProfile {
     }
 }
 
-impl OpenFMBCommon for SwitchControlProfile {
+impl OpenFMBCommon for SwitchDiscreteControlProfile {
     fn device_name(&self) -> Result<String, OpenFMBError> {
         // dbg!(self);
         match self
@@ -1159,58 +1159,58 @@ impl OpenFMBCommon for RecloserReadingProfile {
     }
 }
 
-impl OpenFMBCommon for ShuntReadingProfile {
-    fn device_name(&self) -> Result<String, OpenFMBError> {
-        Ok(self
-            .shunt_system
-            .clone()
-            .context(NoShuntSystem)?
-            .conducting_equipment
-            .context(NoConductingEquipment)?
-            .named_object
-            .context(NoNamedObject)?
-            .name
-            .context(NoName)?)
-    }
-
-    fn device_mrid(&self) -> Result<Uuid, OpenFMBError> {
-        Ok(Uuid::from_str(
-            &self
-                .shunt_system
-                .clone()
-                .context(NoShuntSystem)?
-                .conducting_equipment
-                .context(NoConductingEquipment)?
-                .m_rid,
-        )
-        .context(UuidError)?)
-    }
-    fn message_mrid(&self) -> Result<Uuid, OpenFMBError> {
-        Ok(Uuid::from_str(
-            &self
-                .reading_message_info
-                .clone()
-                .context(NoReadingMessageInfo)?
-                .message_info
-                .context(NoMessageInfo)?
-                .identified_object
-                .context(NoIdentifiedObject)?
-                .m_rid
-                .context(NoMRID)?,
-        )
-        .context(UuidError)?)
-    }
-    fn message_timestamp(&self) -> Result<Timestamp, OpenFMBError> {
-        Ok(self
-            .reading_message_info
-            .clone()
-            .context(NoReadingMessageInfo)?
-            .message_info
-            .context(NoMessageInfo)?
-            .message_time_stamp
-            .context(NoMessageTimestamp)?)
-    }
-}
+// impl OpenFMBCommon for ShuntReadingProfile {
+//     fn device_name(&self) -> Result<String, OpenFMBError> {
+//         Ok(self
+//             .shunt_system
+//             .clone()
+//             .context(NoShuntSystem)?
+//             .conducting_equipment
+//             .context(NoConductingEquipment)?
+//             .named_object
+//             .context(NoNamedObject)?
+//             .name
+//             .context(NoName)?)
+//     }
+//
+//     fn device_mrid(&self) -> Result<Uuid, OpenFMBError> {
+//         Ok(Uuid::from_str(
+//             &self
+//                 .shunt_system
+//                 .clone()
+//                 .context(NoShuntSystem)?
+//                 .conducting_equipment
+//                 .context(NoConductingEquipment)?
+//                 .m_rid,
+//         )
+//         .context(UuidError)?)
+//     }
+//     fn message_mrid(&self) -> Result<Uuid, OpenFMBError> {
+//         Ok(Uuid::from_str(
+//             &self
+//                 .reading_message_info
+//                 .clone()
+//                 .context(NoReadingMessageInfo)?
+//                 .message_info
+//                 .context(NoMessageInfo)?
+//                 .identified_object
+//                 .context(NoIdentifiedObject)?
+//                 .m_rid
+//                 .context(NoMRID)?,
+//         )
+//         .context(UuidError)?)
+//     }
+//     fn message_timestamp(&self) -> Result<Timestamp, OpenFMBError> {
+//         Ok(self
+//             .reading_message_info
+//             .clone()
+//             .context(NoReadingMessageInfo)?
+//             .message_info
+//             .context(NoMessageInfo)?
+//             .message_time_stamp
+//             .context(NoMessageTimestamp)?)
+//     }
+// }
 
 impl OpenFMBCommon for BreakerReadingProfile {
     fn device_name(&self) -> Result<String, OpenFMBError> {
@@ -1531,58 +1531,58 @@ impl OpenFMBCommon for LoadStatusProfile {
     }
 }
 
-impl OpenFMBCommon for ShuntStatusProfile {
-    fn device_name(&self) -> Result<String, OpenFMBError> {
-        Ok(self
-            .shunt_system
-            .clone()
-            .context(NoShuntSystem)?
-            .conducting_equipment
-            .context(NoConductingEquipment)?
-            .named_object
-            .context(NoNamedObject)?
-            .name
-            .context(NoName)?)
-    }
-
-    fn device_mrid(&self) -> Result<Uuid, OpenFMBError> {
-        Ok(Uuid::from_str(
-            &self
-                .shunt_system
-                .clone()
-                .context(NoShuntSystem)?
-                .conducting_equipment
-                .context(NoConductingEquipment)?
-                .m_rid,
-        )
-        .context(UuidError)?)
-    }
-    fn message_mrid(&self) -> Result<Uuid, OpenFMBError> {
-        Ok(Uuid::from_str(
-            &self
-                .status_message_info
-                .clone()
-                .context(NoStatusMessageInfo)?
-                .message_info
-                .context(NoMessageInfo)?
-                .identified_object
-                .context(NoIdentifiedObject)?
-                .m_rid
-                .context(NoMRID)?,
-        )
-        .context(UuidError)?)
-    }
-    fn message_timestamp(&self) -> Result<Timestamp, OpenFMBError> {
-        Ok(self
-            .status_message_info
-            .clone()
-            .context(NoReadingMessageInfo)?
-            .message_info
-            .context(NoMessageInfo)?
-            .message_time_stamp
-            .context(NoMessageTimestamp)?)
-    }
-}
+// impl OpenFMBCommon for ShuntStatusProfile {
+//     fn device_name(&self) -> Result<String, OpenFMBError> {
+//         Ok(self
+//             .shunt_system
+//             .clone()
+//             .context(NoShuntSystem)?
+//             .conducting_equipment
+//             .context(NoConductingEquipment)?
+//             .named_object
+//             .context(NoNamedObject)?
+//             .name
+//             .context(NoName)?)
+//     }
+//
+//     fn device_mrid(&self) -> Result<Uuid, OpenFMBError> {
+//         Ok(Uuid::from_str(
+//             &self
+//                 .shunt_system
+//                 .clone()
+//                 .context(NoShuntSystem)?
+//                 .conducting_equipment
+//                 .context(NoConductingEquipment)?
+//                 .m_rid,
+//         )
+//         .context(UuidError)?)
+//     }
+//     fn message_mrid(&self) -> Result<Uuid, OpenFMBError> {
+//         Ok(Uuid::from_str(
+//             &self
+//                 .status_message_info
+//                 .clone()
+//                 .context(NoStatusMessageInfo)?
+//                 .message_info
+//                 .context(NoMessageInfo)?
+//                 .identified_object
+//                 .context(NoIdentifiedObject)?
+//                 .m_rid
+//                 .context(NoMRID)?,
+//         )
+//         .context(UuidError)?)
+//     }
+//     fn message_timestamp(&self) -> Result<Timestamp, OpenFMBError> {
+//         Ok(self
+//             .status_message_info
+//             .clone()
+//             .context(NoReadingMessageInfo)?
+//             .message_info
+//             .context(NoMessageInfo)?
+//             .message_time_stamp
+//             .context(NoMessageTimestamp)?)
+//     }
+// }
 
 impl OpenFMBCommon for RecloserStatusProfile {
     fn device_name(&self) -> Result<String, OpenFMBError> {
@@ -1744,65 +1744,65 @@ impl OpenFMBCommon for RegulatorStatusProfile {
     }
 }
 
-impl OpenFMBCommon for ResourceStatusProfile {
-    fn device_name(&self) -> Result<String, OpenFMBError> {
-        unimplemented!()
-        // Ok(self
-        //     .regulator_system
-        //     .clone()
-        //     .context(NoRegulatorSystem)?
-        //     .conducting_equipment
-        //     .context(NoConductingEquipment)?
-        //     .named_object
-        //     .context(NoNamedObject)?
-        //     .name
-        //     .context(NoName)?)
-    }
+// impl OpenFMBCommon for ResourceStatusProfile {
+//     fn device_name(&self) -> Result<String, OpenFMBError> {
+//         unimplemented!()
+//         // Ok(self
+//         //     .regulator_system
+//         //     .clone()
+//         //     .context(NoRegulatorSystem)?
+//         //     .conducting_equipment
+//         //     .context(NoConductingEquipment)?
+//         //     .named_object
+//         //     .context(NoNamedObject)?
+//         //     .name
+//         //     .context(NoName)?)
+//     }
+//
+//     fn device_mrid(&self) -> Result<Uuid, OpenFMBError> {
+//         //       panic!("{:#?}",self);
+//         Ok(Uuid::from_str(
+//             &self
+//
+//                 .conducting_equipment.clone().unwrap().m_rid
+//                 // .clone()
+//                 // .context(NoIED)?
+//                 // .identified_object
+//                 // .context(NoIdentifiedObject)?
+//                 // .m_rid.unwrap(),
+//         )
+//         .context(UuidError)?)
+//     }
+//     fn message_mrid(&self) -> Result<Uuid, OpenFMBError> {
+//         unimplemented!()
+//         // Ok(Uuid::from_str(
+//         //     &self
+//         //         .status_message_info
+//         //         .clone()
+//         //         .context(NoStatusMessageInfo)?
+//         //         .message_info
+//         //         .context(NoMessageInfo)?
+//         //         .identified_object
+//         //         .context(NoIdentifiedObject)?
+//         //         .m_rid
+//         //         .context(NoMRID)?,
+//         // )
+//         //     .context(UuidError)?)
+//     }
+//     fn message_timestamp(&self) -> Result<Timestamp, OpenFMBError> {
+//         unimplemented!()
+//         // Ok(self
+//         //     .status_message_info
+//         //     .clone()
+//         //     .context(NoReadingMessageInfo)?
+//         //     .message_info
+//         //     .context(NoMessageInfo)?
+//         //     .message_time_stamp
+//         //     .context(NoMessageTimestamp)?)
+//     }
+// }
 
-    fn device_mrid(&self) -> Result<Uuid, OpenFMBError> {
-        //       panic!("{:#?}",self);
-        Ok(Uuid::from_str(
-            &self
-
-                .conducting_equipment.clone().unwrap().m_rid
-                // .clone()
-                // .context(NoIED)?
-                // .identified_object
-                // .context(NoIdentifiedObject)?
-                // .m_rid.unwrap(),
-        )
-        .context(UuidError)?)
-    }
-    fn message_mrid(&self) -> Result<Uuid, OpenFMBError> {
-        unimplemented!()
-        // Ok(Uuid::from_str(
-        //     &self
-        //         .status_message_info
-        //         .clone()
-        //         .context(NoStatusMessageInfo)?
-        //         .message_info
-        //         .context(NoMessageInfo)?
-        //         .identified_object
-        //         .context(NoIdentifiedObject)?
-        //         .m_rid
-        //         .context(NoMRID)?,
-        // )
-        //     .context(UuidError)?)
-    }
-    fn message_timestamp(&self) -> Result<Timestamp, OpenFMBError> {
-        unimplemented!()
-        // Ok(self
-        //     .status_message_info
-        //     .clone()
-        //     .context(NoReadingMessageInfo)?
-        //     .message_info
-        //     .context(NoMessageInfo)?
-        //     .message_time_stamp
-        //     .context(NoMessageTimestamp)?)
-    }
-}
-
-use openfmb_ops_protobuf::openfmb::reclosermodule::{
+use openfmb_messages::reclosermodule::{
     RecloserReadingProfile, RecloserStatusProfile,
 };
 
@@ -1827,8 +1827,8 @@ impl OpenFMBMessage {
             ESSStatus(msg) => msg.device_mrid(),
             LoadReading(msg) => msg.device_mrid(),
             LoadStatus(msg) => msg.device_mrid(),
-            ShuntReading(msg) => msg.device_mrid(),
-            ShuntStatus(msg) => msg.device_mrid(),
+            // ShuntReading(msg) => msg.device_mrid(),
+            // ShuntStatus(msg) => msg.device_mrid(),
             RecloserReading(msg) => msg.device_mrid(),
             RecloserStatus(msg) => msg.device_mrid(),
             BreakerReading(msg) => msg.device_mrid(),
@@ -1841,7 +1841,7 @@ impl OpenFMBMessage {
             SolarControl(msg) => msg.device_mrid(),
             GeneratorControl(msg) => msg.device_mrid(),
             BreakerControl(msg) => msg.device_mrid(),
-            ResourceStatus(msg) => msg.device_mrid(),
+            // ResourceStatus(msg) => msg.device_mrid(),
         };
 
         //todo!()
@@ -1890,12 +1890,12 @@ impl TryFrom<(&str, &str)> for OpenFMBMessage {
             "LoadStatusProfile" => Ok(LoadStatus(Box::new(
                 LoadStatusProfile::decode(bytes.as_slice()).context(ProstDecodeError)?,
             ))),
-            "ShuntReadingProfile" => Ok(ShuntReading(Box::new(
-                ShuntReadingProfile::decode(bytes.as_slice()).context(ProstDecodeError)?,
-            ))),
-            "ShuntStatusProfile" => Ok(ShuntStatus(Box::new(
-                ShuntStatusProfile::decode(bytes.as_slice()).context(ProstDecodeError)?,
-            ))),
+            // "ShuntReadingProfile" => Ok(ShuntReading(Box::new(
+            //     ShuntReadingProfile::decode(bytes.as_slice()).context(ProstDecodeError)?,
+            // ))),
+            // "ShuntStatusProfile" => Ok(ShuntStatus(Box::new(
+            //     ShuntStatusProfile::decode(bytes.as_slice()).context(ProstDecodeError)?,
+            // ))),
             "RecloserReadingProfile" => Ok(RecloserReading(Box::new(
                 RecloserReadingProfile::decode(bytes.as_slice()).context(ProstDecodeError)?,
             ))),
@@ -1917,8 +1917,8 @@ impl TryFrom<(&str, &str)> for OpenFMBMessage {
             "LoadControlProfile" => Ok(LoadControl(Box::new(
                 LoadControlProfile::decode(bytes.as_slice()).context(ProstDecodeError)?,
             ))),
-            "SwitchControlProfile" => Ok(SwitchControl(Box::new(
-                SwitchControlProfile::decode(bytes.as_slice()).context(ProstDecodeError)?,
+            "SwitchDiscreteControlProfile" => Ok(SwitchControl(Box::new(
+                SwitchDiscreteControlProfile::decode(bytes.as_slice()).context(ProstDecodeError)?,
             ))),
             "ESSControlProfile" => Ok(EssControl(Box::new(
                 EssControlProfile::decode(bytes.as_slice()).context(ProstDecodeError)?,
@@ -1981,12 +1981,12 @@ impl TryFrom<&nats::Message> for OpenFMBMessage {
             "LoadStatusProfile" => Ok(LoadStatus(Box::new(
                 LoadStatusProfile::decode(bytes.as_slice()).context(ProstDecodeError)?,
             ))),
-            "ShuntReadingProfile" => Ok(ShuntReading(Box::new(
-                ShuntReadingProfile::decode(bytes.as_slice()).context(ProstDecodeError)?,
-            ))),
-            "ShuntStatusProfile" => Ok(ShuntStatus(Box::new(
-                ShuntStatusProfile::decode(bytes.as_slice()).context(ProstDecodeError)?,
-            ))),
+            // "ShuntReadingProfile" => Ok(ShuntReading(Box::new(
+            //     ShuntReadingProfile::decode(bytes.as_slice()).context(ProstDecodeError)?,
+            // ))),
+            // "ShuntStatusProfile" => Ok(ShuntStatus(Box::new(
+            //     ShuntStatusProfile::decode(bytes.as_slice()).context(ProstDecodeError)?,
+            // ))),
             "RecloserReadingProfile" => Ok(RecloserReading(Box::new(
                 RecloserReadingProfile::decode(bytes.as_slice()).context(ProstDecodeError)?,
             ))),
@@ -2008,8 +2008,8 @@ impl TryFrom<&nats::Message> for OpenFMBMessage {
             "LoadControlProfile" => Ok(LoadControl(Box::new(
                 LoadControlProfile::decode(bytes.as_slice()).context(ProstDecodeError)?,
             ))),
-            "SwitchControlProfile" => Ok(SwitchControl(Box::new(
-                SwitchControlProfile::decode(bytes.as_slice()).context(ProstDecodeError)?,
+            "SwitchDiscreteControlProfile" => Ok(SwitchControl(Box::new(
+                SwitchDiscreteControlProfile::decode(bytes.as_slice()).context(ProstDecodeError)?,
             ))),
             "ESSControlProfile" => Ok(EssControl(Box::new(
                 EssControlProfile::decode(bytes.as_slice()).context(ProstDecodeError)?,
@@ -2024,9 +2024,9 @@ impl TryFrom<&nats::Message> for OpenFMBMessage {
                 BreakerDiscreteControlProfile::decode(bytes.as_slice())
                     .context(ProstDecodeError)?,
             ))),
-            "ResourceStatusProfile" => Ok(ResourceStatus(Box::new(
-                ResourceStatusProfile::decode(bytes.as_slice()).context(ProstDecodeError)?,
-            ))),
+            // "ResourceStatusProfile" => Ok(ResourceStatus(Box::new(
+            //     ResourceStatusProfile::decode(bytes.as_slice()).context(ProstDecodeError)?,
+            // ))),
             // "control" => Ok(MicrogridControlMsg(Box::new(MicrogridControl::decode(bytes.as_slice()).context(ProstDecodeError)?))),
             _ => Err(OpenFMBError::UnsupportedOpenFMBProfileError {
                 profile: profile.to_string(),
@@ -2086,7 +2086,7 @@ pub enum OpenFMBError {
     },
 }
 
-use openfmb_ops_protobuf::openfmb::{commonmodule, resourcemodule::ResourceStatusProfile};
+use openfmb_messages::{commonmodule};
 
 pub fn get_current_timestamp() -> Timestamp {
     timestamp_from_datetime(Utc::now())
@@ -2109,7 +2109,7 @@ pub fn timestamp_from_datetime(t: DateTime<Utc>) -> Timestamp {
     };
 
     commonmodule::Timestamp {
-        fraction: (ms_to_fraction(t.timestamp_subsec_millis()) as u32),
+        nanoseconds: (ms_to_fraction(t.timestamp_subsec_millis()) as u32),
         seconds: t.timestamp() as u64,
         tq: Some(tq),
     }
@@ -2117,8 +2117,8 @@ pub fn timestamp_from_datetime(t: DateTime<Utc>) -> Timestamp {
 
 pub fn datetime_from_timestamp(t: Timestamp) -> DateTime<Utc> {
     let _nanoseconds: u32 =
-        (t.fraction as f64 / (2u64.pow(32) as f64) * 1000000000f64 as f64) as u32;
+        (t.nanoseconds as f64 / (2u64.pow(32) as f64) * 1000000000f64 as f64) as u32;
 
-    let ms = fraction_to_ms(t.fraction);
+    let ms = fraction_to_ms(t.nanoseconds);
     DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(t.seconds as i64, ms), Utc)
 }

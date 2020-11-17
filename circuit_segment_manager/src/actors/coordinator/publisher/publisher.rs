@@ -15,10 +15,10 @@ use crate::{
 use microgrid_protobuf::CoordinationStatus;
 
 use nats::Connection;
-use openfmb_ops_protobuf::openfmb::{
+use openfmb_messages::{
     breakermodule::BreakerDiscreteControlProfile, essmodule::EssControlProfile,
     generationmodule::GenerationControlProfile, loadmodule::LoadControlProfile,
-    solarmodule::SolarControlProfile, switchmodule::SwitchControlProfile,
+    solarmodule::SolarControlProfile, switchmodule::SwitchDiscreteControlProfile,
 };
 use riker::actors::*;
 use std::fmt::Debug;
@@ -27,7 +27,7 @@ use std::fmt::Debug;
     RequestActorStats,
     OpenFMBMessage,
     LoadControlProfile,
-    SwitchControlProfile,
+    SwitchDiscreteControlProfile,
     EssControlProfile,
     SolarControlProfile,
     GenerationControlProfile,
@@ -238,9 +238,9 @@ impl Receive<GenerationControlProfile> for Publisher {
     }
 }
 
-impl Receive<SwitchControlProfile> for Publisher {
+impl Receive<SwitchDiscreteControlProfile> for Publisher {
     type Msg = PublisherMsg;
-    fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: SwitchControlProfile, _sender: Sender) {
+    fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: SwitchDiscreteControlProfile, _sender: Sender) {
         // dbg!("got load control message: {:?}", msg.clone());
         self.openfmb_nats_publisher
             .as_ref()

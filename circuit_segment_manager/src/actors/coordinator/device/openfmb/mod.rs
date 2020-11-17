@@ -22,7 +22,7 @@ pub use openfmb::*;
 //use log::{info, warn};
 //use prost::Message;
 //use riker::actors::*;
-//use openfmb_ops_protobuf::{
+//use openfmb_rs::{
 //    openfmb,
 //    openfmb::{commonmodule::Timestamp, solarmodule::SolarStatus},
 //};

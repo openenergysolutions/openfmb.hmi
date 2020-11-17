@@ -4,8 +4,8 @@ use crate::actors::{openfmb_ts_to_timestamp, Processor};
 use crate::messages::actor_stats::{ActorStats, RequestActorStats};
 use crate::messages::PartsMessage;
 use log::{info, warn};
-use openfmb_ops_protobuf::openfmb;
-use openfmb_ops_protobuf::openfmb::commonmodule::{IdentifiedObject, StatusMessageInfo};
+use openfmb_rs::openfmb;
+use openfmb_rs::openfmb::commonmodule::{IdentifiedObject, StatusMessageInfo};
 use prost::Message as ProstMessage;
 use riker::actors::*;
 #[actor(RequestActorStats)]

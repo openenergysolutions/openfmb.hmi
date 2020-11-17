@@ -29,7 +29,7 @@ pub struct NatsMessage(Arc<nats::Message>);
     OpenFMBMessage,
     NatsMessage,
     LoadControlProfile,
-    SwitchControlProfile,
+    SwitchDiscreteControlProfile,
     EssControlProfile,
     SolarControlProfile,
     GenerationControlProfile,
@@ -145,14 +145,14 @@ impl Receive<OpenFMBMessage> for OpenFMBNATSPublisher {
     }
 }
 
-use openfmb_ops_protobuf::openfmb::{
+use openfmb_messages:: {
     essmodule::EssControlProfile, generationmodule::GenerationControlProfile,
     loadmodule::LoadControlProfile, solarmodule::SolarControlProfile,
-    switchmodule::SwitchControlProfile,
+    switchmodule::SwitchDiscreteControlProfile,
 };
 
 use nats::Connection;
-use openfmb_ops_protobuf::openfmb::breakermodule::BreakerDiscreteControlProfile;
+use openfmb_messages::breakermodule::BreakerDiscreteControlProfile;
 
 impl Receive<NatsMessage> for OpenFMBNATSPublisher {
     type Msg = OpenFMBNATSPublisherMsg;
@@ -185,14 +185,14 @@ impl Receive<LoadControlProfile> for OpenFMBNATSPublisher {
     }
 }
 
-impl Receive<SwitchControlProfile> for OpenFMBNATSPublisher {
+impl Receive<SwitchDiscreteControlProfile> for OpenFMBNATSPublisher {
     type Msg = OpenFMBNATSPublisherMsg;
-    fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: SwitchControlProfile, _sender: Sender) {
+    fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: SwitchDiscreteControlProfile, _sender: Sender) {
         let mut buffer = vec![];
         msg.encode(&mut buffer).unwrap();
         let mrid = msg.device_mrid().unwrap();
         let mut subject = String::default();
-        subject.push_str("openfmb.switchmodule.SwitchControlProfile.");
+        subject.push_str("openfmb.switchmodule.SwitchDiscreteControlProfile.");
         subject.push_str(&mrid.to_string());
         self.nats_broker.publish(&subject, &mut buffer).unwrap();
 

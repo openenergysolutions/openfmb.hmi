@@ -3,14 +3,14 @@ use crate::{
     messages::{ActorStats, OpenFMBMessage, RequestActorStats},
 };
 
-use openfmb_ops_protobuf::openfmb::{
+use openfmb_messages::{
     commonmodule::{
         CheckConditions, ConductingEquipment, ControlDpc, ControlFscc, ControlMessageInfo,
         ControlScheduleFsch, ControlTimestamp, DynamicTestKind, EnergyConsumer,
         EngGridConnectModeKind, EngScheduleParameter, EnsDynamicTestKind, GridConnectModeKind,
         IdentifiedObject, MessageInfo, NamedObject, OptionalStateKind, ScheduleCsg,
         ScheduleParameterKind, SchedulePoint, StateKind, StatusMessageInfo,
-        SwitchControlScheduleFsch, SwitchCsg, SwitchPoint, Timestamp,
+        SwitchCsg, SwitchPoint, Timestamp,
     },
     essmodule::{
         EssControl, EssControlFscc, EssControlProfile, EssControlScheduleFsch, EssPoint, Esscsg,
@@ -19,7 +19,7 @@ use openfmb_ops_protobuf::openfmb::{
         LoadControl, LoadControlFscc, LoadControlProfile, LoadReadingProfile, LoadStatusProfile,
     },
     switchmodule::{
-        SwitchControl, SwitchControlFscc, SwitchControlProfile, SwitchStatus, SwitchStatusProfile,
+        SwitchStatus, SwitchStatusProfile,
         SwitchStatusXswi,
     },
 };

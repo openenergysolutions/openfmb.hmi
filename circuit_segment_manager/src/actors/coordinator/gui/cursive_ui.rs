@@ -18,7 +18,7 @@ use cursive::{
 
 use log::info;
 
-use openfmb_ops_protobuf::openfmb::switchmodule::SwitchReadingProfile;
+use openfmb_rs::openfmb::switchmodule::SwitchReadingProfile;
 use riker::actors::*;
 
 #[actor(
