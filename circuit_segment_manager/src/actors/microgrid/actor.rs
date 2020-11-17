@@ -20,11 +20,11 @@ use crate::{
     traits::{CircuitSegment, CircuitSegmentConnectionState, ConnectableCircuitSegment},
 };
 use log::{debug, info, warn};
-use openfmb_ops_protobuf::openfmb::commonmodule::{
+use openfmb_messages::commonmodule::{
     DynamicTestKind, EnsDynamicTestKind, OptionalStateKind,
 };
-use openfmb_ops_protobuf::openfmb::switchmodule::SwitchStatus;
-use openfmb_ops_protobuf::openfmb::{
+use openfmb_messages::switchmodule::SwitchStatus;
+use openfmb_messages::{
     breakermodule::{BreakerDiscreteControlProfile, BreakerStatusProfile},
     commonmodule::{DbPosKind, StateKind},
     essmodule::{EssControlProfile, EssReadingProfile, EssStatusProfile},
@@ -34,9 +34,9 @@ use openfmb_ops_protobuf::openfmb::{
     loadmodule::{LoadControlProfile, LoadReadingProfile, LoadStatusProfile},
     metermodule::MeterReadingProfile,
     solarmodule::{SolarControlProfile, SolarReadingProfile, SolarStatusProfile},
-    switchmodule::{SwitchControlProfile, SwitchReadingProfile, SwitchStatusProfile},
+    switchmodule::{SwitchDiscreteControlProfile, SwitchReadingProfile, SwitchStatusProfile},
 };
-use openfmb_protobuf_ext::{
+use openfmb_messages_ext::{
     ess::{ESSStatusExt, EssStatusExt},
     generation::GenerationStatusExt,
     load::LoadReadingExt,
@@ -141,7 +141,7 @@ impl Receive<OpenFMBMessage> for Microgrid {
             EssControl(_status) => {}
             LoadControl(_status) => {}
             BreakerControl(_status) => {}
-            ResourceStatus(_status) => {}
+            // ResourceStatus(_status) => {}
             _ => {
                 panic!(
                     "not handling msg {:?} from {:?}: ",
@@ -217,7 +217,7 @@ impl Receive<DeviceControlMessage> for Microgrid {
                         .cfg
                         .get_str("circuit_segment_devices.abb_pcs100.mrid")
                         .unwrap(),
-                    self.cfg.get_float("tests.ess_start_charge_rate").unwrap() as f32,
+                    self.cfg.get_float("tests.ess_start_charge_rate").unwrap(),
                 );
                 self.publisher.send_msg(msg.into(), None);
             }
@@ -294,7 +294,7 @@ impl Receive<DeviceControlMessage> for Microgrid {
                 self.publisher.send_msg(msg.into(), None);
             }
             DeviceControlMessage::SwitchOneOpen => {
-                let msg: SwitchControlProfile = SwitchControlProfile::switch_open_msg(
+                let msg: SwitchDiscreteControlProfile = SwitchDiscreteControlProfile::switch_open_msg(
                     &self
                         .cfg
                         .get_str("circuit_segment_devices.way1.mrid")
@@ -303,7 +303,7 @@ impl Receive<DeviceControlMessage> for Microgrid {
                 self.publisher.send_msg(msg.into(), None);
             }
             DeviceControlMessage::SwitchOneClosed => {
-                let msg: SwitchControlProfile = SwitchControlProfile::switch_close_msg(
+                let msg: SwitchDiscreteControlProfile = SwitchDiscreteControlProfile::switch_close_msg(
                     &self
                         .cfg
                         .get_str("circuit_segment_devices.way1.mrid")
@@ -312,7 +312,7 @@ impl Receive<DeviceControlMessage> for Microgrid {
                 self.publisher.send_msg(msg.into(), None);
             }
             DeviceControlMessage::SwitchTwoOpen => {
-                let msg: SwitchControlProfile = SwitchControlProfile::switch_open_msg(
+                let msg: SwitchDiscreteControlProfile = SwitchDiscreteControlProfile::switch_open_msg(
                     &self
                         .cfg
                         .get_str("circuit_segment_devices.way2.mrid")
@@ -321,7 +321,7 @@ impl Receive<DeviceControlMessage> for Microgrid {
                 self.publisher.send_msg(msg.into(), None);
             }
             DeviceControlMessage::SwitchTwoClosed => {
-                let msg: SwitchControlProfile = SwitchControlProfile::switch_close_msg(
+                let msg: SwitchDiscreteControlProfile = SwitchDiscreteControlProfile::switch_close_msg(
                     &self
                         .cfg
                         .get_str("circuit_segment_devices.way2.mrid")
@@ -351,7 +351,7 @@ impl Receive<DeviceControlMessage> for Microgrid {
                 self.publisher.send_msg(msg.into(), None);
             }
             DeviceControlMessage::SwitchFourOpen => {
-                let msg: SwitchControlProfile = SwitchControlProfile::switch_open_msg(
+                let msg: SwitchDiscreteControlProfile = SwitchDiscreteControlProfile::switch_open_msg(
                     &self
                         .cfg
                         .get_str("circuit_segment_devices.way4.mrid")
@@ -360,7 +360,7 @@ impl Receive<DeviceControlMessage> for Microgrid {
                 self.publisher.send_msg(msg.into(), None);
             }
             DeviceControlMessage::SwitchFourClosed => {
-                let msg: SwitchControlProfile = SwitchControlProfile::switch_close_msg(
+                let msg: SwitchDiscreteControlProfile = SwitchDiscreteControlProfile::switch_close_msg(
                     &self
                         .cfg
                         .get_str("circuit_segment_devices.way4.mrid")
@@ -394,7 +394,7 @@ impl Receive<MicrogridControl> for Microgrid {
 impl Receive<SolarReadingProfile> for Microgrid {
     type Msg = MicrogridMsg;
     fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: SolarReadingProfile, _sender: Sender) {
-        self.microgrid_status.solar.last_net = msg.solar_reading();
+        self.microgrid_status.solar.last_net = msg.solar_reading() as f32;
     }
 }
 
@@ -406,9 +406,9 @@ impl Receive<GenerationReadingProfile> for Microgrid {
         msg: GenerationReadingProfile,
         _sender: Sender,
     ) {
-        if let Ok(device_mrid) = openfmb_protobuf_ext::OpenFMBExt::device_mrid(&msg) {
+        if let Ok(device_mrid) = openfmb_messages_ext::OpenFMBExt::device_mrid(&msg) {
             if device_mrid == self.devices.turbine_array {
-                self.microgrid_status.generator.last_net = msg.generation_reading();
+                self.microgrid_status.generator.last_net = msg.generation_reading() as f32;
             }
         }
     }
@@ -423,7 +423,7 @@ impl Receive<GenerationStatusProfile> for Microgrid {
         _sender: Sender,
     ) {
         if let (Ok(device_mrid), Ok(status)) = (
-            openfmb_protobuf_ext::OpenFMBExt::device_mrid(&msg),
+            openfmb_messages_ext::OpenFMBExt::device_mrid(&msg),
             msg.generation_status(),
         ) {
             if device_mrid == self.devices.turbine_array {
@@ -437,30 +437,30 @@ impl Receive<EssReadingProfile> for Microgrid {
     type Msg = MicrogridMsg;
     fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: EssReadingProfile, _sender: Sender) {
         //dbg!(&msg);
-        self.microgrid_status.battery.last_net = msg.ess_reading().unwrap();
+        self.microgrid_status.battery.last_net = msg.ess_reading().unwrap() as f32;
     }
 }
 
 impl Receive<SwitchReadingProfile> for Microgrid {
     type Msg = MicrogridMsg;
     fn receive(&mut self, ctx: &Context<Self::Msg>, msg: SwitchReadingProfile, _sender: Sender) {
-        match openfmb_protobuf_ext::OpenFMBExt::device_name(&msg.clone())
+        match openfmb_messages_ext::OpenFMBExt::device_name(&msg.clone())
             .unwrap()
             .as_ref()
         {
             "way1" => {
-                self.microgrid_status.way1.last_net = msg.switch_reading();
+                self.microgrid_status.way1.last_net = msg.switch_reading() as f32;
                 self.net_zero(ctx);
                 info!("{}", self.microgrid_status);
             }
             "way2" => {
-                self.microgrid_status.way2.last_net = msg.switch_reading();
+                self.microgrid_status.way2.last_net = msg.switch_reading() as f32;
             }
             "way3" => {
-                self.microgrid_status.way3.last_net = msg.switch_reading();
+                self.microgrid_status.way3.last_net = msg.switch_reading() as f32;
             }
             "way4" => {
-                self.microgrid_status.way4.last_net = msg.switch_reading();
+                self.microgrid_status.way4.last_net = msg.switch_reading() as f32;
             }
 
             _ => {}
@@ -494,7 +494,7 @@ impl Receive<SolarStatusProfile> for Microgrid {
 impl Receive<EssStatusProfile> for Microgrid {
     type Msg = MicrogridMsg;
     fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: EssStatusProfile, _sender: Sender) {
-        self.microgrid_status.battery.soc = msg.ess_soc().unwrap();
+        self.microgrid_status.battery.soc = msg.ess_soc().unwrap() as f32;
         self.microgrid_status.battery.mode = match msg.ess_mode() {
             Ok(msg) => Some(msg),
             Err(_) => None,
@@ -521,13 +521,13 @@ impl Receive<EssStatusProfile> for Microgrid {
 impl Receive<MeterReadingProfile> for Microgrid {
     type Msg = MicrogridMsg;
     fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: MeterReadingProfile, _sender: Sender) {
-        match openfmb_protobuf_ext::OpenFMBExt::device_name(&msg)
+        match openfmb_messages_ext::OpenFMBExt::device_name(&msg)
             .unwrap()
             .as_str()
         {
             "ion-shop" | "ion_shop" => {
                 self.microgrid_status.shop.ts = SystemTime::now();
-                self.microgrid_status.shop.reading = ShopLoadReading::Load(msg.meter_reading());
+                self.microgrid_status.shop.reading = ShopLoadReading::Load(msg.meter_reading() as f32);
             }
             "way1" => {
                 todo!();
@@ -547,7 +547,7 @@ impl Receive<MeterReadingProfile> for Microgrid {
 
             _ => todo!(
                 "{}",
-                openfmb_protobuf_ext::OpenFMBExt::device_name(&msg).unwrap()
+                openfmb_messages_ext::OpenFMBExt::device_name(&msg).unwrap()
             ),
         }
     }
@@ -556,7 +556,7 @@ impl Receive<MeterReadingProfile> for Microgrid {
 impl Receive<BreakerStatusProfile> for Microgrid {
     type Msg = MicrogridMsg;
     fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: BreakerStatusProfile, _sender: Sender) {
-        match openfmb_protobuf_ext::OpenFMBExt::device_name(&msg)
+        match openfmb_messages_ext::OpenFMBExt::device_name(&msg)
             .unwrap()
             .as_ref()
         {
@@ -578,7 +578,7 @@ impl Receive<BreakerStatusProfile> for Microgrid {
 impl Receive<SwitchStatusProfile> for Microgrid {
     type Msg = MicrogridMsg;
     fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: SwitchStatusProfile, _sender: Sender) {
-        match openfmb_protobuf_ext::OpenFMBExt::device_name(&msg)
+        match openfmb_messages_ext::OpenFMBExt::device_name(&msg)
             .unwrap()
             .as_ref()
         {

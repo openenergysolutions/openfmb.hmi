@@ -2,8 +2,8 @@ use super::Error as OpenFMBError;
 use crate::actors::openfmb_ts_to_timestamp;
 use crate::actors::{Coordinator, CoordinatorMsg};
 use crate::messages::{ActorStats, PartsMessage, RequestActorStats};
-use openfmb_ops_protobuf::openfmb;
-use openfmb_ops_protobuf::openfmb::commonmodule::{IdentifiedObject, StatusMessageInfo};
+use openfmb_rs::openfmb;
+use openfmb_rs::openfmb::commonmodule::{IdentifiedObject, StatusMessageInfo};
 use prost::Message as ProstMessage;
 use riker::actors::*;
 #[actor(RequestActorStats)]

@@ -12,7 +12,7 @@ use crate::{
 use chrono::NaiveDateTime;
 
 use crate::actors::Publisher;
-use openfmb_ops_protobuf::openfmb::commonmodule::Timestamp;
+use openfmb_messages::commonmodule::Timestamp;
 use riker::actors::*;
 
 #[actor(RequestActorStats, OpenFMBMessage, PublisherRefWrap)]
@@ -78,7 +78,7 @@ impl Actor for Device {
 }
 
 pub fn openfmb_ts_to_timestamp(ts: &Timestamp) -> NaiveDateTime {
-    match NaiveDateTime::from_timestamp_opt(ts.seconds as i64, ts.fraction) {
+    match NaiveDateTime::from_timestamp_opt(ts.seconds as i64, ts.nanoseconds) {
         Some(date) => date,
         None => NaiveDateTime::from_timestamp(ts.seconds as i64, 0),
     }

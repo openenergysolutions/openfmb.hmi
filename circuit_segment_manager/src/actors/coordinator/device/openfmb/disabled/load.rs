@@ -2,10 +2,10 @@ use super::Error as OpenFMBError;
 use crate::actors::openfmb_ts_to_timestamp;
 use crate::actors::{Coordinator, CoordinatorMsg};
 use crate::messages::{ActorStats, PartsMessage, RequestActorStats};
-use openfmb_ops_protobuf::openfmb;
-use openfmb_ops_protobuf::openfmb::commonmodule::{MessageInfo, StatusMessageInfo, Timestamp};
-use openfmb_ops_protobuf::openfmb::loadmodule::LoadStatusProfile;
-use openfmb_ops_protobuf::openfmb::solarmodule::SolarStatus;
+use openfmb_rs::openfmb;
+use openfmb_rs::openfmb::commonmodule::{MessageInfo, StatusMessageInfo, Timestamp};
+use openfmb_rs::openfmb::loadmodule::LoadStatusProfile;
+use openfmb_rs::openfmb::solarmodule::SolarStatus;
 use prost::Message;
 use riker::actors::*;
 #[actor(RequestActorStats)]

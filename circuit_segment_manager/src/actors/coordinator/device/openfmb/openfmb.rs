@@ -48,8 +48,8 @@ impl OpenFMBDevice {
             ESSStatus(_msg) => self.ensure_ess_actor(ctx),
             LoadStatus(_msg) => self.ensure_load_actor(ctx),
             LoadReading(_msg) => self.ensure_load_actor(ctx),
-            ShuntStatus(_msg) => self.ensure_shunt_actor(ctx),
-            ShuntReading(_msg) => self.ensure_shunt_actor(ctx),
+//            ShuntStatus(_msg) => self.ensure_shunt_actor(ctx),
+//            ShuntReading(_msg) => self.ensure_shunt_actor(ctx),
             RecloserStatus(_msg) => self.ensure_recloser_actor(ctx),
             RecloserReading(_msg) => self.ensure_recloser_actor(ctx),
             BreakerStatus(_msg) => self.ensure_breaker_actor(ctx),
@@ -62,7 +62,7 @@ impl OpenFMBDevice {
             SolarControl(_msg) => self.ensure_solar_actor(ctx),
             GeneratorControl(_msg) => self.ensure_generator_actor(ctx),
             BreakerControl(_msg) => self.ensure_generator_actor(ctx),
-            ResourceStatus(_msg) => self.ensure_resource_actor(ctx),
+            // ResourceStatus(_msg) => self.ensure_resource_actor(ctx),
             //                        _ => panic!("unsupported message profile: {:?}", msg),
         }
     }

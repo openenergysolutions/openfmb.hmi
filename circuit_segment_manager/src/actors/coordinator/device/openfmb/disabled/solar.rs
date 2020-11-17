@@ -3,9 +3,9 @@ use crate::actors::coordinator::processor::openfmb::switch::{Switch, SwitchMsg};
 use crate::actors::openfmb_ts_to_timestamp;
 use crate::actors::{Coordinator, CoordinatorMsg};
 use crate::messages::*;
-use openfmb_ops_protobuf::openfmb;
-use openfmb_ops_protobuf::openfmb::commonmodule::Timestamp;
-use openfmb_ops_protobuf::openfmb::solarmodule::SolarStatus;
+use openfmb_rs::openfmb;
+use openfmb_rs::openfmb::commonmodule::Timestamp;
+use openfmb_rs::openfmb::solarmodule::SolarStatus;
 use prost::Message;
 use riker::actors::*;
 
