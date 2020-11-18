@@ -16,6 +16,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ee2a4ec343196209d6594e19543ae87a39f96d5534d7174822a3ad825dd6ed7e"
 
 [[package]]
+name = "ahash"
+version = "0.3.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e8fd72866655d1904d6b0997d0b07ba561047d070fbe29de039031c641b61217"
+dependencies = [
+ "const-random",
+]
+
+[[package]]
 name = "aho-corasick"
 version = "0.7.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -343,7 +352,7 @@ dependencies = [
  "prost",
  "prost-types",
  "rand 0.7.3",
- "riker",
+ "riker 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.116",
  "serde_json",
  "sled",
@@ -404,6 +413,26 @@ dependencies = [
  "serde_json",
  "toml",
  "yaml-rust",
+]
+
+[[package]]
+name = "const-random"
+version = "0.1.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "02dc82c12dc2ee6e1ded861cf7d582b46f66f796d1b6c93fa28b911ead95da02"
+dependencies = [
+ "const-random-macro",
+ "proc-macro-hack",
+]
+
+[[package]]
+name = "const-random-macro"
+version = "0.1.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fc757bbb9544aa296c2ae00c679e81f886b37e28e59097defe0cf524306f6685"
+dependencies = [
+ "getrandom 0.2.0",
+ "proc-macro-hack",
 ]
 
 [[package]]
@@ -520,6 +549,17 @@ dependencies = [
  "digest 0.8.1",
  "rand_core 0.3.1",
  "subtle",
+]
+
+[[package]]
+name = "dashmap"
+version = "3.11.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0f260e2fc850179ef410018660006951c1b55b79e8087e87111a2c388994b9b5"
+dependencies = [
+ "ahash",
+ "cfg-if",
+ "num_cpus",
 ]
 
 [[package]]
@@ -895,6 +935,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "getrandom"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ee8025cf36f917e6a52cce185b7c7177689b838b7ec138364e50cc2277a56cf4"
+dependencies = [
+ "cfg-if",
+ "libc",
+ "wasi 0.9.0+wasi-snapshot-preview1",
+]
+
+[[package]]
 name = "getset"
 version = "0.0.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -990,11 +1041,14 @@ name = "hmi_server"
 version = "0.0.1"
 dependencies = [
  "circuit_segment_coordinator",
+ "config",
  "env_logger",
  "futures",
  "inpm",
  "log",
+ "nats",
  "pretty_env_logger",
+ "riker 0.4.1 (git+https://github.com/bfrog/riker?branch=0.4.1_stable_dashmap)",
  "serde 1.0.116",
  "serde_json",
  "static_dir",
@@ -1855,7 +1909,7 @@ version = "0.7.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6a6b1679d49b24bbfe0c803429aa1874472f50d9b363131f0e89fc356b544d03"
 dependencies = [
- "getrandom",
+ "getrandom 0.1.15",
  "libc",
  "rand_chacha 0.2.2",
  "rand_core 0.5.1",
@@ -1903,7 +1957,7 @@ version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "90bde5296fc891b0cef12a6d03ddccc162ce7b2aff54160af9338f8d40df6d19"
 dependencies = [
- "getrandom",
+ "getrandom 0.1.15",
 ]
 
 [[package]]
@@ -2027,13 +2081,33 @@ checksum = "f7b07140216b4c980a887315331822cc63f6d22f824b23dbff1751aee655a365"
 dependencies = [
  "chrono",
  "config",
- "dashmap",
+ "dashmap 4.0.0-rc6",
  "futures",
  "num_cpus",
  "pin-utils",
  "rand 0.7.3",
  "regex",
- "riker-macros",
+ "riker-macros 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "slog",
+ "slog-scope",
+ "slog-stdlog",
+ "uuid 0.8.1",
+]
+
+[[package]]
+name = "riker"
+version = "0.4.1"
+source = "git+https://github.com/bfrog/riker?branch=0.4.1_stable_dashmap#ac48cef0dd5362477f8b8cf7d1400e58c94d5e62"
+dependencies = [
+ "chrono",
+ "config",
+ "dashmap 3.11.10",
+ "futures",
+ "num_cpus",
+ "pin-utils",
+ "rand 0.7.3",
+ "regex",
+ "riker-macros 0.2.0 (git+https://github.com/bfrog/riker?branch=0.4.1_stable_dashmap)",
  "slog",
  "slog-scope",
  "slog-stdlog",
@@ -2045,6 +2119,16 @@ name = "riker-macros"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d2a8e8f71c9e7980a596c39c7e3537ea8563054526e15712a610ac97a02dba15"
+dependencies = [
+ "proc-macro2 0.4.30",
+ "quote 0.6.13",
+ "syn 0.15.44",
+]
+
+[[package]]
+name = "riker-macros"
+version = "0.2.0"
+source = "git+https://github.com/bfrog/riker?branch=0.4.1_stable_dashmap#ac48cef0dd5362477f8b8cf7d1400e58c94d5e62"
 dependencies = [
  "proc-macro2 0.4.30",
  "quote 0.6.13",
@@ -2294,7 +2378,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "98887ae129a828815e623e2656c6cfcc0a4b2926dcc6104e0c866d9f2f95041c"
 dependencies = [
  "ed25519",
- "getrandom",
+ "getrandom 0.1.15",
  "signature",
  "subtle-encoding",
  "zeroize",
