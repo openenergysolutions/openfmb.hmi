@@ -11,6 +11,17 @@
             "url": "http://localhost:4200",
             "webRoot": "${workspaceFolder}/Client",
             "runtimeArgs": []
-        }
+        },
+        {
+            "name": "server-launch",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/target/debug/hmi_server.exe",
+            "args": [],               
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": true
+        },
     ]
 }

@@ -9,10 +9,15 @@ name="hmi_server"
 [dependencies]
 tokio = { version = "0.2", features = ["macros", "sync", "rt-threaded"] }
 warp = { version = "0.2.4", features = ["tls"] }
+#openfmb-messages = {git="https://github.com/openenergysolutions/openfmb-rs"}
+#openfmb-messages-ext = {git="https://github.com/openenergysolutions/openfmb-rs"}
+openfmb-messages = { path = "../../../rust/openfmb-rs/openfmb-messages" }
+openfmb-messages-ext = { path = "../../../rust/openfmb-rs/openfmb-messages-ext" }
+microgrid-protobuf = {path = "../microgrid-protobuf"}
 serde = {version = "1.0.114", features = ["derive"] }
 serde_json = "1.0.57"
 futures = { version = "0.3.5", default-features = false }
-uuid = { version = "0.7", features = ["serde", "v4"] }
+uuid = {version = "0.8.1", features = ["serde", "v4"]}
 log = "0.4.11"
 env_logger = "0.7.1"
 static_dir = "0.1.3"
@@ -24,3 +29,8 @@ nats = "0.7"
 snafu = "0.6.9"
 snafu-derive = "0.6.9"
 config = "0.10.1"
+jsonwebtoken = "7.2.0"
+thiserror = "1.0.21"
+chrono = "0.4.10"
+bytes = "0.5.5"
+prost = "0.6.1"

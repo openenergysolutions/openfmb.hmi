@@ -892,11 +892,14 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
       const cellValue = this.graph.model.getValue(cell);
       if (cellValue && cellValue.userObject) {
         for (let displayData of cellValue.userObject.displayData) {
-          var topic = {
-            name: displayData.path,
-            mrid: cellValue.userObject.mRID
-          };
-          request.topics.push(topic);
+          if (displayData.path && displayData.path !== "" && cellValue.userObject.mRID && cellValue.userObject.mRID !== "")
+          {
+            var topic = {
+              name: displayData.path,
+              mrid: cellValue.userObject.mRID
+            };
+            request.topics.push(topic);
+          }
         }              
       }
     }    

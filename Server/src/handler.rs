@@ -3,32 +3,44 @@ use serde::{Deserialize, Serialize};
 use serde_json::from_str;
 use tokio::sync::{mpsc, RwLock};
 use warp::{http::StatusCode, reply::json, ws::Message, ws::WebSocket, Reply, Rejection};
+use riker::actors::*;
 use futures::{FutureExt, StreamExt};
 use std::collections::HashMap;
 use std::fs::File;
 use std::fs;
 use std::io::prelude::*;
 
+use super::hmi;
+use hmi::processor::ProcessorMsg;
+
+use microgrid_protobuf as microgrid;
+
 pub type Result<T> = std::result::Result<T, Rejection>;
 pub type Clients = Arc<RwLock<HashMap<String, Client>>>;
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct Topic {
-    name: String,
-    mrid: String,
-    value: Option<f32>
+#[derive(Debug, Clone)]
+pub struct MicrogridControl {
+    pub text: String,
+    pub message: microgrid::microgrid_control::ControlMessage,
 }
 
-impl Topic {
-    fn to_string(&self) -> String {
-        format!("{}.{}", self.mrid, self.name)
-    }
+#[derive(Debug, Clone)]
+pub struct DeviceControl {
+    pub text: String,
+    pub message: microgrid::device_control::DeviceControlMessage,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct Topic {
+    pub name: String,
+    pub mrid: String,
+    pub value: Option<f64>    
 }
 
 #[derive(Debug, Clone)]
 pub struct Client {
     pub session_id: String,
-    pub topics: Vec<String>,
+    pub topics: Vec<Topic>,
     pub sender: Option<mpsc::UnboundedSender<std::result::Result<Message, warp::Error>>>,
 }
 
@@ -38,17 +50,36 @@ pub struct RegisterRequest {
     topics: Vec<Topic>
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Equipment {
+    mrid: String,
+    name: String
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Command {      
+    name: String,
+    attributes: Option<CommandAttributes>
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct CommandAttributes {
+    label: String,
+    name: String,
+    path: String
+}
+
 #[allow(non_snake_case)]
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Diagram {
     diagramId: String,
-    name: String,
-    description: String,
-    location: String,
-    data: String,
-    createdDate: String,
-    createdBy: String,
-    backgroundColor: String
+    name: Option<String>,
+    description: Option<String>,
+    location: Option<String>,
+    data: Option<String>,
+    createdDate: Option<String>,
+    createdBy: Option<String>,
+    backgroundColor: Option<String>
 }
 
 #[derive(Serialize, Debug)]
@@ -64,8 +95,17 @@ pub struct RegisterResponse {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct UpdateMessage {
-    topic: Topic,
-    session_id: Option<String>
+    pub topic: Topic,
+    pub session_id: Option<String>
+}
+
+impl UpdateMessage {
+    pub fn create(topic: Topic, session_id: String) -> UpdateMessage {
+        UpdateMessage {
+            topic: topic,
+            session_id: Some(session_id)
+        }
+    }
 }
 
 #[derive(Serialize, Debug)]
@@ -73,7 +113,15 @@ pub struct UpdateMessages {
     updates: Vec<UpdateMessage>
 }
 
-pub async fn data_handler(update: UpdateMessage, clients: Clients) -> Result<impl Reply> {
+impl UpdateMessages {
+    pub fn new(messages: Vec<UpdateMessage>) -> UpdateMessages {
+        UpdateMessages {
+            updates: messages
+        }
+    }
+}
+
+pub async fn data_handler(update: UpdateMessage, clients: Clients, processor: ActorRef<ProcessorMsg>) -> Result<impl Reply> {
     println!("Handle data: {:?}", update);
     clients
         .read()
@@ -83,17 +131,121 @@ pub async fn data_handler(update: UpdateMessage, clients: Clients) -> Result<imp
             Some(v) => client.session_id == v,
             None => true,
         })
-        .filter(|(_, client)| client.topics.contains(&update.topic.to_string()))
+        //.filter(|(_, client)| client.topics.contains(&update.topic.to_string()))
         .for_each(|(_, client)| {
-            if let Some(sender) = &client.sender {
-                let _rs = UpdateMessages {
-                    updates: vec![update.clone()]
-                };
-                let json = serde_json::to_string(&_rs).unwrap();
-                let _ = sender.send(Ok(Message::text(json)));
+            if let Some(_sender) = &client.sender { 
+                println!("Received command: {:?}", update);
+
+                if update.topic.name == "ResetDevices" {
+                    processor.tell(
+                        MicrogridControl {
+                            text: "ResetDevices".to_string(),
+                            message:  microgrid::microgrid_control::ControlMessage::ResetDevices("".to_string()),
+                        },
+                        None,
+                    );
+                }
+                else if update.topic.name == "Shutdown" {
+                    processor.tell(
+                        MicrogridControl {
+                            text: "Shutdown".to_string(),
+                            message:  microgrid::microgrid_control::ControlMessage::Shutdown("".to_string()),
+                        },
+                        None,
+                    );
+                }
+                else if update.topic.name == "InitiateIsland" {
+                    processor.tell(
+                        MicrogridControl {
+                            text: "InitiateIsland".to_string(),
+                            message:  microgrid::microgrid_control::ControlMessage::InitiateIsland("".to_string()),
+                        },
+                        None,
+                    );
+                }
+                else if update.topic.name == "InitiateGridConnect" {
+                    processor.tell(
+                        MicrogridControl {
+                            text: "InitiateGridConnect".to_string(),
+                            message:  microgrid::microgrid_control::ControlMessage::InitiateGridConnect("".to_string()),
+                        },
+                        None,
+                    );
+                }
+                else if update.topic.name == "EnableNetZero" {
+                    processor.tell(
+                        MicrogridControl {
+                            text: "EnableNetZero".to_string(),
+                            message:  microgrid::microgrid_control::ControlMessage::EnableNetZero("".to_string()),
+                        },
+                        None,
+                    );
+                }
+                else if update.topic.name == "DisableNetZero" {
+                    processor.tell(
+                        MicrogridControl {
+                            text: "DisableNetZero".to_string(),
+                            message:  microgrid::microgrid_control::ControlMessage::DisableNetZero("".to_string()),
+                        },
+                        None,
+                    );
+                }
+                else if update.topic.name == "ReconnectPretestOne" {
+                    processor.tell(
+                        MicrogridControl {
+                            text: "ReconnectPretestOne".to_string(),
+                            message:  microgrid::microgrid_control::ControlMessage::ReconnectPretestOne("".to_string()),
+                        },
+                        None,
+                    );
+                }
+                else if update.topic.name == "ReconnectPretestTwo" {
+                    processor.tell(
+                        MicrogridControl {
+                            text: "ReconnectPretestTwo".to_string(),
+                            message:  microgrid::microgrid_control::ControlMessage::ReconnectPretestTwo("".to_string()),
+                        },
+                        None,
+                    );
+                }
+                else if update.topic.name == "ReconnectTest" {
+                    processor.tell(
+                        MicrogridControl {
+                            text: "ReconnectTest".to_string(),
+                            message:  microgrid::microgrid_control::ControlMessage::ReconnectTest("".to_string()),
+                        },
+                        None,
+                    );
+                }
             }
         });
 
+    Ok(StatusCode::OK)
+}
+
+pub async fn send_updates(updates: UpdateMessages, clients: Clients) -> Result<impl Reply> {
+    
+    clients
+        .read()
+        .await
+        .iter()
+        // .filter(|(_, client)| match update.session_id.clone() {
+        //     Some(v) => client.session_id == v,
+        //     None => true,
+        // })
+        //.filter(|(_, client)| client.topics.contains(&update.topic.to_string()))
+        .for_each(|(_, client)| {
+            if let Some(sender) = &client.sender {                          
+                let json = serde_json::to_string(&updates).unwrap();
+                let _ = sender.send(Ok(Message::text(json)));                
+            }
+        });
+
+    Ok(StatusCode::OK)
+}
+
+pub async fn execute_command(update: Command, _clients: Clients) -> Result<impl Reply> {
+    println!("Received command '{}'", update.name);
     Ok(StatusCode::OK)
 }
 
@@ -112,9 +264,29 @@ pub async fn save_handler(request: Diagram) -> Result<impl Reply> {
     }))
 }
 
+// POST
+pub async fn delete_handler(_request: Diagram) -> Result<impl Reply> {
+    write_json(String::from("data.json"), String::from("")).unwrap();
+
+    Ok(json(&Response {
+        success: true,
+        message: "".to_string()
+    }))
+}
+
 // GET
 pub async fn list_handler() -> Result<impl Reply> {
     Ok(json(&read_json(String::from("data.json")).unwrap()))
+}
+
+// GET
+pub async fn equipment_handler() -> Result<impl Reply> {               
+    Ok(json(&read_equipment(String::from("equipment.json")).unwrap()))    
+}
+
+// GET
+pub async fn command_handler() -> Result<impl Reply> {               
+    Ok(json(&read_commands(String::from("command.json")).unwrap()))    
 }
 
 // GET
@@ -122,18 +294,7 @@ pub async fn design_handler(/*id: String*/) -> Result<impl Reply> {
 
     let list = read_json(String::from("data.json")).unwrap();
 
-    return Ok(json(list.get(0).unwrap()));
-
-    // for diagram in list.iter() {
-    //     if diagram.diagramId == "1710c39f-369f-42af-8f7d-9668db790f0f" {
-    //         return Ok(json(diagram));
-    //     }
-    // }
-
-    // Ok(json(&Response {
-    //     success: false,
-    //     message: "ID not found".to_string()
-    // }))
+    return Ok(json(list.get(0).unwrap()));    
 }
 
 pub async fn hmi_handler(ws: warp::ws::Ws, id: String, clients: Clients) -> Result<impl Reply> {
@@ -182,7 +343,7 @@ pub async fn client_connection(ws: WebSocket, id: String, clients: Clients) {
 }
 
 async fn client_msg(id: &str, msg: Message, clients: &Clients) {
-    println!("Received message from {}: {:?}", id, msg);
+    //println!("Received message from {}: {:?}", id, msg);
     let message = match msg.to_str() {
         Ok(v) => v,
         Err(_) => return,
@@ -190,8 +351,8 @@ async fn client_msg(id: &str, msg: Message, clients: &Clients) {
 
     let register_request: RegisterRequest = match from_str(&message) {
         Ok(v) => v,
-        Err(_) => {
-            println!("Only can handle RegisterRequest at this moment.  Ignore message!");
+        Err(e) => {
+            println!("Only can handle RegisterRequest at this moment. {:?}", e);
             return;
         }
     };
@@ -201,8 +362,7 @@ async fn client_msg(id: &str, msg: Message, clients: &Clients) {
         Some(v) => {
             let mut topics = vec![];
             for t in register_request.topics.iter() {
-                topics.push(t.to_string());
-                dbg!(t);
+                topics.push(t.clone());
             }
             v.topics = topics;
         }
@@ -221,6 +381,28 @@ fn read_json(file_path: String) -> std::io::Result<Vec<Diagram>> {
         serde_json::from_str(&contents).expect("JSON was not well-formatted");
 
     Ok(diagrams)
+}
+
+fn read_equipment(file_path: String) -> std::io::Result<Vec<Equipment>> {
+    let mut file = File::open(file_path)?;
+    let mut contents = String::new();
+    file.read_to_string(&mut contents)?;
+
+    let eqs: Vec<Equipment> =
+        serde_json::from_str(&contents).expect("JSON was not well-formatted");
+
+    Ok(eqs)
+}
+
+fn read_commands(file_path: String) -> std::io::Result<Vec<Command>> {
+    let mut file = File::open(file_path)?;
+    let mut contents = String::new();
+    file.read_to_string(&mut contents)?;
+
+    let eqs: Vec<Command> =
+        serde_json::from_str(&contents).expect("JSON was not well-formatted");
+
+    Ok(eqs)
 }
 
 fn write_json(file_path: String, json: String) -> std::io::Result<()> {

@@ -3,6 +3,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ButtonFunction, CommandAction } from '../../../shared/hmi.constants'
 import { Symbol } from '../../../shared/hmi.constants'
 import { DiagramData } from '../../../shared/models/userobject.model';
+import { getCommands, getCommandsByType } from '../../../shared/models/commands.model';
 
 @Component({
   selector: 'app-control-dialog',
@@ -23,13 +24,25 @@ export class ControlDialogComponent implements OnInit {
   hasDataMapped: boolean = false;
   lastUpdate: string;
   hasLastUpdate: boolean = false;
+  commands: any[] = [];
 
   constructor(
     public dialogRef: MatDialogRef<ControlDialogComponent>,    
     @Inject(MAT_DIALOG_DATA) public data: any
   ) { }
 
-  ngOnInit() {        
+  ngOnInit() {  
+    let commandTypes = getCommands();
+    for (let entry of commandTypes) {
+      let a = getCommandsByType(entry);
+
+      for (let cmd of a) {
+        if (cmd.attributes && cmd.attributes.name) {
+          this.commands.push(cmd.attributes.name);
+        }
+      }      
+    }
+
     this.diagramId = this.data.diagramId;
 
     this.diagramData = this.data.diagramData;
@@ -72,6 +85,10 @@ export class ControlDialogComponent implements OnInit {
         else if (dataType === 'analog') {
           this.isSetPoint = true;
           this.setpointValue = this.diagramData.controlData[0].measurement;
+        }    
+        else if (this.commands.includes(this.diagramData.controlData[0].path)) {            
+            this.isControllable = true;
+            this.hasDataMapped = true;
         }
         else {
           console.error('Data type for control point is not supported: ' + dataType);

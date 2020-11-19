@@ -4,7 +4,7 @@ mod device;
 mod lifecycle_manager;
 mod persistor;
 mod processor;
-mod publisher;
+pub mod publisher;
 pub mod subscriber;
 mod sys_event_log;
 //pub use configurator::*;
