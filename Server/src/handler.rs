@@ -31,10 +31,18 @@ pub struct DeviceControl {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
+pub enum DataValue
+{
+    Bool(bool),
+    Double(f64),
+    String(String)
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Topic {
     pub name: String,
     pub mrid: String,
-    pub value: Option<f64>    
+    pub value: Option<DataValue>    
 }
 
 #[derive(Debug, Clone)]

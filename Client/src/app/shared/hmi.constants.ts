@@ -61,11 +61,11 @@ export const Hmi = {
 }
 
 export const Helpers = {
-    convertPos: (pos: any) => {
-        if (pos === PosString.closed || pos === true || pos === 1 || pos === "1") {
+    convertPos: (pos: number) => {
+        if (pos === 1) {
             return PosString.closed;
         }
-        else if (pos === PosString.open || pos === false || pos === 0 || pos === "0") {
+        else if (pos === 2) {
             return PosString.open;
         }
         else {

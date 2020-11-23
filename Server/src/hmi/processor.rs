@@ -5,11 +5,77 @@ use super::hmi_publisher::HmiPublisherMsg;
 use crate::handler::*;
 
 use riker::actors::*;
-use uuid::Uuid;
+use serde_json::Value;
+use log::info;
+use std::collections::HashMap;
 
-use openfmb_messages_ext::{
-    OpenFMBExt, SwitchReadingExt
-};
+pub struct Node {
+    name: String,
+    path: String,
+    value: String,
+    nodes: Vec<Node>
+}
+
+impl Node {
+    pub fn new(name: &str) -> Node {
+        Node {
+            nodes: vec![],
+            name: String::from(name),
+            path: String::from(""),
+            value: String::from("")                                 
+        }
+    }
+    pub fn path(&self) -> String {
+        self.path.clone()
+    }
+    pub fn get_value(&self) -> String {
+        self.value.clone()
+    }
+    pub fn set_value(&mut self, value: &str) {
+        self.value = String::from(value);
+    }
+    fn add_node(&mut self, node: Node) {
+        let mut n = node;
+        if n.path == "" {
+            n.path = format!("{}.{}", self.path, n.name);
+        }
+        self.nodes.push(n);       
+    }
+    pub fn from_json(&mut self, json_value: &Value, data: &mut HashMap<String, DataValue>) {
+        match json_value {
+            Value::Object(m) => {
+                for (k, v) in m.iter() {                
+                    let mut child = Node::new(k);   
+                    child.path = format!("{}.{}", self.path, k);                     
+                    child.from_json(&v, data);
+                    self.add_node(child);
+                }
+            },
+            Value::Array(a) => {
+                let original_path = self.path();
+                for (i, v) in a.iter().enumerate() {                    
+                    self.path = format!("{}[{}]", original_path, i);                                        
+                    self.from_json(&v, data);
+                }
+            },
+            Value::Bool(b) => {                
+                self.set_value(b.to_string().as_str());
+                data.insert(self.path().replace("_", "").to_lowercase(), DataValue::Bool(b.clone()));
+            },
+            Value::Number(n) => {                
+                self.set_value(n.to_string().as_str());
+                data.insert(self.path().replace("_", "").to_lowercase(), DataValue::Double(n.as_f64().unwrap()));
+            },
+            Value::String(s) => {                
+                self.set_value(s.as_str());
+                data.insert(self.path().replace("_", "").to_lowercase(), DataValue::String(s.clone()));
+            },
+            Value::Null => {
+                // ignore
+            }
+        }
+    }    
+}
 
 #[actor(OpenFMBMessage, PublisherRefWrap, MicrogridControl, DeviceControl)]
 #[derive(Clone, Debug)]
@@ -91,65 +157,273 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
 
     let mut update_messages = vec![];
 
+    let mut data_maps : HashMap<String, HashMap<String, DataValue>> = HashMap::new();
+    let dummy : HashMap<String, DataValue> = HashMap::new();
+
+    let device_mrid = format!("{}", msg.device_mrid().unwrap());
+
     clients
         .read()
         .await
-        .iter()        
-        .for_each(|(_, client)| {
-            println!("Session ID: {:?}", client.session_id); 
-            
-
-            for topic in &client.topics {
-                
-                let topic_mrid = Uuid::parse_str(&topic.mrid).unwrap();
-                if topic_mrid == msg.device_mrid().unwrap() {
-                    //println!("{:?}", topic);
-
-                    match &msg {
+        .iter()               
+        .for_each(|(_, client)| {                         
+            for topic in &client.topics {                                
+                if topic.mrid == device_mrid {  
+                    
+                    let data : &HashMap<String, DataValue> = match &msg {
+                        OpenFMBMessage::GenerationReading(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: HashMap<String, DataValue> = HashMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "GenerationReadingProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }                  
+                        },
+                        OpenFMBMessage::GenerationStatus(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: HashMap<String, DataValue> = HashMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "GenerationStatusProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }                  
+                        },
                         OpenFMBMessage::SwitchReading(message) => {
-                            if topic.name.contains(".switchReading[0].readingMMXU.A.phsA.cVal.mag") {
-                                let current = message.as_ref().get_current_phsa();
-                                let mut update_msg = UpdateMessage::create(topic.clone(), client.session_id.clone());
-                                update_msg.topic.value = Some(current);
-                                update_messages.push(update_msg);                                
-                            }
-                            else if topic.name.contains(".switchReading[0].readingMMXU.A.phsB.cVal.mag") {
-                                let current = message.as_ref().get_current_phsb();
-                                let mut update_msg = UpdateMessage::create(topic.clone(), client.session_id.clone());
-                                update_msg.topic.value = Some(current);
-                                update_messages.push(update_msg);                                
-                            }
-                            else if topic.name.contains(".switchReading[0].readingMMXU.A.phsC.cVal.mag") {
-                                let current = message.as_ref().get_current_phsc();
-                                let mut update_msg = UpdateMessage::create(topic.clone(), client.session_id.clone());
-                                update_msg.topic.value = Some(current);
-                                update_messages.push(update_msg);                                
-                            }
-                            else if topic.name.contains(".switchReading[0].readingMMXU.Hz.mag") {
-                                let current = message.as_ref().get_freq(0);
-                                let mut update_msg = UpdateMessage::create(topic.clone(), client.session_id.clone());
-                                update_msg.topic.value = Some(current);
-                                update_messages.push(update_msg);
-                            }                            
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: HashMap<String, DataValue> = HashMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "SwitchReadingProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }                  
                         },
                         OpenFMBMessage::SwitchStatus(message) => {
-                            if topic.name.ends_with(".Pos.phs3.stVal") {
-                                if let Ok(state) = message.as_ref().device_state() {
-                                    let mut s : f64 = 0.0;
-                                    if state == "Closed" {
-                                        s = 1.0;
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: HashMap<String, DataValue> = HashMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "SwitchStatusProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
                                     }
-
-                                    let mut update_msg = UpdateMessage::create(topic.clone(), client.session_id.clone());
-                                    update_msg.topic.value = Some(s);
-                                    update_messages.push(update_msg);
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
                                 }
-                                println!("Topic: path={:?}, state={:?}", topic.name, message.as_ref().device_state());
-                                
-                            }
+                            }  
+                        },
+                        OpenFMBMessage::MeterReading(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: HashMap<String, DataValue> = HashMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "MeterReadingProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }  
+                        },
+                        OpenFMBMessage::SolarReading(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: HashMap<String, DataValue> = HashMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "SolarReadingProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }  
+                        },
+                        OpenFMBMessage::SolarStatus(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: HashMap<String, DataValue> = HashMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "SolarStatusProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }  
+                        },
+                        OpenFMBMessage::ESSReading(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: HashMap<String, DataValue> = HashMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "ESSReadingProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }  
+                        },
+                        OpenFMBMessage::ESSStatus(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: HashMap<String, DataValue> = HashMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "ESSStatusProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }  
+                        },
+                        OpenFMBMessage::LoadReading(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: HashMap<String, DataValue> = HashMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "LoadReadingProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }  
+                        },
+                        OpenFMBMessage::LoadStatus(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: HashMap<String, DataValue> = HashMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "LoadStatusProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }  
+                        },
+                        OpenFMBMessage::BreakerReading(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: HashMap<String, DataValue> = HashMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "BreakerReadingProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }  
+                        },
+                        OpenFMBMessage::BreakerStatus(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: HashMap<String, DataValue> = HashMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "BreakerStatusProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }  
+                        },
+                        OpenFMBMessage::RecloserReading(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: HashMap<String, DataValue> = HashMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "RecloserReadingProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }  
+                        },
+                        OpenFMBMessage::RecloserStatus(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: HashMap<String, DataValue> = HashMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "RecloserStatusProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }  
                         },
                         _ => {
-                            println!("Message type is not yet supported: {:?}", msg.message_type());
+                            &dummy
+                        }
+                    };
+
+                    match data.get(&topic.name.to_lowercase()) {
+                        Some(v) => {
+                            let mut update_msg = UpdateMessage::create(topic.clone(), client.session_id.clone());
+                            update_msg.topic.value = Some(v.clone());                            
+                            update_messages.push(update_msg);
+                        },
+                        _ => {
+                            // ignore
                         }
                     }
                 }                
@@ -158,6 +432,6 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
 
     if update_messages.len() > 0 {
         let _ = send_updates(UpdateMessages::new(update_messages), clients.clone()).await;
+        info!("Update sent");
     }
 }
-

@@ -729,7 +729,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
                           image.removeAttribute('xlink:href');
                         }
 
-                        const val = Helpers.convertPos(update.topic.value);
+                        const val = Helpers.convertPos(update.topic.value?.Double);
                         cell.value.userObject.tag = val;
                         cell.value.userObject.lastUpdate = ts;
 
@@ -753,7 +753,8 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
                   var color = 'gray';
                   if (diagramData && diagramData.statusDefinition) {
                     for(var j = 0; j < diagramData.statusDefinition.length; ++j) {
-                      if (diagramData.statusDefinition[j].value === update.topic?.value) {
+                      console.log(parseInt(update.topic.value.Double, 10));
+                      if (diagramData.statusDefinition[j].value == update.topic.value.Double) {
                         color = diagramData.statusDefinition[j].color;
                       }
                     }
@@ -766,7 +767,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
               }
               else {
                 // This is measurement box
-                domElement[i].textContent = this.setDataFieldValue(domElement[i], update.topic?.value);
+                domElement[i].textContent = this.setDataFieldValue(domElement[i], update.topic?.value.Double);
                 const cellId = domElement[i].getAttribute('cell-id');
                 var cell = this.graph.getModel().getCell(cellId);
                 if (cell) {
@@ -906,9 +907,9 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     this.sendWsData(request);
   }
 
-  setDataFieldValue(element: Element, value: string): string {
+  setDataFieldValue(element: Element, value: any): string {
     if (element.className.match(/\bfield-item-value-state\b/)) {
-      if (value === '0') {
+      if (value === 0.0) {
         element.classList.add('red-color-value');
         element.classList.remove('green-color-value');
         return 'off';
@@ -918,7 +919,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
         return 'on';
       }
     } else if (element.className.match(/\bfield-item-value-status\b/)) {
-      if (value === '1') {
+      if (value === 1.0) {
         element.classList.add('red-color-value');
         element.classList.remove('green-color-value');
         return 'closed';
