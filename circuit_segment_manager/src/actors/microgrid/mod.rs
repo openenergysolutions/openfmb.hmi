@@ -402,33 +402,33 @@ impl Microgrid {
                     1 => {
                         warn!("disabling ess synchro");
                         //switch synchron on, battery synchro off
-                        unimplemented!();
-                        // publish!(
-                        //     self.publisher,
-                        //     EssControlProfile::build_synchro_profile(
-                        //         &self
-                        //             .cfg
-                        //             .get_str("circuit_segment_devices.abb_pcs100.mrid")
-                        //             .unwrap(),
-                        //         SystemTime::now(),
-                        //         true,
-                        //     ),
-                        //     None
-                        // );
+                        //unimplemented!();
+                        publish!(
+                            self.publisher,
+                            EssControlProfile::build_synchro_profile(
+                                &self
+                                    .cfg
+                                    .get_str("circuit_segment_devices.abb_pcs100.mrid")
+                                    .unwrap(),
+                                SystemTime::now(),
+                                true,
+                            ),
+                            None
+                        );
                         warn!("sending ess synchro ");
                         sleep(Duration::from_millis(50));
-                        unimplemented!();
-                        // publish!(
-                        //     self.publisher,
-                        //     EssControlProfile::build_vsi_pq_control_profile(
-                        //         &self
-                        //             .cfg
-                        //             .get_str("circuit_segment_devices.abb_pcs100.mrid")
-                        //             .unwrap(),
-                        //         SystemTime::now(),
-                        //     ),
-                        //     None
-                        // );
+                        //unimplemented!();
+                        publish!(
+                            self.publisher,
+                            EssControlProfile::build_vsi_pq_control_profile(
+                                &self
+                                    .cfg
+                                    .get_str("circuit_segment_devices.abb_pcs100.mrid")
+                                    .unwrap(),
+                                SystemTime::now(),
+                            ),
+                            None
+                        );
                         self.microgrid_status.update_ctl_state(
                             MicrogridControlState::Reconnecting(
                                 ReconnectingState::VerifyEssSynchro,
@@ -451,19 +451,19 @@ impl Microgrid {
                     DbPosKind::Transient => warn!("way1 still in transient mode"),
                     DbPosKind::Invalid => warn!("way1 in invalid state"),
                     DbPosKind::Closed => {
-                        unimplemented!();
-                        // publish!(
-                        //     self.publisher,
-                        //     EssControlProfile::build_synchro_profile(
-                        //         &self
-                        //             .cfg
-                        //             .get_str("circuit_segment_devices.abb_pcs100.mrid")
-                        //             .unwrap(),
-                        //         SystemTime::now(),
-                        //         false,
-                        //     ),
-                        //     None
-                        // );
+                        //unimplemented!();
+                        publish!(
+                            self.publisher,
+                            EssControlProfile::build_synchro_profile(
+                                &self
+                                    .cfg
+                                    .get_str("circuit_segment_devices.abb_pcs100.mrid")
+                                    .unwrap(),
+                                SystemTime::now(),
+                                false,
+                            ),
+                            None
+                        );
                         warn!("sending ess synchro OFF");
                         self.microgrid_status.update_ctl_state(
                             MicrogridControlState::Reconnecting(ReconnectingState::VerifyReconnect),
@@ -487,27 +487,27 @@ impl Microgrid {
                 {
                     "dev" => {
                         // //way 1 closed
-                        // publish!(
-                        //     self.publisher,
-                        //     SwitchDiscreteControlProfile::switch_close_msg(
-                        //         &self
-                        //             .cfg
-                        //             .get_str("circuit_segment_devices.way1.mrid")
-                        //             .unwrap(),
-                        //     ),
-                        //     None
-                        // );
-                        unimplemented!();
-                        // publish!(
-                        //     self.publisher,
-                        //     BreakerDiscreteControlProfile::breaker_open_msg(
-                        //         &self
-                        //             .cfg
-                        //             .get_str("circuit_segment_devices.breaker3.mrid")
-                        //             .unwrap(),
-                        //     ),
-                        //     None
-                        // );
+                        publish!(
+                            self.publisher,
+                            SwitchDiscreteControlProfile::switch_close_msg(
+                                &self
+                                    .cfg
+                                    .get_str("circuit_segment_devices.way1.mrid")
+                                    .unwrap(),
+                            ),
+                            None
+                        );
+                        //unimplemented!();
+                        publish!(
+                            self.publisher,
+                            BreakerDiscreteControlProfile::breaker_open_msg(
+                                &self
+                                    .cfg
+                                    .get_str("circuit_segment_devices.breaker3.mrid")
+                                    .unwrap(),
+                            ),
+                            None
+                        );
                     }
                     _ => {}
                 }
@@ -1370,27 +1370,27 @@ impl Microgrid {
 
         info!("MicrogridControl - Reconnecting...");
 
-        // publish!(
-        //     self.publisher,
-        //     GenerationControlProfile::generator_off_msg(
-        //         &self
-        //             .cfg
-        //             .get_str("circuit_segment_devices.turbine-array.mrid")
-        //             .unwrap(),
-        //     ),
-        //     None
-        // );
-        // publish!(
-        //     self.publisher,
-        //     SwitchDiscreteControlProfile::switch_synchro_msg(
-        //         &self
-        //             .cfg
-        //             .get_str("circuit_segment_devices.way1.mrid")
-        //             .unwrap(),
-        //         true,
-        //     ),
-        //     None
-        // );
+        publish!(
+            self.publisher,
+            GenerationControlProfile::generator_off_msg(
+                &self
+                    .cfg
+                    .get_str("circuit_segment_devices.turbine-array.mrid")
+                    .unwrap(),
+            ),
+            None
+        );
+        publish!(
+            self.publisher,
+            SwitchDiscreteControlProfile::switch_synchro_msg(
+                &self
+                    .cfg
+                    .get_str("circuit_segment_devices.way1.mrid")
+                    .unwrap(),
+                true,
+            ),
+            None
+        );
 
         self.microgrid_status
             .update_ctl_state(MicrogridControlState::Reconnecting(
@@ -1503,16 +1503,16 @@ impl Microgrid {
         info!("MicrogridControl - Islanding...");
         // FIXME use a trait interface for Switch (open/close)
         //open way1
-        // publish!(
-        //     self.publisher,
-        //     SwitchDiscreteControlProfile::switch_open_msg(
-        //         &self
-        //             .cfg
-        //             .get_str("circuit_segment_devices.way1.mrid")
-        //             .unwrap(),
-        //     ),
-        //     None
-        // );
+        publish!(
+            self.publisher,
+            SwitchDiscreteControlProfile::switch_open_msg(
+                &self
+                    .cfg
+                    .get_str("circuit_segment_devices.way1.mrid")
+                    .unwrap(),
+            ),
+            None
+        );
         self.microgrid_status
             .update_ctl_state(MicrogridControlState::Islanding);
     }
