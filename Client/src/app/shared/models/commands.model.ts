@@ -18,7 +18,18 @@ export const COMMANDS = {
                 "type": "",
 				"measurement": ""               
             }
-        },       
+        }, 
+        {   
+            "type": "element",
+			"name": "Object",         
+            "attributes": {
+                "label": "",
+                "name": "InitiateIsland",
+                "path": "InitiateIsland",
+                "type": "",
+				"measurement": ""               
+            }
+        },        
         {   
             "type": "element",
 			"name": "Object",         

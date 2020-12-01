@@ -1406,86 +1406,86 @@ impl Microgrid {
         // FIXME use traits here to open/close/enable/disable devices
 
         //way 1 closed
-        // publish!(
-        //     self.publisher,
-        //     SwitchDiscreteControlProfile::switch_close_msg(
-        //         &self
-        //             .cfg
-        //             .get_str("circuit_segment_devices.way1.mrid")
-        //             .unwrap(),
-        //     ),
-        //     None
-        // );
+        publish!(
+            self.publisher,
+            SwitchDiscreteControlProfile::switch_close_msg(
+                &self
+                    .cfg
+                    .get_str("circuit_segment_devices.way1.mrid")
+                    .unwrap(),
+            ),
+            None
+        );
 
         //way 2 closed
-        // publish!(
-        //     self.publisher,
-        //     SwitchDiscreteControlProfile::switch_close_msg(
-        //         &self
-        //             .cfg
-        //             .get_str("circuit_segment_devices.way2.mrid")
-        //             .unwrap(),
-        //     ),
-        //     None
-        // );
+        publish!(
+            self.publisher,
+            SwitchDiscreteControlProfile::switch_close_msg(
+                &self
+                    .cfg
+                    .get_str("circuit_segment_devices.way2.mrid")
+                    .unwrap(),
+            ),
+            None
+        );
         //breaker 3 open
-        // publish!(
-        //     self.publisher,
-        //     BreakerDiscreteControlProfile::breaker_open_msg(
-        //         &self
-        //             .cfg
-        //             .get_str("circuit_segment_devices.breaker3.mrid")
-        //             .unwrap(),
-        //     ),
-        //     None
-        // );
+        publish!(
+            self.publisher,
+            BreakerDiscreteControlProfile::breaker_open_msg(
+                &self
+                    .cfg
+                    .get_str("circuit_segment_devices.breaker3.mrid")
+                    .unwrap(),
+            ),
+            None
+        );
         //way 4 closed
-        // publish!(
-        //     self.publisher,
-        //     SwitchDiscreteControlProfile::switch_close_msg(
-        //         &self
-        //             .cfg
-        //             .get_str("circuit_segment_devices.way4.mrid")
-        //             .unwrap(),
-        //     ),
-        //     None
-        // );
+        publish!(
+            self.publisher,
+            SwitchDiscreteControlProfile::switch_close_msg(
+                &self
+                    .cfg
+                    .get_str("circuit_segment_devices.way4.mrid")
+                    .unwrap(),
+            ),
+            None
+        );
 
         //loadbank off
-        // publish!(
-        //     self.publisher,
-        //     LoadControlProfile::loadbank_off_msg(
-        //         &self
-        //             .cfg
-        //             .get_str("circuit_segment_devices.load-bank.mrid")
-        //             .unwrap(),
-        //     ),
-        //     None
-        // );
+        publish!(
+            self.publisher,
+            LoadControlProfile::loadbank_off_msg(
+                &self
+                    .cfg
+                    .get_str("circuit_segment_devices.load-bank.mrid")
+                    .unwrap(),
+            ),
+            None
+        );
 
         //solar off
-        // publish!(
-        //     self.publisher,
-        //     SolarControlProfile::solar_off_msg(
-        //         &self
-        //             .cfg
-        //             .get_str("circuit_segment_devices.parker-invert.mrid")
-        //             .unwrap(),
-        //     ),
-        //     None
-        // );
+        publish!(
+            self.publisher,
+            SolarControlProfile::solar_off_msg(
+                &self
+                    .cfg
+                    .get_str("circuit_segment_devices.parker-invert.mrid")
+                    .unwrap(),
+            ),
+            None
+        );
 
-        // publish!(
-        //     self.publisher,
-        //     EssControlProfile::start_now_gridconnected_msg(
-        //         &self
-        //             .cfg
-        //             .get_str("circuit_segment_devices.abb_pcs100.mrid")
-        //             .unwrap(),
-        //         0.0,
-        //     ),
-        //     None
-        // );
+        publish!(
+            self.publisher,
+            EssControlProfile::start_now_gridconnected_msg(
+                &self
+                    .cfg
+                    .get_str("circuit_segment_devices.abb_pcs100.mrid")
+                    .unwrap(),
+                0.0,
+            ),
+            None
+        );
     }
 
     fn island(&mut self, _ctx: &Context<MicrogridMsg>) {

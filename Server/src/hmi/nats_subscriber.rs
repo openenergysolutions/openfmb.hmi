@@ -71,15 +71,15 @@ impl NATSSubscriber {
             Ok(())
         });
 
-        let sub = self.nats_broker.subscribe("microgridui.*").unwrap();
+        // let sub = self.nats_broker.subscribe("microgridui.*").unwrap();
 
-        let myself = ctx.myself.clone();
-        // dropping the returned Handler does not unsubscribe here
-        sub.with_handler(move |msg| {
-            let nats_msg = NatsMessage(Arc::new(msg));
-            myself.send_msg(nats_msg.into(), None);
-            Ok(())
-        });
+        // let myself = ctx.myself.clone();
+        // // dropping the returned Handler does not unsubscribe here
+        // sub.with_handler(move |msg| {
+        //     let nats_msg = NatsMessage(Arc::new(msg));
+        //     myself.send_msg(nats_msg.into(), None);
+        //     Ok(())
+        // });
 
         info!("Subscriber successfully subscribed");
     }
