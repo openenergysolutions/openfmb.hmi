@@ -752,8 +752,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
                   var diagramData = cell.value.userObject;
                   var color = 'gray';
                   if (diagramData && diagramData.statusDefinition) {
-                    for(var j = 0; j < diagramData.statusDefinition.length; ++j) {
-                      console.log(parseInt(update.topic.value.Double, 10));
+                    for(var j = 0; j < diagramData.statusDefinition.length; ++j) {                      
                       if (diagramData.statusDefinition[j].value == update.topic.value.Double) {
                         color = diagramData.statusDefinition[j].color;
                       }

@@ -1,5 +1,5 @@
 use circuit_segment_manager::messages::*;
-
+use prost::Message;
 use log::info;
 use riker::actors::*;
 use snafu::Snafu;
@@ -85,13 +85,13 @@ impl Receive<MicrogridControl> for NATSPublisher {
 
 impl Receive<DeviceControl> for NATSPublisher {
     type Msg = NATSPublisherMsg;    
-
-    fn receive(&mut self, _ctx: &Context<Self::Msg>, _msg: DeviceControl, _sender: Sender) { 
-        // TODO:: DeviceControlMessage encode???     
-        // let subject = "microgridui.device_control";
-        // info!("Sending {:?} to NATS topic {}", msg, subject);
-        // let mut buffer = Vec::<u8>::new();
-        // msg.message.encode(&mut buffer);
-        // self.nats_broker.publish(&subject, &mut buffer).unwrap();    
+   
+    fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: DeviceControl, _sender: Sender) {           
+        let subject = "microgridui.device_control";
+        info!("Sending {:?} to NATS topic {}", msg, subject);
+        let mut buffer = Vec::<u8>::new();
+        let device_control_msg = microgrid_protobuf::DeviceControl { msg: msg.message.into() };
+        device_control_msg.encode(&mut buffer).unwrap();
+        self.nats_broker.publish(&subject, &mut buffer).unwrap();    
     } 
 }

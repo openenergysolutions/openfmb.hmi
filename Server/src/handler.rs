@@ -9,7 +9,7 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::fs;
 use std::io::prelude::*;
-
+use log::info;
 use super::hmi;
 use hmi::processor::ProcessorMsg;
 
@@ -71,8 +71,7 @@ pub struct Command {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct CommandAttributes {
-    label: String,
+pub struct CommandAttributes {    
     name: String,
     path: String
 }
@@ -130,7 +129,7 @@ impl UpdateMessages {
 }
 
 pub async fn data_handler(update: UpdateMessage, clients: Clients, processor: ActorRef<ProcessorMsg>) -> Result<impl Reply> {
-    println!("Handle data: {:?}", update);
+    info!("Handle data: {:?}", update);
     clients
         .read()
         .await
@@ -141,13 +140,11 @@ pub async fn data_handler(update: UpdateMessage, clients: Clients, processor: Ac
         })
         //.filter(|(_, client)| client.topics.contains(&update.topic.to_string()))
         .for_each(|(_, client)| {
-            if let Some(_sender) = &client.sender { 
-                println!("Received command: {:?}", update);
-
+            if let Some(_sender) = &client.sender {                 
                 if update.topic.name == "ResetDevices" {
                     processor.tell(
                         MicrogridControl {
-                            text: "ResetDevices".to_string(),
+                            text: update.topic.name.clone(),
                             message:  microgrid::microgrid_control::ControlMessage::ResetDevices("".to_string()),
                         },
                         None,
@@ -156,7 +153,7 @@ pub async fn data_handler(update: UpdateMessage, clients: Clients, processor: Ac
                 else if update.topic.name == "Shutdown" {
                     processor.tell(
                         MicrogridControl {
-                            text: "Shutdown".to_string(),
+                            text: update.topic.name.clone(),
                             message:  microgrid::microgrid_control::ControlMessage::Shutdown("".to_string()),
                         },
                         None,
@@ -165,7 +162,7 @@ pub async fn data_handler(update: UpdateMessage, clients: Clients, processor: Ac
                 else if update.topic.name == "InitiateIsland" {
                     processor.tell(
                         MicrogridControl {
-                            text: "InitiateIsland".to_string(),
+                            text: update.topic.name.clone(),
                             message:  microgrid::microgrid_control::ControlMessage::InitiateIsland("".to_string()),
                         },
                         None,
@@ -174,7 +171,7 @@ pub async fn data_handler(update: UpdateMessage, clients: Clients, processor: Ac
                 else if update.topic.name == "InitiateGridConnect" {
                     processor.tell(
                         MicrogridControl {
-                            text: "InitiateGridConnect".to_string(),
+                            text: update.topic.name.clone(),
                             message:  microgrid::microgrid_control::ControlMessage::InitiateGridConnect("".to_string()),
                         },
                         None,
@@ -183,7 +180,7 @@ pub async fn data_handler(update: UpdateMessage, clients: Clients, processor: Ac
                 else if update.topic.name == "EnableNetZero" {
                     processor.tell(
                         MicrogridControl {
-                            text: "EnableNetZero".to_string(),
+                            text: update.topic.name.clone(),
                             message:  microgrid::microgrid_control::ControlMessage::EnableNetZero("".to_string()),
                         },
                         None,
@@ -192,7 +189,7 @@ pub async fn data_handler(update: UpdateMessage, clients: Clients, processor: Ac
                 else if update.topic.name == "DisableNetZero" {
                     processor.tell(
                         MicrogridControl {
-                            text: "DisableNetZero".to_string(),
+                            text: update.topic.name.clone(),
                             message:  microgrid::microgrid_control::ControlMessage::DisableNetZero("".to_string()),
                         },
                         None,
@@ -201,7 +198,7 @@ pub async fn data_handler(update: UpdateMessage, clients: Clients, processor: Ac
                 else if update.topic.name == "ReconnectPretestOne" {
                     processor.tell(
                         MicrogridControl {
-                            text: "ReconnectPretestOne".to_string(),
+                            text: update.topic.name.clone(),
                             message:  microgrid::microgrid_control::ControlMessage::ReconnectPretestOne("".to_string()),
                         },
                         None,
@@ -210,7 +207,7 @@ pub async fn data_handler(update: UpdateMessage, clients: Clients, processor: Ac
                 else if update.topic.name == "ReconnectPretestTwo" {
                     processor.tell(
                         MicrogridControl {
-                            text: "ReconnectPretestTwo".to_string(),
+                            text: update.topic.name.clone(),
                             message:  microgrid::microgrid_control::ControlMessage::ReconnectPretestTwo("".to_string()),
                         },
                         None,
@@ -219,12 +216,205 @@ pub async fn data_handler(update: UpdateMessage, clients: Clients, processor: Ac
                 else if update.topic.name == "ReconnectTest" {
                     processor.tell(
                         MicrogridControl {
-                            text: "ReconnectTest".to_string(),
+                            text:update.topic.name.clone(),
                             message:  microgrid::microgrid_control::ControlMessage::ReconnectTest("".to_string()),
                         },
                         None,
                     );
                 }
+                // Device controls
+                else if update.topic.name == "EnableSolarInverter" {
+                    processor.tell(
+                        DeviceControl {
+                            text: update.topic.name.clone(),
+                            message:  microgrid::device_control::DeviceControlMessage::EnableSolarInverter,
+                        },
+                        None,
+                    );
+                }
+                else if update.topic.name == "DisableSolarInverter" {
+                    processor.tell(
+                        DeviceControl {
+                            text: update.topic.name.clone(),
+                            message:  microgrid::device_control::DeviceControlMessage::DisableSolarInverter,
+                        },
+                        None,
+                    );
+                }
+                else if update.topic.name == "EnableLoadbank" {
+                    processor.tell(
+                        DeviceControl {
+                            text: update.topic.name.clone(),
+                            message:  microgrid::device_control::DeviceControlMessage::EnableLoadbank,
+                        },
+                        None,
+                    );
+                }
+                else if update.topic.name == "DisableLoadbank" {
+                    processor.tell(
+                        DeviceControl {
+                            text: update.topic.name.clone(),
+                            message:  microgrid::device_control::DeviceControlMessage::DisableLoadbank,
+                        },
+                        None,
+                    );
+                }
+                else if update.topic.name == "EssStart" {
+                    processor.tell(
+                        DeviceControl {
+                            text: update.topic.name.clone(),
+                            message:  microgrid::device_control::DeviceControlMessage::EssStart,
+                        },
+                        None,
+                    );
+                }
+                else if update.topic.name == "EssDischarge" {
+                    processor.tell(
+                        DeviceControl {
+                            text: update.topic.name.clone(),
+                            message:  microgrid::device_control::DeviceControlMessage::EssDischarge,
+                        },
+                        None,
+                    );
+                }
+                else if update.topic.name == "EssSocManage" {
+                    processor.tell(
+                        DeviceControl {
+                            text: update.topic.name.clone(),
+                            message:  microgrid::device_control::DeviceControlMessage::EssSocManage,
+                        },
+                        None,
+                    );
+                }
+                else if update.topic.name == "EssSocLimits" {
+                    processor.tell(
+                        DeviceControl {
+                            text: update.topic.name.clone(),
+                            message:  microgrid::device_control::DeviceControlMessage::EssSocLimits,
+                        },
+                        None,
+                    );
+                }
+                else if update.topic.name == "EssStop" {
+                    processor.tell(
+                        DeviceControl {
+                            text: update.topic.name.clone(),
+                            message:  microgrid::device_control::DeviceControlMessage::EssStop,
+                        },
+                        None,
+                    );
+                }
+                else if update.topic.name == "GeneratorOn" {
+                    processor.tell(
+                        DeviceControl {
+                            text: update.topic.name.clone(),
+                            message:  microgrid::device_control::DeviceControlMessage::GeneratorOn,
+                        },
+                        None,
+                    );
+                }
+                else if update.topic.name == "GeneratorDisabled" {
+                    processor.tell(
+                        DeviceControl {
+                            text: update.topic.name.clone(),
+                            message:  microgrid::device_control::DeviceControlMessage::GeneratorDisabled,
+                        },
+                        None,
+                    );
+                }
+                else if update.topic.name == "GeneratorEnabled" {
+                    processor.tell(
+                        DeviceControl {
+                            text: update.topic.name.clone(),
+                            message:  microgrid::device_control::DeviceControlMessage::GeneratorEnabled,
+                        },
+                        None,
+                    );
+                }
+                else if update.topic.name == "GeneratorOff" {
+                    processor.tell(
+                        DeviceControl {
+                            text: update.topic.name.clone(),
+                            message:  microgrid::device_control::DeviceControlMessage::GeneratorOff,
+                        },
+                        None,
+                    );
+                }
+                else if update.topic.name == "SwitchOneOpen" {
+                    processor.tell(
+                        DeviceControl {
+                            text: update.topic.name.clone(),
+                            message:  microgrid::device_control::DeviceControlMessage::SwitchOneOpen,
+                        },
+                        None,
+                    );
+                }
+                else if update.topic.name == "SwitchOneClosed" {
+                    processor.tell(
+                        DeviceControl {
+                            text: update.topic.name.clone(),
+                            message:  microgrid::device_control::DeviceControlMessage::SwitchOneClosed,
+                        },
+                        None,
+                    );
+                }
+                else if update.topic.name == "SwitchTwoOpen" {
+                    processor.tell(
+                        DeviceControl {
+                            text: update.topic.name.clone(),
+                            message:  microgrid::device_control::DeviceControlMessage::SwitchTwoOpen,
+                        },
+                        None,
+                    );
+                }
+                else if update.topic.name == "SwitchTwoClosed" {
+                    processor.tell(
+                        DeviceControl {
+                            text: update.topic.name.clone(),
+                            message:  microgrid::device_control::DeviceControlMessage::SwitchTwoClosed,
+                        },
+                        None,
+                    );
+                }
+                else if update.topic.name == "BreakerThreeOpen" {
+                    processor.tell(
+                        DeviceControl {
+                            text: update.topic.name.clone(),
+                            message:  microgrid::device_control::DeviceControlMessage::BreakerThreeOpen,
+                        },
+                        None,
+                    );
+                }
+                else if update.topic.name == "BreakerThreeClosed" {
+                    processor.tell(
+                        DeviceControl {
+                            text: update.topic.name.clone(),
+                            message:  microgrid::device_control::DeviceControlMessage::BreakerThreeClosed,
+                        },
+                        None,
+                    );
+                }
+                else if update.topic.name == "SwitchFourOpen" {
+                    processor.tell(
+                        DeviceControl {
+                            text: update.topic.name.clone(),
+                            message:  microgrid::device_control::DeviceControlMessage::SwitchFourOpen,
+                        },
+                        None,
+                    );
+                }
+                else if update.topic.name == "SwitchFourClosed" {
+                    processor.tell(
+                        DeviceControl {
+                            text: update.topic.name.clone(),
+                            message:  microgrid::device_control::DeviceControlMessage::SwitchFourClosed,
+                        },
+                        None,
+                    );
+                }
+                else {
+                    info!("Received unknown command: {}", update.topic.name);
+                }                
             }
         });
 
@@ -288,13 +478,30 @@ pub async fn list_handler() -> Result<impl Reply> {
 }
 
 // GET
-pub async fn equipment_handler() -> Result<impl Reply> {               
-    Ok(json(&read_equipment(String::from("equipment.json")).unwrap()))    
+pub async fn equipment_handler() -> Result<impl Reply> {  
+    
+    let config = riker::load_config();
+    let mut equipment_list = vec![];
+
+    if let Ok(list) = config.get_array("circuit_segment_devices.all_devices") {
+        for item in list {
+            let device_name = item.into_str().unwrap();
+            
+            let eq = Equipment {
+                name: config.get_str(&format!("circuit_segment_devices.{}.name", device_name)).unwrap(),
+                mrid: config.get_str(&format!("circuit_segment_devices.{}.mrid", device_name)).unwrap(),
+            };
+            
+            equipment_list.push(eq);
+        }
+    }        
+      
+    Ok(json(&equipment_list))
 }
 
 // GET
-pub async fn command_handler() -> Result<impl Reply> {               
-    Ok(json(&read_commands(String::from("command.json")).unwrap()))    
+pub async fn command_handler() -> Result<impl Reply> {  
+    Ok(json(&read_commands(String::from("command.json")).unwrap()))   
 }
 
 // GET
@@ -389,17 +596,6 @@ fn read_json(file_path: String) -> std::io::Result<Vec<Diagram>> {
         serde_json::from_str(&contents).expect("JSON was not well-formatted");
 
     Ok(diagrams)
-}
-
-fn read_equipment(file_path: String) -> std::io::Result<Vec<Equipment>> {
-    let mut file = File::open(file_path)?;
-    let mut contents = String::new();
-    file.read_to_string(&mut contents)?;
-
-    let eqs: Vec<Equipment> =
-        serde_json::from_str(&contents).expect("JSON was not well-formatted");
-
-    Ok(eqs)
 }
 
 fn read_commands(file_path: String) -> std::io::Result<Vec<Command>> {
