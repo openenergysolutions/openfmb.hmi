@@ -547,17 +547,16 @@ impl Microgrid {
                             .unwrap()
                             .as_str()
                         {
-                            "dev" => unimplemented!(),
-                            //publish!(
-                            //     self.publisher,
-                            //     BreakerDiscreteControlProfile::breaker_close_msg(
-                            //         &self
-                            //             .cfg
-                            //             .get_str("circuit_segment_devices.breaker3.mrid")
-                            //             .unwrap(),
-                            //     ),
-                            //     None
-                            // ),
+                            "dev" => publish!(
+                                self.publisher,
+                                BreakerDiscreteControlProfile::breaker_close_msg(
+                                    &self
+                                        .cfg
+                                        .get_str("circuit_segment_devices.breaker3.mrid")
+                                        .unwrap(),
+                                ),
+                                None
+                            ),
                             _ => {}
                         }
                     }
@@ -577,17 +576,16 @@ impl Microgrid {
                     .unwrap()
                     .as_str()
                 {
-                    "dev" => unimplemented!(),
-                    //     publish!(
-                    //     self.publisher,
-                    //     BreakerDiscreteControlProfile::breaker_close_msg(
-                    //         &self
-                    //             .cfg
-                    //             .get_str("circuit_segment_devices.breaker3.mrid")
-                    //             .unwrap(),
-                    //     ),
-                    //     None
-                    // ),
+                    "dev" => publish!(
+                        self.publisher,
+                        BreakerDiscreteControlProfile::breaker_close_msg(
+                            &self
+                                .cfg
+                                .get_str("circuit_segment_devices.breaker3.mrid")
+                                .unwrap(),
+                        ),
+                        None
+                    ),
                     _ => {}
                 }
             }

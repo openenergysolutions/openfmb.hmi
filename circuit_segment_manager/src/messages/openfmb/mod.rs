@@ -1,3 +1,4 @@
+use log::warn;
 use openfmb_messages::commonmodule::StatusDps;
 use chrono::{offset::TimeZone, DateTime, NaiveDateTime, Utc};
 use enum_as_inner::EnumAsInner;
@@ -1946,6 +1947,9 @@ impl TryFrom<&nats::Message> for OpenFMBMessage {
     fn try_from(msg: &nats::Message) -> Result<Self, OpenFMBError> {
         let bytes = &msg.data;
         let profile: Vec<&str> = msg.subject.split(".").collect();
+        if profile.len() <=1 {
+            warn!("PROFILE: {:?}", &profile);
+        }
         let profile = profile.get(2).unwrap();
         match *profile {
             "GenerationReadingProfile" => Ok(GenerationReading(Box::new(
