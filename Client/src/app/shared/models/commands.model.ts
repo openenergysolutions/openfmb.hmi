@@ -13,8 +13,8 @@ export const COMMANDS = {
 			"name": "Object",         
             "attributes": {
                 "label": "",
-                "name": "InitiateIsland",
-                "path": "InitiateIsland",
+                "name": "ResetDevices",
+                "path": "ResetDevices",
                 "type": "",
 				"measurement": ""               
             }
