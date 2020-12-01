@@ -239,7 +239,8 @@ async fn server_setup() {
             "Origin", 
             "Access-Control-Request-Method", 
             "Access-Control-Request-Headers", 
-            "content-type", 
+            "content-type",
+            "upgrade", 
             "authorization"]);   
 
     let routes = login_routes

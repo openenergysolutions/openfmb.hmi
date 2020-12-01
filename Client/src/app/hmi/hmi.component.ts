@@ -927,8 +927,8 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
         element.classList.remove('red-color-value');
         return 'open';
       }
-    }
-    return value;
+    }    
+    return parseFloat(value).toFixed(2).toString();
   }
 
   ngOnDestroy() {
