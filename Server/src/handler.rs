@@ -120,6 +120,11 @@ pub struct UpdateMessages {
     updates: Vec<UpdateMessage>
 }
 
+#[derive(Deserialize)]
+pub struct DiagramQuery {
+    id: String,
+}
+
 impl UpdateMessages {
     pub fn new(messages: Vec<UpdateMessage>) -> UpdateMessages {
         UpdateMessages {
@@ -450,22 +455,19 @@ pub async fn execute_command(update: Command, _clients: Clients) -> Result<impl 
 // POST
 pub async fn save_handler(request: Diagram) -> Result<impl Reply> {
 
-    let list = vec![request];
+    let j = serde_json::to_string(&request).unwrap();
 
-    let j = serde_json::to_string(&list).unwrap();
+    write_json(format!("diagrams/{}.json", request.diagramId), j).unwrap();
 
-    write_json(String::from("data.json"), j).unwrap();
-
-    Ok(json(&Response {
+     Ok(json(&Response {
         success: true,
         message: "".to_string()
     }))
 }
 
 // POST
-pub async fn delete_handler(_request: Diagram) -> Result<impl Reply> {
-    write_json(String::from("data.json"), String::from("")).unwrap();
-
+pub async fn delete_handler(request: Diagram) -> Result<impl Reply> {    
+    let _ = fs::remove_file(format!("diagrams/{}.json", request.diagramId));
     Ok(json(&Response {
         success: true,
         message: "".to_string()
@@ -474,7 +476,7 @@ pub async fn delete_handler(_request: Diagram) -> Result<impl Reply> {
 
 // GET
 pub async fn list_handler() -> Result<impl Reply> {
-    Ok(json(&read_json(String::from("data.json")).unwrap()))
+    Ok(json(&read_json(String::from("diagrams")).unwrap()))
 }
 
 // GET
@@ -505,11 +507,17 @@ pub async fn command_handler() -> Result<impl Reply> {
 }
 
 // GET
-pub async fn design_handler(/*id: String*/) -> Result<impl Reply> {
+pub async fn diagram_handler(id: DiagramQuery) -> Result<impl Reply> {
+    
+    let list = read_json(String::from("diagrams")).unwrap();
+    let id = id.id;
+    for d in list {
+        if d.diagramId == id {
+            return Ok(json(&d));
+        }
+    }
 
-    let list = read_json(String::from("data.json")).unwrap();
-
-    return Ok(json(list.get(0).unwrap()));    
+    Err(warp::reject::not_found())
 }
 
 pub async fn hmi_handler(ws: warp::ws::Ws, id: String, clients: Clients) -> Result<impl Reply> {
@@ -587,13 +595,27 @@ async fn client_msg(id: &str, msg: Message, clients: &Clients) {
     };
 }
 
-fn read_json(file_path: String) -> std::io::Result<Vec<Diagram>> {
-    let mut file = File::open(file_path)?;
-    let mut contents = String::new();
-    file.read_to_string(&mut contents)?;
+fn read_json(file_path: String) -> std::io::Result<Vec<Diagram>> {    
 
-    let diagrams: Vec<Diagram> =
-        serde_json::from_str(&contents).expect("JSON was not well-formatted");
+    let mut diagrams: Vec<Diagram> = vec![];    
+    for entry in fs::read_dir(&file_path)? {
+        let entry = entry?;
+        let path = entry.path();
+        if !path.is_dir() {
+            let mut file = File::open(path)?;
+            let mut contents = String::new();
+            file.read_to_string(&mut contents)?;
+            diagrams.push(serde_json::from_str(&contents).expect("JSON was not well-formatted"));
+        } 
+    }
+        
+
+    // let mut file = File::open(file_path)?;
+    // let mut contents = String::new();
+    // file.read_to_string(&mut contents)?;
+
+    // let diagrams: Vec<Diagram> =
+    //     serde_json::from_str(&contents).expect("JSON was not well-formatted");
 
     Ok(diagrams)
 }

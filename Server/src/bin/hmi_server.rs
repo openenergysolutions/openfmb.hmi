@@ -196,8 +196,9 @@ async fn server_setup() {
 
     let design = warp::path("diagram");
     let design_routes = design        
-        .and(warp::get())          
-        .and_then(design_handler);
+        .and(warp::get()) 
+        .and(warp::query())      
+        .and_then(diagram_handler);
 
     let update = warp::path!("update-data")
         .and(warp::body::json())
