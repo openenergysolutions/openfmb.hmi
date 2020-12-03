@@ -14,6 +14,7 @@ use riker::system::ActorSystem;
 use riker::actor::{ActorRef, ActorRefFactory, ActorSelectionFactory};
 use circuit_segment_manager::actors::{SystemEventLog, Publisher, Persistor, Microgrid};
 use std::time::Duration;
+use std::net::ToSocketAddrs;
 use nats::Connection;
 use config::Config;
 use circuit_segment_manager::actors::coordinator::subscriber::subscriber::Subscriber;
@@ -257,8 +258,14 @@ async fn server_setup() {
         .or(execute)        
         .with(cors)
         .with(warp::log("openfmb"));  
-                      
-    warp::serve(routes).run(([0, 0, 0, 0], 32771)).await;
+     
+    let mut server_uri = "0.0.0.0:32771".to_string();
+    
+    if let Ok(ip) = config.get_str("hmi.server_uri") {
+        server_uri = ip.clone();
+    }    
+
+    warp::serve(routes).run(server_uri.to_socket_addrs().unwrap().next().unwrap()).await;
 
 }
 

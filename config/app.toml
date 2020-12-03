@@ -27,7 +27,8 @@ max_soc_hard = "0.9"
 ess_start_discharge_rate = "19000"
 ess_start_charge_rate = "-122000"
 
-
+[hmi]
+server_uri = "127.0.0.1:32771"
 
 [circuit_segment_devices]
 # satec_aux_abb

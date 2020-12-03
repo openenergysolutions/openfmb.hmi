@@ -33,7 +33,7 @@ export class HeaderToolComponent implements OnInit {
   showTicks = false;
   step = 0.1;
   thumbLabel = false;
-  value = 1;
+  value: number = 1;
   vertical = false;
   tickInterval = 1;
 

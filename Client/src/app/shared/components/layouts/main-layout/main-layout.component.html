@@ -1,10 +1,4 @@
-<div class="app-admin-wrap" [dir]='layoutConf?.dir'>
-  <!-- Header for top navigation layout -->
-  <!-- ONLY REQUIRED FOR **TOP** NAVIGATION LAYOUT -->
-  <app-header-top 
-    *ngIf="layoutConf.navigationPos === 'top'" 
-    [notificPanel]="notificationPanel">
-  </app-header-top>
+<div class="app-admin-wrap" [dir]='layoutConf?.dir'>  
   <!-- Main Container -->
   <mat-sidenav-container 
   [dir]='layoutConf.dir'
@@ -17,11 +11,7 @@
     *ngIf="layoutConf.navigationPos === 'side'" 
     (mouseenter)="sidebarMouseenter($event)"
     (mouseleave)="sidebarMouseleave($event)"
-    ></app-sidebar-side>
-    
-    <!-- Top navigation layout (navigation for mobile screen) -->
-    <!-- ONLY REQUIRED FOR **TOP** NAVIGATION MOBILE LAYOUT -->
-    <app-sidebar-top *ngIf="layoutConf.navigationPos === 'top' && layoutConf.isMobile"></app-sidebar-top>
+    ></app-sidebar-side>        
 
     <!-- App content -->
     <div class="main-content-wrap" id="main-content-wrap" [perfectScrollbar]="" [disabled]="layoutConf.topbarFixed || !layoutConf.perfectScrollbar">

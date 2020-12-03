@@ -1,14 +1,17 @@
 ### STAGE 1: Build ###
 FROM node:alpine AS build
-WORKDIR /usr/src/app
-COPY package.json ./
-COPY yarn.lock ./
-RUN yarn install
+WORKDIR /app
+
 COPY . .
-RUN yarn build
+RUN npm install
+RUN npm run build
 
 ### STAGE 2: Run ###
-FROM nginx:1.17.1-alpine
-RUN ls -la
+FROM nginx:1.19.5-alpine
+
 COPY /nginx-custom.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /usr/src/app/dist/client /usr/share/nginx/html
+COPY --from=build /app/dist/openfmb-hmi /usr/share/nginx/html
+
+EXPOSE 80
+
+ENTRYPOINT ["nginx", "-g", "daemon off;"]

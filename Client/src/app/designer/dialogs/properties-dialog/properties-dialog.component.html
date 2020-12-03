@@ -142,18 +142,18 @@
       <div mat-dialog-content class="dialog-input-container pt-1">
         <strong>Fore Color</strong><br />
         <mat-form-field class="designer-form-field" floatLabel='never'>
-          <input matInput [ngxMatColorPicker]="picker" [(ngModel)]="foreColor" [disabled]="disabled" name="fore-color">
+          <input matInput [ngxMatColorPicker]="picker" [(ngModel)]="foreColor" name="fore-color">
           <ngx-mat-color-toggle matSuffix [for]="picker"></ngx-mat-color-toggle>
-          <ngx-mat-color-picker #picker [touchUi]="touchUi" [color]="color"></ngx-mat-color-picker>
+          <ngx-mat-color-picker #picker></ngx-mat-color-picker>
         </mat-form-field>
       </div>
       <div mat-dialog-content class="dialog-input-container pt-1" *ngIf="changeBackgroundAllowed">
         <strong>Background Color</strong><br />
         <mat-form-field class="designer-form-field" floatLabel='never'>
-          <input matInput [ngxMatColorPicker]="picker2" [(ngModel)]="backgroundColor" [disabled]="disabled"
+          <input matInput [ngxMatColorPicker]="picker2" [(ngModel)]="backgroundColor"
             name="back-color">
           <ngx-mat-color-toggle matSuffix [for]="picker2"></ngx-mat-color-toggle>
-          <ngx-mat-color-picker #picker2 [touchUi]="touchUi2" [color]="color2"></ngx-mat-color-picker>
+          <ngx-mat-color-picker #picker2></ngx-mat-color-picker>
         </mat-form-field>
       </div>
     </mat-tab>

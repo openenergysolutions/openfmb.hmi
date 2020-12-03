@@ -20,7 +20,7 @@
         <mat-slider class="zoom-slider" [disabled]="disabled" [invert]="invert" [max]="max" [min]="min" [step]="step"
           [thumbLabel]="thumbLabel" [(ngModel)]="value" (change)="onZoomGraph()" [vertical]="vertical"></mat-slider>
         <a [routerLink]="" class="zoom-button zoom-in" (click)="zoomIn()">+</a>
-        <span class="value"> {{ value | percent: 0 }}</span>
+        <span class="value"> {{ value | percent }}</span>
       </div>
     </div>    
     
