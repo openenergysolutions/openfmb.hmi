@@ -40,7 +40,29 @@ export const COMMANDS = {
                 "type": "",
 				"measurement": ""               
             }
-        },          
+        }, 
+        {   
+            "type": "element",
+			"name": "Object",          
+            "attributes": {
+                "label": "",
+                "name": "EnableNetZero",
+                "path": "EnableNetZero",
+                "type": "",
+				"measurement": ""               
+            }
+        }, 
+        {   
+            "type": "element",
+			"name": "Object",          
+            "attributes": {
+                "label": "",
+                "name": "DisableNetZero",
+                "path": "DisableNetZero",
+                "type": "",
+				"measurement": ""               
+            }
+        },            
         {   
             "type": "element",
 			"name": "Object",          
