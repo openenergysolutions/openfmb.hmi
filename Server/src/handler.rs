@@ -452,12 +452,20 @@ pub async fn execute_command(update: Command, _clients: Clients) -> Result<impl 
     Ok(StatusCode::OK)
 }
 
+fn get_diagram_folder() -> String {
+    let app_dir = std::env::var("APP_DIR_NAME").unwrap_or_else(|_| "".into());
+    if app_dir != "" {
+        return format!("/{}/diagrams", app_dir);
+    }
+    "diagrams".to_string()
+}
+
 // POST
 pub async fn save_handler(request: Diagram) -> Result<impl Reply> {
 
     let j = serde_json::to_string(&request).unwrap();
 
-    write_json(format!("diagrams/{}.json", request.diagramId), j).unwrap();
+    write_json(format!("{}/{}.json", get_diagram_folder(), request.diagramId), j).unwrap();
 
      Ok(json(&Response {
         success: true,
@@ -467,7 +475,7 @@ pub async fn save_handler(request: Diagram) -> Result<impl Reply> {
 
 // POST
 pub async fn delete_handler(request: Diagram) -> Result<impl Reply> {    
-    let _ = fs::remove_file(format!("diagrams/{}.json", request.diagramId));
+    let _ = fs::remove_file(format!("/{}/{}.json", get_diagram_folder(), request.diagramId));
     Ok(json(&Response {
         success: true,
         message: "".to_string()
@@ -476,7 +484,7 @@ pub async fn delete_handler(request: Diagram) -> Result<impl Reply> {
 
 // GET
 pub async fn list_handler() -> Result<impl Reply> {
-    Ok(json(&read_json(String::from("diagrams")).unwrap()))
+    Ok(json(&read_json(format!("{}", get_diagram_folder())).unwrap()))
 }
 
 // GET
@@ -503,13 +511,12 @@ pub async fn equipment_handler() -> Result<impl Reply> {
 
 // GET
 pub async fn command_handler() -> Result<impl Reply> {  
-    Ok(json(&read_commands(String::from("command.json")).unwrap()))   
+    Ok(json(&read_commands(format!("{}/command.json", get_diagram_folder())).unwrap()))   
 }
 
 // GET
-pub async fn diagram_handler(id: DiagramQuery) -> Result<impl Reply> {
-    
-    let list = read_json(String::from("diagrams")).unwrap();
+pub async fn diagram_handler(id: DiagramQuery) -> Result<impl Reply> {    
+    let list = read_json(format!("{}", get_diagram_folder())).unwrap();
     let id = id.id;
     for d in list {
         if d.diagramId == id {

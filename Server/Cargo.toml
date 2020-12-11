@@ -9,8 +9,8 @@ name="hmi_server"
 [dependencies]
 tokio = { version = "0.2", features = ["macros", "sync", "rt-threaded"] }
 warp = { version = "0.2.4", features = ["tls"] }
-openfmb-messages = {git="https://github.com/openenergysolutions/openfmb-rs", branch="hmi-develop"}
-openfmb-messages-ext = {git="https://github.com/openenergysolutions/openfmb-rs", branch="hmi-develop"}
+openfmb-messages = { path = "../deps/openfmb-rs/openfmb-messages"}
+openfmb-messages-ext = { path = "../deps/openfmb-rs/openfmb-messages-ext"}
 microgrid-protobuf = {path = "../microgrid-protobuf"}
 serde = {version = "1.0.114", features = ["derive"] }
 serde_json = "1.0.57"
@@ -23,7 +23,7 @@ inpm = { version="0.2.0", features=["warp"]}
 pretty_env_logger = "0.4.0"
 circuit_segment_manager = {path = "../circuit_segment_manager"}
 riker = {git="https://github.com/bfrog/riker", branch="0.4.1_stable_dashmap"}
-nats = "0.7"
+nats = "0.8.6"
 snafu = "0.6.9"
 snafu-derive = "0.6.9"
 config = "0.10.1"

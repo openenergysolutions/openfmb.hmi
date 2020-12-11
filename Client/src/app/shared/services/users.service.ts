@@ -9,8 +9,7 @@ import { Observable, of } from 'rxjs';
 })
 
 export class UserService {
-  private REST_API_SERVER = config.apiUrl;
-
+    
   constructor(private httpClient: HttpClient) { }
 
   userList = [

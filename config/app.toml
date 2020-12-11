@@ -15,7 +15,7 @@ filename = "../datafiles/capture_10.txt"
 
 [openfmb_nats_subscriber]
 prod_uri = "microgrid.mthollylab.io:32224"
-dev_uri = "172.16.1.69:4222"
+dev_uri = "192.168.86.36:32224"
 
 [battery]
 min_soc_soft = "0.26"
@@ -28,7 +28,7 @@ ess_start_discharge_rate = "19000"
 ess_start_charge_rate = "-122000"
 
 [hmi]
-server_uri = "127.0.0.1:32771"
+server_uri = "0.0.0.0:32771"
 
 [circuit_segment_devices]
 # satec_aux_abb

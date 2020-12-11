@@ -1,6 +1,4 @@
 export const config = {
-  apiUrl: 'http://127.0.0.1:32771/',
-  ws: 'ws://127.0.0.1:32771/hmi/',
   authRoles: {
     sa: ['SA'], // Only Super Admin has access
     admin: ['SA', 'Admin'], // Only SA & Admin has access

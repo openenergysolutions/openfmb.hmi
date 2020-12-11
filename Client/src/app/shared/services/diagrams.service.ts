@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { config } from '../../../config'
+import { environment } from '../../../environments/environment';
 import { Diagram } from '../models/diagram.model'
 import { Equipment } from '../models/equipment.model';
 import { Command } from '../models/command.model';
@@ -14,9 +14,9 @@ import { Observable, throwError } from 'rxjs';
 })
 
 export class DiagramsService {
-  private endpoint = config.apiUrl;
+  private endpoint = environment.apiUrl;
 
-  constructor(private httpClient: HttpClient) { }      
+  constructor(private httpClient: HttpClient){}    
 
   private handleError(error: HttpErrorResponse): any {    
     if (error.error instanceof ErrorEvent) {

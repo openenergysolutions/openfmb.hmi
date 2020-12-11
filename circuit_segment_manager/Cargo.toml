@@ -15,8 +15,8 @@ fern = { version = "0.6", features = ["colored"] }
 #microgrid-protobuf = { path = "../microgrid-protobuf" }
 riker = {git="https://github.com/bfrog/riker", branch="0.4.1_stable_dashmap"}
 snafu = "0.6.2"
-openfmb-messages = {git="https://github.com/openenergysolutions/openfmb-rs", branch="hmi-develop"}
-openfmb-messages-ext = {git="https://github.com/openenergysolutions/openfmb-rs", branch="hmi-develop"}
+openfmb-messages = { path = "../deps/openfmb-rs/openfmb-messages"}
+openfmb-messages-ext = { path = "../deps/openfmb-rs/openfmb-messages-ext"}
 #openfmb-ops-protobuf = {git="https://github.com/tupshin/openfmb-ops-protobuf-shuntbranch"}
 prost = "0.6.1"
 base64 = "0.11.0"
@@ -33,7 +33,7 @@ futures = "0.3.4"
 tokio = "0.2.11"
 enum-as-inner = "0.3.1"
 bytes = "0.5.5"
-nats = "0.7"
+nats = "0.8.6"
 sled = "0.31.0"
 dimensioned = "0.7.0"
 prost-types = "0.6.1"
