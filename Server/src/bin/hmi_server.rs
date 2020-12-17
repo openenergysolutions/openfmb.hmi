@@ -27,7 +27,7 @@ use circuit_segment_manager::actors::CoordinatorMsg;
 use circuit_segment_manager::actors::Device;
 use circuit_segment_manager::actors::DeviceMsg;
 
-const ASSETS: inpm::Dir = inpm::include_package!("Client/dist/openfmb-hmi/");
+//const ASSETS: inpm::Dir = inpm::include_package!("Client/dist/openfmb-hmi/");
 
 #[tokio::main]
 async fn main() {    
@@ -162,7 +162,7 @@ async fn server_setup() {
     hmi_actor.tell(start_processing_msg, Some(sys.user_root().clone()));
 
     //let static_route = warp::path("static").and(static_dir!("../Client/dist/openfmb-hmi/"));
-    let static_route = inpm::warp::embedded(ASSETS);        
+    //let static_route = inpm::warp::embedded(ASSETS);        
 
     let users = Arc::new(RwLock::new(init_users()));
 
@@ -245,7 +245,7 @@ async fn server_setup() {
             "authorization"]);   
 
     let routes = login_routes
-        .or(static_route)
+        //.or(static_route)
         .or(user_profile)
         .or(save_routes)
         .or(delete_routes)
