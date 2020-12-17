@@ -25,7 +25,7 @@ use openfmb_messages::commonmodule::{
 };
 use openfmb_messages::switchmodule::SwitchStatus;
 use openfmb_messages::{
-    breakermodule::{BreakerDiscreteControlProfile, BreakerStatusProfile},
+    breakermodule::{BreakerDiscreteControlProfile, BreakerStatusProfile, BreakerReadingProfile},
     commonmodule::{DbPosKind, StateKind},
     essmodule::{EssControlProfile, EssReadingProfile, EssStatusProfile},
     generationmodule::{
@@ -42,6 +42,7 @@ use openfmb_messages_ext::{
     load::LoadReadingExt,
     meter::reading::MeterReadingExt,
     solar::SolarStatusExt,
+    breaker::BreakerReadingExt,
     EssReadingExt, OpenFMBExt, SwitchReadingExt, *,
 };
 use std::time::SystemTime;
@@ -133,6 +134,9 @@ impl Receive<OpenFMBMessage> for Microgrid {
                 ctx.myself.send_msg(status.as_ref().clone().into(), None);
             }
             BreakerStatus(status) => {
+                ctx.myself.send_msg(status.as_ref().clone().into(), None);
+            }
+            BreakerReading(status) => {
                 ctx.myself.send_msg(status.as_ref().clone().into(), None);
             }
             SwitchControl(_status) => {}
@@ -294,7 +298,7 @@ impl Receive<DeviceControlMessage> for Microgrid {
                 self.publisher.send_msg(msg.into(), None);
             }
             DeviceControlMessage::SwitchOneOpen => {
-                let msg: SwitchDiscreteControlProfile = SwitchDiscreteControlProfile::switch_open_msg(
+                let msg: BreakerDiscreteControlProfile = BreakerDiscreteControlProfile::breaker_open_msg(
                     &self
                         .cfg
                         .get_str("circuit_segment_devices.way1.mrid")
@@ -303,7 +307,7 @@ impl Receive<DeviceControlMessage> for Microgrid {
                 self.publisher.send_msg(msg.into(), None);
             }
             DeviceControlMessage::SwitchOneClosed => {
-                let msg: SwitchDiscreteControlProfile = SwitchDiscreteControlProfile::switch_close_msg(
+                let msg: BreakerDiscreteControlProfile = BreakerDiscreteControlProfile::breaker_close_msg(
                     &self
                         .cfg
                         .get_str("circuit_segment_devices.way1.mrid")
@@ -312,7 +316,7 @@ impl Receive<DeviceControlMessage> for Microgrid {
                 self.publisher.send_msg(msg.into(), None);
             }
             DeviceControlMessage::SwitchTwoOpen => {
-                let msg: SwitchDiscreteControlProfile = SwitchDiscreteControlProfile::switch_open_msg(
+                let msg: BreakerDiscreteControlProfile = BreakerDiscreteControlProfile::breaker_open_msg(
                     &self
                         .cfg
                         .get_str("circuit_segment_devices.way2.mrid")
@@ -321,7 +325,7 @@ impl Receive<DeviceControlMessage> for Microgrid {
                 self.publisher.send_msg(msg.into(), None);
             }
             DeviceControlMessage::SwitchTwoClosed => {
-                let msg: SwitchDiscreteControlProfile = SwitchDiscreteControlProfile::switch_close_msg(
+                let msg: BreakerDiscreteControlProfile = BreakerDiscreteControlProfile::breaker_close_msg(
                     &self
                         .cfg
                         .get_str("circuit_segment_devices.way2.mrid")
@@ -351,7 +355,7 @@ impl Receive<DeviceControlMessage> for Microgrid {
                 self.publisher.send_msg(msg.into(), None);
             }
             DeviceControlMessage::SwitchFourOpen => {
-                let msg: SwitchDiscreteControlProfile = SwitchDiscreteControlProfile::switch_open_msg(
+                let msg: BreakerDiscreteControlProfile = BreakerDiscreteControlProfile::breaker_open_msg(
                     &self
                         .cfg
                         .get_str("circuit_segment_devices.way4.mrid")
@@ -360,7 +364,7 @@ impl Receive<DeviceControlMessage> for Microgrid {
                 self.publisher.send_msg(msg.into(), None);
             }
             DeviceControlMessage::SwitchFourClosed => {
-                let msg: SwitchDiscreteControlProfile = SwitchDiscreteControlProfile::switch_close_msg(
+                let msg: BreakerDiscreteControlProfile = BreakerDiscreteControlProfile::breaker_close_msg(
                     &self
                         .cfg
                         .get_str("circuit_segment_devices.way4.mrid")
@@ -572,6 +576,33 @@ impl Receive<BreakerStatusProfile> for Microgrid {
             status: Some(DbPosKind::Transient),
             state: self.microgrid_status.way1.state.clone(),
         };
+    }
+}
+
+impl Receive<BreakerReadingProfile> for Microgrid {
+    type Msg = MicrogridMsg;
+    fn receive(&mut self, ctx: &Context<Self::Msg>, msg: BreakerReadingProfile, _sender: Sender) {
+        match openfmb_messages_ext::OpenFMBExt::device_name(&msg.clone())
+            .unwrap()
+            .as_ref()
+        {
+            "way1" => {
+                self.microgrid_status.way1.last_net = msg.breaker_reading() as f32;
+                self.net_zero(ctx);
+                info!("{}", self.microgrid_status);
+            }
+            "way2" => {
+                self.microgrid_status.way2.last_net = msg.breaker_reading() as f32;
+            }
+            "way3" => {
+                self.microgrid_status.way3.last_net = msg.breaker_reading() as f32;
+            }
+            "way4" => {
+                self.microgrid_status.way4.last_net = msg.breaker_reading() as f32;
+            }
+
+            _ => {}
+        }
     }
 }
 

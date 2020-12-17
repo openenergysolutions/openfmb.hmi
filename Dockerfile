@@ -12,19 +12,11 @@ COPY Cargo.toml Cargo.toml
 
 RUN cargo build --release
 
-RUN cp /usr/src/target/release/hmi_server /usr/local/bin/
+FROM debian:buster-slim
+COPY --from=build /usr/src/target/release/hmi_server /usr/local/bin/
 
 WORKDIR /hmi_server
 
 EXPOSE 32771 42771
 
 ENTRYPOINT ["hmi_server"]
-
-#FROM debian:buster-slim
-#COPY --from=build /usr/src/target/release/hmi_server /usr/local/bin/
-
-#WORKDIR /hmi_server
-
-#EXPOSE 32771 42771
-
-#ENTRYPOINT ["hmi_server"]

@@ -28,7 +28,7 @@ macro_rules! publish {
 use openfmb_messages::{
     breakermodule::{
         Breaker, BreakerDiscreteControl, BreakerDiscreteControlProfile, BreakerDiscreteControlXcbr,
-        BreakerStatusProfile,
+        BreakerStatusProfile, BreakerReadingProfile
     },
     commonmodule::{
         CheckConditions, ConductingEquipment, ControlDpc, ControlFscc, ControlMessageInfo,
@@ -112,7 +112,8 @@ struct MicrogridDevices {
     EssReadingProfile,
     GenerationReadingProfile,
     GenerationStatusProfile,
-    BreakerStatusProfile
+    BreakerStatusProfile,
+    BreakerReadingProfile
 )]
 #[derive(Debug)]
 pub struct Microgrid {
@@ -1382,7 +1383,7 @@ impl Microgrid {
         );
         publish!(
             self.publisher,
-            SwitchDiscreteControlProfile::switch_synchro_msg(
+            BreakerDiscreteControlProfile::breaker_synchro_msg(
                 &self
                     .cfg
                     .get_str("circuit_segment_devices.way1.mrid")
@@ -1406,7 +1407,7 @@ impl Microgrid {
         //way 1 closed
         publish!(
             self.publisher,
-            SwitchDiscreteControlProfile::switch_close_msg(
+            BreakerDiscreteControlProfile::breaker_close_msg(
                 &self
                     .cfg
                     .get_str("circuit_segment_devices.way1.mrid")
@@ -1418,7 +1419,7 @@ impl Microgrid {
         //way 2 closed
         publish!(
             self.publisher,
-            SwitchDiscreteControlProfile::switch_close_msg(
+            BreakerDiscreteControlProfile::breaker_close_msg(
                 &self
                     .cfg
                     .get_str("circuit_segment_devices.way2.mrid")
@@ -1440,7 +1441,7 @@ impl Microgrid {
         //way 4 closed
         publish!(
             self.publisher,
-            SwitchDiscreteControlProfile::switch_close_msg(
+            BreakerDiscreteControlProfile::breaker_close_msg(
                 &self
                     .cfg
                     .get_str("circuit_segment_devices.way4.mrid")
@@ -1505,7 +1506,7 @@ impl Microgrid {
         //open way1
         publish!(
             self.publisher,
-            SwitchDiscreteControlProfile::switch_open_msg(
+            BreakerDiscreteControlProfile::breaker_open_msg(
                 &self
                     .cfg
                     .get_str("circuit_segment_devices.way1.mrid")
