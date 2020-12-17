@@ -62,7 +62,7 @@ impl OpenFMBDevice {
             SolarControl(_msg) => self.ensure_solar_actor(ctx),
             GeneratorControl(_msg) => self.ensure_generator_actor(ctx),
             BreakerControl(_msg) => self.ensure_generator_actor(ctx),
-            // ResourceStatus(_msg) => self.ensure_resource_actor(ctx),
+            ResourceStatus(_msg) => self.ensure_resource_actor(ctx),
             //                        _ => panic!("unsupported message profile: {:?}", msg),
         }
     }

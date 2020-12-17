@@ -145,7 +145,7 @@ impl Receive<OpenFMBMessage> for Microgrid {
             EssControl(_status) => {}
             LoadControl(_status) => {}
             BreakerControl(_status) => {}
-            // ResourceStatus(_status) => {}
+            ResourceStatus(_status) => {}
             _ => {
                 panic!(
                     "not handling msg {:?} from {:?}: ",

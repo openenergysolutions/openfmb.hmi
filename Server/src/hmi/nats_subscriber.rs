@@ -108,6 +108,7 @@ impl NATSSubscriber {
             BreakerReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Breaker),
             RegulatorStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Regulator),
             RegulatorReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Regulator),
+            ResourceStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Resource),
             LoadControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Load),
             SwitchControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Switch),
             EssControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::ESS),
