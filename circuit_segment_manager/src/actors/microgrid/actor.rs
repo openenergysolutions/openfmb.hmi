@@ -567,15 +567,32 @@ impl Receive<BreakerStatusProfile> for Microgrid {
             "breaker-3" | "breaker3" => {
                 self.microgrid_status.brk3.status = Some(msg.breaker_status());
             }
+            "way1" => {
+                //dbg!(&msg.switch_status);
+                self.microgrid_status.way1.status = Some(msg.breaker_status());
+                self.microgrid_status.way1.state = msg.breaker_status.clone();
+            }
+            "way2" => {
+                self.microgrid_status.way2.status = Some(msg.breaker_status());
+                self.microgrid_status.way2.state = msg.breaker_status.clone();
+            }
+            "way3" => {
+                self.microgrid_status.way3.status = Some(msg.breaker_status());
+                self.microgrid_status.way3.state = msg.breaker_status.clone();
+            }
+            "way4" => {
+                self.microgrid_status.way4.status = Some(msg.breaker_status());
+                self.microgrid_status.way4.state = msg.breaker_status.clone();
+            }
             other => debug!("Ignoring status update for breaker named {}", other), // Ignore other breakers
         }
 
         //TODO review with tupshin, is this needed here? We have SwitchStatusProfile updates below
-        self.microgrid_status.way1 = SwitchState {
-            last_net: self.microgrid_status.way1.last_net,
-            status: Some(DbPosKind::Transient),
-            state: self.microgrid_status.way1.state.clone(),
-        };
+        // self.microgrid_status.way1 = SwitchState {
+        //     last_net: self.microgrid_status.way1.last_net,
+        //     status: Some(DbPosKind::Transient),
+        //     state: self.microgrid_status.way1.state.clone(),
+        // };
     }
 }
 
@@ -615,20 +632,20 @@ impl Receive<SwitchStatusProfile> for Microgrid {
         {
             "way1" => {
                 //dbg!(&msg.switch_status);
-                self.microgrid_status.way1.status = Some(msg.switch_status());
-                self.microgrid_status.way1.state = msg.switch_status.clone();
+                //self.microgrid_status.way1.status = Some(msg.switch_status());
+                //self.microgrid_status.way1.state = msg.switch_status.clone();
             }
             "way2" => {
-                self.microgrid_status.way2.status = Some(msg.switch_status());
-                self.microgrid_status.way2.state = msg.switch_status.clone();
+                //self.microgrid_status.way2.status = Some(msg.switch_status());
+                //self.microgrid_status.way2.state = msg.switch_status.clone();
             }
             "way3" => {
-                self.microgrid_status.way3.status = Some(msg.switch_status());
-                self.microgrid_status.way3.state = msg.switch_status.clone();
+                //self.microgrid_status.way3.status = Some(msg.switch_status());
+                //self.microgrid_status.way3.state = msg.switch_status.clone();
             }
             "way4" => {
-                self.microgrid_status.way4.status = Some(msg.switch_status());
-                self.microgrid_status.way4.state = msg.switch_status.clone();
+                //self.microgrid_status.way4.status = Some(msg.switch_status());
+                //self.microgrid_status.way4.state = msg.switch_status.clone();
             }
             other => debug!("Ignoring status update for switch named {}", other),
         }

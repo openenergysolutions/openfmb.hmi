@@ -386,7 +386,7 @@ impl Microgrid {
                 let switch_state = match &self.microgrid_status.way1.state.clone() {
                     Some(state) => {
                         state
-                            .switch_status_xswi
+                            .status_and_event_xcbr
                             .clone()
                             .unwrap()
                             .dynamic_test
@@ -490,7 +490,7 @@ impl Microgrid {
                         // //way 1 closed
                         publish!(
                             self.publisher,
-                            SwitchDiscreteControlProfile::switch_close_msg(
+                            BreakerDiscreteControlProfile::breaker_close_msg(
                                 &self
                                     .cfg
                                     .get_str("circuit_segment_devices.way1.mrid")

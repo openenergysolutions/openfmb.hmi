@@ -3,7 +3,8 @@ use openfmb_messages::commonmodule::{
     DbPosKind, EngGridConnectModeKind, GridConnectModeKind, StateKind,
 };
 use openfmb_messages::essmodule::EssStatus;
-use openfmb_messages::switchmodule::SwitchStatus;
+//use openfmb_messages::switchmodule::SwitchStatus;
+use openfmb_messages::breakermodule::BreakerStatus;
 use std::{
     fmt::{Display, Formatter},
     time::SystemTime,
@@ -384,7 +385,7 @@ impl Display for GeneratorState {
 #[derive(Default, Debug)]
 pub struct SwitchState {
     pub status: Option<DbPosKind>,
-    pub state: Option<SwitchStatus>,
+    pub state: Option<BreakerStatus>,
     pub last_net: f32,
 }
 
@@ -402,7 +403,7 @@ impl Display for SwitchState {
 
         let xswi = match &self.state {
             None => None,
-            Some(state) => state.switch_status_xswi.clone(),
+            Some(state) => state.status_and_event_xcbr.clone(),
         };
 
         let dynamic_test = match &xswi {
@@ -424,7 +425,7 @@ impl Display for SwitchState {
         write!(
             f,
             "dynamic_test: {:?}, Status: {:?}, Reading: {:?}",
-            dynamic_test, self.last_net, self.status
+            dynamic_test, self.status, self.last_net
         )
     }
 }
