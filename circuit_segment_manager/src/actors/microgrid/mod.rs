@@ -316,29 +316,27 @@ impl Microgrid {
         match self.microgrid_status.algorithm {
             NetZeroState::Disabled => return,
             _ => {
-                unimplemented!();
-                // publish!(
-                //     self.publisher,
-                //     GenerationControlProfile::generator_off_msg(
-                //         &self
-                //             .cfg
-                //             .get_str("circuit_segment_devices.turbine-array.mrid")
-                //             .unwrap(),
-                //     ),
-                //     None
-                // );
-                // publish!(
-                //     self.publisher,
-                //     SwitchDiscreteControlProfile::switch_synchro_msg(
-                //         &self
-                //             .cfg
-                //             .get_str("circuit_segment_devices.way1.mrid")
-                //             .unwrap(),
-                //         true,
-                //     ),
-                //     None
-                // );
-                unimplemented!();
+                publish!(
+                    self.publisher,
+                    GenerationControlProfile::generator_off_msg(
+                        &self
+                            .cfg
+                            .get_str("circuit_segment_devices.turbine-array.mrid")
+                            .unwrap(),
+                    ),
+                    None
+                );
+                publish!(
+                    self.publisher,
+                    SwitchDiscreteControlProfile::switch_synchro_msg(
+                        &self
+                            .cfg
+                            .get_str("circuit_segment_devices.way1.mrid")
+                            .unwrap(),
+                        true,
+                    ),
+                    None
+                );
                 // sleep(Duration::from_secs(10));
                 self.microgrid_status.algorithm = NetZeroState::ShuttingDown
             }
@@ -529,17 +527,16 @@ impl Microgrid {
                     DbPosKind::Closed => {}
                     DbPosKind::Open => {
                         //put battery into vsiiso mode
-                        unimplemented!();
-                        // publish!(
-                        //     self.publisher,
-                        //     EssControlProfile::vsi_iso_msg(
-                        //         &self
-                        //             .cfg
-                        //             .get_str("circuit_segment_devices.abb_pcs100.mrid")
-                        //             .unwrap(),
-                        //     ),
-                        //     None
-                        // );
+                        publish!(
+                            self.publisher,
+                            EssControlProfile::vsi_iso_msg(
+                                &self
+                                    .cfg
+                                    .get_str("circuit_segment_devices.abb_pcs100.mrid")
+                                    .unwrap(),
+                            ),
+                            None
+                        );
                         self.microgrid_status
                             .update_ctl_state(MicrogridControlState::Idle);
                         // close breaker3 but only in dev
@@ -631,44 +628,42 @@ impl Microgrid {
             NetZeroState::Disabled => {}
             NetZeroState::ShuttingDown => {
                 //succesfully grid connected. now we get to shut the rest down
-                unimplemented!();
-                // publish!(
-                //     self.publisher,
-                //     GenerationControlProfile::generator_off_msg(
-                //         &self
-                //             .cfg
-                //             .get_str("circuit_segment_devices.turbine-array.mrid")
-                //             .unwrap(),
-                //     ),
-                //     None
-                // );
+                publish!(
+                    self.publisher,
+                    GenerationControlProfile::generator_off_msg(
+                        &self
+                            .cfg
+                            .get_str("circuit_segment_devices.turbine-array.mrid")
+                            .unwrap(),
+                    ),
+                    None
+                );
 
-                // let msg: SolarControlProfile = SolarControlProfile::solar_off_msg(
-                //     &self
-                //         .cfg
-                //         .get_str("circuit_segment_devices.parker-invert.mrid")
-                //         .unwrap(),
-                // );
-                // publish!(self.publisher, msg, None);
-                unimplemented!();
+                let msg: SolarControlProfile = SolarControlProfile::solar_off_msg(
+                    &self
+                        .cfg
+                        .get_str("circuit_segment_devices.parker-invert.mrid")
+                        .unwrap(),
+                );
+                publish!(self.publisher, msg, None);
 
-                // publish!(
-                //     self.publisher,
-                //     LoadControlProfile::loadbank_off_msg(
-                //         &self
-                //             .cfg
-                //             .get_str("circuit_segment_devices.load-bank.mrid")
-                //             .unwrap(),
-                //     ),
-                //     None
-                // );
-                // let msg: EssControlProfile = EssControlProfile::soc_manage_msg(
-                //     &self
-                //         .cfg
-                //         .get_str("circuit_segment_devices.abb_pcs100.mrid")
-                //         .unwrap(),
-                // );
-                // publish!(self.publisher, msg, None);
+                publish!(
+                    self.publisher,
+                    LoadControlProfile::loadbank_off_msg(
+                        &self
+                            .cfg
+                            .get_str("circuit_segment_devices.load-bank.mrid")
+                            .unwrap(),
+                    ),
+                    None
+                );
+                let msg: EssControlProfile = EssControlProfile::soc_manage_msg(
+                    &self
+                        .cfg
+                        .get_str("circuit_segment_devices.abb_pcs100.mrid")
+                        .unwrap(),
+                );
+                publish!(self.publisher, msg, None);
             }
             NetZeroState::ESSDischarge => {}
             NetZeroState::ESSCharge => {
@@ -680,41 +675,41 @@ impl Microgrid {
                     // we immediately turn off the turbines, turn on the load bank
                     // and island. We should island before this happens though.
                     soc if soc >= max_soc_hard => {
-                        // publish!(
-                        //     self.publisher,
-                        //     GenerationControlProfile::generator_off_msg(
-                        //         &self
-                        //             .cfg
-                        //             .get_str("circuit_segment_devices.turbine-array.mrid")
-                        //             .unwrap(),
-                        //     ),
-                        //     None
-                        // );
-                        // publish!(
-                        //     self.publisher,
-                        //     LoadControlProfile::loadbank_on_msg(
-                        //         &self
-                        //             .cfg
-                        //             .get_str("circuit_segment_devices.load-bank.mrid",)
-                        //             .unwrap(),
-                        //         150000.0,
-                        //     ),
-                        //     None
-                        // );
+                        publish!(
+                            self.publisher,
+                            GenerationControlProfile::generator_off_msg(
+                                &self
+                                    .cfg
+                                    .get_str("circuit_segment_devices.turbine-array.mrid")
+                                    .unwrap(),
+                            ),
+                            None
+                        );
+                        publish!(
+                            self.publisher,
+                            LoadControlProfile::loadbank_on_msg(
+                                &self
+                                    .cfg
+                                    .get_str("circuit_segment_devices.load-bank.mrid",)
+                                    .unwrap(),
+                                150000.0,
+                            ),
+                            None
+                        );
                         self.microgrid_status.algorithm = NetZeroState::LoadDischarge;
                         self.island(ctx);
                     }
                     soc if soc >= max_soc_soft => {
-                        // publish!(
-                        //     self.publisher,
-                        //     GenerationControlProfile::generator_off_msg(
-                        //         &self
-                        //             .cfg
-                        //             .get_str("circuit_segment_devices.turbine-array.mrid")
-                        //             .unwrap(),
-                        //     ),
-                        //     None
-                        // );
+                        publish!(
+                            self.publisher,
+                            GenerationControlProfile::generator_off_msg(
+                                &self
+                                    .cfg
+                                    .get_str("circuit_segment_devices.turbine-array.mrid")
+                                    .unwrap(),
+                            ),
+                            None
+                        );
                         self.island(ctx);
                         self.microgrid_status.algorithm = NetZeroState::Normal;
                     }
@@ -753,50 +748,50 @@ impl Microgrid {
                             true => {
                                 match self.microgrid_status.battery.soc {
                                     soc if soc >= max_soc_hard => {
-                                        // publish!(
-                                        //     self.publisher,
-                                        //     LoadControlProfile::loadbank_on_msg(
-                                        //         &self
-                                        //             .cfg
-                                        //             .get_str(
-                                        //                 "circuit_segment_devices.load-bank.mrid",
-                                        //             )
-                                        //             .unwrap(),
-                                        //         150000.0,
-                                        //     ),
-                                        //     None
-                                        // );
+                                        publish!(
+                                            self.publisher,
+                                            LoadControlProfile::loadbank_on_msg(
+                                                &self
+                                                    .cfg
+                                                    .get_str(
+                                                        "circuit_segment_devices.load-bank.mrid",
+                                                    )
+                                                    .unwrap(),
+                                                150000.0,
+                                            ),
+                                            None
+                                        );
                                         self.microgrid_status.algorithm =
                                             NetZeroState::LoadDischarge;
                                         self.island(ctx);
                                     }
                                     soc if soc <= min_soc_soft => {
                                         if !self.microgrid_status.generator.disabled {
-                                            // publish!(self.publisher,
-                                            //         GenerationControlProfile::generator_on_msg(
-                                            //             &self
-                                            //             .cfg
-                                            //             .get_str("circuit_segment_devices.turbine-array.mrid")
-                                            //             .unwrap(),130000.0,
-                                            //         ), None
-                                            //     );
+                                            publish!(self.publisher,
+                                                    GenerationControlProfile::generator_on_msg(
+                                                        &self
+                                                        .cfg
+                                                        .get_str("circuit_segment_devices.turbine-array.mrid")
+                                                        .unwrap(),130000.0,
+                                                    ), None
+                                                );
                                         }
                                         self.microgrid_status.algorithm = NetZeroState::ESSCharge;
                                     }
                                     soc if soc <= max_soc_hard => {
                                         self.microgrid_status.algorithm = NetZeroState::Normal;
-                                        // publish!(
-                                        //     self.publisher,
-                                        //     LoadControlProfile::loadbank_off_msg(
-                                        //         &self
-                                        //             .cfg
-                                        //             .get_str(
-                                        //                 "circuit_segment_devices.load-bank.mrid",
-                                        //             )
-                                        //             .unwrap(),
-                                        //     ),
-                                        //     None
-                                        // );
+                                        publish!(
+                                            self.publisher,
+                                            LoadControlProfile::loadbank_off_msg(
+                                                &self
+                                                    .cfg
+                                                    .get_str(
+                                                        "circuit_segment_devices.load-bank.mrid",
+                                                    )
+                                                    .unwrap(),
+                                            ),
+                                            None
+                                        );
                                     }
                                     _ => todo!(),
                                 }
@@ -815,19 +810,19 @@ impl Microgrid {
                                 //dbg!("soc: {}", self.microgrid_status.battery.soc);
                                 match self.microgrid_status.battery.soc {
                                     soc if soc >= max_soc_hard => {
-                                        // publish!(
-                                        //     self.publisher,
-                                        //     LoadControlProfile::loadbank_on_msg(
-                                        //         &self
-                                        //             .cfg
-                                        //             .get_str(
-                                        //                 "circuit_segment_devices.load-bank.mrid",
-                                        //             )
-                                        //             .unwrap(),
-                                        //         150000.0,
-                                        //     ),
-                                        //     None
-                                        // );
+                                        publish!(
+                                            self.publisher,
+                                            LoadControlProfile::loadbank_on_msg(
+                                                &self
+                                                    .cfg
+                                                    .get_str(
+                                                        "circuit_segment_devices.load-bank.mrid",
+                                                    )
+                                                    .unwrap(),
+                                                150000.0,
+                                            ),
+                                            None
+                                        );
                                         self.microgrid_status.algorithm =
                                             NetZeroState::LoadDischarge;
                                         self.island(ctx);
@@ -836,30 +831,30 @@ impl Microgrid {
                                         // self.island(ctx);
                                     }
                                     soc if soc > min_soc_hard => {
-                                        // publish!(self.publisher,
-                                        // GenerationControlProfile::generator_off_msg(
-                                        //     &self
-                                        //     .cfg
-                                        //     .get_str("circuit_segment_devices.turbine-array.mrid")
-                                        //     .unwrap(),
-                                        // ), None
-                                    // );
+                                        publish!(self.publisher,
+                                        GenerationControlProfile::generator_off_msg(
+                                            &self
+                                            .cfg
+                                            .get_str("circuit_segment_devices.turbine-array.mrid")
+                                            .unwrap(),
+                                        ), None
+                                    );
                                     }
                                     soc if soc < max_soc_hard => {
                                         self.microgrid_status.algorithm = NetZeroState::Normal;
                                         // dbg!("DISABLING LOADBANK");
-                                        // publish!(
-                                        //     self.publisher,
-                                        //     LoadControlProfile::loadbank_off_msg(
-                                        //         &self
-                                        //             .cfg
-                                        //             .get_str(
-                                        //                 "circuit_segment_devices.load-bank.mrid",
-                                        //             )
-                                        //             .unwrap(),
-                                        //     ),
-                                        //     None
-                                        // );
+                                        publish!(
+                                            self.publisher,
+                                            LoadControlProfile::loadbank_off_msg(
+                                                &self
+                                                    .cfg
+                                                    .get_str(
+                                                        "circuit_segment_devices.load-bank.mrid",
+                                                    )
+                                                    .unwrap(),
+                                            ),
+                                            None
+                                        );
                                     }
                                     _ => todo!(),
                                 }
@@ -905,16 +900,16 @@ impl Microgrid {
                 //info!("discharging");
                 match self.microgrid_status.battery.soc {
                     soc if soc <= max_soc_soft => {
-                        // publish!(
-                        //     self.publisher,
-                        //     LoadControlProfile::loadbank_off_msg(
-                        //         &self
-                        //             .cfg
-                        //             .get_str("circuit_segment_devices.load-bank.mrid")
-                        //             .unwrap(),
-                        //     ),
-                        //     None
-                        // );
+                        publish!(
+                            self.publisher,
+                            LoadControlProfile::loadbank_off_msg(
+                                &self
+                                    .cfg
+                                    .get_str("circuit_segment_devices.load-bank.mrid")
+                                    .unwrap(),
+                            ),
+                            None
+                        );
                         self.microgrid_status.algorithm = NetZeroState::Normal;
                     }
                     //keep discharging
@@ -975,17 +970,17 @@ impl Microgrid {
                     true => {
                         match self.microgrid_status.battery.soc {
                             soc if soc > max_soc_hard => {
-                                // publish!(
-                                //     self.publisher,
-                                //     LoadControlProfile::loadbank_on_msg(
-                                //         &self
-                                //             .cfg
-                                //             .get_str("circuit_segment_devices.load-bank.mrid")
-                                //             .unwrap(),
-                                //         150000.0,
-                                //     ),
-                                //     None
-                                // );
+                                publish!(
+                                    self.publisher,
+                                    LoadControlProfile::loadbank_on_msg(
+                                        &self
+                                            .cfg
+                                            .get_str("circuit_segment_devices.load-bank.mrid")
+                                            .unwrap(),
+                                        150000.0,
+                                    ),
+                                    None
+                                );
                                 self.microgrid_status.algorithm = NetZeroState::LoadDischarge;
                                 self.island(ctx);
                             }
@@ -993,28 +988,28 @@ impl Microgrid {
                                 self.reconnect(ctx);
                             }
                             soc if soc <= min_soc_soft => {
-                                // publish!(
-                                //     self.publisher,
-                                //     EssControlProfile::vsi_iso_msg(
-                                //         &self
-                                //             .cfg
-                                //             .get_str("circuit_segment_devices.abb_pcs100.mrid")
-                                //             .unwrap(),
-                                //     ),
-                                //     None
-                                // );
+                                publish!(
+                                    self.publisher,
+                                    EssControlProfile::vsi_iso_msg(
+                                        &self
+                                            .cfg
+                                            .get_str("circuit_segment_devices.abb_pcs100.mrid")
+                                            .unwrap(),
+                                    ),
+                                    None
+                                );
                                 if !self.microgrid_status.generator.disabled {
-                                    // let msg: GenerationControlProfile =
-                                    //     GenerationControlProfile::generator_on_msg(
-                                    //         &self
-                                    //             .cfg
-                                    //             .get_str(
-                                    //                 "circuit_segment_devices.turbine-array.mrid",
-                                    //             )
-                                    //             .unwrap(),
-                                    //         130000.0,
-                                    //     );
-                                    // publish!(self.publisher, msg, None);
+                                    let msg: GenerationControlProfile =
+                                        GenerationControlProfile::generator_on_msg(
+                                            &self
+                                                .cfg
+                                                .get_str(
+                                                    "circuit_segment_devices.turbine-array.mrid",
+                                                )
+                                                .unwrap(),
+                                            130000.0,
+                                        );
+                                    publish!(self.publisher, msg, None);
                                 }
                                 self.microgrid_status.algorithm = NetZeroState::ESSCharge;
                                 //continue operating in normal mode
@@ -1050,17 +1045,17 @@ impl Microgrid {
                     false => {
                         match self.microgrid_status.battery.soc {
                             soc if soc > max_soc_hard => {
-                                // publish!(
-                                //     self.publisher,
-                                //     LoadControlProfile::loadbank_on_msg(
-                                //         &self
-                                //             .cfg
-                                //             .get_str("circuit_segment_devices.load-bank.mrid")
-                                //             .unwrap(),
-                                //         150000.0,
-                                //     ),
-                                //     None
-                                // );
+                                publish!(
+                                    self.publisher,
+                                    LoadControlProfile::loadbank_on_msg(
+                                        &self
+                                            .cfg
+                                            .get_str("circuit_segment_devices.load-bank.mrid")
+                                            .unwrap(),
+                                        150000.0,
+                                    ),
+                                    None
+                                );
                                 self.microgrid_status.algorithm = NetZeroState::LoadDischarge;
                             }
                             soc if soc <= min_soc_hard => {
@@ -1069,17 +1064,17 @@ impl Microgrid {
 
                             soc if soc <= min_soc_soft => {
                                 if !self.microgrid_status.generator.disabled {
-                                    // let msg: GenerationControlProfile =
-                                    //     GenerationControlProfile::generator_on_msg(
-                                    //         &self
-                                    //             .cfg
-                                    //             .get_str(
-                                    //                 "circuit_segment_devices.turbine-array.mrid",
-                                    //             )
-                                    //             .unwrap(),
-                                    //         130000.0,
-                                    //     );
-                                    // publish!(self.publisher, msg, None);
+                                    let msg: GenerationControlProfile =
+                                        GenerationControlProfile::generator_on_msg(
+                                            &self
+                                                .cfg
+                                                .get_str(
+                                                    "circuit_segment_devices.turbine-array.mrid",
+                                                )
+                                                .unwrap(),
+                                            130000.0,
+                                        );
+                                    publish!(self.publisher, msg, None);
                                 }
                                 self.microgrid_status.algorithm = NetZeroState::ESSCharge;
                             }
@@ -1087,16 +1082,16 @@ impl Microgrid {
                             soc if soc <= max_soc_hard => {
                                 self.microgrid_status.algorithm = NetZeroState::Normal;
                                 // dbg!("DISABLING LOADBANK");
-                                // publish!(
-                                //     self.publisher,
-                                //     LoadControlProfile::loadbank_off_msg(
-                                //         &self
-                                //             .cfg
-                                //             .get_str("circuit_segment_devices.load-bank.mrid")
-                                //             .unwrap(),
-                                //     ),
-                                //     None
-                                // );
+                                publish!(
+                                    self.publisher,
+                                    LoadControlProfile::loadbank_off_msg(
+                                        &self
+                                            .cfg
+                                            .get_str("circuit_segment_devices.load-bank.mrid")
+                                            .unwrap(),
+                                    ),
+                                    None
+                                );
                             }
                             _ => todo!(),
                         }
@@ -1123,16 +1118,16 @@ impl Microgrid {
                     match self.microgrid_status.generator.state.unwrap() {
                         StateKind::On => {
                             warn!("generator turning off");
-                            // publish!(
-                            //     self.publisher,
-                            //     GenerationControlProfile::generator_off_msg(
-                            //         &self
-                            //             .cfg
-                            //             .get_str("circuit_segment_devices.turbine-array.mrid")
-                            //             .unwrap(),
-                            //     ),
-                            //     None
-                            // )
+                            publish!(
+                                self.publisher,
+                                GenerationControlProfile::generator_off_msg(
+                                    &self
+                                        .cfg
+                                        .get_str("circuit_segment_devices.turbine-array.mrid")
+                                        .unwrap(),
+                                ),
+                                None
+                            )
                         }
                         StateKind::Off | StateKind::Standby | StateKind::Undefined {} => {}
                     }
@@ -1160,17 +1155,16 @@ impl Microgrid {
                         //Staty in ESSDischarge Mode
                         match self.microgrid_status.generator.state.unwrap() {
                             StateKind::Off | StateKind::Standby | StateKind::Undefined => {}
-                            StateKind::On => {}
-                            // publish!(
-                            //     self.publisher,
-                            //     GenerationControlProfile::generator_off_msg(
-                            //         &self
-                            //             .cfg
-                            //             .get_str("circuit_segment_devices.turbine-array.mrid")
-                            //             .unwrap(),
-                            //     ),
-                            //     None
-                            // ),
+                            StateKind::On => publish!(
+                                self.publisher,
+                                GenerationControlProfile::generator_off_msg(
+                                    &self
+                                        .cfg
+                                        .get_str("circuit_segment_devices.turbine-array.mrid")
+                                        .unwrap(),
+                                ),
+                                None
+                            ),
                         }
                         //dbg!(
                         //    "charging battery at rate {} + {} = {}",
@@ -1186,16 +1180,16 @@ impl Microgrid {
                         );
                     }
                     soc if soc <= max_soc_soft => {
-                        // publish!(
-                        //     self.publisher,
-                        //     LoadControlProfile::loadbank_off_msg(
-                        //         &self
-                        //             .cfg
-                        //             .get_str("circuit_segment_devices.load-bank.mrid")
-                        //             .unwrap(),
-                        //     ),
-                        //     None
-                        // );
+                        publish!(
+                            self.publisher,
+                            LoadControlProfile::loadbank_off_msg(
+                                &self
+                                    .cfg
+                                    .get_str("circuit_segment_devices.load-bank.mrid")
+                                    .unwrap(),
+                            ),
+                            None
+                        );
                         self.microgrid_status.battery.charge_rate = 125000.0;
                         //dbg!(
                         //    "charging battery at rate {} + {} = {}",
@@ -1212,16 +1206,16 @@ impl Microgrid {
                     }
                     soc if soc <= min_soc_hard => {
                         //                        dbg!("soc > 0.20");
-                        // publish!(
-                        //     self.publisher,
-                        //     LoadControlProfile::loadbank_off_msg(
-                        //         &self
-                        //             .cfg
-                        //             .get_str("circuit_segment_devices.load-bank.mrid")
-                        //             .unwrap(),
-                        //     ),
-                        //     None
-                        // );
+                        publish!(
+                            self.publisher,
+                            LoadControlProfile::loadbank_off_msg(
+                                &self
+                                    .cfg
+                                    .get_str("circuit_segment_devices.load-bank.mrid")
+                                    .unwrap(),
+                            ),
+                            None
+                        );
                         //dbg!("charging battery at rate {}", 125_000.0);
                         self.charge_battery(125_000.0, ctx);
                         self.microgrid_status.algorithm = ESSCharge;
@@ -1246,16 +1240,16 @@ impl Microgrid {
                 //info!("discharging");
                 match self.microgrid_status.battery.soc {
                     soc if soc <= max_soc_soft => {
-                        // publish!(
-                        //     self.publisher,
-                        //     LoadControlProfile::loadbank_off_msg(
-                        //         &self
-                        //             .cfg
-                        //             .get_str("circuit_segment_devices.load-bank.mrid")
-                        //             .unwrap(),
-                        //     ),
-                        //     None
-                        // );
+                        publish!(
+                            self.publisher,
+                            LoadControlProfile::loadbank_off_msg(
+                                &self
+                                    .cfg
+                                    .get_str("circuit_segment_devices.load-bank.mrid")
+                                    .unwrap(),
+                            ),
+                            None
+                        );
                         self.microgrid_status.algorithm = NetZeroState::Normal;
                     }
                     //keep discharging
@@ -1296,67 +1290,67 @@ impl Microgrid {
         };
 
         if let Some(grid_connect_mode) = grid_connect_mode {
-        //     let ess_msg = EssControlProfile::build_charge_control_profile(
-        //         &self
-        //             .cfg
-        //             .get_str("circuit_segment_devices.abb_pcs100.mrid")
-        //             .unwrap(),
-        //         -rate_kw,
-        //         SystemTime::now(),
-        //         grid_connect_mode,
-        //         1,
-        //     );
-        //     //dbg!(&ess_msg);
-        //     //info!("setting battery charge rate to {}", -self.last_battery_charge_rate);
-        //     publish!(self.publisher, ess_msg, None);
-        // } else {
+            let ess_msg = EssControlProfile::build_charge_control_profile(
+                &self
+                    .cfg
+                    .get_str("circuit_segment_devices.abb_pcs100.mrid")
+                    .unwrap(),
+                -rate_kw as f64,
+                SystemTime::now(),
+                grid_connect_mode,
+                1,
+            );
+            //dbg!(&ess_msg);
+            //info!("setting battery charge rate to {}", -self.last_battery_charge_rate);
+            publish!(self.publisher, ess_msg, None);
+        } else {
             warn!("Attempting to charge battery in unknown microgrid state!");
         }
     }
 
     fn reconnect_pretest_one(&mut self, _ctx: &Context<MicrogridMsg>) {
-        // let msg = SwitchDiscreteControlProfile::switch_synchro_msg(
-        //     &self
-        //         .cfg
-        //         .get_str("circuit_segment_devices.way1.mrid")
-        //         .unwrap(),
-        //     true,
-        // );
-        // // dbg!(&msg);
-        // publish!(self.publisher, msg, None);
+        let msg = SwitchDiscreteControlProfile::switch_synchro_msg(
+            &self
+                .cfg
+                .get_str("circuit_segment_devices.way1.mrid")
+                .unwrap(),
+            true,
+        );
+        // dbg!(&msg);
+        publish!(self.publisher, msg, None);
         //FIXME
         sleep(Duration::from_secs(2));
-        // let msg = SwitchDiscreteControlProfile::switch_synchro_msg(
-        //     &self
-        //         .cfg
-        //         .get_str("circuit_segment_devices.way1.mrid")
-        //         .unwrap(),
-        //     false,
-        // );
-        // //dbg!(&msg);
-        // publish!(self.publisher, msg, None);
+        let msg = SwitchDiscreteControlProfile::switch_synchro_msg(
+            &self
+                .cfg
+                .get_str("circuit_segment_devices.way1.mrid")
+                .unwrap(),
+            false,
+        );
+        //dbg!(&msg);
+        publish!(self.publisher, msg, None);
     }
 
     fn reconnect_pretest_two(&mut self, _ctx: &Context<MicrogridMsg>) {
-        // let msg = EssControlProfile::ess_synchro_msg(
-        //     &self
-        //         .cfg
-        //         .get_str("circuit_segment_devices.abb_pcs100.mrid")
-        //         .unwrap(),
-        //     true,
-        // );
-        // //dbg!(&msg);
-        // publish!(self.publisher, msg, None);
+        let msg = EssControlProfile::ess_synchro_msg(
+            &self
+                .cfg
+                .get_str("circuit_segment_devices.abb_pcs100.mrid")
+                .unwrap(),
+            true,
+        );
+        //dbg!(&msg);
+        publish!(self.publisher, msg, None);
         sleep(Duration::from_secs(2));
-        // let msg = EssControlProfile::ess_synchro_msg(
-        //     &self
-        //         .cfg
-        //         .get_str("circuit_segment_devices.abb_pcs100.mrid")
-        //         .unwrap(),
-        //     false,
-        // );
-        // //dbg!(&msg);
-        // publish!(self.publisher, msg, None);
+        let msg = EssControlProfile::ess_synchro_msg(
+            &self
+                .cfg
+                .get_str("circuit_segment_devices.abb_pcs100.mrid")
+                .unwrap(),
+            false,
+        );
+        //dbg!(&msg);
+        publish!(self.publisher, msg, None);
     }
 
     fn reconnect(&mut self, _ctx: &Context<MicrogridMsg>) {

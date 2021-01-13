@@ -51,11 +51,11 @@ impl
     }
 }
 
-impl Debug for NATSSubscriber {
-    fn fmt(&self, _f: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
-        unimplemented!()
-    }
-}
+// impl Debug for NATSSubscriber {
+//     fn fmt(&self, _f: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+//         unimplemented!()
+//     }
+// }
 
 impl NATSSubscriber {
     fn connect_to_nats_broker(&mut self, ctx: &Context<<NATSSubscriber as Actor>::Msg>) {
@@ -179,7 +179,7 @@ impl Receive<OpenFMBMessage> for NATSSubscriber {
     }
 }
 
-use serde::export::Formatter;
+//use serde::export::Formatter;
 
 use nats::Connection;
 use std::fmt::Debug;

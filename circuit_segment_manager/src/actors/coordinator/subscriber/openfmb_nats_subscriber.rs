@@ -78,11 +78,11 @@ impl
     }
 }
 
-impl Debug for OpenFMBNATSSubscriber {
-    fn fmt(&self, _f: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
-        unimplemented!()
-    }
-}
+// impl Debug for OpenFMBNATSSubscriber {
+//     fn fmt(&self, _f: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+//         unimplemented!()
+//     }
+// }
 
 impl OpenFMBNATSSubscriber {
     fn connect_to_nats_broker(&mut self, ctx: &Context<<OpenFMBNATSSubscriber as Actor>::Msg>) {
@@ -511,7 +511,7 @@ impl Receive<OpenFMBMessage> for OpenFMBNATSSubscriber {
 }
 
 use openfmb_messages::loadmodule::LoadControlProfile;
-use serde::export::Formatter;
+//use serde::export::Formatter;
 
 use microgrid_protobuf::MicrogridControl;
 use nats::Connection;
