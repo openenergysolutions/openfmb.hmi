@@ -323,10 +323,11 @@ impl BreakerStatusExt for BreakerStatusProfile {
             .unwrap()
             .phs3.unwrap().st_val;
         match st_val {
-            0 => DbPosKind::Transient,
-            1 => DbPosKind::Closed,
-            2 => DbPosKind::Open,
-            3 => DbPosKind::Invalid,
+            0 => DbPosKind::Undefined,
+            1 => DbPosKind::Transient,
+            2 => DbPosKind::Closed,
+            3 => DbPosKind::Open,
+            4 => DbPosKind::Invalid,
             _ => unreachable!(),
         }
     }
@@ -359,10 +360,11 @@ impl SwitchStatusExt for SwitchStatusProfile {
             .unwrap()
             .phs3.unwrap().st_val;
         match st_val {
-            0 => DbPosKind::Transient,
-            1 => DbPosKind::Closed,
-            2 => DbPosKind::Open,
-            3 => DbPosKind::Invalid,
+            0 => DbPosKind::Undefined,
+            1 => DbPosKind::Transient,
+            2 => DbPosKind::Closed,
+            3 => DbPosKind::Open,
+            4 => DbPosKind::Invalid,
             _ => unreachable!(),
         }
     }

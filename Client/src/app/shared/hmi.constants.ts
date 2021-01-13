@@ -62,10 +62,10 @@ export const Hmi = {
 
 export const Helpers = {
     convertPos: (pos: number) => {
-        if (pos === 1) {
+        if (pos === 2) {
             return PosString.closed;
         }
-        else if (pos === 2) {
+        else if (pos === 3) {
             return PosString.open;
         }
         else {

@@ -512,9 +512,10 @@ impl Receive<EssStatusProfile> for Microgrid {
             .and_then(|point_status| point_status.state)
             .and_then(|state| Some(state.value));
         self.microgrid_status.battery.state = match battery_state {
-            Some(0) => Some(StateKind::Off),
-            Some(1) => Some(StateKind::On),
-            Some(2) => Some(StateKind::Standby),
+            Some(0) => Some(StateKind::Undefined),
+            Some(1) => Some(StateKind::Off),
+            Some(2) => Some(StateKind::On),
+            Some(3) => Some(StateKind::Standby),
             _ => None,
         };
 
