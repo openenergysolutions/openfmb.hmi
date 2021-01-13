@@ -69,17 +69,7 @@ impl NATSSubscriber {
             let nats_msg = NatsMessage(Arc::new(msg));
             myself.send_msg(nats_msg.into(), None);
             Ok(())
-        });
-
-        // let sub = self.nats_broker.subscribe("microgridui.*").unwrap();
-
-        // let myself = ctx.myself.clone();
-        // // dropping the returned Handler does not unsubscribe here
-        // sub.with_handler(move |msg| {
-        //     let nats_msg = NatsMessage(Arc::new(msg));
-        //     myself.send_msg(nats_msg.into(), None);
-        //     Ok(())
-        // });
+        });       
 
         info!("Subscriber successfully subscribed");
     }
@@ -114,7 +104,8 @@ impl NATSSubscriber {
             EssControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::ESS),
             SolarControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Solar),
             GeneratorControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Generation),
-            BreakerControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Breaker),            
+            BreakerControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Breaker), 
+            ResourceControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Resource),
         }
     }
 
@@ -179,14 +170,6 @@ impl Receive<StartProcessing> for NATSSubscriber {
     }
 }
 
-#[derive(Debug, Snafu)]
-pub enum Error {
-    #[snafu(display("Actor System Error"))]
-    IOError { source: std::io::Error },
-    #[snafu(display("Unsupported OpenFMB type"))]
-    UnsupportedOpenFMBTypeError { fmb_type: String },
-}
-
 impl Receive<OpenFMBMessage> for NATSSubscriber {
     type Msg = NATSSubscriberMsg;
     fn receive(&mut self, ctx: &Context<Self::Msg>, msg: OpenFMBMessage, _sender: Sender) {
@@ -201,14 +184,28 @@ use serde::export::Formatter;
 use nats::Connection;
 use std::fmt::Debug;
 
+#[derive(Debug, Snafu)]
+pub enum Error {
+    #[snafu(display("Actor System Error"))]
+    IOError { source: std::io::Error },
+    #[snafu(display("Unsupported OpenFMB type"))]
+    UnsupportedOpenFMBTypeError { fmb_type: String },
+}
+
 impl Receive<NatsMessage> for NATSSubscriber {
     type Msg = NATSSubscriberMsg;
     fn receive(&mut self, ctx: &Context<Self::Msg>, msg: NatsMessage, _sender: Sender) {
         match msg.0.subject.as_str() {            
             _ => {
-                let msg: OpenFMBMessage = msg.0.as_ref().try_into().unwrap();
-                let actor = self.ensure_actor(ctx, &msg);
-                actor.send_msg(msg.clone().into(), ctx.myself.clone());                
+                
+                let result: Result<OpenFMBMessage, _> = msg.0.as_ref().try_into();
+                if let Ok(msg) = result {                    
+                    let actor = self.ensure_actor(ctx, &msg);
+                    actor.send_msg(msg.clone().into(), ctx.myself.clone()); 
+                }    
+                else {
+                    println!("Message is not supported.");
+                }                              
             }
         }        
     }

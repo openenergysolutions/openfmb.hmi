@@ -79,3 +79,16 @@ message CoordinationStatus
     repeated DeviceStatus deviceStates = 4;
     Config config = 5;
 }
+
+message GenericControl
+{
+    string mrid = 1;
+    string profile = 2;
+    ControlType control_type = 3;
+    enum ControlType {
+        Open = 0;
+        Close = 1;
+        SetModBlkOn = 2;
+        SetModBlkOff = 3;
+    }
+}

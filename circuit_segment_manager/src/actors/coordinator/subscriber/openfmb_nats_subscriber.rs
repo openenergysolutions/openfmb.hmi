@@ -144,6 +144,7 @@ impl OpenFMBNATSSubscriber {
             GeneratorControl(_msg) => self.ensure_generator_actor(ctx),
             BreakerControl(_msg) => self.ensure_generator_actor(ctx),
             ResourceStatus(_msg) => self.ensure_resource_actor(ctx),
+            ResourceControl(_msg) => self.ensure_resource_actor(ctx),
         }
     }
 
@@ -570,9 +571,12 @@ impl Receive<NatsMessage> for OpenFMBNATSSubscriber {
                 }
             }
             _val => {
-                let msg: OpenFMBMessage = msg.0.as_ref().try_into().unwrap();
-                let actor = self.ensure_actor(ctx, &msg);
-                actor.send_msg(msg.clone().into(), ctx.myself.clone());
+                let result: Result<OpenFMBMessage, _> = msg.0.as_ref().try_into();
+                if let Ok(msg) = result {
+                    let actor = self.ensure_actor(ctx, &msg);
+                    actor.send_msg(msg.clone().into(), ctx.myself.clone());
+                }
+                
                 // if let Some(gui) = &self.gui {
                 //     gui.send_msg(msg.clone().into(), ctx.myself.clone());
                 // }

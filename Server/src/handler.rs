@@ -30,6 +30,14 @@ pub struct DeviceControl {
     pub message: microgrid::device_control::DeviceControlMessage,
 }
 
+#[derive(Debug, Clone)]
+pub struct GenericControl {
+    pub text: String,
+    pub message: microgrid::generic_control::ControlType,
+    pub mrid: String,
+    pub profile_name: Option<String>,
+}
+
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum DataValue
 {
@@ -103,14 +111,16 @@ pub struct RegisterResponse {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct UpdateMessage {
     pub topic: Topic,
-    pub session_id: Option<String>
+    pub session_id: Option<String>,
+    pub profile_name: Option<String>,
 }
 
 impl UpdateMessage {
     pub fn create(topic: Topic, session_id: String) -> UpdateMessage {
         UpdateMessage {
             topic: topic,
-            session_id: Some(session_id)
+            session_id: Some(session_id),
+            profile_name: None,
         }
     }
 }
@@ -413,6 +423,17 @@ pub async fn data_handler(update: UpdateMessage, clients: Clients, processor: Ac
                         DeviceControl {
                             text: update.topic.name.clone(),
                             message:  microgrid::device_control::DeviceControlMessage::SwitchFourClosed,
+                        },
+                        None,
+                    );
+                }
+                else if update.topic.name == "Open" {
+                    processor.tell(
+                        GenericControl {
+                            text: update.topic.name.clone(),
+                            message:  microgrid::generic_control::ControlType::Open,
+                            mrid: update.topic.mrid.clone(),
+                            profile_name: update.profile_name.clone(),
                         },
                         None,
                     );

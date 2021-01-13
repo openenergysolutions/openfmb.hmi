@@ -17,7 +17,7 @@ use openfmb_messages::{
     regulatormodule::{RegulatorReadingProfile, RegulatorStatusProfile},
     solarmodule::{SolarControlProfile, SolarReadingProfile, SolarStatusProfile},
     switchmodule::{SwitchDiscreteControlProfile, SwitchReadingProfile, SwitchStatusProfile},
-    resourcemodule::ResourceStatusProfile,
+    resourcemodule::{ResourceStatusProfile, ResourceDiscreteControlProfile},
 };
 use prost::Message;
 
@@ -83,6 +83,7 @@ pub enum OpenFMBMessage {
     GeneratorControl(Box<GenerationControlProfile>),
     BreakerControl(Box<BreakerDiscreteControlProfile>),
     ResourceStatus(Box<ResourceStatusProfile>),
+    ResourceControl(Box<ResourceDiscreteControlProfile>),
 }
 
 impl OpenFMBMessage {
@@ -139,6 +140,7 @@ impl OpenFMBMessage {
             GeneratorControl(_) => "GeneratorControl",
             BreakerControl(_) => "BreakerControl",
             ResourceStatus(_) => "ResourceStatus",
+            ResourceControl(_) => "ResourceControl",
         }
     }
 }
@@ -172,6 +174,7 @@ impl OpenFMBCommon for OpenFMBMessage {
             GeneratorControl(c) => c.device_mrid(),
             BreakerControl(c) => c.device_mrid(),
             ResourceStatus(c) => c.device_mrid(),
+            ResourceControl(c) => c.device_mrid(),
         }
     }
 
@@ -203,6 +206,8 @@ impl OpenFMBCommon for OpenFMBMessage {
             GeneratorControl(c) => c.device_name(),
             BreakerControl(c) => c.device_name(),
             ResourceStatus(c) => c.device_name(),
+            ResourceControl(c) => c.device_name(),
+            ResourceControl(c) => c.device_name(),
         }
     }
 
@@ -234,6 +239,8 @@ impl OpenFMBCommon for OpenFMBMessage {
             GeneratorControl(c) => c.message_mrid(),
             BreakerControl(c) => c.message_mrid(),
             ResourceStatus(c) => c.message_mrid(),
+            ResourceControl(c) => c.message_mrid(),
+            ResourceControl(c) => c.message_mrid(),
         }
     }
 
@@ -265,6 +272,7 @@ impl OpenFMBCommon for OpenFMBMessage {
             GeneratorControl(c) => c.message_timestamp(),
             BreakerControl(c) => c.message_timestamp(),
             ResourceStatus(c) => c.message_timestamp(),
+            ResourceControl(c) => c.message_timestamp(), 
         }
     }
 }
@@ -1796,6 +1804,56 @@ impl OpenFMBCommon for ResourceStatusProfile {
     }
 }
 
+impl OpenFMBCommon for ResourceDiscreteControlProfile {
+    fn device_name(&self) -> Result<String, OpenFMBError> {        
+        Ok(self           
+            .clone()            
+            .conducting_equipment
+            .context(NoConductingEquipment)?
+            .named_object
+            .context(NoNamedObject)?
+            .name
+            .context(NoName)?)
+    }
+
+    fn device_mrid(&self) -> Result<Uuid, OpenFMBError> {
+        //       panic!("{:#?}",self);
+        Ok(Uuid::from_str(
+            &self                
+                .clone()                
+                .conducting_equipment
+                .context(NoConductingEquipment)?
+                .m_rid,
+        )
+        .context(UuidError)?)
+    }
+    fn message_mrid(&self) -> Result<Uuid, OpenFMBError> {        
+        Ok(Uuid::from_str(
+            &self
+                .control_message_info
+                .clone()
+                .context(NoStatusMessageInfo)?
+                .message_info
+                .context(NoMessageInfo)?
+                .identified_object
+                .context(NoIdentifiedObject)?
+                .m_rid
+                .context(NoMRID)?,
+        )
+            .context(UuidError)?)
+    }
+    fn message_timestamp(&self) -> Result<Timestamp, OpenFMBError> {        
+        Ok(self
+            .control_message_info
+            .clone()
+            .context(NoReadingMessageInfo)?
+            .message_info
+            .context(NoMessageInfo)?
+            .message_time_stamp
+            .context(NoMessageTimestamp)?)
+    }
+}
+
 use openfmb_messages::reclosermodule::{
     RecloserReadingProfile, RecloserStatusProfile,
 };
@@ -1836,6 +1894,7 @@ impl OpenFMBMessage {
             GeneratorControl(msg) => msg.device_mrid(),
             BreakerControl(msg) => msg.device_mrid(),
             ResourceStatus(msg) => msg.device_mrid(),
+            ResourceControl(msg) => msg.device_mrid(),
         };
 
         //todo!()
@@ -2023,6 +2082,10 @@ impl TryFrom<&nats::Message> for OpenFMBMessage {
             ))),
             "ResourceStatusProfile" => Ok(ResourceStatus(Box::new(
                 ResourceStatusProfile::decode(bytes.as_slice()).context(ProstDecodeError)?,
+            ))),
+            "ResourceDiscreteControlProfile" => Ok(ResourceControl(Box::new(
+                ResourceDiscreteControlProfile::decode(bytes.as_slice())
+                    .context(ProstDecodeError)?,
             ))),
             // "control" => Ok(MicrogridControlMsg(Box::new(MicrogridControl::decode(bytes.as_slice()).context(ProstDecodeError)?))),
             _ => Err(OpenFMBError::UnsupportedOpenFMBProfileError {

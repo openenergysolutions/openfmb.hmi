@@ -471,6 +471,7 @@ impl Microgrid {
                         );
                     }
                     DbPosKind::Open => warn!("way1 still open"),
+                    _ => warn!("way1 is undefined")
                 };
                 // let msg = SwitchDiscreteControlProfile::switch_synchro_msg(
                 //     &self.cfg.get_str("circuit_segment_devices.way1.mrid").unwrap(),
@@ -523,7 +524,7 @@ impl Microgrid {
             MicrogridControlState::Islanding => {
                 warn!("matching islanding state");
                 match &self.microgrid_status.way1.status.unwrap() {
-                    DbPosKind::Transient => {}
+                    DbPosKind::Transient | DbPosKind::Undefined => {}
                     DbPosKind::Invalid => {}
                     DbPosKind::Closed => {}
                     DbPosKind::Open => {
@@ -560,7 +561,7 @@ impl Microgrid {
                             ),
                             _ => {}
                         }
-                    }
+                    }                    
                 }
                 // //put battery into vsiiso mode
                 // publish!(self.publisher,
@@ -737,6 +738,7 @@ impl Microgrid {
                         //FIXME is this correct?
                         self.microgrid_status.algorithm = NetZeroState::Normal;
                     }
+                    Some(StateKind::Undefined) => {},
                     None => {}
                 }
 
@@ -896,7 +898,8 @@ impl Microgrid {
                     Some(StateKind::Off) => self.microgrid_status.algorithm = NetZeroState::Normal,
                     Some(StateKind::On) => {
                         self.microgrid_status.algorithm = NetZeroState::LoadDischarge
-                    }
+                    },
+                    Some(StateKind::Undefined) => {},
                     None => {}
                 }
                 //info!("discharging");
@@ -1131,7 +1134,7 @@ impl Microgrid {
                             //     None
                             // )
                         }
-                        StateKind::Off | StateKind::Standby {} => {}
+                        StateKind::Off | StateKind::Standby | StateKind::Undefined {} => {}
                     }
                     //dbg!(
                     //    "charging battery at rate {} + {} = {}",
@@ -1156,7 +1159,7 @@ impl Microgrid {
                     soc if soc > max_soc_soft => {
                         //Staty in ESSDischarge Mode
                         match self.microgrid_status.generator.state.unwrap() {
-                            StateKind::Off | StateKind::Standby => {}
+                            StateKind::Off | StateKind::Standby | StateKind::Undefined => {}
                             StateKind::On => {}
                             // publish!(
                             //     self.publisher,
@@ -1238,6 +1241,7 @@ impl Microgrid {
                     Some(StateKind::On) => {
                         self.microgrid_status.algorithm = NetZeroState::LoadDischarge
                     }
+                    Some(_) => warn!("undefined")
                 }
                 //info!("discharging");
                 match self.microgrid_status.battery.soc {

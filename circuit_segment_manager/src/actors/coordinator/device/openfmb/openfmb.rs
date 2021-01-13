@@ -63,6 +63,7 @@ impl OpenFMBDevice {
             GeneratorControl(_msg) => self.ensure_generator_actor(ctx),
             BreakerControl(_msg) => self.ensure_generator_actor(ctx),
             ResourceStatus(_msg) => self.ensure_resource_actor(ctx),
+            ResourceControl(_msg) => self.ensure_resource_actor(ctx),
             //                        _ => panic!("unsupported message profile: {:?}", msg),
         }
     }

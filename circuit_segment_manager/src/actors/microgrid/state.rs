@@ -255,6 +255,7 @@ impl Display for BatteryState {
                 StateKind::Off => "Off",
                 StateKind::On => "On",
                 StateKind::Standby => "Standby",
+                StateKind::Undefined => "Undefined",
             },
             None => "",
         };

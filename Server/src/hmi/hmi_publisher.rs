@@ -1,6 +1,6 @@
 use super::nats_publisher::{NATSPublisher, NATSPublisherMsg};
 use circuit_segment_manager::messages::*;
-
+use openfmb_messages::breakermodule::BreakerDiscreteControlProfile;
 use nats::Connection;
 
 use riker::actors::*;
@@ -11,7 +11,9 @@ use crate::handler::*;
 #[actor(
     OpenFMBMessage, 
     MicrogridControl,
-    DeviceControl
+    DeviceControl,
+    GenericControl,
+    BreakerDiscreteControlProfile
 )]
 #[derive(Clone, Debug)]
 pub struct HmiPublisher {
@@ -106,6 +108,34 @@ impl Receive<DeviceControl> for HmiPublisher {
         match &self.openfmb_nats_publisher {
             Some(child) => {
                 child.tell(msg.clone(), sender.clone());
+            }
+            None => {}
+        }       
+    } 
+}
+
+impl Receive<GenericControl> for HmiPublisher {
+    type Msg = HmiPublisherMsg;    
+
+    fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: GenericControl, sender: Sender) {      
+        println!("Publisher received generic control message {:?}", msg); 
+        match &self.openfmb_nats_publisher {
+            Some(child) => {
+                child.tell(msg.clone(), sender.clone());
+            }
+            None => {}
+        }       
+    } 
+}
+
+impl Receive<BreakerDiscreteControlProfile> for HmiPublisher {
+    type Msg = HmiPublisherMsg;    
+
+    fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: BreakerDiscreteControlProfile, sender: Sender) {      
+        println!("Publisher received generic control message {:?}", msg); 
+        match &self.openfmb_nats_publisher {
+            Some(child) => {
+                //child.tell(msg.clone(), sender.clone());
             }
             None => {}
         }       

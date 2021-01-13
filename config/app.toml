@@ -1,6 +1,6 @@
 [coordinator]
-environment = "dev"
-# environment = "prod"
+# environment = "dev"
+environment = "prod"
 app_name = "CircuitSegmentCoordinator"
 modules = ["publisher", "subscriber", "persistor", "device"]
 cursive_ui_enabled = false
@@ -15,7 +15,7 @@ filename = "../datafiles/capture_10.txt"
 
 [openfmb_nats_subscriber]
 prod_uri = "microgrid.mthollylab.io:32224"
-dev_uri = "172.16.1.69:4222"
+dev_uri = "127.0.0.1:4222"
 
 [battery]
 min_soc_soft = "0.26"

@@ -1,7 +1,7 @@
 FROM rust:latest AS build
 WORKDIR /usr/src
 
-RUN rustup default nightly
+#RUN rustup default nightly
 
 COPY circuit_segment_manager ./circuit_segment_manager
 COPY diagrams ./diagrams
