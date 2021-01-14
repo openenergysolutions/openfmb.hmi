@@ -1,7 +1,10 @@
 FROM rust:latest AS build
+
+ARG GITHUB_API_KEY
+
 WORKDIR /usr/src
 
-#RUN rustup default nightly
+RUN git config --global --add url."https://${GITHUB_API_KEY}@github.com/".insteadOf "git@github.com:" && git config --global --add url."https://${GITHUB_API_KEY}@github.com/".insteadOf "https://github.com/"
 
 COPY circuit_segment_manager ./circuit_segment_manager
 COPY diagrams ./diagrams

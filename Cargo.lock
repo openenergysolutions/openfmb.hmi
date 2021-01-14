@@ -1591,9 +1591,9 @@ checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
 [[package]]
 name = "openfmb-codegen"
 version = "0.6.1"
+source = "git+https://github.com/openenergysolutions/openfmb-rs?branch=hmi-develop#064ff1996f6ad0fcde13980dc9a67bd87c64aa87"
 dependencies = [
  "bytes",
- "env_logger 0.7.1",
  "heck",
  "itertools",
  "log",
@@ -1608,6 +1608,7 @@ dependencies = [
 [[package]]
 name = "openfmb-messages"
 version = "0.1.0"
+source = "git+https://github.com/openenergysolutions/openfmb-rs?branch=hmi-develop#064ff1996f6ad0fcde13980dc9a67bd87c64aa87"
 dependencies = [
  "bytes",
  "env_logger 0.8.1",
@@ -1622,8 +1623,8 @@ dependencies = [
 [[package]]
 name = "openfmb-messages-ext"
 version = "0.0.1"
+source = "git+https://github.com/openenergysolutions/openfmb-rs?branch=hmi-develop#064ff1996f6ad0fcde13980dc9a67bd87c64aa87"
 dependencies = [
- "cargo-husky",
  "chrono",
  "log",
  "openfmb-messages",
@@ -1859,6 +1860,7 @@ dependencies = [
 [[package]]
 name = "proto-types"
 version = "0.6.1"
+source = "git+https://github.com/openenergysolutions/openfmb-rs?branch=hmi-develop#064ff1996f6ad0fcde13980dc9a67bd87c64aa87"
 dependencies = [
  "bytes",
  "prost",

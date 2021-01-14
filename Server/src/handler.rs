@@ -438,6 +438,39 @@ pub async fn data_handler(update: UpdateMessage, clients: Clients, processor: Ac
                         None,
                     );
                 }
+                else if update.topic.name == "Close" {
+                    processor.tell(
+                        GenericControl {
+                            text: update.topic.name.clone(),
+                            message:  microgrid::generic_control::ControlType::Close,
+                            mrid: update.topic.mrid.clone(),
+                            profile_name: update.profile_name.clone(),
+                        },
+                        None,
+                    );
+                }
+                else if update.topic.name == "SetModBlkOn" {
+                    processor.tell(
+                        GenericControl {
+                            text: update.topic.name.clone(),
+                            message:  microgrid::generic_control::ControlType::SetModBlkOn,
+                            mrid: update.topic.mrid.clone(),
+                            profile_name: update.profile_name.clone(),
+                        },
+                        None,
+                    );
+                }
+                else if update.topic.name == "SetModBlkOff" {
+                    processor.tell(
+                        GenericControl {
+                            text: update.topic.name.clone(),
+                            message:  microgrid::generic_control::ControlType::SetModBlkOff,
+                            mrid: update.topic.mrid.clone(),
+                            profile_name: update.profile_name.clone(),
+                        },
+                        None,
+                    );
+                }
                 else {
                     info!("Received unknown command: {}", update.topic.name);
                 }                

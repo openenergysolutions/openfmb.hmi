@@ -13,8 +13,7 @@ pub struct NatsMessage(Arc<nats::Message>);
 #[actor(    
     OpenFMBMessage,
     MicrogridControl,
-    DeviceControl,
-    GenericControl
+    DeviceControl
 )]
 pub struct NATSPublisher {
     pub message_count: u32,
@@ -94,18 +93,5 @@ impl Receive<DeviceControl> for NATSPublisher {
         let device_control_msg = microgrid_protobuf::DeviceControl { msg: msg.message.into() };
         device_control_msg.encode(&mut buffer).unwrap();
         self.nats_broker.publish(&subject, &mut buffer).unwrap();    
-    } 
-}
-
-impl Receive<GenericControl> for NATSPublisher {
-    type Msg = NATSPublisherMsg;    
-   
-    fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: GenericControl, _sender: Sender) {           
-        let subject = "microgridui.generic_control";
-        info!("Sending {:?} to NATS topic {}", msg, subject);
-        // let mut buffer = Vec::<u8>::new();
-        // let device_control_msg = microgrid_protobuf::GenericControl { msg: msg.message.into() };
-        // device_control_msg.encode(&mut buffer).unwrap();
-        // self.nats_broker.publish(&subject, &mut buffer).unwrap();    
     } 
 }

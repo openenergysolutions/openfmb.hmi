@@ -397,8 +397,10 @@ impl Microgrid {
                     }
                 };
 
+                let switch_state_i = DynamicTestKind::Testing as i32;
+
                 match switch_state {
-                    1 => {
+                    switch_state_i => {
                         warn!("disabling ess synchro");
                         //switch synchron on, battery synchro off
                         //unimplemented!();
@@ -1298,7 +1300,7 @@ impl Microgrid {
                 -rate_kw as f64,
                 SystemTime::now(),
                 grid_connect_mode,
-                1,
+                StateKind::On as i32,
             );
             //dbg!(&ess_msg);
             //info!("setting battery charge rate to {}", -self.last_battery_charge_rate);

@@ -1,9 +1,6 @@
 use circuit_segment_manager::actors::coordinator::openfmb::openfmb::OpenFMBDeviceMsg;
 use circuit_segment_manager::messages::*;
 
-use openfmb_messages::breakermodule::BreakerDiscreteControlProfile;
-use openfmb_messages_ext::breaker::BreakerControlExt;
-
 use super::hmi_publisher::HmiPublisherMsg;
 use crate::handler::*;
 
@@ -159,7 +156,7 @@ impl Receive<DeviceControl> for Processor {
 impl Receive<GenericControl> for Processor {
     type Msg = ProcessorMsg;    
 
-    fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: GenericControl, sender: Sender) {      
+    fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: GenericControl, _sender: Sender) {      
         println!("Received generic control message {:?}", msg);
         let mut rt = tokio::runtime::Runtime::new().unwrap();
         rt.block_on(handle_generic_control(self, msg));
@@ -466,29 +463,6 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
 }
 
 async fn handle_generic_control(processor: &Processor, msg: GenericControl) {
-    let profile_name = msg.profile_name.clone().unwrap();
-    use microgrid_protobuf as microgrid;
-    match profile_name.clone().as_str() {
-        "BreakerDiscreteControlProfile" => {
-            match msg.message {
-                microgrid::generic_control::ControlType::Open => {
-                    let profile = BreakerDiscreteControlProfile::breaker_open_msg(
-                        &msg.mrid
-                    );
-                    processor.publisher.send_msg(profile.into(), None);
-                }
-                microgrid::generic_control::ControlType::Close => {
-                    let profile = BreakerDiscreteControlProfile::breaker_close_msg(
-                        &msg.mrid
-                    );
-                    processor.publisher.send_msg(profile.into(), None);
-                }
-                _ => {}
-            }
-           
-        },
-        _ => {
-            println!("Unsupported generic control for profile {}", profile_name)
-        }
-    }
+
+    processor.publisher.send_msg(msg.into(), None);    
 }
