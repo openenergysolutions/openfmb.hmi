@@ -46,3 +46,5 @@ Thumbs.db
 /target
 /deps
 /diagrams
+
+*.tar.gz
