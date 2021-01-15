@@ -273,18 +273,7 @@ export const COMMANDS = {
                 "type": "",
 				"measurement": ""               
             }
-        },
-        {    
-            "type": "element",
-			"name": "Object",        
-            "attributes": {
-                "label": "",
-                "name": "ToggleSwitchOne",
-                "path": "ToggleSwitchOne",
-                "type": "",
-				"measurement": ""               
-            }
-        },
+        },        
         {     
             "type": "element",
 			"name": "Object",       
@@ -306,18 +295,7 @@ export const COMMANDS = {
                 "type": "",
 				"measurement": ""               
             }
-        },
-        {     
-            "type": "element",
-			"name": "Object",       
-            "attributes": {
-                "label": "",
-                "name": "ToggleSwitchTwo",
-                "path": "ToggleSwitchTwo",
-                "type": "",
-				"measurement": ""               
-            }
-        },
+        },        
         {      
             "type": "element",
 			"name": "Object",      
@@ -339,18 +317,7 @@ export const COMMANDS = {
                 "type": "",
 				"measurement": ""               
             }
-        },
-        {     
-            "type": "element",
-			"name": "Object",       
-            "attributes": {
-                "label": "",
-                "name": "ToggleBreakerThree",
-                "path": "ToggleBreakerThree",
-                "type": "",
-				"measurement": ""               
-            }
-        },
+        },        
         {    
             "type": "element",
 			"name": "Object",        
@@ -373,16 +340,27 @@ export const COMMANDS = {
 				"measurement": ""               
             }
         },
-        {    
+        { 
             "type": "element",
-			"name": "Object",        
+			"name": "Object",           
             "attributes": {
                 "label": "",
-                "name": "ToggleSwitchFour",
-                "path": "ToggleSwitchFour",
+                "name": "SetModBlkOn",
+                "path": "SetModBlkOn",
                 "type": "",
 				"measurement": ""               
             }
-        }
+        },
+        { 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
+                "name": "SetModBlkOff",
+                "path": "SetModBlkOff",
+                "type": "",
+				"measurement": ""               
+            }
+        }         
     ]
 };

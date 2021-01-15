@@ -11,7 +11,8 @@ use nats::Connection;
 
 use riker::actors::*;
 use std::fmt::Debug;
-
+use config::Config;
+use log::info;
 use crate::handler::*;
 
 #[actor(
@@ -23,18 +24,43 @@ use crate::handler::*;
 #[derive(Clone, Debug)]
 pub struct HmiPublisher {
     pub message_count: u32,
-    pub nats_client: nats::Connection,
+    pub nats_client: nats::Connection,    
     pub openfmb_nats_publisher: Option<ActorRef<NATSPublisherMsg>>,
+    pub cfg: Config,
+    pub devices: Vec<Equipment>,
 }
 
-impl ActorFactoryArgs<Connection> for HmiPublisher {
-    fn create_args(args: Connection) -> Self {
+impl ActorFactoryArgs<(Connection, Config)> for HmiPublisher {
+    fn create_args((args, config): (Connection, Config)) -> Self {
         HmiPublisher {
             message_count: 0,
             nats_client: args,            
-            openfmb_nats_publisher: None,            
+            openfmb_nats_publisher: None,             
+            devices: initial_devices(&config),
+            cfg: config,
         }
     }
+}
+
+fn initial_devices(config: &Config) -> Vec<Equipment> {          
+    let mut equipment_list = vec![];
+
+    if let Ok(list) = config.get_array("circuit_segment_devices.all_devices") {
+        for item in list {
+            let device_name = item.into_str().unwrap();
+            
+            let eq = Equipment {
+                name: config.get_str(&format!("circuit_segment_devices.{}.name", device_name)).unwrap(),
+                mrid: config.get_str(&format!("circuit_segment_devices.{}.mrid", device_name)).unwrap(),
+                device_type: match config.get_str(&format!("circuit_segment_devices.{}.type", device_name)) {
+                    Ok(t) => Some(t),
+                    _ => None,
+                },
+            };            
+            equipment_list.push(eq);
+        }
+    }        
+    equipment_list
 }
 
 impl HmiPublisher {
@@ -43,6 +69,34 @@ impl HmiPublisher {
     ) ->  Option<ActorRef<NATSPublisherMsg>>        
     {                   
         self.openfmb_nats_publisher.clone()                    
+    }
+    fn get_device_type_by_mrid(&self, mrid: String) -> Option<String> {
+        for eq in self.devices.iter() {
+           if eq.mrid == mrid {
+               return eq.device_type.clone();
+           }
+        }
+        None
+    }
+    fn get_common_control_profile(&self, mrid: String) -> Option<String> {
+
+        let t = match self.get_device_type_by_mrid(mrid) {
+            Some(device_type) => {
+                match device_type.as_str() {
+                    "switch" => Some("SwitchDiscreteControlProfile".to_string()),
+                    "breaker" => Some("BreakerDiscreteControlProfile".to_string()),
+                    "recloser" => Some("RecloserDiscreteControlProfile".to_string()),
+                    _ => {
+                        info!("Unable to get common control profile for device type: {}", device_type);
+                        None
+                    }
+                }
+            },
+            None => {
+                None
+            }
+        };
+        t
     }
 }
 impl Actor for HmiPublisher {
@@ -124,9 +178,16 @@ impl Receive<GenericControl> for HmiPublisher {
    
     fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: GenericControl, _sender: Sender) {           
                             
-        let profile_name = msg.profile_name.clone().unwrap();
+        let mut profile_name = String::from("");
+        if let Some(p) = msg.profile_name.clone() {
+            profile_name = p.clone();
+        }
+        else if let Some(p) = self.get_common_control_profile(msg.mrid.clone().to_string()){
+            profile_name = p.clone();
+        }
+        
         use microgrid_protobuf as microgrid;
-        match profile_name.clone().as_str() {
+        match profile_name.as_str() {
             "BreakerDiscreteControlProfile" => {
                 let subject = format!("openfmb.breakermodule.BreakerDiscreteControlProfile.{}", &msg.mrid);
                 match msg.message {

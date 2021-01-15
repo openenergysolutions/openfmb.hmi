@@ -122,7 +122,7 @@ async fn server_setup() {
     // Start Hmi related 
     
     let publisher = sys
-        .actor_of_args::<HmiPublisher, Connection>("HmiPublisher", nats_client.clone())
+        .actor_of_args::<HmiPublisher, (Connection, Config)>("HmiPublisher", (nats_client.clone(), sys.config().clone()))
         .unwrap();
 
     let processor = sys

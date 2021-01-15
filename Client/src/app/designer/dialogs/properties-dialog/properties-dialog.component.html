@@ -82,7 +82,9 @@
             <mat-form-field class="designer-line-form-field" floatLabel='never'>
               <div style="padding-right: 10px;">
                 <input type="number" [(ngModel)]="statusDefinitions[i].value" min="0" max="65535" matInput name="input-status{{i}}"
-                  placeholder="Value" />
+                  placeholder="Value" *ngIf="isStatusDefinitionNumericDataType" />
+                <input [(ngModel)]="statusDefinitions[i].value" matInput name="input-status{{i}}"
+                  placeholder="Value" *ngIf="!isStatusDefinitionNumericDataType" />
               </div>
             </mat-form-field>
             <mat-form-field class="designer-line-form-field" floatLabel='never'>

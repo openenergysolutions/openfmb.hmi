@@ -752,8 +752,11 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
                   var diagramData = cell.value.userObject;
                   var color = 'gray';
                   if (diagramData && diagramData.statusDefinition) {
-                    for(var j = 0; j < diagramData.statusDefinition.length; ++j) {                      
+                    for(var j = 0; j < diagramData.statusDefinition.length; ++j) {                       
                       if (diagramData.statusDefinition[j].value == update.topic.value.Double) {
+                        color = diagramData.statusDefinition[j].color;
+                      }
+                      else if (diagramData.statusDefinition[j].value == (update.topic.value.Bool + "")) {
                         color = diagramData.statusDefinition[j].color;
                       }
                     }
@@ -810,29 +813,34 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
         this.snack.open('Unable to send command.  No sepcified mRID.', 'OK', { duration: 2000 });
       }
 
-      let commandValue = value;
+      // let commandValue = value;
 
-      if (!commandValue) {
-        if (action === CommandAction.OPEN) {
-          commandValue = 0;
-        }
-        else if (action === CommandAction.CLOSE) {
-          commandValue = 1;
-        }
-      }
+      // if (!commandValue) {
+      //   if (action === CommandAction.OPEN) {
+      //     commandValue = 0;
+      //   }
+      //   else if (action === CommandAction.CLOSE) {
+      //     commandValue = 1;
+      //   }
+      // }
 
-      if (commandValue == 'true') {
-        commandValue = 1
-      }
-      else if (commandValue == 'false') {
-        commandValue = 0;
-      }
+      // if (commandValue == 'true') {
+      //   commandValue = 1
+      // }
+      // else if (commandValue == 'false') {
+      //   commandValue = 0;
+      // }
 
       const t : Topic = {
         name: control?.path,
         mrid: userObject.mRID,
-        value: commandValue
+        action: action,   
+        args: null,     
       };
+
+      if (value) {
+        t.args = [value];
+      }
 
       const data: UpdateData = {
         topic: t

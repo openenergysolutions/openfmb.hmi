@@ -50,7 +50,9 @@ pub enum DataValue
 pub struct Topic {
     pub name: String,
     pub mrid: String,
-    pub value: Option<DataValue>    
+    pub value: Option<DataValue>,
+    pub action: Option<String>,
+    pub args: Option<Vec<f32>>,
 }
 
 #[derive(Debug, Clone)]
@@ -66,10 +68,11 @@ pub struct RegisterRequest {
     topics: Vec<Topic>
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Equipment {
-    mrid: String,
-    name: String
+    pub mrid: String,
+    pub name: String,
+    pub device_type: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -112,7 +115,7 @@ pub struct RegisterResponse {
 pub struct UpdateMessage {
     pub topic: Topic,
     pub session_id: Option<String>,
-    pub profile_name: Option<String>,
+    //pub profile_name: Option<String>,
 }
 
 impl UpdateMessage {
@@ -120,7 +123,7 @@ impl UpdateMessage {
         UpdateMessage {
             topic: topic,
             session_id: Some(session_id),
-            profile_name: None,
+            //profile_name: None,
         }
     }
 }
@@ -427,13 +430,13 @@ pub async fn data_handler(update: UpdateMessage, clients: Clients, processor: Ac
                         None,
                     );
                 }
-                else if update.topic.name == "Open" {
+                else if update.topic.name == "Trip" {
                     processor.tell(
                         GenericControl {
                             text: update.topic.name.clone(),
                             message:  microgrid::generic_control::ControlType::Open,
                             mrid: update.topic.mrid.clone(),
-                            profile_name: update.profile_name.clone(),
+                            profile_name: None,
                         },
                         None,
                     );
@@ -444,7 +447,7 @@ pub async fn data_handler(update: UpdateMessage, clients: Clients, processor: Ac
                             text: update.topic.name.clone(),
                             message:  microgrid::generic_control::ControlType::Close,
                             mrid: update.topic.mrid.clone(),
-                            profile_name: update.profile_name.clone(),
+                            profile_name: None,
                         },
                         None,
                     );
@@ -455,7 +458,7 @@ pub async fn data_handler(update: UpdateMessage, clients: Clients, processor: Ac
                             text: update.topic.name.clone(),
                             message:  microgrid::generic_control::ControlType::SetModBlkOn,
                             mrid: update.topic.mrid.clone(),
-                            profile_name: update.profile_name.clone(),
+                            profile_name: None,
                         },
                         None,
                     );
@@ -466,18 +469,55 @@ pub async fn data_handler(update: UpdateMessage, clients: Clients, processor: Ac
                             text: update.topic.name.clone(),
                             message:  microgrid::generic_control::ControlType::SetModBlkOff,
                             mrid: update.topic.mrid.clone(),
-                            profile_name: update.profile_name.clone(),
+                            profile_name: None,
                         },
                         None,
                     );
                 }
                 else {
-                    info!("Received unknown command: {}", update.topic.name);
+
+                    if let Some(action) = &update.topic.action {
+                        if action == "SET_VALUE" {
+                            if let Some(args) = &update.topic.args {
+
+                            }
+                        }
+                        else if action == "OPEN" {
+                            processor.tell(
+                                GenericControl {
+                                    text: update.topic.name.clone(),
+                                    message:  microgrid::generic_control::ControlType::Open,
+                                    mrid: update.topic.mrid.clone(),
+                                    profile_name: Some("SwitchDiscreteControlProfile".to_string()),
+                                },
+                                None,
+                            );
+                        }
+                        else if action == "CLOSE" {
+                            processor.tell(
+                                GenericControl {
+                                    text: update.topic.name.clone(),
+                                    message:  microgrid::generic_control::ControlType::Close,
+                                    mrid: update.topic.mrid.clone(),
+                                    profile_name: Some("SwitchDiscreteControlProfile".to_string()),
+                                },
+                                None,
+                            );
+                        }
+                    }
+                    else {
+                        info!("Received unknown command: {}", update.topic.name);
+                    }
                 }                
             }
         });
 
     Ok(StatusCode::OK)
+}
+
+pub fn get_profile_name(topic_name: &str) -> String {
+    let token:  Vec<&str> = topic_name.split(".").collect();
+    token[0].to_string()
 }
 
 pub async fn send_updates(updates: UpdateMessages, clients: Clients) -> Result<impl Reply> {
@@ -554,6 +594,10 @@ pub async fn equipment_handler() -> Result<impl Reply> {
             let eq = Equipment {
                 name: config.get_str(&format!("circuit_segment_devices.{}.name", device_name)).unwrap(),
                 mrid: config.get_str(&format!("circuit_segment_devices.{}.mrid", device_name)).unwrap(),
+                device_type: match config.get_str(&format!("circuit_segment_devices.{}.type", device_name)) {
+                    Ok(t) => Some(t),
+                    _ => None,
+                },
             };
             
             equipment_list.push(eq);

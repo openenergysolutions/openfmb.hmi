@@ -443,9 +443,10 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                     };
 
                     match data.get(&topic.name.to_lowercase()) {
-                        Some(v) => {
+                        Some(v) => {                            
                             let mut update_msg = UpdateMessage::create(topic.clone(), client.session_id.clone());
-                            update_msg.topic.value = Some(v.clone());                            
+                            update_msg.topic.value = Some(v.clone());  
+                            info!("{:?}", &update_msg.topic.clone());                          
                             update_messages.push(update_msg);
                         },
                         _ => {

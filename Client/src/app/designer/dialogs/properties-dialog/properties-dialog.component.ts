@@ -58,6 +58,7 @@ export class PropertiesDialogComponent implements OnInit {
   // status definition
   statusDefinitions: StatusDefinition[];
   statusColors: string[] = ['gray', 'green', 'yellow', 'red'];
+  isStatusDefinitionNumericDataType: boolean = false;
 
   constructor(
     public dialogRef: MatDialogRef<PropertiesDialogComponent>,
@@ -135,6 +136,9 @@ export class PropertiesDialogComponent implements OnInit {
   
     if (this.data.displayData) {
       this.displayData = [...this.data.displayData];
+      if (this.displayData.length > 0) {
+        this.isStatusDefinitionNumericDataType = this.displayData[0].type === "analog";        
+      }
     } 
     if (this.data.controlData) {
       this.controlData = [...this.data.controlData];
