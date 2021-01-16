@@ -53,7 +53,10 @@
                                         <div class="data-connect-box" *ngFor="let item of currentPoints" cdkDrag>
                                             <div>
                                                 <div class="data-header">{{item.attributes.name}}</div>
-                                                <div class="data-detail">{{truncateString(item.attributes.path)}}</div>
+                                                <div class="data-detail">
+                                                    <!-- {{truncateString(item.attributes.path)}} -->
+                                                    <input matInput [value]="item.attributes.path" (input)="item.attributes.path = $event.target.value" />
+                                                </div>
                                                 <div class="data-detail">
                                                     <mat-form-field class="example-full-width pr-1">
                                                         <mat-label>Custom Label</mat-label>
@@ -70,7 +73,7 @@
                                             <button mat-icon-button aria-label="Delete" style="cursor: pointer;"
                                                 (click)="removePoint(item)">
                                                 <mat-icon>delete</mat-icon>
-                                            </button>
+                                            </button>                                            
                                         </div>
                                     </div>
                                     <div fxFlex="2">&nbsp;</div>

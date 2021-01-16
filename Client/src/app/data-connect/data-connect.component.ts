@@ -230,6 +230,7 @@ export class DataConnectComponent implements OnInit {
         var obj = this.currentPoints[index];
         if (obj === item) {        
           this.currentPoints.splice(index, 1);
+          break;
         }
       }
     }
@@ -260,7 +261,7 @@ export class DataConnectComponent implements OnInit {
       this.snack.open('Only one mapping is allowed.', 'OK', { duration: 4000 });
     }
     else {
-      this.currentPoints.push(item);
+      this.currentPoints.push({ ...item});
     }
   }
 

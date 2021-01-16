@@ -32,21 +32,21 @@ server_uri = "0.0.0.0:32771"
 
 [circuit_segment_devices]
 # satec_aux_abb
-satec_aux_abb_dnp3= {mrid="3feccf53-d4b4-4c52-b1f0-79450cacdc20", name="SATEC AUX ABB"}
-abb_pcs100 = {mrid="836a8638-b448-4961-8258-47aa18e05f65", name="Battery Inverter", min_soc=20.0, max_soc=90.0, discharge_to=80.0}
+satec_aux_abb_dnp3= {mrid="3feccf53-d4b4-4c52-b1f0-79450cacdc20", name="SATEC AUX ABB", type="meter"}
+abb_pcs100 = {mrid="836a8638-b448-4961-8258-47aa18e05f65", name="Battery Inverter", min_soc=20.0, max_soc=90.0, discharge_to=80.0, type="ess"}
 way1 = {mrid="e6768784-48ad-40e9-af2a-9676413d4d6a", name="Way 1", type="switch"}
 way2 = {mrid="894bc1be-507a-4845-8f2c-b20de8b223aa", name="Way 2", type="switch"}
 way3 = {mrid="66228596-99ed-4127-9388-bc66a2944b4d", name="Way 3", type="switch"}
 breaker3 = {mrid="449b9433-af9b-4914-aa83-f119c11a962d", name="Breaker 3", type="breaker"}
 way4 = {mrid="6e595d68-67b4-434c-8c26-736104cc14fe", name="Way 4", type="switch"}
 ion-lb= {mrid="2a09c597-d666-4354-a31a-dfe6da7727a9", name="Load Bank Meter", type="meter"}
-load-bank = {mrid="4cadfaed-4176-453d-9625-e9ae8ad70529", name="Load Bank", type="loadbank"}
-turbine-array = {mrid="8e202725-5a8d-45c2-b575-8161927c6770", name="Array", type="turbine"}
-turbine1 = {mrid="d0e662ca-26a3-4c5d-a60f-0420978e1486", name="Turbine 1", type="turbine"}
-turbine2 = {mrid="e4105c59-2b82-473c-89b4-74352a444c13", name="Turbine 2", type="turbine"}
+load-bank = {mrid="4cadfaed-4176-453d-9625-e9ae8ad70529", name="Load Bank", type="load"}
+turbine-array = {mrid="8e202725-5a8d-45c2-b575-8161927c6770", name="Array", type="generator"}
+turbine1 = {mrid="d0e662ca-26a3-4c5d-a60f-0420978e1486", name="Turbine 1", type="generator"}
+turbine2 = {mrid="e4105c59-2b82-473c-89b4-74352a444c13", name="Turbine 2", type="generator"}
 satec_aux_saft = {mrid="2e8fbf26-a9ef-4fdd-8c5c-3f0d55b10000", name="SATEC AUX Saft", type="meter"}
 ion-shop = {mrid="0648ef71-cb63-4347-921a-9dbf178da687", name = "Shop Meter", type="meter"}
-sel751 = {mrid="081a9cd4-b7d2-4a7c-b089-42d0053f8e6a", name="Solar"}
+sel751 = {mrid="081a9cd4-b7d2-4a7c-b089-42d0053f8e6a", name="Solar", type="solar"}
 parker-invert = {mrid="540b292a-e600-4ae4-b077-40b892ae6970", name="Solar Parker", type="solar"}
 weather-station = {mrid="9ad28dca-5bfb-49d6-9651-e59630129068", name="Weather Station"}
 sat-gypsum = {mrid="f1ec4b3e-f43e-4d81-ae1c-30eb08b0d7c7", name="Gypsum Meter"}

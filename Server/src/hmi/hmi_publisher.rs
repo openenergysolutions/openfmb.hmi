@@ -6,6 +6,16 @@ use openfmb_messages_ext::breaker::BreakerControlExt;
 
 use openfmb_messages::switchmodule::SwitchDiscreteControlProfile;
 use openfmb_messages_ext::switch::SwitchControlExt;
+
+use openfmb_messages::essmodule::EssControlProfile;
+use openfmb_messages_ext::ess::EssControlExt;
+
+use openfmb_messages::loadmodule::LoadControlProfile;
+use openfmb_messages_ext::load::LoadControlExt;
+
+use openfmb_messages::solarmodule::SolarControlProfile;
+use openfmb_messages_ext::solar::SolarControlExt;
+
 use prost::Message;
 use nats::Connection;
 
@@ -86,6 +96,9 @@ impl HmiPublisher {
                     "switch" => Some("SwitchDiscreteControlProfile".to_string()),
                     "breaker" => Some("BreakerDiscreteControlProfile".to_string()),
                     "recloser" => Some("RecloserDiscreteControlProfile".to_string()),
+                    "ess" => Some("EssControlProfile".to_string()),
+                    "solar" => Some("SolarControlProfile".to_string()),
+                    "generator" => Some("GenerationDiscreteControlProfile".to_string()),
                     _ => {
                         info!("Unable to get common control profile for device type: {}", device_type);
                         None
@@ -246,8 +259,56 @@ impl Receive<GenericControl> for HmiPublisher {
                         let mut buffer = Vec::<u8>::new();                        
                         profile.encode(&mut buffer).unwrap();                        
                         self.nats_client.publish(&subject, &mut buffer).unwrap();                   
-                    }                    
+                    },
+                    _ => {}                    
                 }            
+            },
+            "EssControlProfile" => {
+                let subject = format!("openfmb.essmodule.ESSControlProfile.{}", &msg.mrid);
+                match msg.message {                    
+                    microgrid::generic_control::ControlType::SetModBlkOn => {
+                        let profile = EssControlProfile::ess_modblk_msg(
+                            &msg.mrid,
+                            true
+                        ); 
+                        let mut buffer = Vec::<u8>::new();                        
+                        profile.encode(&mut buffer).unwrap();                        
+                        self.nats_client.publish(&subject, &mut buffer).unwrap();                  
+                    }
+                    microgrid::generic_control::ControlType::SetModBlkOff => {
+                        let profile = EssControlProfile::ess_modblk_msg(
+                            &msg.mrid,
+                            false
+                        );
+                        let mut buffer = Vec::<u8>::new();                        
+                        profile.encode(&mut buffer).unwrap();                        
+                        self.nats_client.publish(&subject, &mut buffer).unwrap();                   
+                    },
+                    _ => {}                   
+                } 
+            },
+            "LoadControlProfile" => {
+                let subject = format!("openfmb.loadmodule.LoadControlProfile.{}", &msg.mrid);
+                match msg.message {                    
+                    microgrid::generic_control::ControlType::StateOn => {
+                        let profile = LoadControlProfile::loadbank_on_msg(
+                            &msg.mrid,
+                            125000.0
+                        ); 
+                        let mut buffer = Vec::<u8>::new();                        
+                        profile.encode(&mut buffer).unwrap();                        
+                        self.nats_client.publish(&subject, &mut buffer).unwrap();                  
+                    }
+                    microgrid::generic_control::ControlType::StateOn => {
+                        let profile = LoadControlProfile::loadbank_off_msg(
+                            &msg.mrid                            
+                        );
+                        let mut buffer = Vec::<u8>::new();                        
+                        profile.encode(&mut buffer).unwrap();                        
+                        self.nats_client.publish(&subject, &mut buffer).unwrap();                   
+                    },
+                    _ => {}                   
+                } 
             },
             _ => {
                 println!("Unsupported generic control for profile {}", profile_name);                

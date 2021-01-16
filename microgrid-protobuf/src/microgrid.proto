@@ -90,5 +90,7 @@ message GenericControl
         Close = 1;
         SetModBlkOn = 2;
         SetModBlkOff = 3;
+        StateOn = 4;
+        StateOff = 5;
     }
 }
