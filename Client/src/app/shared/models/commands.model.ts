@@ -361,6 +361,17 @@ export const COMMANDS = {
                 "type": "",
 				"measurement": ""               
             }
-        }         
+        },
+        { 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
+                "name": "SetWNetMag",
+                "path": "SetWNetMag",
+                "type": "",
+				"measurement": ""               
+            }
+        }          
     ]
 };

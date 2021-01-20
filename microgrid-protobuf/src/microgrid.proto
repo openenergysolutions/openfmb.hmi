@@ -92,5 +92,7 @@ message GenericControl
         SetModBlkOff = 3;
         StateOn = 4;
         StateOff = 5;
+        SetValue = 6;
+        SetWNetMag = 7;
     }
 }

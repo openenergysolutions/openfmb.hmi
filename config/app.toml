@@ -15,7 +15,7 @@ filename = "../datafiles/capture_10.txt"
 
 [openfmb_nats_subscriber]
 prod_uri = "microgrid.mthollylab.io:32224"
-dev_uri = "127.0.0.1:4222"
+dev_uri = "192.168.86.36:4222"
 
 [battery]
 min_soc_soft = "0.26"
@@ -51,7 +51,13 @@ parker-invert = {mrid="540b292a-e600-4ae4-b077-40b892ae6970", name="Solar Parker
 weather-station = {mrid="9ad28dca-5bfb-49d6-9651-e59630129068", name="Weather Station"}
 sat-gypsum = {mrid="f1ec4b3e-f43e-4d81-ae1c-30eb08b0d7c7", name="Gypsum Meter"}
 eaton_m410 = {mrid="62f9785d-c5cd-4e3f-b41f-caac2e87cc92", name="Eaton M410"}
-all_devices = ["satec_aux_abb_dnp3", "abb_pcs100", "way1", "way2", "way3", "way4", "breaker3", "ion-lb", "load-bank", "turbine-array", "turbine1", "turbine2", "satec_aux_saft", "ion-shop", "sel751", "parker-invert", "weather-station", "sat-gypsum", "eaton_m410"]
+ess-control = {mrid="a23948b4-d001-4467-bbdd-a51faf49b571", name="ESS-Control"}
+sim-solar = {mrid="4230fa0d-cabe-4ab3-9be7-e201826aca56", name="sim-solar"}
+sim-load = {mrid="579f7152-0ab6-4c69-8904-68aff8473e9c", name="sim-load"}
+sim-ess = {mrid="814ded14-a864-4f17-b2b9-c81b09862bff", name="sim-ess"}
+sim-load-bank = {mrid="e26634d0-b9ee-47f6-98be-86e931f49cee", name="sim-load-bank"}
+sim-switch = {mrid="2ad7b5c0-243c-461f-8cd9-351298b8d35d", name="sim-switch"}
+all_devices = ["satec_aux_abb_dnp3", "abb_pcs100", "way1", "way2", "way3", "way4", "breaker3", "ion-lb", "load-bank", "turbine-array", "turbine1", "turbine2", "satec_aux_saft", "ion-shop", "sel751", "parker-invert", "weather-station", "sat-gypsum", "eaton_m410", "ess-control", "sim-solar", "sim-load", "sim-ess", "sim-switch", "sim-load-bank"]
 
 #"62d73f75-5c66-420d-81af-4267585c3e1e" = {name = "Breaker (B)", openfmb_type="breaker"}
 #"28c0c3be-8f2e-4bea-bd21-2a9b62f7fbd4" = {name="Voltage Regulator (VT) -PhsA", openfmb_type="voltage_regulator"}

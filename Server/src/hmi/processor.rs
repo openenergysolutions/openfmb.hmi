@@ -446,7 +446,7 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                         Some(v) => {                            
                             let mut update_msg = UpdateMessage::create(topic.clone(), client.session_id.clone());
                             update_msg.topic.value = Some(v.clone());  
-                            info!("{:?}", &update_msg.topic.clone());                          
+                            //info!("{:?}", &update_msg.topic.clone());                          
                             update_messages.push(update_msg);
                         },
                         _ => {
@@ -458,8 +458,7 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
         });
 
     if update_messages.len() > 0 {
-        let _ = send_updates(UpdateMessages::new(update_messages), clients.clone()).await;
-        info!("Update sent");
+        let _ = send_updates(UpdateMessages::new(update_messages), clients.clone()).await;        
     }
 }
 

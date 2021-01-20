@@ -89,6 +89,8 @@ export class ControlDialogComponent implements OnInit {
         else if (this.commands.includes(this.diagramData.controlData[0].path)) {            
             this.isControllable = true;
             this.hasDataMapped = true;
+            this.isSetPoint = true;
+            this.setpointValue = this.diagramData.controlData[0].measurement;
         }
         else {
           console.error('Data type for control point is not supported: ' + dataType);
@@ -110,12 +112,8 @@ export class ControlDialogComponent implements OnInit {
   onAction() : void {
 
     if (this.isSetPoint) {
-      if (!this.setpointValue) {
-        alert('Please specify setpoint value');
-        return;
-      }
-      else if (!this.isNumeric(this.setpointValue)) {
-        alert('Not a valid value');
+      if (!this.isNumeric(this.setpointValue)) {
+        alert('Please specify valid numeric setpoint value');
         return;
       }
 

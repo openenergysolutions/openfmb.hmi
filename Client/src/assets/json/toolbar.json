@@ -456,6 +456,22 @@
   },
   {
     "shape": "image",
+    "image": "assets/images/toolbar/converter-dc.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Converter DC-AC",
+    "left": 0,
+    "top": 0,
+    "type": "converter"
+  },
+  {
+    "shape": "image",
     "image": "assets/images/toolbar/solar-farm.svg",
     "points": [
       [1, 0.5],

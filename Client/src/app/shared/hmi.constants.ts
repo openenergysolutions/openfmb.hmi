@@ -21,13 +21,15 @@ export const CommandAction = {
 }
 
 export const Pos = {
-    transient: 0,
-    closed: 1,
-    open: 2,
-    invalid: 3        
+    undefined: 0,
+    transient: 1,
+    closed: 2,
+    open: 3,
+    invalid: 4
 }
 
 export const PosString = {
+    undefined: 'undefined',
     transient: 'transient',
     closed: 'closed',
     open: 'open',
@@ -47,7 +49,7 @@ export const Hmi = {
         return false;
     },
     isDataConnectable: (type: string) => {
-        return type  && type !== Symbol.label && type !== Symbol.setPointButton && type !== Symbol.button;
+        return type  && type !== Symbol.label /*&& type !== Symbol.setPointButton*/ && type !== Symbol.button;
     },
     isMeasureBox: (type: string) => {
         return type === Symbol.measureBox;
@@ -62,10 +64,10 @@ export const Hmi = {
 
 export const Helpers = {
     convertPos: (pos: number) => {
-        if (pos === 2) {
+        if (pos === Pos.closed) {
             return PosString.closed;
         }
-        else if (pos === 3) {
+        else if (pos === Pos.open) {
             return PosString.open;
         }
         else {

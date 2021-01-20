@@ -36,6 +36,7 @@ pub struct GenericControl {
     pub message: microgrid::generic_control::ControlType,
     pub mrid: String,
     pub profile_name: Option<String>,
+    pub args: Option<f64>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -52,7 +53,7 @@ pub struct Topic {
     pub mrid: String,
     pub value: Option<DataValue>,
     pub action: Option<String>,
-    pub args: Option<Vec<f32>>,
+    pub args: Option<f64>,
 }
 
 #[derive(Debug, Clone)]
@@ -437,6 +438,7 @@ pub async fn data_handler(update: UpdateMessage, clients: Clients, processor: Ac
                             message:  microgrid::generic_control::ControlType::Open,
                             mrid: update.topic.mrid.clone(),
                             profile_name: None,
+                            args: None,
                         },
                         None,
                     );
@@ -448,6 +450,7 @@ pub async fn data_handler(update: UpdateMessage, clients: Clients, processor: Ac
                             message:  microgrid::generic_control::ControlType::Close,
                             mrid: update.topic.mrid.clone(),
                             profile_name: None,
+                            args: None,
                         },
                         None,
                     );
@@ -459,6 +462,7 @@ pub async fn data_handler(update: UpdateMessage, clients: Clients, processor: Ac
                             message:  microgrid::generic_control::ControlType::SetModBlkOn,
                             mrid: update.topic.mrid.clone(),
                             profile_name: None,
+                            args: None,
                         },
                         None,
                     );
@@ -470,16 +474,40 @@ pub async fn data_handler(update: UpdateMessage, clients: Clients, processor: Ac
                             message:  microgrid::generic_control::ControlType::SetModBlkOff,
                             mrid: update.topic.mrid.clone(),
                             profile_name: None,
+                            args: None,
                         },
                         None,
                     );
                 }
+                else if update.topic.name == "SetWNetMag" {
+                    if let Some(args) = &update.topic.args {
+                        processor.tell(
+                            GenericControl {
+                                text: update.topic.name.clone(),
+                                message:  microgrid::generic_control::ControlType::SetWNetMag,
+                                mrid: update.topic.mrid.clone(),
+                                profile_name: None,
+                                args: Some(*args)
+                            },
+                            None,
+                        );
+                    }
+                }
                 else {
 
                     if let Some(action) = &update.topic.action {
-                        if action == "SET_VALUE" {
+                        if action == "SET-VALUE" {
                             if let Some(args) = &update.topic.args {
-
+                                processor.tell(
+                                    GenericControl {
+                                        text: update.topic.name.clone(),
+                                        message:  microgrid::generic_control::ControlType::SetValue,
+                                        mrid: update.topic.mrid.clone(),
+                                        profile_name: Some(get_profile_name(&update.topic.name)),
+                                        args: Some(*args)
+                                    },
+                                    None,
+                                );
                             }
                         }
                         else if action == "OPEN" {
@@ -488,7 +516,8 @@ pub async fn data_handler(update: UpdateMessage, clients: Clients, processor: Ac
                                     text: update.topic.name.clone(),
                                     message:  microgrid::generic_control::ControlType::Open,
                                     mrid: update.topic.mrid.clone(),
-                                    profile_name: Some("SwitchDiscreteControlProfile".to_string()),
+                                    profile_name: None,
+                                    args: None,
                                 },
                                 None,
                             );
@@ -499,7 +528,8 @@ pub async fn data_handler(update: UpdateMessage, clients: Clients, processor: Ac
                                     text: update.topic.name.clone(),
                                     message:  microgrid::generic_control::ControlType::Close,
                                     mrid: update.topic.mrid.clone(),
-                                    profile_name: Some("SwitchDiscreteControlProfile".to_string()),
+                                    profile_name: None,
+                                    args: None,
                                 },
                                 None,
                             );

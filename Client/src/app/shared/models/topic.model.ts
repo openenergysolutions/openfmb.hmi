@@ -3,7 +3,7 @@ export interface Topic {
   mrid: string,
   value?: any,
   action?: string,
-  args?: number[],
+  args?: number,
 }
 
 export interface UpdateData {

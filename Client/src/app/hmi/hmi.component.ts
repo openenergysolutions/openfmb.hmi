@@ -295,6 +295,9 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
               } else if (elem.label === 'Status') {
                 text = '';
                 this.renderer.addClass(fieldItemValue, 'field-item-value-status');
+              } else if (elem.label === 'Mode') {
+                text = '';
+                this.renderer.addClass(fieldItemValue, 'field-item-value-mode');
               }
               const value = this.renderer.createText(text);
               this.renderer.addClass(fieldItem, 'field-item');
@@ -355,7 +358,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
             if (userObject.linkData) {
               if (userObject.linkData.diagramId) {
                 var target = userObject.linkData.target ? userObject.linkData.target : '_blank';
-                this.renderer.setAttribute(span, 'onclick', "navigateToDiagram('" + userObject.linkData.diagramId + "', '" + target + "')");
+                this.renderer.setAttribute(span, 'ondblclick', "navigateToDiagram('" + userObject.linkData.diagramId + "', '" + target + "')");
               }
             }
           }
@@ -769,7 +772,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
               }
               else {
                 // This is measurement box
-                domElement[i].textContent = this.setDataFieldValue(domElement[i], update.topic?.value.Double);
+                domElement[i].textContent = this.setDataFieldValue(domElement[i], update.topic?.value);
                 const cellId = domElement[i].getAttribute('cell-id');
                 var cell = this.graph.getModel().getCell(cellId);
                 if (cell) {
@@ -813,34 +816,12 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
         this.snack.open('Unable to send command.  No sepcified mRID.', 'OK', { duration: 2000 });
       }
 
-      // let commandValue = value;
-
-      // if (!commandValue) {
-      //   if (action === CommandAction.OPEN) {
-      //     commandValue = 0;
-      //   }
-      //   else if (action === CommandAction.CLOSE) {
-      //     commandValue = 1;
-      //   }
-      // }
-
-      // if (commandValue == 'true') {
-      //   commandValue = 1
-      // }
-      // else if (commandValue == 'false') {
-      //   commandValue = 0;
-      // }
-
       const t : Topic = {
         name: control?.path,
         mrid: userObject.mRID,
         action: action,   
-        args: null,     
+        args: value,     
       };
-
-      if (value) {
-        t.args = [value];
-      }
 
       const data: UpdateData = {
         topic: t
@@ -915,28 +896,61 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   setDataFieldValue(element: Element, value: any): string {
-    if (element.className.match(/\bfield-item-value-state\b/)) {
-      if (value === 0.0) {
-        element.classList.add('red-color-value');
-        element.classList.remove('green-color-value');
-        return 'off';
+    if (typeof value.Double !== 'undefined') {
+      if (element.className.match(/\bfield-item-value-state\b/)) {
+        if (value.Double === 0.0 ) {
+          element.classList.add('red-color-value');
+          element.classList.remove('green-color-value');
+          return 'off';
+        } else {
+          element.classList.add('green-color-value');
+          element.classList.remove('red-color-value');
+          return 'on';
+        }
+      } else if (element.className.match(/\bfield-item-value-status\b/)) {
+        if (value.Double === 1.0) {
+          element.classList.add('red-color-value');
+          element.classList.remove('green-color-value');
+          return 'closed';
+        } else {
+          element.classList.add('green-color-value');
+          element.classList.remove('red-color-value');
+          return 'open';
+        }
+      } else if (element.className.match(/\bfield-item-value-mode\b/)) {
+        if (value.Double === 2000.0) {        
+          return 'VsiPq';
+        } else if (value.Double === 2002.0) {        
+          return 'VsiIso';
+        }
       } else {
+        if (value.Double >= 0.0) {
+                    
+        } else {
+          element.classList.add('red-color-value');
+          element.classList.remove('green-color-value');         
+        } 
+      }   
+      return parseFloat(value.Double).toFixed(2).toString();
+    }
+    else if (value.String) {
+      return value.String
+    }
+    else if (value.Bool) {
+      if (value.Bool === true) {
         element.classList.add('green-color-value');
         element.classList.remove('red-color-value');
         return 'on';
       }
-    } else if (element.className.match(/\bfield-item-value-status\b/)) {
-      if (value === 1.0) {
+      else {
         element.classList.add('red-color-value');
         element.classList.remove('green-color-value');
-        return 'closed';
-      } else {
-        element.classList.add('green-color-value');
-        element.classList.remove('red-color-value');
-        return 'open';
+        return 'off';
       }
-    }    
-    return parseFloat(value).toFixed(2).toString();
+    }
+    else {
+      return '';
+    }
   }
 
   ngOnDestroy() {

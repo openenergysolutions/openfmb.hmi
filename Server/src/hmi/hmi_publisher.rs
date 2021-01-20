@@ -16,6 +16,9 @@ use openfmb_messages_ext::load::LoadControlExt;
 use openfmb_messages::solarmodule::SolarControlProfile;
 use openfmb_messages_ext::solar::SolarControlExt;
 
+use openfmb_messages::resourcemodule::ResourceDiscreteControlProfile;
+use openfmb_messages_ext::resource::ResourceControlExt;
+
 use prost::Message;
 use nats::Connection;
 
@@ -99,6 +102,7 @@ impl HmiPublisher {
                     "ess" => Some("EssControlProfile".to_string()),
                     "solar" => Some("SolarControlProfile".to_string()),
                     "generator" => Some("GenerationDiscreteControlProfile".to_string()),
+                    "load" => Some("LoadControlProfile".to_string()),
                     _ => {
                         info!("Unable to get common control profile for device type: {}", device_type);
                         None
@@ -263,7 +267,7 @@ impl Receive<GenericControl> for HmiPublisher {
                     _ => {}                    
                 }            
             },
-            "EssControlProfile" => {
+            "ESSControlProfile" | "EssControlProfile" => {
                 let subject = format!("openfmb.essmodule.ESSControlProfile.{}", &msg.mrid);
                 match msg.message {                    
                     microgrid::generic_control::ControlType::SetModBlkOn => {
@@ -277,6 +281,39 @@ impl Receive<GenericControl> for HmiPublisher {
                     }
                     microgrid::generic_control::ControlType::SetModBlkOff => {
                         let profile = EssControlProfile::ess_modblk_msg(
+                            &msg.mrid,
+                            false
+                        );
+                        let mut buffer = Vec::<u8>::new();                        
+                        profile.encode(&mut buffer).unwrap();                        
+                        self.nats_client.publish(&subject, &mut buffer).unwrap();                   
+                    },
+                    microgrid::generic_control::ControlType::SetValue => {                        
+                        let profile = EssControlProfile::discharge_now_msg(
+                            &msg.mrid,
+                            msg.args.unwrap()
+                        ); 
+                        let mut buffer = Vec::<u8>::new();                        
+                        profile.encode(&mut buffer).unwrap();                        
+                        self.nats_client.publish(&subject, &mut buffer).unwrap();                  
+                    }
+                    _ => {}                   
+                } 
+            },
+            "SolarControlProfile" => {
+                let subject = format!("openfmb.solarmodule.SolarControlProfile.{}", &msg.mrid);
+                match msg.message {                    
+                    microgrid::generic_control::ControlType::SetModBlkOn => {
+                        let profile = SolarControlProfile::solar_modblk_msg(
+                            &msg.mrid,
+                            true
+                        ); 
+                        let mut buffer = Vec::<u8>::new();                        
+                        profile.encode(&mut buffer).unwrap();                        
+                        self.nats_client.publish(&subject, &mut buffer).unwrap();                  
+                    }
+                    microgrid::generic_control::ControlType::SetModBlkOff => {
+                        let profile = SolarControlProfile::solar_modblk_msg(
                             &msg.mrid,
                             false
                         );
@@ -299,7 +336,7 @@ impl Receive<GenericControl> for HmiPublisher {
                         profile.encode(&mut buffer).unwrap();                        
                         self.nats_client.publish(&subject, &mut buffer).unwrap();                  
                     }
-                    microgrid::generic_control::ControlType::StateOn => {
+                    microgrid::generic_control::ControlType::StateOff => {
                         let profile = LoadControlProfile::loadbank_off_msg(
                             &msg.mrid                            
                         );
@@ -307,9 +344,33 @@ impl Receive<GenericControl> for HmiPublisher {
                         profile.encode(&mut buffer).unwrap();                        
                         self.nats_client.publish(&subject, &mut buffer).unwrap();                   
                     },
+                    microgrid::generic_control::ControlType::SetWNetMag | microgrid::generic_control::ControlType::SetValue => {                        
+                        let profile = LoadControlProfile::loadbank_on_msg(
+                            &msg.mrid,
+                            msg.args.unwrap().abs(),
+                        ); 
+                        let mut buffer = Vec::<u8>::new();                        
+                        profile.encode(&mut buffer).unwrap();                        
+                        self.nats_client.publish(&subject, &mut buffer).unwrap();                  
+                    }
                     _ => {}                   
                 } 
             },
+            "ResourceDiscreteControlProfile" => {
+                let subject = format!("openfmb.resourcemodule.ResourceDiscreteControlProfile.{}", &msg.mrid);
+                match msg.message {                    
+                    microgrid::generic_control::ControlType::SetValue => {
+                        let profile = ResourceDiscreteControlProfile::set_analog_msg(
+                            &msg.mrid,
+                            msg.args.unwrap()
+                        ); 
+                        let mut buffer = Vec::<u8>::new();                        
+                        profile.encode(&mut buffer).unwrap();                        
+                        self.nats_client.publish(&subject, &mut buffer).unwrap();                  
+                    }
+                    _ => {}                   
+                } 
+            }
             _ => {
                 println!("Unsupported generic control for profile {}", profile_name);                
             }
