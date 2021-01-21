@@ -42,24 +42,9 @@ export class JwtAuthService {
   }
 
   public signin(username, password) {
-    return of({token: DEMO_TOKEN, user: DEMO_USER})
-      .pipe(
-        delay(1000),
-        map((res: any) => {
-          this.setUserAndToken(res.token, res.user, !!res);
-          this.signingIn = false;
-          return res;
-        }),
-        catchError((error) => {
-          return throwError(error);
-        })
-      );
-
-    // FOLLOWING CODE SENDS SIGNIN REQUEST TO SERVER
-
-    // this.signingIn = true;
-    // return this.http.post(`${environment.apiUrl}login`, {"username": username, "pwd": password})
+    // return of({token: DEMO_TOKEN, user: DEMO_USER})
     //   .pipe(
+    //     delay(1000),
     //     map((res: any) => {
     //       this.setUserAndToken(res.token, res.user, !!res);
     //       this.signingIn = false;
@@ -69,6 +54,21 @@ export class JwtAuthService {
     //       return throwError(error);
     //     })
     //   );
+
+    // FOLLOWING CODE SENDS SIGNIN REQUEST TO SERVER
+
+    this.signingIn = true;
+    return this.http.post(`${environment.apiUrl}login`, {"username": username, "pwd": password})
+      .pipe(
+        map((res: any) => {
+          this.setUserAndToken(res.token, res.user, !!res);
+          this.signingIn = false;
+          return res;
+        }),
+        catchError((error) => {
+          return throwError(error);
+        })
+      );
   }
 
   /*
@@ -76,17 +76,17 @@ export class JwtAuthService {
     shared/components/layouts/admin-layout/admin-layout.component.ts
   */
   public checkTokenIsValid() {
-    return of(DEMO_USER)
-      .pipe(
-        map((profile: User) => {
-          this.setUserAndToken(this.getJwtToken(), profile, true);
-          this.signingIn = false;
-          return profile;
-        }),
-        catchError((error) => {
-          return of(error);
-        })
-      );
+    // return of(DEMO_USER)
+    //   .pipe(
+    //     map((profile: User) => {
+    //       this.setUserAndToken(this.getJwtToken(), profile, true);
+    //       this.signingIn = false;
+    //       return profile;
+    //     }),
+    //     catchError((error) => {
+    //       return of(error);
+    //     })
+    //   );
     
     /*
       The following code get user data and jwt token is assigned to
@@ -94,17 +94,17 @@ export class JwtAuthService {
       This checks if the existing token is valid when app is reloaded
     */
 
-    // return this.http.get(`${environment.apiUrl}profile`)
-    //   .pipe(
-    //     map((profile: User) => {
-    //       this.setUserAndToken(this.getJwtToken(), profile, true);
-    //       return profile;
-    //     }),
-    //     catchError((error) => {
-    //       this.signout();
-    //       return of(error);
-    //     })
-    //   );
+    return this.http.get(`${environment.apiUrl}profile`)
+      .pipe(
+        map((profile: User) => {
+          this.setUserAndToken(this.getJwtToken(), profile, true);
+          return profile;
+        }),
+        catchError((error) => {
+          this.signout();
+          return of(error);
+        })
+      );
   }
 
   public signout() {

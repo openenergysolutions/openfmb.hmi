@@ -56,16 +56,18 @@ pub struct LoginResponse {
 }
 
 #[derive(Clone, PartialEq)]
-pub enum Role {
-    User,
+pub enum Role {    
     Admin,
+    Engineer,
+    Viewer
 }
 
 impl Role {
     pub fn from_str(role: &str) -> Role {
         match role {
             "Admin" => Role::Admin,
-            _ => Role::User,
+            "Engineer" => Role::Engineer,
+            _ => Role::Viewer,
         }
     }
 }
@@ -73,8 +75,9 @@ impl Role {
 impl fmt::Display for Role {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Role::User => write!(f, "User"),
             Role::Admin => write!(f, "Admin"),
+            Role::Engineer => write!(f, "Engineer"),
+            Role::Viewer => write!(f, "Viewer"),            
         }
     }
 }

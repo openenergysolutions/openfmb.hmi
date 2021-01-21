@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { MainLayoutComponent } from './shared/components/layouts/main-layout/main-layout.component';
 import { AuthLayoutComponent } from './shared/components/layouts/auth-layout/auth-layout.component';
 import { AuthGuard } from './shared/guards/auth.guard';
+import { UserRoleGuard } from './shared/guards/user-role.guard'
 
 export const rootRouterConfig: Routes = [
   { 
@@ -24,6 +25,10 @@ export const rootRouterConfig: Routes = [
     path: '',
     component: MainLayoutComponent,
     canActivate: [AuthGuard],
+    data: 
+    { 
+      roles: ['Viewer', 'Engineer', 'Admin' ]
+    },
     children: [
       {
         path: '',
@@ -34,6 +39,10 @@ export const rootRouterConfig: Routes = [
   {
     path: '',
     canActivate: [AuthGuard],
+    data: 
+    { 
+      roles: ['Viewer', 'Engineer', 'Admin' ]
+    },
     children: [
       {
         path: '',
@@ -45,6 +54,10 @@ export const rootRouterConfig: Routes = [
     path: '',
     component: MainLayoutComponent,
     canActivate: [AuthGuard],
+    data: 
+    { 
+      roles: ['Viewer', 'Engineer', 'Admin' ]
+    },
     children: [
       {
         path: '',
@@ -53,9 +66,13 @@ export const rootRouterConfig: Routes = [
     ]
   },  
   {
-    path: '',    
+    path: '', 
+    component: MainLayoutComponent,   
     canActivate: [AuthGuard],
-    component: MainLayoutComponent,
+    data: 
+    { 
+      roles: ['Engineer', 'Admin' ]
+    },    
     children: [
       {
         path: '',
@@ -67,6 +84,10 @@ export const rootRouterConfig: Routes = [
     path: '',    
     canActivate: [AuthGuard],
     component: MainLayoutComponent,
+    data: 
+    { 
+      roles: [ 'Admin' ]
+    }, 
     children: [
       {
         path: 'settings',
@@ -76,7 +97,11 @@ export const rootRouterConfig: Routes = [
   },
   {
     path: '',    
-    canActivate: [AuthGuard],    
+    canActivate: [AuthGuard],
+    data: 
+    { 
+      roles: ['Engineer', 'Admin' ]
+    },       
     children: [
       {
         path: '',

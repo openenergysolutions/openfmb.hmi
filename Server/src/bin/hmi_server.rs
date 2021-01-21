@@ -174,7 +174,7 @@ async fn server_setup() {
 
     let user_profile = warp::path("profile")
         .and(warp::get()) 
-        .and(with_auth(Role::User))                     
+        .and(with_auth(Role::Viewer))                     
         .and_then(profile_handler);    
 
     let save = warp::path("save");
@@ -231,7 +231,7 @@ async fn server_setup() {
         .and_then(command_handler);
 
     let cors = warp::cors()        
-        .allow_methods(vec!["POST", "GET"])        
+        .allow_methods(vec!["POST", "GET", "OPTIONS"])        
         .allow_any_origin()
         .allow_headers(vec![
             "User-Agent", 
@@ -289,8 +289,8 @@ fn init_users() -> HashMap<String, User> {
             id: String::from("1"),
             username: String::from("admin"),
             email: String::from(""),
-            pwd: String::from("1234"),
-            name: String::from("Cory Nguyen"),
+            pwd: String::from("admin"),
+            name: String::from("Administrator"),
             role: String::from("Admin"),
         },
     );
@@ -300,9 +300,9 @@ fn init_users() -> HashMap<String, User> {
             id: String::from("2"),
             username: String::from("hmi"),
             email: String::from(""),
-            pwd: String::from("4321"),
+            pwd: String::from("hmi"),
             name: String::from("HMI User"),
-            role: String::from("User"),
+            role: String::from("Viewer"),
         },
     );
     map

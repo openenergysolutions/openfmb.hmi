@@ -17,8 +17,8 @@ riker = {git="https://github.com/bfrog/riker", branch="0.4.1_stable_dashmap"}
 snafu = "0.6.2"
 #openfmb-messages = {git="https://github.com/openenergysolutions/openfmb-rs", branch="hmi-develop"}
 #openfmb-messages-ext = {git="https://github.com/openenergysolutions/openfmb-rs", branch="hmi-develop"}
-openfmb-messages = { path = "../../../../rust/openfmb-rs/openfmb-messages" }
-openfmb-messages-ext = { path = "../../../rust/openfmb-rs/openfmb-messages-ext" }
+openfmb-messages = { path = "../deps/openfmb-rs/openfmb-messages" }
+openfmb-messages-ext = { path = "../deps/openfmb-rs/openfmb-messages-ext" }
 #openfmb-ops-protobuf = {git="https://github.com/tupshin/openfmb-ops-protobuf-shuntbranch"}
 prost = "0.6.1"
 base64 = "0.11.0"

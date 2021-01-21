@@ -1593,6 +1593,7 @@ name = "openfmb-codegen"
 version = "0.6.1"
 dependencies = [
  "bytes",
+ "env_logger 0.7.1",
  "heck",
  "itertools",
  "log",
@@ -1622,6 +1623,7 @@ dependencies = [
 name = "openfmb-messages-ext"
 version = "0.0.1"
 dependencies = [
+ "cargo-husky",
  "chrono",
  "log",
  "openfmb-messages",
