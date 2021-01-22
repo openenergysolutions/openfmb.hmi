@@ -164,38 +164,60 @@ async fn server_setup() {
     //let static_route = warp::path("static").and(static_dir!("../Client/dist/openfmb-hmi/"));
     //let static_route = inpm::warp::embedded(ASSETS);        
 
-    let users = Arc::new(RwLock::new(init_users()));
+    //let users = Arc::new(RwLock::new(init_users()));
 
     let login_routes = warp::path("login")
         .and(warp::post())
-        .and(warp::body::json())
-        .and(with_users(users.clone()))        
-        .and_then(login_handler);
-
+        .and(warp::body::json())              
+        .and_then(login_handler);  
+        
     let user_profile = warp::path("profile")
         .and(warp::get()) 
         .and(with_auth(Role::Viewer))                     
-        .and_then(profile_handler);    
+        .and_then(profile_handler);  
+        
+    let get_users = warp::path("get-users")
+        .and(warp::get()) 
+        .and(with_auth(Role::Admin))                     
+        .and_then(get_users_handler);
+    
+    let delete_user = warp::path("delete-user")
+        .and(warp::post()) 
+        .and(with_auth(Role::Admin)) 
+        .and(warp::body::json())                     
+        .and_then(delete_user_handler);
 
-    let save = warp::path("save");
+    let update_user = warp::path("update-user")
+        .and(warp::post()) 
+        .and(with_auth(Role::Admin)) 
+        .and(warp::body::json())                     
+        .and_then(update_user_handler);
+    
+    let create_user = warp::path("create-user")
+        .and(warp::post()) 
+        .and(with_auth(Role::Admin)) 
+        .and(warp::body::json())                     
+        .and_then(create_user_handler);
+
+    let save = warp::path("save-diagram");
     let save_routes = save
         .and(warp::post())
         .and(warp::body::json())        
         .and_then(save_handler);  
         
-    let delete = warp::path("delete");
+    let delete = warp::path("delete-diagram");
     let delete_routes = delete
         .and(warp::post())
         .and(warp::body::json())        
         .and_then(delete_handler); 
 
-    let list = warp::path("diagrams");     
+    let list = warp::path("get-diagrams");     
         
     let list_routes = list
         .and(warp::get())                
         .and_then(list_handler);
 
-    let design = warp::path("diagram");
+    let design = warp::path("get-diagram");
     let design_routes = design        
         .and(warp::get()) 
         .and(warp::query())      
@@ -212,11 +234,11 @@ async fn server_setup() {
         .and(with_clients(clients.clone()))
         .and_then(execute_command);
 
-    let hmi_route = warp::path("hmi")
+    let hmi_route = warp::path("data")
         .and(warp::ws())
         .and(warp::path::param())
         .and(with_clients(clients.clone()))
-        .and_then(hmi_handler);
+        .and_then(connect_handler);
 
     let equipment_list = warp::path("equipment-list");     
         
@@ -245,8 +267,12 @@ async fn server_setup() {
             "authorization"]);   
 
     let routes = login_routes
-        //.or(static_route)
-        .or(user_profile)
+        //.or(static_route) 
+        .or(user_profile)       
+        .or(get_users)
+        .or(delete_user)
+        .or(update_user)
+        .or(create_user)
         .or(save_routes)
         .or(delete_routes)
         .or(list_routes)
@@ -273,37 +299,6 @@ fn with_clients(clients: Clients) -> impl Filter<Extract = (Clients,), Error = I
     warp::any().map(move || clients.clone())
 }
 
-fn with_users(users: Users) -> impl Filter<Extract = (Users,), Error = Infallible> + Clone {
-    warp::any().map(move || users.clone())
-}
-
 fn with_processor(process: ActorRef<ProcessorMsg>) -> impl Filter<Extract = (ActorRef<ProcessorMsg>,), Error = Infallible> + Clone {
     warp::any().map(move || process.clone())
-}
-
-fn init_users() -> HashMap<String, User> {
-    let mut map = HashMap::new();
-    map.insert(
-        String::from("1"),
-        User {
-            id: String::from("1"),
-            username: String::from("admin"),
-            email: String::from(""),
-            pwd: String::from("admin"),
-            name: String::from("Administrator"),
-            role: String::from("Admin"),
-        },
-    );
-    map.insert(
-        String::from("2"),
-        User {
-            id: String::from("2"),
-            username: String::from("hmi"),
-            email: String::from(""),
-            pwd: String::from("hmi"),
-            name: String::from("HMI User"),
-            role: String::from("Viewer"),
-        },
-    );
-    map
 }

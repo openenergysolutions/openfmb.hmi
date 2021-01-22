@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { JwtAuthService } from "../shared/services/auth/jwt-auth.service";
+import { Authorization } from '../shared/models/user.model';
 
 @Component({
   selector: 'app-home',
@@ -6,10 +8,11 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-
-  constructor() { }
+  canEditDiagram: boolean = false;
+  constructor(private jwtService: JwtAuthService) { }
 
   ngOnInit(): void {
+    this.canEditDiagram = Authorization.canEditDiagram( this.jwtService.getUserRole());
   }
 
 }

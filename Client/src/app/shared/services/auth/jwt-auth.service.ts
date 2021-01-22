@@ -6,17 +6,7 @@ import { map, catchError, delay } from "rxjs/operators";
 import { User } from "../../models/user.model";
 import { of, BehaviorSubject, throwError } from "rxjs";
 import { environment } from "../../../../environments/environment";
-
-// ================= only for demo purpose ===========
-const DEMO_TOKEN =
-  "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwibmFtZSI6IkNvcnkgTmd1eWVuIiwicm9sZSI6IkFkbWluIiwiZXhwIjoxNjA0NjEyNzIyfQ.kCMlPWBLF4TL7KtO_dp_EYNDZyEw3AYaUdnK8uqxnnfciSoW8s6NbK7J4drOq-pXIvxmEUDLrFSin_-upyQkGw";
-
-const DEMO_USER: User = {
-  id: "1",
-  displayName: "Cory Nguyen",
-  role: "Admin",
-};
-// ================= you will get those data from server =======
+import jwt_decode from 'jwt-decode';
 
 @Injectable({
   providedIn: "root",
@@ -35,28 +25,14 @@ export class JwtAuthService {
     private ls: LocalStoreService,
     private http: HttpClient,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute    
   ) {
     this.route.queryParams
       .subscribe(params => this.return = params['return'] || '/');
   }
 
   public signin(username, password) {
-    // return of({token: DEMO_TOKEN, user: DEMO_USER})
-    //   .pipe(
-    //     delay(1000),
-    //     map((res: any) => {
-    //       this.setUserAndToken(res.token, res.user, !!res);
-    //       this.signingIn = false;
-    //       return res;
-    //     }),
-    //     catchError((error) => {
-    //       return throwError(error);
-    //     })
-    //   );
-
-    // FOLLOWING CODE SENDS SIGNIN REQUEST TO SERVER
-
+    
     this.signingIn = true;
     return this.http.post(`${environment.apiUrl}login`, {"username": username, "pwd": password})
       .pipe(
@@ -75,25 +51,7 @@ export class JwtAuthService {
     checkTokenIsValid is called inside constructor of
     shared/components/layouts/admin-layout/admin-layout.component.ts
   */
-  public checkTokenIsValid() {
-    // return of(DEMO_USER)
-    //   .pipe(
-    //     map((profile: User) => {
-    //       this.setUserAndToken(this.getJwtToken(), profile, true);
-    //       this.signingIn = false;
-    //       return profile;
-    //     }),
-    //     catchError((error) => {
-    //       return of(error);
-    //     })
-    //   );
-    
-    /*
-      The following code get user data and jwt token is assigned to
-      Request header using token.interceptor
-      This checks if the existing token is valid when app is reloaded
-    */
-
+  public checkTokenIsValid() {   
     return this.http.get(`${environment.apiUrl}profile`)
       .pipe(
         map((profile: User) => {
@@ -119,8 +77,24 @@ export class JwtAuthService {
   getJwtToken() {
     return this.ls.getItem(this.JWT_TOKEN);
   }
-  getUser() {
-    return this.ls.getItem(this.APP_USER);
+  getUser() : User {        
+    var usr = this.ls.getItem(this.APP_USER);
+    if (usr == null) {
+      var token = this.getJwtToken();
+      if (!!token) {
+        const decodeToken = this.getDecodedAccessToken(token);        
+        usr = {
+          id: decodeToken.sub,
+          displayName: decodeToken.name,
+          role: decodeToken.role,
+        };
+      }    
+    }    
+    return usr;
+  }
+  getUserRole() : string {
+    const usr = this.getUser();
+    return usr?.role;
   }
 
   setUserAndToken(token: String, user: User, isAuthenticated: Boolean) {
@@ -130,5 +104,14 @@ export class JwtAuthService {
     this.user$.next(user);
     this.ls.setItem(this.JWT_TOKEN, token);
     this.ls.setItem(this.APP_USER, user);
+  }
+
+  getDecodedAccessToken(token: string): any {
+    try{
+        return jwt_decode(token);
+    }
+    catch(Error){
+        return null;
+    }
   }
 }

@@ -36,31 +36,31 @@ export class DiagramsService {
 
   getAll() : Observable<any> {  
     
-    return this.httpClient.get<Diagram>(this.endpoint + 'diagrams').pipe(
+    return this.httpClient.get<Diagram>(this.endpoint + 'get-diagrams').pipe(
       catchError(this.handleError)
     );
   }
 
   get(id: string) : any {    
-    return this.httpClient.get<Diagram>(this.endpoint + 'diagram?id='+id).pipe(
+    return this.httpClient.get<Diagram>(this.endpoint + 'get-diagram?id='+id).pipe(
       catchError(this.handleError)
     );
   }
 
   update(diagram: Diagram) : Observable<any> {    
     console.log("Updating diagram!");        
-    return this.httpClient.post<Diagram>(this.endpoint + 'save', diagram);
+    return this.httpClient.post<Diagram>(this.endpoint + 'save-diagram', diagram);
   }
 
   delete(id: string) : any {
     var diagram : Diagram = {
       diagramId: id
     };
-    return this.httpClient.post<Diagram>(this.endpoint + 'delete', diagram);
+    return this.httpClient.post<Diagram>(this.endpoint + 'delete-diagram', diagram);
   }
 
   create(diagram: Diagram) {
-    return this.httpClient.post<Diagram>(this.endpoint + 'save', diagram).pipe(
+    return this.httpClient.post<Diagram>(this.endpoint + 'save-diagram', diagram).pipe(
       catchError(this.handleError)
     );  
   }

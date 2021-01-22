@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { JwtAuthService } from "../../../app/shared/services/auth/jwt-auth.service";
+import { Authorization } from '../../shared/models/user.model';
 
 interface IMenuItem {
   type: string; // Possible values: link/dropDown/icon/separator/extLink
@@ -10,6 +12,7 @@ interface IMenuItem {
   disabled?: boolean; // If true, item will not be appeared in sidenav.
   sub?: IChildItem[]; // Dropdown items
   badges?: IBadge[];
+  visible?: boolean;
 }
 interface IChildItem {
   type?: string;
@@ -26,20 +29,24 @@ interface IBadge {
 
 @Injectable()
 export class NavigationService {
+  userRole: string = this.jwtService.getUserRole();
+
   iconMenu: IMenuItem[] = [
     {
       name: 'DIAGRAMS',
       type: 'link',
       tooltip: 'Diagrams',
       icon: 'dashboard',
-      state: 'diagrams'
+      state: 'diagrams',
+      visible: true
     },
     {
       name: 'DATA CONNECTION',
       type: 'link',
       tooltip: 'Data connection',
       icon: 'settings_remote',
-      state: 'data-connect'
+      state: 'data-connect',
+      visible: Authorization.canEditDiagram(this.userRole)
     },
     {
       name: "SETTINGS",
@@ -47,10 +54,9 @@ export class NavigationService {
       tooltip: "Settings",
       icon: "settings",
       state: "settings",
-      sub: [
-        { name: "General", state: "general" },
-        { name: "Users", state: "users" },
-        { name: "Tags", state: "tags" },        
+      visible: Authorization.canUpdateSettings(this.userRole),
+      sub: [        
+        { name: "Users", state: "users" }              
       ]
     }
   ]
@@ -62,7 +68,7 @@ export class NavigationService {
   // navigation component has subscribed to this Observable
   menuItems$ = this.menuItems.asObservable();
 
-  constructor() {}
+  constructor(private jwtService : JwtAuthService) {}  
 
   // Customizer component uses this method to change menu.
   // You can remove this method and customizer component.

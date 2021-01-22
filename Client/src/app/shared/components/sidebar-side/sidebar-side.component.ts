@@ -10,11 +10,12 @@ import { JwtAuthService } from "../../../../app/shared/services/auth/jwt-auth.se
   templateUrl: "./sidebar-side.component.html"
 })
 export class SidebarSideComponent implements OnInit, OnDestroy, AfterViewInit {
-  public menuItems: any[];
+  public menuItems: any[] = [];
   public hasIconTypeMenuItem: boolean;
   public iconTypeMenuTitle: string;
   private menuItemsSub: Subscription;
   public layoutConf: ILayoutConf;
+  public userDisplayName: string;
 
   constructor(
     private navService: NavigationService,
@@ -26,13 +27,20 @@ export class SidebarSideComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     this.iconTypeMenuTitle = this.navService.iconTypeMenuTitle;
     this.menuItemsSub = this.navService.menuItems$.subscribe(menuItem => {
-      this.menuItems = menuItem;
+
+      //this.menuItems = menuItem;
+      for(var i = 0; i < menuItem.length; ++i) {
+        if (menuItem[i].visible === true) {
+          this.menuItems.push(menuItem[i]);
+        }
+      }
       //Checks item list has any icon type.
       this.hasIconTypeMenuItem = !!this.menuItems.filter(
         item => item.type === "icon"
       ).length;
     });
     this.layoutConf = this.layout.layoutConf;
+    this.userDisplayName = this.jwtAuth.getUser()?.displayname;
   }
   ngAfterViewInit() {}
   ngOnDestroy() {

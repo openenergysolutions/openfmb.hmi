@@ -1,7 +1,7 @@
 export const config = {
   authRoles: {    
-    admin: ['Admin'],
-    engineer: ['Admin', 'Engineer'],
-    viewer: ['Admin', 'Engineer', 'viewer'], 
+    admin: 'Admin',
+    engineer: 'Engineer',
+    viewer: 'viewer'
   }
 }

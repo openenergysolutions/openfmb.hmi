@@ -23,7 +23,7 @@ export class UserRoleGuard implements CanActivate {
     ) {
       return true;
     } else {
-      this.snack.open('You do not have access to this page!', 'OK');
+      this.snack.open('You do not have access to this page!', 'OK', { duration: 5000 });
       return false;
     }
   }

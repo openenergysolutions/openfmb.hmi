@@ -14,6 +14,8 @@ pub enum Error {
     InvalidAuthHeaderError,
     #[error("no permission")]
     NoPermissionError,
+    #[error("add user failed")]
+    AddUserError,
 }
 
 impl warp::reject::Reject for Error {}

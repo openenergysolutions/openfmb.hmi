@@ -6,8 +6,13 @@ use chrono::prelude::*;
 use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
 use std::fmt;
+use std::fs::File;
+use std::fs;
+use std::io::prelude::*;
+use log::error;
 use warp::{
-    http::StatusCode,    
+    http::StatusCode, 
+    reply::json,  
     filters::header::headers_cloned,
     http::header::{HeaderMap, HeaderValue, AUTHORIZATION},
     reject, Filter, Rejection, Reply, reply
@@ -20,13 +25,12 @@ const JWT_SECRET: &[u8] = b"openfmbsecrete2@2@";
 
 pub type Users = Arc<RwLock<HashMap<String, User>>>;
 
-#[derive(Clone, Serialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct User {
     pub id: String,
     pub username: String,    
-    pub pwd: String,
-    pub email: String,
-    pub name: String,
+    pub pwd: String,    
+    pub displayname: String,
     pub role: String,
 }
 
@@ -35,10 +39,9 @@ impl User {
         User {
             id: String::from(""),
             username: String::from(""),
-            pwd: String::from(""),
-            email: String::from(""),
-            name: String::from(""),
-            role: String::from("")
+            pwd: String::from(""),            
+            displayname: String::from(""),
+            role: String::from(""),
         }
     }
 }
@@ -148,7 +151,9 @@ fn jwt_from_header(headers: &HeaderMap<HeaderValue>) -> std::result::Result<Stri
     Ok(auth_header.trim_start_matches(BEARER).to_owned())
 }
 
-pub async fn login_handler(body: LoginRequest, users: Users) -> Result<impl Reply> {
+pub async fn login_handler(body: LoginRequest) -> Result<impl Reply> {
+
+    let users = Arc::new(RwLock::new(init_users()));
 
     let mut token = String::from("");
 
@@ -161,7 +166,7 @@ pub async fn login_handler(body: LoginRequest, users: Users) -> Result<impl Repl
         .filter(|(_, user)| user.username == body.username)
         .filter(|(_, user)| user.pwd == body.pwd)
         .for_each(|(uid, user)| {
-            token = create_jwt(&uid, &user.name, &Role::from_str(&user.role))
+            token = create_jwt(&uid, &user.displayname, &Role::from_str(&user.role))
                 .map_err(|e| reject::custom(e)).unwrap(); 
             usr = user.clone();                        
         });
@@ -177,4 +182,124 @@ pub async fn login_handler(body: LoginRequest, users: Users) -> Result<impl Repl
 
 pub async fn profile_handler(_id: String) -> Result<impl Reply> {
     Ok(StatusCode::OK)
+}
+
+fn get_user_file() -> String {
+    let app_dir = std::env::var("APP_DIR_NAME").unwrap_or_else(|_| "".into());
+    if app_dir != "" {
+        return format!("/{}/users.json", app_dir);
+    }
+    "users.json".to_string()
+}
+
+pub fn init_users() -> HashMap<String, User> {
+    
+    let file = get_user_file();
+
+    load_users(file).unwrap()
+}
+
+fn load_users(file_path: String) -> std::io::Result<HashMap<String, User>> {    
+
+    let mut map: HashMap<String, User> = HashMap::new(); 
+    let mut users : Vec<User> = get_user_list(file_path).unwrap();
+
+    for usr in users.iter() {
+        map.insert(
+            usr.id.clone(),
+            usr.clone()
+        );   
+    }
+    
+    Ok(map)
+}
+
+fn save_user_list(file_path: String, users: &Vec<User>) -> std::io::Result<()> {
+    let json = serde_json::to_string(&users).unwrap();
+    fs::write(file_path, json).expect("Unable to write file");
+
+    Ok(())
+}
+
+fn get_user_list(file_path: String) -> std::io::Result<Vec<User>> {    
+
+    let map: Vec<User> = vec!();
+
+    if let Ok(mut file) = File::open(file_path.clone()) {
+        let mut contents = String::new();
+        if let Ok(_) = file.read_to_string(&mut contents) {        
+            let mut users : Vec<User> = serde_json::from_str(&contents).expect("User json file was not well-formatted");
+            if users.len() == 0 {
+                users.push(
+                    User {
+                        id: String::from("e2a1eaff-c4ea-4f28-bd59-d88fc2882f39"),
+                        username: String::from("admin"),                    
+                        pwd: String::from("hm1admin"),
+                        displayname: String::from("Administrator"),
+                        role: String::from("Admin"),
+                    }
+                );
+            } 
+            return Ok(users);
+
+        } else {
+            error!("Unable to read user file: {}", file_path);
+        }
+
+    } else {
+        error!("Unable to open user file: {}", file_path);
+    }
+    
+    Ok(map)
+}
+
+pub async fn get_users_handler(_id: String) -> Result<impl Reply> {    
+    let mut list = get_user_list(get_user_file()).unwrap();
+    for usr in list.iter_mut() {
+        usr.pwd.clear();
+    }
+
+    Ok(json(&list))
+}
+
+pub async fn delete_user_handler(_id: String, user: User) -> Result<impl Reply> {
+    let mut list = get_user_list(get_user_file()).unwrap();
+
+    if let Some(pos) = list.iter().position(|x| *x.id == user.id) {
+        list.remove(pos);
+
+        save_user_list(get_user_file(), &list);
+    }    
+
+    Ok(json(&list))
+}
+
+pub async fn update_user_handler(_id: String, user: User) -> Result<impl Reply> {
+    let mut list = get_user_list(get_user_file()).unwrap();
+
+    if let Some(pos) = list.iter().position(|x| *x.id == user.id) {
+        
+        let mut usr = list.get_mut(pos).unwrap();
+        usr.displayname = user.displayname;   
+        
+        save_user_list(get_user_file(), &list);
+    }
+
+    Ok(json(&list))
+}
+
+pub async fn create_user_handler(_id: String, user: User) -> Result<impl Reply> {
+    let mut list = get_user_list(get_user_file()).unwrap();
+    if let Some(pos) = list.iter().position(|x| *x.id.to_lowercase() == user.id.to_lowercase() || *x.username.to_lowercase() == user.username.to_lowercase()) {
+        // same user id/username already exists    
+        error!("User with same id/username ({}/{}) already exists", user.id, user.username);
+        
+        return Err(reject::custom(Error::AddUserError));
+    } 
+    else {
+        list.push(user);
+        save_user_list(get_user_file(), &list);
+    }
+
+    Ok(json(&list))
 }

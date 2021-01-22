@@ -599,7 +599,7 @@ pub async fn save_handler(request: Diagram) -> Result<impl Reply> {
 
 // POST
 pub async fn delete_handler(request: Diagram) -> Result<impl Reply> {    
-    let _ = fs::remove_file(format!("/{}/{}.json", get_diagram_folder(), request.diagramId));
+    let _ = fs::remove_file(format!("{}/{}.json", get_diagram_folder(), request.diagramId));
     Ok(json(&Response {
         success: true,
         message: "".to_string()
@@ -655,7 +655,7 @@ pub async fn diagram_handler(id: DiagramQuery) -> Result<impl Reply> {
     Err(warp::reject::not_found())
 }
 
-pub async fn hmi_handler(ws: warp::ws::Ws, id: String, clients: Clients) -> Result<impl Reply> {
+pub async fn connect_handler(ws: warp::ws::Ws, id: String, clients: Clients) -> Result<impl Reply> {
     return Ok(ws.on_upgrade(move |socket| client_connection(socket, id, clients)));
 }
 
@@ -742,16 +742,7 @@ fn read_json(file_path: String) -> std::io::Result<Vec<Diagram>> {
             file.read_to_string(&mut contents)?;
             diagrams.push(serde_json::from_str(&contents).expect("JSON was not well-formatted"));
         } 
-    }
-        
-
-    // let mut file = File::open(file_path)?;
-    // let mut contents = String::new();
-    // file.read_to_string(&mut contents)?;
-
-    // let diagrams: Vec<Diagram> =
-    //     serde_json::from_str(&contents).expect("JSON was not well-formatted");
-
+    }    
     Ok(diagrams)
 }
 

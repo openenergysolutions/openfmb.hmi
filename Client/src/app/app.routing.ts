@@ -24,7 +24,7 @@ export const rootRouterConfig: Routes = [
   {
     path: '',
     component: MainLayoutComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, UserRoleGuard],
     data: 
     { 
       roles: ['Viewer', 'Engineer', 'Admin' ]
@@ -38,7 +38,7 @@ export const rootRouterConfig: Routes = [
   },
   {
     path: '',
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, UserRoleGuard],
     data: 
     { 
       roles: ['Viewer', 'Engineer', 'Admin' ]
@@ -53,7 +53,7 @@ export const rootRouterConfig: Routes = [
   {
     path: '',
     component: MainLayoutComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, UserRoleGuard],
     data: 
     { 
       roles: ['Viewer', 'Engineer', 'Admin' ]
@@ -68,7 +68,7 @@ export const rootRouterConfig: Routes = [
   {
     path: '', 
     component: MainLayoutComponent,   
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, UserRoleGuard],
     data: 
     { 
       roles: ['Engineer', 'Admin' ]
@@ -82,7 +82,7 @@ export const rootRouterConfig: Routes = [
   },
   {
     path: '',    
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, UserRoleGuard],
     component: MainLayoutComponent,
     data: 
     { 
@@ -97,7 +97,7 @@ export const rootRouterConfig: Routes = [
   },
   {
     path: '',    
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, UserRoleGuard],
     data: 
     { 
       roles: ['Engineer', 'Admin' ]

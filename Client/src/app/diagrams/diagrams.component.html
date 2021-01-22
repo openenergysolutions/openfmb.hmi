@@ -1,5 +1,5 @@
 <div class="m-333">
-  <button mat-raised-button class="mb-05" color="primary" (click)="addOrEdit({}, true)">ADD DIAGRAM</button>
+  <button mat-raised-button class="mb-05" color="primary" (click)="addOrEdit({}, true)" *ngIf="canEditDiagram">ADD DIAGRAM</button>
 </div>
 <mat-form-field class="margin-333" style="width: 100%">
   <input matInput placeholder="Type to filter" value="" (keyup)='updateFilter($event)'>
@@ -12,7 +12,7 @@
       <ngx-datatable-column name="name" [flexGrow]="1">
         <ng-template let-column="column" ngx-datatable-header-template> Name </ng-template>
         <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
-          <a (click)="open(row.diagramId)" title="Go to designer">{{ value }}</a>
+          <a (click)="run(row.diagramId)" title="Go to designer">{{ value }}</a>
         </ng-template>
       </ngx-datatable-column>
       <ngx-datatable-column name="description" [flexGrow]="1">
@@ -43,11 +43,11 @@
         <ng-template let-column="column" ngx-datatable-header-template>Actions</ng-template>
         <ng-template let-value="diagramId" let-row="row" ngx-datatable-cell-template>
           <button mat-icon-button mat-sm-button color="primary" aria-label="Design" matTooltip="Design"
-            (click)="open(row.diagramId)">
+            (click)="open(row.diagramId)" *ngIf="canEditDiagram">
             <mat-icon>border_clear</mat-icon>
           </button>
           <button mat-icon-button mat-sm-button color="primary" aria-label="Data Connect" matTooltip="Data Connect"
-            (click)="connect(row.diagramId)">
+            (click)="connect(row.diagramId)" *ngIf="canEditDiagram">
             <mat-icon>settings_remote</mat-icon>
           </button>          
           <button mat-icon-button mat-sm-button color="primary" aria-label="Run" matTooltip="Run" class="mr-1"
@@ -55,11 +55,11 @@
             <mat-icon>flash_on</mat-icon>
           </button>
           <button mat-icon-button mat-sm-button color="primary" aria-label="Edit" matTooltip="Edit"
-            (click)="addOrEdit(row)">
+            (click)="addOrEdit(row)" *ngIf="canEditDiagram">
             <mat-icon>edit</mat-icon>
           </button>
           <button mat-icon-button mat-sm-button color="warn" aria-label="Delete" matTooltip="Delete"
-            (click)="delete(row)">
+            (click)="delete(row)" *ngIf="canEditDiagram">
             <mat-icon>delete</mat-icon>
           </button>
         </ng-template>

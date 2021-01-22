@@ -5,6 +5,7 @@ import { MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DialogsComponent } from './dialogs/dialogs.component';
 import { AppLoaderService } from '../../shared/services/app-loader/app-loader.service';
+import { v4 as uuidv4 } from 'uuid';
 
 @Component({
   selector: 'app-users',
@@ -68,7 +69,17 @@ export class UsersComponent implements OnInit, OnDestroy {
     console.log("delete user: " + id);
 
     if(confirm("Are you sure to delete user ID="+id)) {
-      this.service.delete(id);
+      this.service.delete(id).subscribe(
+        data => {
+          this.rows = data;
+          this.loader.close();
+          this.snack.open('User Deleted!', 'OK', { duration: 4000 })
+        },
+        error => {
+          this.loader.close();
+          this.snack.open('Unable to delete user!', 'OK', { duration: 4000 });                
+        }
+      );
     }
   }
 
@@ -87,19 +98,32 @@ export class UsersComponent implements OnInit, OnDestroy {
         }
         this.loader.open();
         if (isNew) {
+          res.id = uuidv4();
           this.service.create(res)
-            .subscribe(data => {
-              this.rows = data;
-              this.loader.close();
-              this.snack.open('User Added!', 'OK', { duration: 4000 });              
-            })
-        } else {
-          this.service.update(data._id/*, res*/)
-            .subscribe(data => {
-              this.rows = data;
-              this.loader.close();
-              this.snack.open('User Updated!', 'OK', { duration: 4000 })
-            })
+            .subscribe(
+              data => {
+                this.rows = data;
+                this.loader.close();
+                this.snack.open('User Added!', 'OK', { duration: 4000 });              
+              },
+              error => {
+                this.loader.close();
+                this.snack.open('Unable to add user!', 'OK', { duration: 4000 });                
+              }
+            )
+        } else {          
+          this.service.update(res)
+            .subscribe(
+              data => {
+                this.rows = data;
+                this.loader.close();
+                this.snack.open('User Updated!', 'OK', { duration: 4000 })
+              },
+              error => {
+                this.loader.close();
+                this.snack.open('Unable to update user!', 'OK', { duration: 4000 });                
+              }
+            )
         }
       })
   }

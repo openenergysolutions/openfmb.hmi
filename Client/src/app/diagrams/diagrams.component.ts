@@ -8,8 +8,9 @@ import { DialogsComponent } from './dialogs/dialogs.component';
 import { Subscription } from 'rxjs';
 import { AppLoaderService } from '../shared/services/app-loader/app-loader.service';
 import { Diagram } from '../shared/models/diagram.model';
-import { uuid } from 'ngx-custom-validators/src/app/uuid/validator';
+import { JwtAuthService } from "../shared/services/auth/jwt-auth.service";
 import { v4 as uuidv4 } from 'uuid';
+import { Authorization } from '../shared/models/user.model';
 
 
 @Component({
@@ -20,6 +21,7 @@ import { v4 as uuidv4 } from 'uuid';
 export class DiagramsComponent implements OnInit, OnDestroy {
   public rows = [];
   temp = [];
+  canEditDiagram: boolean = false;
   public getItemSub: Subscription;
 
   constructor(
@@ -27,9 +29,11 @@ export class DiagramsComponent implements OnInit, OnDestroy {
     private router: Router,
     private dialog: MatDialog,
     private snack: MatSnackBar,
+    private jwtAuth: JwtAuthService,
     private loader: AppLoaderService) { }
 
-  ngOnInit() {    
+  ngOnInit() {   
+    this.canEditDiagram = Authorization.canEditDiagram( this.jwtAuth.getUserRole());
     this.getData();
   }
 

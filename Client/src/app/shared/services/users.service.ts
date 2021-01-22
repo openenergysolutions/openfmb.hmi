@@ -1,67 +1,73 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http'
-import { config } from '../../../config'
+import { HttpClient, HttpErrorResponse } from '@angular/common/http'
+import { environment } from '../../../environments/environment';
 import { User } from '../models/user.model'
-import { Observable, of } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/internal/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class UserService {
-    
+  private endpoint = environment.apiUrl;  
   constructor(private httpClient: HttpClient) { }
+
+  private handleError(error: HttpErrorResponse): any {    
+    if (error.error instanceof ErrorEvent) {
+      console.error('An error occurred:', error.error.message);
+    } else {
+      console.error(
+        `Backend returned code ${error.status}, ` +
+        `body was: ${error.error}`);
+    }
+    return throwError('An error occurred.  Check if the server is running and accessible.');    
+  }
 
   userList = [
     {
-        "userId": "f033d088-8ace-48a6-8cec-31befd43308f",
-        "userName": "admin",
-        "firstName": "User",
-        "lastName": "Admin",
-        "role": "admin"
-    },
-    {
-        "userId": "dd214b2a-484d-42bf-8ac5-8df38de1f3cb",
-        "userName": "user1",
-        "firstName": "User",
-        "lastName": "Engineer",
-        "role": "engineer"
-    },
-    {
-        "userId": "ed0ca7ce-a516-4c2e-afc9-dacda9cde6b9",
-        "userName": "user2",
-        "firstName": "User",
-        "lastName": "Viewer",
-        "role": "viewer"
+        "id": "f033d088-8ace-48a6-8cec-31befd43308f",
+        "username": "admin",
+        "displayname": "Administrator",        
+        "role": "Admin"
     }
   ];
 
-  getAll() : Observable<any> {    
-    return of(this.userList);
+  getAll() : Observable<any> {        
+    return this.httpClient.get<User>(this.endpoint + 'get-users').pipe(
+      catchError(this.handleError)
+    );
   }
 
-  get(id: string) : any {
-    for(var i = 0; i < this.userList.length; ++i) {
-      if (this.userList[i].userId === id) {
-        return this.userList[i];
-      }
-    }
-    return null;
+  // get(id: string) : any {
+  //   for(var i = 0; i < this.userList.length; ++i) {
+  //     if (this.userList[i].id === id) {
+  //       return this.userList[i];
+  //     }
+  //   }
+  //   return null;
+  // }
+
+  update(user: User) : Observable<any> {    
+    return this.httpClient.post<User>(this.endpoint + 'update-user', user).pipe(
+      catchError(this.handleError)
+    );  
   }
 
-  update(user: User) : Observable<any> {
-    console.log("Update user:: " + user);
-
-    return this.getAll();
+  delete(id: string) : Observable<any>  {
+    var user : User = {
+      id: id,
+      username: "",
+      displayname: "",
+      pwd: "",
+      role: ""
+    };
+    return this.httpClient.post<User>(this.endpoint + 'delete-user', user);
   }
 
-  delete(id: string) {
-    console.log("TODO:: implement delete user in user service.");
-    return this.getAll();
-  }
-
-  create(user: User) {
-    console.log("TODO:: implement create user in user service.");
-    return this.getAll();
+  create(user: User) : Observable<any> {
+    return this.httpClient.post<User>(this.endpoint + 'create-user', user).pipe(
+      catchError(this.handleError)
+    );      
   }
 }

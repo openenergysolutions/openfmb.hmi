@@ -5,8 +5,8 @@
       <mat-form-field class="full-width">
         <input
         matInput
-        name="userName"
-        [formControl]="itemForm.controls['userName']"
+        name="username"
+        [formControl]="itemForm.controls['username']"
         placeholder="User Name">
       </mat-form-field>
     </div>
@@ -16,8 +16,8 @@
           <input
           matInput
           type="password"
-          name="password"
-          [formControl]="itemForm.controls['password']"
+          name="pwd"
+          [formControl]="itemForm.controls['pwd']"
           placeholder="Password">
         </mat-form-field>
       </div>
@@ -26,29 +26,24 @@
       <mat-form-field class="full-width">
         <input
         matInput
-        name="firstName"
-        [formControl]="itemForm.controls['firstName']"
-        placeholder="First Name">
-      </mat-form-field>
-    </div>
-
-    <div fxFlex="50"  class="pr-1">
-      <mat-form-field class="full-width">
-        <input
-        matInput
-        name="lastName"
-        [formControl]="itemForm.controls['lastName']"
-        placeholder="Last Name">
+        name="displayname"
+        [formControl]="itemForm.controls['displayname']"
+        placeholder="Display Name">
       </mat-form-field>
     </div>
 
     <div fxFlex="50"  class="pr-1">
         <mat-form-field class="full-width">
-          <input
+          <!-- <input
           matInput
           name="role"
           [formControl]="itemForm.controls['role']"
-          placeholder="Role">
+          placeholder="Role"> -->
+          <mat-select [(ngModel)]="selectedRole" name="selectRole">
+            <mat-option *ngFor="let option of roles" value="[option">
+              {{option}}
+            </mat-option>
+          </mat-select>
         </mat-form-field>
       </div>
 

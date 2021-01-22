@@ -2,7 +2,6 @@
     <p style="color:#d7d6d6;font-size:450%;text-align:center;">OpenFMB<br />HMI</p>
     <div style="text-align:center;">
         <button mat-raised-button color="primary" style="width:140px;text-align:left !important;" [routerLink]="'/diagrams'"><mat-icon>dashboard</mat-icon>&nbsp;Diagrams</button>&nbsp;
-        <button mat-raised-button color="primary" style="width:140px;text-align:left !important;" [routerLink]="'/data-connect'"><mat-icon>settings_remote</mat-icon>&nbsp;Data Connect</button>&nbsp;
-        <!-- <button mat-raised-button color="primary" style="width:140px;text-align:left !important;" [routerLink]="'/import'"><mat-icon>import_export</mat-icon>&nbsp;Import</button> -->
+        <button mat-raised-button color="primary" style="width:140px;text-align:left !important;" [routerLink]="'/data-connect'" *ngIf="canEditDiagram"><mat-icon>settings_remote</mat-icon>&nbsp;Data Connect</button>&nbsp;       
     </div>
 </div>

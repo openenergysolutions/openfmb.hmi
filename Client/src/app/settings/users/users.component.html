@@ -10,39 +10,33 @@
       <ngx-datatable class="material ml-0 mr-0" [rows]="rows" [columnMode]="'force'" [headerHeight]="50"
         [footerHeight]="50" [scrollbarH]="true" [limit]="10" [rowHeight]="50">
         >
-        <ngx-datatable-column name="userName" [flexGrow]="1">
+        <ngx-datatable-column name="username" [flexGrow]="1">
           <ng-template let-column="column" ngx-datatable-header-template> Username </ng-template>
           <ng-template let-value="value" ngx-datatable-cell-template>
             {{ value }}
           </ng-template>
         </ngx-datatable-column>
-        <ngx-datatable-column name="firstName" [flexGrow]="1">
-          <ng-template let-column="column" ngx-datatable-header-template> First Name </ng-template>
+        <ngx-datatable-column name="displayname" [flexGrow]="1">
+          <ng-template let-column="column" ngx-datatable-header-template> Name </ng-template>
           <ng-template let-value="value" ngx-datatable-cell-template>
             {{ value }}
           </ng-template>
-        </ngx-datatable-column>
-        <ngx-datatable-column name="lastName" [flexGrow]="1">
-          <ng-template let-column="column" ngx-datatable-header-template> Last Name </ng-template>
-          <ng-template let-value="value" ngx-datatable-cell-template>
-            {{ value }}
-          </ng-template>
-        </ngx-datatable-column>
+        </ngx-datatable-column>        
         <ngx-datatable-column name="role" [flexGrow]="1">
             <ng-template let-column="column" ngx-datatable-header-template> Role </ng-template>
             <ng-template let-value="value" ngx-datatable-cell-template>
               {{ value }}
             </ng-template>
           </ngx-datatable-column>         
-        <ngx-datatable-column name="userId" [flexGrow]="1">
+        <ngx-datatable-column name="id" [flexGrow]="1">
           <ng-template let-column="column" ngx-datatable-header-template>Actions</ng-template>
-          <ng-template let-value="userId" let-row="row" ngx-datatable-cell-template>                       
+          <ng-template let-value="id" let-row="row" ngx-datatable-cell-template>                       
             <button mat-icon-button mat-sm-button color="primary" aria-label="Edit" matTooltip="Edit"
               (click)="addOrEdit(row)">
               <mat-icon>edit</mat-icon>
             </button>
             <button mat-icon-button mat-sm-button color="warn" aria-label="Delete" matTooltip="Delete"
-              (click)="delete(row.userId)">
+              (click)="delete(row.id)">
               <mat-icon>delete</mat-icon>
             </button>
           </ng-template>
