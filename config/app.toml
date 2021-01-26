@@ -1,6 +1,6 @@
 [coordinator]
-# environment = "dev"
-environment = "prod"
+environment = "dev"
+# environment = "prod"
 app_name = "CircuitSegmentCoordinator"
 modules = ["publisher", "subscriber", "persistor", "device"]
 cursive_ui_enabled = false

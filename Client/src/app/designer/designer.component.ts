@@ -274,6 +274,9 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
             if (userObject.containerWidth) {
               style += 'width: ' + userObject.containerWidth + 'px;';
             }
+            if (userObject.containerHeight) {
+              style += 'height: ' + userObject.containerHeight + 'px;';
+            }
 
             if (style != '') {
               this.renderer.setAttribute(data, "style", style);
@@ -847,6 +850,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
           fontStyle: result.fontStyle,
           textAlign: result.textAlign,
           containerWidth: result.containerWidth,
+          containerHeight: result.containerHeight,
           foreColor: result.foreColor,
           backgroundColor: result.backgroundColor,
           linkData: result.linkData,

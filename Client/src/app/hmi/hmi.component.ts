@@ -263,6 +263,9 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
         if (userObject.containerWidth) {
           style += 'width: ' + userObject.containerWidth + 'px;';
         }
+        if (userObject.containerHeight) {
+          style += 'height: ' + userObject.containerHeight + 'px;';
+        }
         
         if (userObject.type === Symbol.measureBox) {          
           if (displayData) {
@@ -568,6 +571,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
       mRID: currentCellData.mRID,
       fontSize: currentCellData.fontSize,
       containerWidth: currentCellData.containerWidth,
+      containerHeight: currentCellData.containerHeight,
       foreColor: currentCellData.foreColor,
       backgroundColor: currentCellData.backgroundColor,      
       deviceTypeMapping: currentCellData.deviceTypeMapping,

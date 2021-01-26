@@ -20,6 +20,7 @@ export class PropertiesDialogComponent implements OnInit {
   mRID: string;
   fontSize: number;
   containerWidth: number;
+  containerHeight: number;
   foreColor: any;
   backgroundColor: any;
   changeStyleAllowed: boolean;
@@ -76,7 +77,8 @@ export class PropertiesDialogComponent implements OnInit {
     this.label = this.data.label;    
     this.name = this.data.name,    
     this.fontSize = this.data.fontSize;
-    this.containerWidth = this.data.containerWidth;    
+    this.containerWidth = this.data.containerWidth;  
+    this.containerHeight = this.data.containerHeight;  
 
     this.changeStyleAllowed = this.data.type === Symbol.measureBox 
       || this.data.type === Symbol.label 
@@ -226,6 +228,7 @@ export class PropertiesDialogComponent implements OnInit {
       fontStyle: this.fontStyle,
       textAlign: this.textAlign,
       containerWidth: this.containerWidth,
+      containerHeight: this.containerHeight,
       foreColor: foreC,
       backgroundColor: backgroundC,
       linkData: linkData,

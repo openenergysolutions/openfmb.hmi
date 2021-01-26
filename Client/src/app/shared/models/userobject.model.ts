@@ -16,6 +16,7 @@ export interface DiagramData {
     foreColor?: string,
     backgroundColor?: string,
     containerWidth?: number,
+    containerHeight?: number,
     changeStyleAllowed?: boolean,    
     tag?: any,
     lastUpdate?: any,

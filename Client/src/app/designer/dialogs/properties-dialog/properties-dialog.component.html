@@ -113,6 +113,13 @@
             name="container-width" placeholder="width (in px)">
         </mat-form-field>
       </div>
+      <div mat-dialog-content class="dialog-input-container pt-1" *ngIf="changeWidthAllowed">
+        <strong>Container Height</strong><br />
+        <mat-form-field class="designer-form-field" floatLabel='never'>
+          <input type="number" [(ngModel)]="containerHeight" class="form-control" min="0" max="500" matInput
+            name="container-height" placeholder="height (in px)">
+        </mat-form-field>
+      </div>
       <div mat-dialog-content class="dialog-input-container pt-1">
         <strong>Font Size</strong><br />
         <mat-form-field class="designer-form-field" floatLabel='never'>
