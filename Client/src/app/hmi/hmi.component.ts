@@ -919,18 +919,13 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       } else if (element.className.match(/\bfield-item-value-mode\b/)) {
         if (value.Double === 2000.0) {        
-          return 'VsiPq';
+          return 'VSI_PQ';
+        } else if (value.Double === 2001.0) {        
+          return 'VSI_VF';
         } else if (value.Double === 2002.0) {        
-          return 'VsiIso';
+          return 'VSI_ISO';
         }
-      } else {
-        if (value.Double >= 0.0) {
-                    
-        } else {
-          element.classList.add('red-color-value');
-          element.classList.remove('green-color-value');         
-        } 
-      }   
+      }  
       return parseFloat(value.Double).toFixed(2).toString();
     }
     else if (value.String) {
