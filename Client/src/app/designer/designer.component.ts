@@ -283,7 +283,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
             }
             
             const titleContainer = this.renderer.createElement('div');
-            const titleText = this.renderer.createText(userObject.label ? userObject.label : userObject.deviceTypeMapping ? userObject.deviceTypeMapping : "Measure");
+            const titleText = this.renderer.createText(userObject.label ? userObject.label : userObject.deviceTypeMapping ? userObject.deviceTypeMapping : "");
             this.renderer.addClass(titleContainer, 'data-title');
             this.renderer.appendChild(titleContainer, titleText);
             this.renderer.appendChild(data, titleContainer);

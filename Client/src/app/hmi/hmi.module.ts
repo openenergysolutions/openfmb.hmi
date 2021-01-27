@@ -7,6 +7,7 @@ import { SharedModule } from '../shared/shared.module';
 import { HeaderToolComponent } from './header-tool/header-tool.component';
 import { PropertiesDialogComponent } from './dialogs/properties-dialog/properties-dialog.component';
 import { SwitchgearDialogComponent } from './dialogs/switchgear-dialog/switchgear-dialog.component';
+import { RegulatorDialogComponent } from './dialogs/regulator-dialog/regulator-dialog.component';
 import { GenericDialogComponent } from './dialogs/generic-dialog/generic-dialog.component';
 import { ControlDialogComponent } from './dialogs/control-dialog/control-dialog.component';
 import { SharedMaterialModule } from '../shared/shared-material.module';
@@ -16,7 +17,8 @@ import { SharedMaterialModule } from '../shared/shared-material.module';
     HmiComponent,
     HeaderToolComponent,
     PropertiesDialogComponent,
-    SwitchgearDialogComponent,    
+    SwitchgearDialogComponent, 
+    RegulatorDialogComponent,   
     ControlDialogComponent,
     GenericDialogComponent    
   ],
@@ -28,7 +30,8 @@ import { SharedMaterialModule } from '../shared/shared-material.module';
   ],
   entryComponents: [
     PropertiesDialogComponent,
-    SwitchgearDialogComponent,    
+    SwitchgearDialogComponent, 
+    RegulatorDialogComponent,   
     ControlDialogComponent,
     GenericDialogComponent
   ]

@@ -94,5 +94,13 @@ message GenericControl
         StateOff = 5;
         SetValue = 6;
         SetWNetMag = 7;
+        TapChangeLowerPhs3 = 8;
+        TapChangeRaisePhs3 = 9;
+        TapChangeLowerPhsA = 10;
+        TapChangeRaisePhsA = 11;
+        TapChangeLowerPhsB = 12;
+        TapChangeRaisePhsB = 13;
+        TapChangeLowerPhsC = 14;
+        TapChangeRaisePhsC = 15;
     }
 }

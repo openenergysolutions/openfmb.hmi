@@ -266,8 +266,8 @@ export class DataConnectComponent implements OnInit {
   }
 
   addControlPoint(item: any) {
-    console.log("add control data:: " + item);
-    if (this.selectedGraphItem.type !== 'measure-box' && this.currentControlPoints.length > 0) {
+    console.log("add control data:: " + item);    
+    if (!Hmi.isVoltageRegulator(this.selectedGraphItem.type) && this.currentControlPoints.length > 0) {
       this.snack.open('Only one mapping is allowed.', 'OK', { duration: 4000 });
     }
     else {

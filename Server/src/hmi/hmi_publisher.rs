@@ -4,6 +4,9 @@ use circuit_segment_manager::messages::*;
 use openfmb_messages::breakermodule::BreakerDiscreteControlProfile;
 use openfmb_messages_ext::breaker::BreakerControlExt;
 
+use openfmb_messages::reclosermodule::RecloserDiscreteControlProfile;
+use openfmb_messages_ext::recloser::RecloserControlExt;
+
 use openfmb_messages::switchmodule::SwitchDiscreteControlProfile;
 use openfmb_messages_ext::switch::SwitchControlExt;
 
@@ -19,13 +22,16 @@ use openfmb_messages_ext::solar::SolarControlExt;
 use openfmb_messages::resourcemodule::ResourceDiscreteControlProfile;
 use openfmb_messages_ext::resource::ResourceControlExt;
 
+use openfmb_messages::regulatormodule::RegulatorDiscreteControlProfile;
+use openfmb_messages_ext::regulator::RegulatorControlExt;
+
 use prost::Message;
 use nats::Connection;
 
 use riker::actors::*;
 use std::fmt::Debug;
 use config::Config;
-use log::info;
+use log::{info, warn};
 use crate::handler::*;
 
 #[actor(
@@ -102,6 +108,7 @@ impl HmiPublisher {
                     "ess" => Some("EssControlProfile".to_string()),
                     "solar" => Some("SolarControlProfile".to_string()),
                     "generator" => Some("GenerationDiscreteControlProfile".to_string()),
+                    "regulator" => Some("RegulatorDiscreteControlProfile".to_string()),
                     "load" => Some("LoadControlProfile".to_string()),
                     _ => {
                         info!("Unable to get common control profile for device type: {}", device_type);
@@ -224,7 +231,33 @@ impl Receive<GenericControl> for HmiPublisher {
                         profile.encode(&mut buffer).unwrap();                        
                         self.nats_client.publish(&subject, &mut buffer).unwrap();                      
                     }
-                    _ => {}
+                    _ => {
+                        warn!("Unsupport control type: {:?}", msg.message)
+                    }
+                }
+            },
+            "RecloserDiscreteControlProfile" => {
+                let subject = format!("openfmb.reclosermodule.RecloserDiscreteControlProfile.{}", &msg.mrid);
+                match msg.message {
+                    microgrid::generic_control::ControlType::Open => {
+                        let profile = RecloserDiscreteControlProfile::recloser_open_msg(
+                            &msg.mrid
+                        );
+                        let mut buffer = Vec::<u8>::new();                        
+                        profile.encode(&mut buffer).unwrap();                        
+                        self.nats_client.publish(&subject, &mut buffer).unwrap();
+                    }
+                    microgrid::generic_control::ControlType::Close => {
+                        let profile = RecloserDiscreteControlProfile::recloser_close_msg(
+                            &msg.mrid
+                        );  
+                        let mut buffer = Vec::<u8>::new();                        
+                        profile.encode(&mut buffer).unwrap();                        
+                        self.nats_client.publish(&subject, &mut buffer).unwrap();                      
+                    }
+                    _ => {
+                        warn!("Unsupport control type: {:?}", msg.message)
+                    }
                 }
             },
             "SwitchDiscreteControlProfile" => {
@@ -264,7 +297,9 @@ impl Receive<GenericControl> for HmiPublisher {
                         profile.encode(&mut buffer).unwrap();                        
                         self.nats_client.publish(&subject, &mut buffer).unwrap();                   
                     },
-                    _ => {}                    
+                    _ => {
+                        warn!("Unsupport control type: {:?}", msg.message)
+                    }                    
                 }            
             },
             "ESSControlProfile" | "EssControlProfile" => {
@@ -297,7 +332,9 @@ impl Receive<GenericControl> for HmiPublisher {
                         profile.encode(&mut buffer).unwrap();                        
                         self.nats_client.publish(&subject, &mut buffer).unwrap();                  
                     }
-                    _ => {}                   
+                    _ => {
+                        warn!("Unsupport control type: {:?}", msg.message)
+                    }                  
                 } 
             },
             "SolarControlProfile" => {
@@ -321,7 +358,9 @@ impl Receive<GenericControl> for HmiPublisher {
                         profile.encode(&mut buffer).unwrap();                        
                         self.nats_client.publish(&subject, &mut buffer).unwrap();                   
                     },
-                    _ => {}                   
+                    _ => {
+                        warn!("Unsupport control type: {:?}", msg.message)
+                    }                 
                 } 
             },
             "LoadControlProfile" => {
@@ -353,7 +392,9 @@ impl Receive<GenericControl> for HmiPublisher {
                         profile.encode(&mut buffer).unwrap();                        
                         self.nats_client.publish(&subject, &mut buffer).unwrap();                  
                     }
-                    _ => {}                   
+                    _ => {
+                        warn!("Unsupport control type: {:?}", msg.message)
+                    }                   
                 } 
             },
             "ResourceDiscreteControlProfile" => {
@@ -368,7 +409,89 @@ impl Receive<GenericControl> for HmiPublisher {
                         profile.encode(&mut buffer).unwrap();                        
                         self.nats_client.publish(&subject, &mut buffer).unwrap();                  
                     }
-                    _ => {}                   
+                    _ => {
+                        warn!("Unsupport control type: {:?}", msg.message)
+                    }                   
+                } 
+            }
+            "RegulatorDiscreteControlProfile" => {
+                let subject = format!("openfmb.regulatormodule.RegulatorDiscreteControlProfile.{}", &msg.mrid);
+                match msg.message {                    
+                    microgrid::generic_control::ControlType::TapChangeLowerPhs3 => {
+                        let profile = RegulatorDiscreteControlProfile::regulator_tap_lower_phs3_msg(
+                            &msg.mrid,
+                            false
+                        ); 
+                        let mut buffer = Vec::<u8>::new();                        
+                        profile.encode(&mut buffer).unwrap();                        
+                        self.nats_client.publish(&subject, &mut buffer).unwrap();                  
+                    }
+                    microgrid::generic_control::ControlType::TapChangeRaisePhs3 => {
+                        let profile = RegulatorDiscreteControlProfile::regulator_tap_raise_phs3_msg(
+                            &msg.mrid,
+                            true
+                        ); 
+                        let mut buffer = Vec::<u8>::new();                        
+                        profile.encode(&mut buffer).unwrap();                        
+                        self.nats_client.publish(&subject, &mut buffer).unwrap();                  
+                    }
+                    microgrid::generic_control::ControlType::TapChangeLowerPhsA => {
+                        let profile = RegulatorDiscreteControlProfile::regulator_tap_lower_phsA_msg(
+                            &msg.mrid,
+                            false
+                        ); 
+                        let mut buffer = Vec::<u8>::new();                        
+                        profile.encode(&mut buffer).unwrap();                        
+                        self.nats_client.publish(&subject, &mut buffer).unwrap();                  
+                    }
+                    microgrid::generic_control::ControlType::TapChangeRaisePhsA => {
+                        let profile = RegulatorDiscreteControlProfile::regulator_tap_raise_phsA_msg(
+                            &msg.mrid,
+                            true
+                        ); 
+                        let mut buffer = Vec::<u8>::new();                        
+                        profile.encode(&mut buffer).unwrap();                        
+                        self.nats_client.publish(&subject, &mut buffer).unwrap();                  
+                    }
+                    microgrid::generic_control::ControlType::TapChangeLowerPhsB => {
+                        let profile = RegulatorDiscreteControlProfile::regulator_tap_lower_phsB_msg(
+                            &msg.mrid,
+                            false
+                        ); 
+                        let mut buffer = Vec::<u8>::new();                        
+                        profile.encode(&mut buffer).unwrap();                        
+                        self.nats_client.publish(&subject, &mut buffer).unwrap();                  
+                    }
+                    microgrid::generic_control::ControlType::TapChangeRaisePhsB => {
+                        let profile = RegulatorDiscreteControlProfile::regulator_tap_raise_phsB_msg(
+                            &msg.mrid,
+                            true
+                        ); 
+                        let mut buffer = Vec::<u8>::new();                        
+                        profile.encode(&mut buffer).unwrap();                        
+                        self.nats_client.publish(&subject, &mut buffer).unwrap();                  
+                    }
+                    microgrid::generic_control::ControlType::TapChangeLowerPhsC => {
+                        let profile = RegulatorDiscreteControlProfile::regulator_tap_lower_phsC_msg(
+                            &msg.mrid,
+                            false
+                        ); 
+                        let mut buffer = Vec::<u8>::new();                        
+                        profile.encode(&mut buffer).unwrap();                        
+                        self.nats_client.publish(&subject, &mut buffer).unwrap();                  
+                    }
+                    microgrid::generic_control::ControlType::TapChangeRaisePhsC => {
+                        let profile = RegulatorDiscreteControlProfile::regulator_tap_raise_phsC_msg(
+                            &msg.mrid,
+                            true
+                        ); 
+                        let mut buffer = Vec::<u8>::new();                        
+                        profile.encode(&mut buffer).unwrap();                        
+                        self.nats_client.publish(&subject, &mut buffer).unwrap();                  
+                    }
+                    _ => {
+                        warn!("Unsupport control type: {:?}", msg.message)
+                    }                   
                 } 
             }
             _ => {

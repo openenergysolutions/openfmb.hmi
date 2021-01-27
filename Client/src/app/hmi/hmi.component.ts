@@ -16,6 +16,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PropertiesDialogComponent } from './dialogs/properties-dialog/properties-dialog.component';
 import { SwitchgearDialogComponent } from './dialogs/switchgear-dialog/switchgear-dialog.component';
+import { RegulatorDialogComponent } from './dialogs/regulator-dialog/regulator-dialog.component';
 import { ControlDialogComponent } from './dialogs/control-dialog/control-dialog.component'
 import { GenericDialogComponent } from './dialogs/generic-dialog/generic-dialog.component'
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -173,9 +174,12 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
         if (Hmi.isSwitchgear(currentCellData.type)) {                             
           this.openSwitchgearDialog(x < centerX ? x + cell.getGeometry().width + 250 : x, y - 100 > centerY ? centerY : y, cell);
         }
+        else if (Hmi.isVoltageRegulator(currentCellData.type)) {
+          this.openVoltageRegulatorDialog(x < centerX ? x + cell.getGeometry().width + 250 : x, y - 100 > centerY ? centerY : y, cell);
+        }
         else if (currentCellData.type === Symbol.measureBox || (evt.target as HTMLElement).tagName === 'image' || (evt.target as HTMLElement).tagName === 'path') {                   
           this.openDialog(x < centerX ? x + cell.getGeometry().width + 250 : x, y - 100 > centerY ? centerY : y, cell);                    
-        }
+        }        
         else if (currentCellData.type === Symbol.setPointButton) {          
           this.openControlDialog(x < centerX ? x + cell.getGeometry().width + 250 : x, y - 100 > centerY ? centerY : y, cell);
         }
@@ -277,7 +281,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
             }
             
             const titleContainer = this.renderer.createElement('div');
-            const titleText = this.renderer.createText(userObject.label ? userObject.label : userObject.deviceTypeMapping ? userObject.deviceTypeMapping : "Measure");
+            const titleText = this.renderer.createText(userObject.label ? userObject.label : userObject.deviceTypeMapping ? userObject.deviceTypeMapping : "");
             this.renderer.addClass(titleContainer, 'data-title');
             this.renderer.appendChild(titleContainer, titleText);
             this.renderer.appendChild(data, titleContainer);
@@ -624,7 +628,32 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
         this.sendCommand(currentCellData, result.action);
       }
     });
-  }  
+  } 
+  
+  openVoltageRegulatorDialog(x: number, y: number, cell: mxgraph.mxCell) : void {
+    const currentCellData = this.graph.model.getValue(cell).userObject;
+    this.dialog.closeAll();
+    const filterData = {
+      top: y,
+      left: x,
+      diagramId: this.diagramId,
+      diagramData: currentCellData
+    };
+    const dialogRef = this.dialog.open(RegulatorDialogComponent, {
+      width: '355px',
+      data: filterData,
+      hasBackdrop: false,
+      panelClass: 'filter-popup',
+      autoFocus: true,
+      closeOnNavigation: true
+    });
+
+    dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
+      if (result && result.proceed) {                
+        this.sendTapChangerCommand(currentCellData, result.action, result.path);
+      }
+    });
+  }
 
   openControlDialog(x: number, y: number, cell: mxgraph.mxCell): void {
     const currentCellData = this.graph.model.getValue(cell).userObject;
@@ -792,6 +821,32 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
 
   sendWsData(data: any) {    
     this.wsService.sendWsData(data);
+  }
+
+  sendTapChangerCommand(userObject: DiagramData, action: string, path: string, value?: number) {
+    if (!path) {
+      this.snack.open('Unable to send command.  No data is mapped for this control.', 'OK', { duration: 2000 });
+    }
+    else {
+      const t : Topic = {
+        name: path,
+        mrid: userObject.mRID,
+        action: action,   
+        args: value,     
+      };
+
+      const data: UpdateData = {
+        topic: t
+      };
+
+      this.diagramService.updateData( data)
+        .subscribe(data => {                              
+          // success
+        }, error => {
+          console.error(error);
+          this.snack.open(error, 'OK', { duration: 4000 });
+      });
+    }
   }
 
   sendCommand(userObject: DiagramData, action: string, value?: any) {

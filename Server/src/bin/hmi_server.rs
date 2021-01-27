@@ -58,66 +58,71 @@ async fn server_setup() {
     let nats_client = nats::connect(&nats_server_uri).unwrap();
     info!("Connected to NATS server");
 
-    let app_name = sys
-        .config()
-        .get_str("coordinator.app_name")
-        .unwrap();
-    std::thread::sleep(Duration::from_millis(1000));
-    let publisher = sys
-        .actor_of_args::<Publisher, Connection>("Publisher", nats_client.clone())
-        .unwrap();
-    let persistor = sys.actor_of::<Persistor>("Persistor").unwrap();
-    let microgrid = sys
-        .actor_of_args::<Microgrid, (Config, ActorRef<PublisherMsg>, ActorRef<PersistorMsg>)>(
-            "Microgrid",
-            (sys.config().clone(), publisher.clone(), persistor.clone()),
-        )
-        .unwrap();
-    let processor = sys
-        .actor_of_args::<Device, (
-            ActorRef<PublisherMsg>,
-            ActorRef<PersistorMsg>,
-            ActorRef<MicrogridMsg>,
-        )>(
-            "Device",
-            (publisher.clone(), persistor.clone(), microgrid.clone()),
-        )
-        .unwrap();
-    let subscriber = sys
-        .actor_of_args::<Subscriber, (
-            ActorRef<PublisherMsg>,
-            ActorRef<DeviceMsg>,
-            ActorRef<PersistorMsg>,
-            ActorRef<MicrogridMsg>,
-            Connection,
-        )>(
-            "Subscriber",
-            (
-                publisher.clone(),
-                processor.clone(),
-                persistor.clone(),
-                microgrid.clone(),
-                nats_client.clone(),
-            ),
-        )
-        .unwrap();
+    if config
+        .get_bool("coordinator.circuit_segment_service_enabled")
+        .unwrap_or(false)
+    {
+        let app_name = sys
+            .config()
+            .get_str("coordinator.app_name")
+            .unwrap();
+        std::thread::sleep(Duration::from_millis(1000));
+        let publisher = sys
+            .actor_of_args::<Publisher, Connection>("Publisher", nats_client.clone())
+            .unwrap();
+        let persistor = sys.actor_of::<Persistor>("Persistor").unwrap();
+        let microgrid = sys
+            .actor_of_args::<Microgrid, (Config, ActorRef<PublisherMsg>, ActorRef<PersistorMsg>)>(
+                "Microgrid",
+                (sys.config().clone(), publisher.clone(), persistor.clone()),
+            )
+            .unwrap();
+        let processor = sys
+            .actor_of_args::<Device, (
+                ActorRef<PublisherMsg>,
+                ActorRef<PersistorMsg>,
+                ActorRef<MicrogridMsg>,
+            )>(
+                "Device",
+                (publisher.clone(), persistor.clone(), microgrid.clone()),
+            )
+            .unwrap();
+        let subscriber = sys
+            .actor_of_args::<Subscriber, (
+                ActorRef<PublisherMsg>,
+                ActorRef<DeviceMsg>,
+                ActorRef<PersistorMsg>,
+                ActorRef<MicrogridMsg>,
+                Connection,
+            )>(
+                "Subscriber",
+                (
+                    publisher.clone(),
+                    processor.clone(),
+                    persistor.clone(),
+                    microgrid.clone(),
+                    nats_client.clone(),
+                ),
+            )
+            .unwrap();
+        
+        //The Coordinator is the root of our user actor tree, and is the only one we ever instantiate directly
+        let coordinator_actor = sys
+            .actor_of_args::<Coordinator, (
+                ActorRef<PublisherMsg>,
+                ActorRef<SubscriberMsg>,
+                ActorRef<PersistorMsg>,
+                ActorRef<DeviceMsg>,
+            )>(&app_name, (publisher.clone(), subscriber, persistor.clone(), processor))
+            .unwrap();
     
-    //The Coordinator is the root of our user actor tree, and is the only one we ever instantiate directly
-    let coordinator_actor = sys
-        .actor_of_args::<Coordinator, (
-            ActorRef<PublisherMsg>,
-            ActorRef<SubscriberMsg>,
-            ActorRef<PersistorMsg>,
-            ActorRef<DeviceMsg>,
-        )>(&app_name, (publisher.clone(), subscriber, persistor.clone(), processor))
-        .unwrap();
-   
-    let coordinator = sys.select("/user/CircuitSegmentCoordinator").unwrap();
-    std::thread::sleep(Duration::from_millis(500));
-    let start_processing_msg: CoordinatorMsg = StartProcessing.into();        
-    coordinator_actor.tell(start_processing_msg, Some(sys.user_root().clone()));    
-    let request_actor_stats_msg: CoordinatorMsg = RequestActorStats.into();
-    coordinator.try_tell(request_actor_stats_msg, Some(sys.user_root().clone()));
+        let coordinator = sys.select("/user/CircuitSegmentCoordinator").unwrap();
+        std::thread::sleep(Duration::from_millis(500));
+        let start_processing_msg: CoordinatorMsg = StartProcessing.into();        
+        coordinator_actor.tell(start_processing_msg, Some(sys.user_root().clone()));    
+        let request_actor_stats_msg: CoordinatorMsg = RequestActorStats.into();
+        coordinator.try_tell(request_actor_stats_msg, Some(sys.user_root().clone()));
+    }
 
     // Start Hmi related 
     

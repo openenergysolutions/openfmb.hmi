@@ -4,7 +4,7 @@ use circuit_segment_manager::{
 use super::processor::{ProcessorMsg};
 use super::profile_subscriber::{ProfileSubscriber, ProfileSubscriberMsg};
 
-use log::info;
+use log::{info, warn};
 use riker::actors::*;
 use snafu::Snafu;
 use std::{    
@@ -204,7 +204,7 @@ impl Receive<NatsMessage> for NATSSubscriber {
                     actor.send_msg(msg.clone().into(), ctx.myself.clone()); 
                 }    
                 else {
-                    println!("Message is not supported.");
+                    warn!("Message is not supported.");
                 }                              
             }
         }        

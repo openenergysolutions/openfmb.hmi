@@ -64,7 +64,8 @@
     "height": 40,
     "title": "Voltage Regulator horizontal",
     "left": 0,
-    "top": 0
+    "top": 0,
+    "type": "regulator"
   },
   {
     "shape": "image",
@@ -77,7 +78,8 @@
     "height": 40,
     "title": "Voltage Regulator vertical",
     "left": 0,
-    "top": 0
+    "top": 0,
+    "type": "regulator"
   },
   {
     "shape": "image",
@@ -424,6 +426,22 @@
   },
   {
     "shape": "image",
+    "image": "assets/images/toolbar/recloser.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Recloser",
+    "left": 0,
+    "top": 0,
+    "type": "recloser"
+  },
+  {
+    "shape": "image",
     "image": "assets/images/toolbar/converter.svg",
     "points": [
       [1, 0.5],
@@ -550,6 +568,37 @@
     "type": "set-point-button"  
   },
   {
+    "shape": "image",
+    "image": "assets/images/toolbar/regulator.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "Voltage Regulator",
+    "left": 0,
+    "top": 0,
+    "type": "regulator"
+  }, 
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/substation.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 80,
+    "title": "Substation",
+    "left": 0,
+    "top": 0    
+  },  
+  {
     "shape": "rectangle",
     "image": "assets/images/toolbar/rectangle2.svg",
     "points": [],
@@ -559,5 +608,5 @@
     "left": 0,
     "top": 0,
     "type": "rectangle"   
-  }  
+  }
 ]

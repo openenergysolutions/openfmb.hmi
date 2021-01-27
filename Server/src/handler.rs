@@ -534,6 +534,105 @@ pub async fn data_handler(update: UpdateMessage, clients: Clients, processor: Ac
                                 None,
                             );
                         }
+                        else if action == "TAP-LOWER-PHS3" {
+                            processor.tell(
+                                GenericControl {
+                                    text: update.topic.name.clone(),
+                                    message:  microgrid::generic_control::ControlType::TapChangeLowerPhs3,
+                                    mrid: update.topic.mrid.clone(),
+                                    profile_name: None,
+                                    args: None,
+                                },
+                                None,
+                            );
+                        }
+                        else if action == "TAP-RAISE-PHS3" {
+                            processor.tell(
+                                GenericControl {
+                                    text: update.topic.name.clone(),
+                                    message:  microgrid::generic_control::ControlType::TapChangeRaisePhs3,
+                                    mrid: update.topic.mrid.clone(),
+                                    profile_name: None,
+                                    args: None,
+                                },
+                                None,
+                            );
+                        }
+                        else if action == "TAP-LOWER-PHSA" {
+                            processor.tell(
+                                GenericControl {
+                                    text: update.topic.name.clone(),
+                                    message:  microgrid::generic_control::ControlType::TapChangeLowerPhsA,
+                                    mrid: update.topic.mrid.clone(),
+                                    profile_name: None,
+                                    args: None,
+                                },
+                                None,
+                            );
+                        }
+                        else if action == "TAP-RAISE-PHSA" {
+                            processor.tell(
+                                GenericControl {
+                                    text: update.topic.name.clone(),
+                                    message:  microgrid::generic_control::ControlType::TapChangeRaisePhsA,
+                                    mrid: update.topic.mrid.clone(),
+                                    profile_name: None,
+                                    args: None,
+                                },
+                                None,
+                            );
+                        }
+                        else if action == "TAP-LOWER-PHSB" {
+                            processor.tell(
+                                GenericControl {
+                                    text: update.topic.name.clone(),
+                                    message:  microgrid::generic_control::ControlType::TapChangeLowerPhsB,
+                                    mrid: update.topic.mrid.clone(),
+                                    profile_name: None,
+                                    args: None,
+                                },
+                                None,
+                            );
+                        }
+                        else if action == "TAP-RAISE-PHSB" {
+                            processor.tell(
+                                GenericControl {
+                                    text: update.topic.name.clone(),
+                                    message:  microgrid::generic_control::ControlType::TapChangeRaisePhsB,
+                                    mrid: update.topic.mrid.clone(),
+                                    profile_name: None,
+                                    args: None,
+                                },
+                                None,
+                            );
+                        }
+                        else if action == "TAP-LOWER-PHSC" {
+                            processor.tell(
+                                GenericControl {
+                                    text: update.topic.name.clone(),
+                                    message:  microgrid::generic_control::ControlType::TapChangeLowerPhsC,
+                                    mrid: update.topic.mrid.clone(),
+                                    profile_name: None,
+                                    args: None,
+                                },
+                                None,
+                            );
+                        }
+                        else if action == "TAP-RAISE-PHSC" {
+                            processor.tell(
+                                GenericControl {
+                                    text: update.topic.name.clone(),
+                                    message:  microgrid::generic_control::ControlType::TapChangeRaisePhsC,
+                                    mrid: update.topic.mrid.clone(),
+                                    profile_name: None,
+                                    args: None,
+                                },
+                                None,
+                            );
+                        }
+                        else {
+                            info!("Received unknown action: {}", action);
+                        }
                     }
                     else {
                         info!("Received unknown command: {}", update.topic.name);

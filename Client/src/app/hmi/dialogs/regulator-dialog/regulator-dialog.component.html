@@ -1,0 +1,49 @@
+<form #f="ngForm">
+  <mat-tab-group mat-align-tabs="start">
+    <mat-tab label="Control">
+      <div mat-dialog-content class="dialog-input-container pt-1">
+        <strong>Name</strong><br/>
+        <mat-form-field class="designer-form-field" floatLabel='never'>
+          <input matInput [(ngModel)]="name" placeholder="Enter Name (required)" [disabled]="true" name="symbol-name"/>
+        </mat-form-field>
+      </div>
+      <div mat-dialog-content class="dialog-input-container">
+        <strong>mRID</strong><br/>
+        <mat-form-field class="designer-form-field" floatLabel='never'>
+          <input matInput [(ngModel)]="mRID" placeholder="Not set" [disabled]="true" name="symbol-mrid"/> 
+        </mat-form-field>  
+      </div>
+      <div mat-dialog-content class="dialog-input-container pt-1" *ngIf="has3PhaseLowerMapped || has3PhaseRaiseMapped">
+        <strong>3-Phase</strong><br/>        
+        <button class="pr-1" style="width: 120px;" (click)="onLowerPhs3()" [disabled]="!has3PhaseLowerMapped">Lower</button>&nbsp;&nbsp;        
+        <button class="pr-1" style="width: 120px;" (click)="onRaisePhs3()" [disabled]="!has3PhaseRaiseMapped">Raise</button>
+      </div>
+      <div mat-dialog-content class="dialog-input-container pt-1" *ngIf="hasPhaseALowerMapped || hasPhaseARaiseMapped">
+        <strong>Phase A</strong><br/>        
+        <button class="pr-1" style="width: 120px;" (click)="onLowerPhsA()" [disabled]="!hasPhaseALowerMapped">Lower</button>&nbsp;&nbsp;        
+        <button class="pr-1" style="width: 120px;" (click)="onRaisePhsA()" [disabled]="!hasPhaseARaiseMapped">Raise</button>
+      </div>
+      <div mat-dialog-content class="dialog-input-container pt-1" *ngIf="hasPhaseBLowerMapped || hasPhaseBRaiseMapped">
+        <strong>Phase B</strong><br/>        
+        <button class="pr-1" style="width: 120px;" (click)="onLowerPhsB()" [disabled]="!hasPhaseBLowerMapped">Lower</button>&nbsp;&nbsp;        
+        <button class="pr-1" style="width: 120px;" (click)="onRaisePhsB()" [disabled]="!hasPhaseBRaiseMapped">Raise</button>
+      </div> 
+      <div mat-dialog-content class="dialog-input-container pt-1" *ngIf="hasPhaseCLowerMapped || hasPhaseCRaiseMapped">
+        <strong>Phase C</strong><br/>        
+        <button class="pr-1" style="width: 120px;" (click)="onLowerPhsC()" [disabled]="!hasPhaseCLowerMapped">Lower</button>&nbsp;&nbsp;        
+        <button class="pr-1" style="width: 120px;" (click)="onRaisePhsC()" [disabled]="!hasPhaseCRaiseMapped">Raise</button>
+      </div>        
+      <div mat-dialog-content class="dialog-input-container pt-1" *ngIf="!hasDataMapped">
+        <p style="color:red;">No data mapping is defined</p>
+      </div>
+      <div *ngIf="hasLastUpdate">
+        <p style="font-size: 8px;">Updated on: {{lastUpdate}}</p>
+      </div>
+    </mat-tab>    
+  </mat-tab-group>
+  <div mat-dialog-actions>
+    <button mat-raised-button color="primary" (click)="onClose()" cdkFocusInitial class="pr-1" style="width: 120px;">
+      CANCEL
+    </button>             
+  </div>
+</form>
