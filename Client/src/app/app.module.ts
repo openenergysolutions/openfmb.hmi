@@ -107,10 +107,10 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
       useClass: LoadingInterceptor,
       multi: true
     },
-    // { 
-    //   provide: MAT_COLOR_FORMATS, 
-    //   useValue: NGX_MAT_COLOR_FORMATS 
-    // },
+    { 
+      provide: Window, 
+      useValue: window 
+    },
     fakeBackendProvider
   ],
   bootstrap: [AppComponent]
