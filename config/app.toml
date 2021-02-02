@@ -16,7 +16,7 @@ filename = "../datafiles/capture_10.txt"
 
 [openfmb_nats_subscriber]
 prod_uri = "172.16.1.34:4222"
-dev_uri = "192.168.86.250:4222"
+dev_uri = "192.168.86.26:4222"
 
 [battery]
 min_soc_soft = "0.26"

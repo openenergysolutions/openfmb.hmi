@@ -115,16 +115,14 @@ pub struct RegisterResponse {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct UpdateMessage {
     pub topic: Topic,
-    pub session_id: Option<String>,
-    //pub profile_name: Option<String>,
+    pub session_id: Option<String>,    
 }
 
 impl UpdateMessage {
     pub fn create(topic: Topic, session_id: String) -> UpdateMessage {
         UpdateMessage {
             topic: topic,
-            session_id: Some(session_id),
-            //profile_name: None,
+            session_id: Some(session_id),           
         }
     }
 }
@@ -670,6 +668,23 @@ pub async fn send_updates(updates: UpdateMessages, clients: Clients) -> Result<i
     Ok(StatusCode::OK)
 }
 
+pub async fn send_inspector_messages(messages: &Vec<String>, clients: Clients) -> Result<impl Reply> {
+    
+    clients
+        .read()
+        .await
+        .iter()       
+        .for_each(|(_, client)| {
+            if let Some(sender) = &client.sender {                          
+                for json in messages {
+                    let _ = sender.send(Ok(Message::text(json)));    
+                }           
+            }
+        });
+
+    Ok(StatusCode::OK)
+}
+
 pub async fn execute_command(update: Command, _clients: Clients) -> Result<impl Reply> {
     println!("Received command '{}'", update.name);
     Ok(StatusCode::OK)
@@ -759,6 +774,51 @@ pub async fn connect_handler(ws: warp::ws::Ws, id: String, clients: Clients) -> 
 }
 
 pub async fn client_connection(ws: WebSocket, id: String, clients: Clients) {
+    let mut client = match clients.read().await.get(&id).cloned() {
+        Some(c) => c,
+        None => {
+            Client {
+                session_id: id.clone(),
+                sender: None,
+                topics: vec![]
+            }
+        }
+    };
+
+    let (client_ws_sender, mut client_ws_rcv) = ws.split();
+    let (client_sender, client_rcv) = mpsc::unbounded_channel();
+
+    tokio::task::spawn(client_rcv.forward(client_ws_sender).map(|result| {
+        if let Err(e) = result {
+            eprintln!("ERROR::Error sending websocket msg: {}", e);
+        }
+    }));
+
+    client.sender = Some(client_sender);
+    clients.write().await.insert(id.clone(), client);
+
+    println!("Client id '{}' connected", id);
+
+    while let Some(result) = client_ws_rcv.next().await {
+        let msg = match result {
+            Ok(msg) => msg,
+            Err(e) => {
+                eprintln!("ERROR::Error receiving message for client id: {}): {}", id.clone(), e);
+                break;
+            }
+        };
+        client_msg(&id, msg, &clients).await;
+    }
+
+    clients.write().await.remove(&id);
+    println!("Client id '{}' disconnected", id);
+}
+
+pub async fn inspector_handler(ws: warp::ws::Ws, id: String, clients: Clients) -> Result<impl Reply> {
+    return Ok(ws.on_upgrade(move |socket| inspector_connection(socket, id, clients)));
+}
+
+pub async fn inspector_connection(ws: WebSocket, id: String, clients: Clients) {
     let mut client = match clients.read().await.get(&id).cloned() {
         Some(c) => c,
         None => {

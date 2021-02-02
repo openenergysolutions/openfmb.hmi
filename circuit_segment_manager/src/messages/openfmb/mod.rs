@@ -2,6 +2,7 @@ use log::warn;
 use openfmb_messages::commonmodule::StatusDps;
 use chrono::{offset::TimeZone, DateTime, NaiveDateTime, Utc};
 use enum_as_inner::EnumAsInner;
+use serde::{Deserialize, Serialize};
 
 use openfmb_messages::{
     breakermodule::{BreakerDiscreteControlProfile, BreakerReadingProfile, BreakerStatusProfile},
@@ -55,7 +56,7 @@ impl From<OpenFMBTimestampWrapper> for DateTime<Utc> {
     }
 }
 
-#[derive(Clone, Debug, EnumAsInner)]
+#[derive(Clone, Debug, EnumAsInner, Serialize, Deserialize)]
 pub enum OpenFMBMessage {
     GenerationReading(Box<GenerationReadingProfile>),
     GenerationStatus(Box<GenerationStatusProfile>),
@@ -68,8 +69,6 @@ pub enum OpenFMBMessage {
     ESSStatus(Box<EssStatusProfile>),
     LoadReading(Box<LoadReadingProfile>),
     LoadStatus(Box<LoadStatusProfile>),
-//    ShuntReading(Box<ShuntReadingProfile>),
-//    ShuntStatus(Box<ShuntStatusProfile>),
     RecloserReading(Box<RecloserReadingProfile>),
     RecloserStatus(Box<RecloserStatusProfile>),
     BreakerReading(Box<BreakerReadingProfile>),

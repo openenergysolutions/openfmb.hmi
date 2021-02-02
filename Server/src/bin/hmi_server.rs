@@ -245,6 +245,12 @@ async fn server_setup() {
         .and(with_clients(clients.clone()))
         .and_then(connect_handler);
 
+    let inspector_route = warp::path("inspector")
+        .and(warp::ws())
+        .and(warp::path::param())
+        .and(with_clients(clients.clone()))
+        .and_then(inspector_handler);
+
     let equipment_list = warp::path("equipment-list");     
         
     let equipment_routes = equipment_list
@@ -285,6 +291,7 @@ async fn server_setup() {
         .or(command_routes)
         .or(design_routes)
         .or(hmi_route)
+        .or(inspector_route)
         .or(update)
         .or(execute)        
         .with(cors)

@@ -436,7 +436,7 @@ impl Receive<GenericControl> for HmiPublisher {
                         self.nats_client.publish(&subject, &mut buffer).unwrap();                  
                     }
                     microgrid::generic_control::ControlType::TapChangeLowerPhsA => {
-                        let profile = RegulatorDiscreteControlProfile::regulator_tap_lower_phsA_msg(
+                        let profile = RegulatorDiscreteControlProfile::regulator_tap_lower_phs_a_msg(
                             &msg.mrid,
                             false
                         ); 
@@ -445,7 +445,7 @@ impl Receive<GenericControl> for HmiPublisher {
                         self.nats_client.publish(&subject, &mut buffer).unwrap();                  
                     }
                     microgrid::generic_control::ControlType::TapChangeRaisePhsA => {
-                        let profile = RegulatorDiscreteControlProfile::regulator_tap_raise_phsA_msg(
+                        let profile = RegulatorDiscreteControlProfile::regulator_tap_raise_phs_a_msg(
                             &msg.mrid,
                             true
                         ); 
@@ -454,7 +454,7 @@ impl Receive<GenericControl> for HmiPublisher {
                         self.nats_client.publish(&subject, &mut buffer).unwrap();                  
                     }
                     microgrid::generic_control::ControlType::TapChangeLowerPhsB => {
-                        let profile = RegulatorDiscreteControlProfile::regulator_tap_lower_phsB_msg(
+                        let profile = RegulatorDiscreteControlProfile::regulator_tap_lower_phs_b_msg(
                             &msg.mrid,
                             false
                         ); 
@@ -463,7 +463,7 @@ impl Receive<GenericControl> for HmiPublisher {
                         self.nats_client.publish(&subject, &mut buffer).unwrap();                  
                     }
                     microgrid::generic_control::ControlType::TapChangeRaisePhsB => {
-                        let profile = RegulatorDiscreteControlProfile::regulator_tap_raise_phsB_msg(
+                        let profile = RegulatorDiscreteControlProfile::regulator_tap_raise_phs_b_msg(
                             &msg.mrid,
                             true
                         ); 
@@ -472,7 +472,7 @@ impl Receive<GenericControl> for HmiPublisher {
                         self.nats_client.publish(&subject, &mut buffer).unwrap();                  
                     }
                     microgrid::generic_control::ControlType::TapChangeLowerPhsC => {
-                        let profile = RegulatorDiscreteControlProfile::regulator_tap_lower_phsC_msg(
+                        let profile = RegulatorDiscreteControlProfile::regulator_tap_lower_phs_c_msg(
                             &msg.mrid,
                             false
                         ); 
@@ -481,7 +481,7 @@ impl Receive<GenericControl> for HmiPublisher {
                         self.nats_client.publish(&subject, &mut buffer).unwrap();                  
                     }
                     microgrid::generic_control::ControlType::TapChangeRaisePhsC => {
-                        let profile = RegulatorDiscreteControlProfile::regulator_tap_raise_phsC_msg(
+                        let profile = RegulatorDiscreteControlProfile::regulator_tap_raise_phs_c_msg(
                             &msg.mrid,
                             true
                         ); 

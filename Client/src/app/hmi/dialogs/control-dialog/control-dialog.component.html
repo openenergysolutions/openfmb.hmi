@@ -40,6 +40,9 @@
     </button> 
     <button mat-raised-button color="red" (click)="onAction()" *ngIf="isControllable" cdkFocusInitial class="pr-1" style="width: 120px;">
       EXECUTE
-    </button>           
+    </button>              
+  </div>
+  <div class="pr-1">
+    <a style="font-size:small;text-decoration:underline;" (click)="onMessageInspector()">Message Inspector</a>
   </div>
 </form>

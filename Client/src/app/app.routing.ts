@@ -49,6 +49,20 @@ export const rootRouterConfig: Routes = [
         loadChildren: () => import('./hmi/hmi.module').then(m => m.HmiModule)       
       }
     ]
+  },
+  {
+    path: '',
+    canActivate: [AuthGuard, UserRoleGuard],
+    data: 
+    { 
+      roles: ['Viewer', 'Engineer', 'Admin' ]
+    },
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./inspector/inspector-dialog.module').then(m => m.InspectorDialogModule)       
+      }
+    ]
   },    
   {
     path: '',

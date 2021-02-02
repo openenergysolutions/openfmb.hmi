@@ -6,7 +6,6 @@ use crate::handler::*;
 
 use riker::actors::*;
 use serde_json::Value;
-use log::info;
 use std::collections::HashMap;
 
 pub struct Node {
@@ -166,6 +165,7 @@ impl Receive<GenericControl> for Processor {
 async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {    
 
     let mut update_messages = vec![];
+    let mut inspector_messages: Vec<String> = vec![];
 
     let mut data_maps : HashMap<String, HashMap<String, DataValue>> = HashMap::new();
     let dummy : HashMap<String, DataValue> = HashMap::new();
@@ -177,8 +177,19 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
         .await
         .iter()               
         .for_each(|(_, client)| {                         
-            for topic in &client.topics {                                
-                if topic.mrid == device_mrid {  
+            for topic in &client.topics {
+                if topic.name == "*" {
+                    if topic.mrid == device_mrid {
+                        let mut d: HashMap<String, DataValue> = HashMap::new();
+                        if let Ok(my_msg_json) = serde_json::to_string(&msg) {
+                            let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                            let mut root = Node::new("mapping");
+                            root.path = "GenerationReadingProfile.mapping".to_string();
+                            root.from_json(&json, &mut d); 
+                        }
+                    }
+                }
+                else if topic.mrid == device_mrid {  
                     
                     let data : &HashMap<String, DataValue> = match &msg {
                         OpenFMBMessage::GenerationReading(message) => {
@@ -459,6 +470,9 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
 
     if update_messages.len() > 0 {
         let _ = send_updates(UpdateMessages::new(update_messages), clients.clone()).await;        
+    }
+    if inspector_messages.len() > 0 {
+        let _ = send_inspector_messages(&inspector_messages, clients.clone()).await; 
     }
 }
 

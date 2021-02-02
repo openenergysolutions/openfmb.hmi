@@ -202,7 +202,7 @@ pub fn init_users() -> HashMap<String, User> {
 fn load_users(file_path: String) -> std::io::Result<HashMap<String, User>> {    
 
     let mut map: HashMap<String, User> = HashMap::new(); 
-    let mut users : Vec<User> = get_user_list(file_path).unwrap();
+    let users : Vec<User> = get_user_list(file_path).unwrap();
 
     for usr in users.iter() {
         map.insert(
@@ -268,7 +268,7 @@ pub async fn delete_user_handler(_id: String, user: User) -> Result<impl Reply> 
     if let Some(pos) = list.iter().position(|x| *x.id == user.id) {
         list.remove(pos);
 
-        save_user_list(get_user_file(), &list);
+        let _ = save_user_list(get_user_file(), &list);
     }    
 
     Ok(json(&list))
@@ -282,7 +282,7 @@ pub async fn update_user_handler(_id: String, user: User) -> Result<impl Reply> 
         let mut usr = list.get_mut(pos).unwrap();
         usr.displayname = user.displayname;   
         
-        save_user_list(get_user_file(), &list);
+        let _ = save_user_list(get_user_file(), &list);
     }
 
     Ok(json(&list))
@@ -290,7 +290,7 @@ pub async fn update_user_handler(_id: String, user: User) -> Result<impl Reply> 
 
 pub async fn create_user_handler(_id: String, user: User) -> Result<impl Reply> {
     let mut list = get_user_list(get_user_file()).unwrap();
-    if let Some(pos) = list.iter().position(|x| *x.id.to_lowercase() == user.id.to_lowercase() || *x.username.to_lowercase() == user.username.to_lowercase()) {
+    if let Some(_pos) = list.iter().position(|x| *x.id.to_lowercase() == user.id.to_lowercase() || *x.username.to_lowercase() == user.username.to_lowercase()) {
         // same user id/username already exists    
         error!("User with same id/username ({}/{}) already exists", user.id, user.username);
         
@@ -298,7 +298,7 @@ pub async fn create_user_handler(_id: String, user: User) -> Result<impl Reply> 
     } 
     else {
         list.push(user);
-        save_user_list(get_user_file(), &list);
+        let _ = save_user_list(get_user_file(), &list);
     }
 
     Ok(json(&list))
