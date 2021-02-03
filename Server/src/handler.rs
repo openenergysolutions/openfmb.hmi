@@ -114,22 +114,25 @@ pub struct RegisterResponse {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct UpdateMessage {
+    pub profile: Option<String>,
     pub topic: Topic,
-    pub session_id: Option<String>,    
+    pub session_id: Option<String>,     
 }
 
 impl UpdateMessage {
-    pub fn create(topic: Topic, session_id: String) -> UpdateMessage {
+    pub fn create(topic: Topic, session_id: String, profile: Option<String>) -> UpdateMessage {
         UpdateMessage {
+            profile: profile,
             topic: topic,
-            session_id: Some(session_id),           
+            session_id: Some(session_id),                        
         }
     }
 }
 
 #[derive(Serialize, Debug)]
 pub struct UpdateMessages {
-    updates: Vec<UpdateMessage>
+    updates: Vec<UpdateMessage>,
+    pub session_id: Option<String>,
 }
 
 #[derive(Deserialize)]
@@ -138,9 +141,10 @@ pub struct DiagramQuery {
 }
 
 impl UpdateMessages {
-    pub fn new(messages: Vec<UpdateMessage>) -> UpdateMessages {
+    pub fn new(messages: Vec<UpdateMessage>, session_id: String) -> UpdateMessages {
         UpdateMessages {
-            updates: messages
+            updates: messages,
+            session_id: Some(session_id),
         }
     }
 }
@@ -653,11 +657,10 @@ pub async fn send_updates(updates: UpdateMessages, clients: Clients) -> Result<i
         .read()
         .await
         .iter()
-        // .filter(|(_, client)| match update.session_id.clone() {
-        //     Some(v) => client.session_id == v,
-        //     None => true,
-        // })
-        //.filter(|(_, client)| client.topics.contains(&update.topic.to_string()))
+        .filter(|(_, client)| match &updates.session_id {
+            Some(v) => client.session_id == *v,
+            None => false,
+        })        
         .for_each(|(_, client)| {
             if let Some(sender) = &client.sender {                          
                 let json = serde_json::to_string(&updates).unwrap();
@@ -751,9 +754,17 @@ pub async fn equipment_handler() -> Result<impl Reply> {
     Ok(json(&equipment_list))
 }
 
+fn get_command_file() -> String {
+    let app_dir = std::env::var("APP_DIR_NAME").unwrap_or_else(|_| "".into());
+    if app_dir != "" {
+        return format!("/{}/command.json", app_dir);
+    }
+    "command.json".to_string()
+}
+
 // GET
 pub async fn command_handler() -> Result<impl Reply> {  
-    Ok(json(&read_commands(format!("{}/command.json", get_diagram_folder())).unwrap()))   
+    Ok(json(&read_commands(get_command_file()).unwrap()))   
 }
 
 // GET
@@ -774,51 +785,6 @@ pub async fn connect_handler(ws: warp::ws::Ws, id: String, clients: Clients) -> 
 }
 
 pub async fn client_connection(ws: WebSocket, id: String, clients: Clients) {
-    let mut client = match clients.read().await.get(&id).cloned() {
-        Some(c) => c,
-        None => {
-            Client {
-                session_id: id.clone(),
-                sender: None,
-                topics: vec![]
-            }
-        }
-    };
-
-    let (client_ws_sender, mut client_ws_rcv) = ws.split();
-    let (client_sender, client_rcv) = mpsc::unbounded_channel();
-
-    tokio::task::spawn(client_rcv.forward(client_ws_sender).map(|result| {
-        if let Err(e) = result {
-            eprintln!("ERROR::Error sending websocket msg: {}", e);
-        }
-    }));
-
-    client.sender = Some(client_sender);
-    clients.write().await.insert(id.clone(), client);
-
-    println!("Client id '{}' connected", id);
-
-    while let Some(result) = client_ws_rcv.next().await {
-        let msg = match result {
-            Ok(msg) => msg,
-            Err(e) => {
-                eprintln!("ERROR::Error receiving message for client id: {}): {}", id.clone(), e);
-                break;
-            }
-        };
-        client_msg(&id, msg, &clients).await;
-    }
-
-    clients.write().await.remove(&id);
-    println!("Client id '{}' disconnected", id);
-}
-
-pub async fn inspector_handler(ws: warp::ws::Ws, id: String, clients: Clients) -> Result<impl Reply> {
-    return Ok(ws.on_upgrade(move |socket| inspector_connection(socket, id, clients)));
-}
-
-pub async fn inspector_connection(ws: WebSocket, id: String, clients: Clients) {
     let mut client = match clients.read().await.get(&id).cloned() {
         Some(c) => c,
         None => {

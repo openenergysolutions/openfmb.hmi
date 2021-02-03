@@ -1,5 +1,39 @@
-.inspector-dialog {
-  margin: -16px;
-  overflow: hidden;
-  padding: 10px   12px 25px 12px;  
+table {
+  width: 95%;
+  overflow: hidden !important;
+}
+
+.mat-tab-body-content {
+  overflow: hidden !important;
+}
+
+.mat-column-path {
+  word-wrap: break-word !important;
+  white-space: unset !important;
+  flex: 0 0 70% !important;
+  width: 70% !important;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  font-size: 8pt;
+}
+
+.mat-column-value {
+  word-wrap: break-word !important;
+  white-space: unset !important;
+  flex: 0 0 30% !important;
+  width: 30% !important;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  font-size: 8pt;
+  font-weight:500;
 }

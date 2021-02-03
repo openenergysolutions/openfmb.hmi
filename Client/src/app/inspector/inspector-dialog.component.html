@@ -1,4 +1,23 @@
-<div class="inspector-dialog">
-	<h2 mat-dialog-title>{{title}}</h2>
-	
+<div class="ml-05 mr-05 mt-05 pb-1">
+	<div class="mat-elevation-z8">
+		<mat-tab-group mat-align-tabs="start">
+			<mat-tab *ngFor="let kvp of dataSources | keyvalue" label="{{kvp.key}}">
+				<mat-table [dataSource]="kvp.value">
+					<ng-container matColumnDef="path">
+						<mat-header-cell *matHeaderCellDef> Path </mat-header-cell>
+						<mat-cell *matCellDef="let row" data-label="path"> {{row.topic.name}} </mat-cell>
+					</ng-container>
+		
+					<ng-container matColumnDef="value">
+						<mat-header-cell *matHeaderCellDef> Value </mat-header-cell>
+						<mat-cell *matCellDef="let row" data-label="value"> {{row.topic.value.Double ? row.topic.value.Double : row.topic.value.String ? row.topic.value.String : row.topic.value.Bool ? row.topic.value.Bool : '' }} </mat-cell>
+					</ng-container>
+					
+					<mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+					<mat-row *matRowDef="let row; columns: displayedColumns;">
+					</mat-row>
+				</mat-table>
+			</mat-tab>
+		</mat-tab-group>				
+	</div>
 </div>

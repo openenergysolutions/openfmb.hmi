@@ -139,7 +139,7 @@ export class ControlDialogComponent implements OnInit {
   }
 
   onMessageInspector(): void {
-    window.open('/inspector?mrid=' + this.mRID, '_blank', 'toolbar=0,width=750,height=700', true);
+    window.open('/inspector?mrid=' + this.mRID, '_blank', 'toolbar=0,width=850,height=700', true);
     this.dialogRef.close({
       proceed: false      
     });

@@ -46,4 +46,7 @@
       CANCEL
     </button>             
   </div>
+  <div class="pr-1" *ngIf="mRID">
+    <a style="font-size:small;text-decoration:underline;" (click)="onMessageInspector()">Message Inspector</a>
+  </div>
 </form>

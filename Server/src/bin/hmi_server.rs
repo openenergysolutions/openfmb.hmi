@@ -239,17 +239,11 @@ async fn server_setup() {
         .and(with_clients(clients.clone()))
         .and_then(execute_command);
 
-    let hmi_route = warp::path("data")
+    let data_route = warp::path("data")
         .and(warp::ws())
         .and(warp::path::param())
         .and(with_clients(clients.clone()))
-        .and_then(connect_handler);
-
-    let inspector_route = warp::path("inspector")
-        .and(warp::ws())
-        .and(warp::path::param())
-        .and(with_clients(clients.clone()))
-        .and_then(inspector_handler);
+        .and_then(connect_handler);    
 
     let equipment_list = warp::path("equipment-list");     
         
@@ -290,8 +284,7 @@ async fn server_setup() {
         .or(equipment_routes)
         .or(command_routes)
         .or(design_routes)
-        .or(hmi_route)
-        .or(inspector_route)
+        .or(data_route)        
         .or(update)
         .or(execute)        
         .with(cors)

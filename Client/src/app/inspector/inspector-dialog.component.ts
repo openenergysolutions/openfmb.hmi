@@ -1,18 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router'
 import { v4 as uuidv4 } from 'uuid';
 import { WebSocketService } from '../core/services/web-socket.service';
 import { JwtAuthService } from '../shared/services/auth/jwt-auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTableDataSource } from '@angular/material/table';
 
 @Component({
   selector: 'app-inspector-dialog',
   templateUrl: './inspector-dialog.component.html',
   styleUrls: ['./inspector-dialog.component.scss']
 })
-export class InspectorDialogComponent implements OnInit { 
+export class InspectorDialogComponent implements OnInit {       
   mrid: string;
   sessionId: string;
+  
+  displayedColumns: string[] = [];
+  dataSource: any;
+  dataSources: Map<string, any> = new Map<string, any>();
 
   constructor(
     private wsService: WebSocketService,
@@ -28,14 +33,16 @@ export class InspectorDialogComponent implements OnInit {
     });
   }  
 
-  ngOnInit() {                 
+  ngOnInit() {  
+    this.displayedColumns = ['path', 'value'];
+    this.dataSource = new MatTableDataSource([]);               
   }  
 
   ngAfterViewInit() {       
     if (this.mrid) {  
       this.sessionId = uuidv4();    
       this.connect(this.sessionId);          
-    }
+    }      
   }
 
   connect(sessionId: string) {
@@ -79,6 +86,16 @@ export class InspectorDialogComponent implements OnInit {
   }
 
   onReceivedMessage(message: any)
-  {
+  {    
+    if (message.updates.length > 0) {
+      let profile = message.updates[0].profile;
+      let ds = this.dataSources.get(profile);
+      if (ds) {
+        ds.data = message.updates;
+      }
+      else {
+        this.dataSources.set(profile, new MatTableDataSource(message.updates));
+      }
+    }
   }
 }

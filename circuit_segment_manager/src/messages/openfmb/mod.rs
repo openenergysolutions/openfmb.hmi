@@ -205,8 +205,7 @@ impl OpenFMBCommon for OpenFMBMessage {
             GeneratorControl(c) => c.device_name(),
             BreakerControl(c) => c.device_name(),
             ResourceStatus(c) => c.device_name(),
-            ResourceControl(c) => c.device_name(),
-            ResourceControl(c) => c.device_name(),
+            ResourceControl(c) => c.device_name(),            
         }
     }
 

@@ -69,4 +69,11 @@ export class SwitchgearDialogComponent implements OnInit {
       action: this.actionText
     });
   }
+
+  onMessageInspector(): void {
+    window.open('/inspector?mrid=' + this.mRID, '_blank', 'toolbar=0,width=850,height=700', true);
+    this.dialogRef.close({
+      proceed: false      
+    });
+  }
 }

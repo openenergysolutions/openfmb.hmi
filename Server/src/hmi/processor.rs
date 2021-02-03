@@ -6,7 +6,7 @@ use crate::handler::*;
 
 use riker::actors::*;
 use serde_json::Value;
-use std::collections::HashMap;
+use std::collections::btree_map::BTreeMap;
 
 pub struct Node {
     name: String,
@@ -40,7 +40,7 @@ impl Node {
         }
         self.nodes.push(n);       
     }
-    pub fn from_json(&mut self, json_value: &Value, data: &mut HashMap<String, DataValue>) {
+    pub fn from_json(&mut self, json_value: &Value, data: &mut BTreeMap<String, DataValue>) {
         match json_value {
             Value::Object(m) => {
                 for (k, v) in m.iter() {                
@@ -162,13 +162,12 @@ impl Receive<GenericControl> for Processor {
     } 
 }
 
-async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {    
+async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
 
-    let mut update_messages = vec![];
-    let mut inspector_messages: Vec<String> = vec![];
+    let mut update_messages: BTreeMap<String, Vec<UpdateMessage>> = BTreeMap::new();    
 
-    let mut data_maps : HashMap<String, HashMap<String, DataValue>> = HashMap::new();
-    let dummy : HashMap<String, DataValue> = HashMap::new();
+    let mut data_maps : BTreeMap<String, BTreeMap<String, DataValue>> = BTreeMap::new();
+    let dummy : BTreeMap<String, DataValue> = BTreeMap::new();
 
     let device_mrid = format!("{}", msg.device_mrid().unwrap());
 
@@ -176,27 +175,43 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
         .read()
         .await
         .iter()               
-        .for_each(|(_, client)| {                         
+        .for_each(|(_, client)| {             
             for topic in &client.topics {
                 if topic.name == "*" {
                     if topic.mrid == device_mrid {
-                        let mut d: HashMap<String, DataValue> = HashMap::new();
+                        let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
                         if let Ok(my_msg_json) = serde_json::to_string(&msg) {
                             let json: Value = serde_json::from_str(&my_msg_json).unwrap();
                             let mut root = Node::new("mapping");
-                            root.path = "GenerationReadingProfile.mapping".to_string();
-                            root.from_json(&json, &mut d); 
+                            root.path = format!("{}Profile.mapping", msg.message_type().to_string());
+                            root.from_json(&json, &mut d);                             
+                            
+                            for (key, value) in d.into_iter() {
+                                let update_msg = UpdateMessage {
+                                    profile: Some(msg.message_type().to_string()),
+                                    session_id: Some(client.session_id.clone()),
+                                    topic: crate::handler::Topic {
+                                        name: key.clone(),
+                                        mrid: device_mrid.clone(),
+                                        value: Some(value.clone()),
+                                        action: None,
+                                        args: None,
+                                    },
+                                };
+
+                                update_messages.entry(client.session_id.clone()).or_insert(Vec::new()).push(update_msg);
+                            }
                         }
                     }
                 }
                 else if topic.mrid == device_mrid {  
                     
-                    let data : &HashMap<String, DataValue> = match &msg {
+                    let data : &BTreeMap<String, DataValue> = match &msg {
                         OpenFMBMessage::GenerationReading(message) => {
                             match data_maps.get(&topic.mrid) {
                                 Some(d) => d,
                                 _ => {
-                                    let mut d: HashMap<String, DataValue> = HashMap::new();
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
                                     if let Ok(my_msg_json) = serde_json::to_string(message) {
                                         let json: Value = serde_json::from_str(&my_msg_json).unwrap();
                                         let mut root = Node::new("mapping");
@@ -212,7 +227,7 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                             match data_maps.get(&topic.mrid) {
                                 Some(d) => d,
                                 _ => {
-                                    let mut d: HashMap<String, DataValue> = HashMap::new();
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
                                     if let Ok(my_msg_json) = serde_json::to_string(message) {
                                         let json: Value = serde_json::from_str(&my_msg_json).unwrap();
                                         let mut root = Node::new("mapping");
@@ -228,7 +243,7 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                             match data_maps.get(&topic.mrid) {
                                 Some(d) => d,
                                 _ => {
-                                    let mut d: HashMap<String, DataValue> = HashMap::new();
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
                                     if let Ok(my_msg_json) = serde_json::to_string(message) {
                                         let json: Value = serde_json::from_str(&my_msg_json).unwrap();
                                         let mut root = Node::new("mapping");
@@ -244,7 +259,7 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                             match data_maps.get(&topic.mrid) {
                                 Some(d) => d,
                                 _ => {
-                                    let mut d: HashMap<String, DataValue> = HashMap::new();
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
                                     if let Ok(my_msg_json) = serde_json::to_string(message) {
                                         let json: Value = serde_json::from_str(&my_msg_json).unwrap();
                                         let mut root = Node::new("mapping");
@@ -260,7 +275,7 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                             match data_maps.get(&topic.mrid) {
                                 Some(d) => d,
                                 _ => {
-                                    let mut d: HashMap<String, DataValue> = HashMap::new();
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
                                     if let Ok(my_msg_json) = serde_json::to_string(message) {
                                         let json: Value = serde_json::from_str(&my_msg_json).unwrap();
                                         let mut root = Node::new("mapping");
@@ -276,7 +291,7 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                             match data_maps.get(&topic.mrid) {
                                 Some(d) => d,
                                 _ => {
-                                    let mut d: HashMap<String, DataValue> = HashMap::new();
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
                                     if let Ok(my_msg_json) = serde_json::to_string(message) {
                                         let json: Value = serde_json::from_str(&my_msg_json).unwrap();
                                         let mut root = Node::new("mapping");
@@ -292,7 +307,7 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                             match data_maps.get(&topic.mrid) {
                                 Some(d) => d,
                                 _ => {
-                                    let mut d: HashMap<String, DataValue> = HashMap::new();
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
                                     if let Ok(my_msg_json) = serde_json::to_string(message) {
                                         let json: Value = serde_json::from_str(&my_msg_json).unwrap();
                                         let mut root = Node::new("mapping");
@@ -308,7 +323,7 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                             match data_maps.get(&topic.mrid) {
                                 Some(d) => d,
                                 _ => {
-                                    let mut d: HashMap<String, DataValue> = HashMap::new();
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
                                     if let Ok(my_msg_json) = serde_json::to_string(message) {
                                         let json: Value = serde_json::from_str(&my_msg_json).unwrap();
                                         let mut root = Node::new("mapping");
@@ -324,7 +339,7 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                             match data_maps.get(&topic.mrid) {
                                 Some(d) => d,
                                 _ => {
-                                    let mut d: HashMap<String, DataValue> = HashMap::new();
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
                                     if let Ok(my_msg_json) = serde_json::to_string(message) {
                                         let json: Value = serde_json::from_str(&my_msg_json).unwrap();
                                         let mut root = Node::new("mapping");
@@ -340,7 +355,7 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                             match data_maps.get(&topic.mrid) {
                                 Some(d) => d,
                                 _ => {
-                                    let mut d: HashMap<String, DataValue> = HashMap::new();
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
                                     if let Ok(my_msg_json) = serde_json::to_string(message) {
                                         let json: Value = serde_json::from_str(&my_msg_json).unwrap();
                                         let mut root = Node::new("mapping");
@@ -356,7 +371,7 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                             match data_maps.get(&topic.mrid) {
                                 Some(d) => d,
                                 _ => {
-                                    let mut d: HashMap<String, DataValue> = HashMap::new();
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
                                     if let Ok(my_msg_json) = serde_json::to_string(message) {
                                         let json: Value = serde_json::from_str(&my_msg_json).unwrap();
                                         let mut root = Node::new("mapping");
@@ -372,7 +387,7 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                             match data_maps.get(&topic.mrid) {
                                 Some(d) => d,
                                 _ => {
-                                    let mut d: HashMap<String, DataValue> = HashMap::new();
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
                                     if let Ok(my_msg_json) = serde_json::to_string(message) {
                                         let json: Value = serde_json::from_str(&my_msg_json).unwrap();
                                         let mut root = Node::new("mapping");
@@ -388,7 +403,7 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                             match data_maps.get(&topic.mrid) {
                                 Some(d) => d,
                                 _ => {
-                                    let mut d: HashMap<String, DataValue> = HashMap::new();
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
                                     if let Ok(my_msg_json) = serde_json::to_string(message) {
                                         let json: Value = serde_json::from_str(&my_msg_json).unwrap();
                                         let mut root = Node::new("mapping");
@@ -404,7 +419,7 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                             match data_maps.get(&topic.mrid) {
                                 Some(d) => d,
                                 _ => {
-                                    let mut d: HashMap<String, DataValue> = HashMap::new();
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
                                     if let Ok(my_msg_json) = serde_json::to_string(message) {
                                         let json: Value = serde_json::from_str(&my_msg_json).unwrap();
                                         let mut root = Node::new("mapping");
@@ -420,7 +435,7 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                             match data_maps.get(&topic.mrid) {
                                 Some(d) => d,
                                 _ => {
-                                    let mut d: HashMap<String, DataValue> = HashMap::new();
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
                                     if let Ok(my_msg_json) = serde_json::to_string(message) {
                                         let json: Value = serde_json::from_str(&my_msg_json).unwrap();
                                         let mut root = Node::new("mapping");
@@ -436,7 +451,7 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                             match data_maps.get(&topic.mrid) {
                                 Some(d) => d,
                                 _ => {
-                                    let mut d: HashMap<String, DataValue> = HashMap::new();
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
                                     if let Ok(my_msg_json) = serde_json::to_string(message) {
                                         let json: Value = serde_json::from_str(&my_msg_json).unwrap();
                                         let mut root = Node::new("mapping");
@@ -454,26 +469,24 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                     };
 
                     match data.get(&topic.name.to_lowercase()) {
-                        Some(v) => {                            
-                            let mut update_msg = UpdateMessage::create(topic.clone(), client.session_id.clone());
-                            update_msg.topic.value = Some(v.clone());  
-                            //info!("{:?}", &update_msg.topic.clone());                          
-                            update_messages.push(update_msg);
+                        Some(v) => {
+                            let mut update_msg = UpdateMessage::create(topic.clone(), client.session_id.clone(), None);
+                            update_msg.topic.value = Some(v.clone()); 
+                            update_messages.entry(client.session_id.clone()).or_insert(Vec::new()).push(update_msg);
                         },
                         _ => {
                             // ignore
                         }
                     }
                 }                
-            }                         
+            }
         });
 
-    if update_messages.len() > 0 {
-        let _ = send_updates(UpdateMessages::new(update_messages), clients.clone()).await;        
-    }
-    if inspector_messages.len() > 0 {
-        let _ = send_inspector_messages(&inspector_messages, clients.clone()).await; 
-    }
+    if update_messages.len() > 0 {        
+        for (key, value) in update_messages.into_iter() {
+            let _ = send_updates(UpdateMessages::new(value, key.clone()), clients.clone()).await;
+        }
+    }    
 }
 
 async fn handle_generic_control(processor: &Processor, msg: GenericControl) {

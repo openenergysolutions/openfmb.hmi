@@ -197,4 +197,11 @@ export class RegulatorDialogComponent implements OnInit {
       alert('Phase C Tap Raise is not mapped.');
     }
   }
+
+  onMessageInspector(): void {
+    window.open('/inspector?mrid=' + this.mRID, '_blank', 'toolbar=0,width=850,height=700', true);
+    this.dialogRef.close({
+      proceed: false      
+    });
+  }
 }

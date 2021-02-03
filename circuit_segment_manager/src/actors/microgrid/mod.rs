@@ -397,10 +397,10 @@ impl Microgrid {
                     }
                 };
 
-                let _switch_state_i = DynamicTestKind::Testing as i32;
+                const DYNAMIC_TEST_TESTING : i32 = DynamicTestKind::Testing as i32;
 
                 match switch_state {
-                    _switch_state_i => {
+                    DYNAMIC_TEST_TESTING => {
                         warn!("disabling ess synchro");
                         //switch synchron on, battery synchro off
                         //unimplemented!();
