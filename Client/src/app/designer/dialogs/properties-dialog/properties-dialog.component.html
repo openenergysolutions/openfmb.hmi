@@ -120,7 +120,7 @@
             name="container-height" placeholder="height (in px)">
         </mat-form-field>
       </div>
-      <div mat-dialog-content class="dialog-input-container pt-1">
+      <div mat-dialog-content class="dialog-input-container pt-1" *ngIf="fontSizeAllowed">
         <strong>Font Size</strong><br />
         <mat-form-field class="designer-form-field" floatLabel='never'>
           <input type="number" [(ngModel)]="fontSize" class="form-control" min="0" max="30" matInput name="font-size"

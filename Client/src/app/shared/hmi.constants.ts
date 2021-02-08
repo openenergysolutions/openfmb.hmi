@@ -11,7 +11,9 @@ export const Symbol = {
     button: "button",
     setPointButton: "set-point-button",
     rectangle: "rectangle",
-    image: "image"
+    image: "image",
+    line: "line",
+    curve: "curve"
 }
 
 export const CommandAction = {

@@ -48,7 +48,9 @@ const {
   mxCodec,
   mxKeyHandler,
   mxUndoManager,
-  mxClient
+  mxClient,
+  mxCell,
+  mxGeometry
 } = mxgraphFactory({
   mxLoadResources: false,
   mxLoadStylesheets: false,
@@ -157,7 +159,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.graph.graphHandler.scaleGrid = true;
     this.graph.gridSize = 10;
     this.graph.multigraph = false;
-    this.graph.setAllowDanglingEdges(false);
+    this.graph.setAllowDanglingEdges(true);
     this.graph.isHtmlLabel = (cell) => {
       return !this.graph.isSwimlane(cell);
     };    
@@ -181,7 +183,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
         this.graph.isCellEditable(cell)
       ) {
         
-        const isMeasureBox = this.isMeasureBox(cell);
+        const isMeasureBox = this.isMeasureBox(cell);        
         
         if (isMeasureBox || this.graph.isHtmlLabel(cell) || (evt.target as HTMLElement).tagName === 'image' || (evt.target as HTMLElement).tagName === 'path') {
           // Assign MRID, label
@@ -238,10 +240,23 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const insertEdge = this.graph.insertEdge;
     this.graph.insertEdge = (...params) => {
-      const color = this.graph.getStylesheet().getDefaultEdgeStyle().strokeColor;
-      params[1] = this.idGenerator();
+      const color = this.graph.getStylesheet().getDefaultEdgeStyle().strokeColor;      
+      const userObject : DiagramData = {
+        label: '',       
+        mRID: '',
+        deviceTypeMapping: '',        
+        type: Symbol.line,                           
+        backgroundColor: '',
+        displayData: [],
+        controlData: []
+      };
+      params[1] = this.idGenerator();      
       params[5] = `strokeColor=${color};`;
-      return insertEdge.apply(this.graph, params)
+      let cell = insertEdge.apply(this.graph, params);
+      let model = this.graph.getModel();
+      let currentValue = model.getValue(cell);
+      model.setValue(cell, { ...currentValue, userObject }); 
+      return cell;
     };
 
     // sets label and data fields to grid item
@@ -397,7 +412,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
           this.renderer.appendChild(span, labelText);
           
           return span;
-        }
+        }        
         else {
           if (userObject.label) {
             const label = this.renderer.createElement('div');
@@ -618,6 +633,30 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
             userObject.label = 'Group';
             model.setValue(v1, { ...currentValue, userObject });
           }
+          else if (data.shape == Symbol.line) {
+
+            var cell = new mxCell('', new mxGeometry(0, 0, 80, 80), "endArrow=none;html=1;edgeStyle=isometricEdgeStyle;strokeColor=#000000;");
+            cell.id = this.idGenerator();
+	          cell.geometry.setTerminalPoint(new mxPoint(x, y), true);
+            cell.geometry.setTerminalPoint(new mxPoint(x + 80, y), false);            
+	          cell.geometry.relative = true;
+            cell.edge = true;            
+            
+            v1 = graph.addCell(cell);
+            model.setValue(v1, { ...currentValue, userObject });
+          }
+          else if (data.shape == Symbol.curve) {            
+            var cell = new mxCell('', new mxGeometry(0, 0, 120, 120), "endArrow=none;html=1;curved=1;strokeColor=#000000;");
+            cell.id = this.idGenerator();
+	          cell.geometry.setTerminalPoint(new mxPoint(x, y + 120), true);
+            cell.geometry.setTerminalPoint(new mxPoint(x + 120, y), false);
+            
+	          cell.geometry.relative = true;
+            cell.edge = true;            
+            
+            v1 = graph.addCell(cell);
+            model.setValue(v1, { ...currentValue, userObject });
+          }
         } finally {
           model.endUpdate();
         }
@@ -805,7 +844,11 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // open property popup
   openDialog(x: number, y: number, cell: mxgraph.mxCell): void {
-    const currentCellData = this.graph.model.getValue(cell).userObject;      
+    const currentCellData = this.graph.model.getValue(cell)?.userObject;  
+    if (!currentCellData) {
+      return;
+    }
+
     this.dialog.closeAll();
 
     if (currentCellData.type === Symbol.button) {
@@ -892,7 +935,26 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
           }
           this.graph.setCellStyle(style, [cell]);
         }
-
+        else if (currentCellData.type == Symbol.line) {
+          if (userObject.foreColor) {
+            let style = "endArrow=none;html=1;edgeStyle=isometricEdgeStyle;strokeColor=" + userObject.foreColor;
+            this.graph.setCellStyle(style, [cell]);
+          }
+          else {
+            let style = "endArrow=none;html=1;edgeStyle=isometricEdgeStyle;strokeColor=#000000";
+            this.graph.setCellStyle(style, [cell]);
+          }
+        }
+        else if (currentCellData.type == Symbol.curve) {
+          if (userObject.foreColor) {
+            let style = "endArrow=none;html=1;curved=1;strokeColor=" + userObject.foreColor;
+            this.graph.setCellStyle(style, [cell]);
+          }
+          else {
+            let style = "endArrow=none;html=1;curved=1;strokeColor=#000000;";
+            this.graph.setCellStyle(style, [cell]);
+          }
+        }
 
         if (result.navigateToDataConnection === true) {
           this.saveGraphToServer();

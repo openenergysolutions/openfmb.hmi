@@ -550,23 +550,7 @@
     "left": 0,
     "top": 0,
     "type": "button"  
-  },
-  {
-    "shape": "set-point-button",
-    "image": "assets/images/toolbar/setpoint.svg",
-    "points": [
-      [1, 0.5],
-      [0, 0.5],
-      [0.5, 0],
-      [0.5, 1]
-    ],
-    "width": 80,
-    "height": 40,
-    "title": "Set Point Button",
-    "left": 0,
-    "top": 0,
-    "type": "set-point-button"  
-  },
+  },  
   {
     "shape": "image",
     "image": "assets/images/toolbar/regulator.svg",
@@ -582,6 +566,49 @@
     "left": 0,
     "top": 0,
     "type": "regulator"
+  },
+  {
+    "shape": "line",
+    "image": "assets/images/toolbar/line.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 80,
+    "title": "Line",
+    "left": 0,
+    "top": 0,
+    "type": "line"
+  },
+  {
+    "shape": "curve",
+    "image": "assets/images/toolbar/curve.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 80,
+    "title": "Curve",
+    "left": 0,
+    "top": 0,
+    "type": "curve"
+  },
+  {
+    "shape": "rectangle",
+    "image": "assets/images/toolbar/rectangle2.svg",
+    "points": [],
+    "width": 80,
+    "height": 40,
+    "title": "Rectangle",
+    "left": 0,
+    "top": 0,
+    "type": "rectangle"   
   }, 
   {
     "shape": "image",
@@ -597,16 +624,110 @@
     "title": "Substation",
     "left": 0,
     "top": 0    
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/building.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 80,
+    "title": "Building",
+    "left": 0,
+    "top": 0    
+  }, 
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/home.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 80,
+    "title": "House",
+    "left": 0,
+    "top": 0    
+  }, 
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/gas.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 80,
+    "title": "Gas Generator",
+    "left": 0,
+    "top": 0    
   },  
   {
-    "shape": "rectangle",
-    "image": "assets/images/toolbar/rectangle2.svg",
-    "points": [],
+    "shape": "image",
+    "image": "assets/images/toolbar/tower.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
     "width": 80,
-    "height": 40,
-    "title": "Rectangle",
+    "height": 80,
+    "title": "Tower",
     "left": 0,
-    "top": 0,
-    "type": "rectangle"   
-  }
+    "top": 0    
+  }, 
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/solar.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 80,
+    "title": "Solar Panel",
+    "left": 0,
+    "top": 0    
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/power.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 80,
+    "title": "Power Plant",
+    "left": 0,
+    "top": 0    
+  },    
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/wind.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 80,
+    "title": "Wind Farm",
+    "left": 0,
+    "top": 0    
+  }  
 ]

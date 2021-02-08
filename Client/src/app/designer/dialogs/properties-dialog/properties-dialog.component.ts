@@ -40,7 +40,8 @@ export class PropertiesDialogComponent implements OnInit {
   selectedEquipment: any;
   textAlign: string;
   fontStyle: string;
-  textAlignAllowed: boolean = false;  
+  textAlignAllowed: boolean = false; 
+  fontSizeAllowed: boolean = true; 
   buttonFunction: string;
   buttonFunctionOptions: string[] = [ButtonFunction.link, ButtonFunction.command];
   showLink: boolean = true;
@@ -84,7 +85,11 @@ export class PropertiesDialogComponent implements OnInit {
       || this.data.type === Symbol.label 
       || this.data.type === Symbol.button 
       || this.data.type === Symbol.setPointButton
-      || this.data.type === Symbol.statusIndicator;
+      || this.data.type === Symbol.statusIndicator 
+      || this.data.type === Symbol.line
+      || this.data.type === Symbol.curve;
+
+    this.fontSizeAllowed = this.data.type !== Symbol.line && this.data.type !== Symbol.curve;
     
     this.deviceTypeMapping = this.data.deviceTypeMapping; 
     this.changeWidthAllowed = this.data.type === Symbol.measureBox;
