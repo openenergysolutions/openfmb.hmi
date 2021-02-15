@@ -592,15 +592,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
 
     dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
       if (result) {        
-        const currentValue = this.graph.model.getValue(cell);
-        const userObject = {
-          ...currentValue.userObject,
-          label: result.title,          
-          displayData: result.displayData,
-          mRID: result.mRID,
-          deviceTypeMapping: result.deviceTypeMapping
-        };
-        this.graph.model.setValue(cell, { ...currentValue, userObject });
+        // do nothing
       }
     });
   }    
