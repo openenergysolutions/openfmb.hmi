@@ -729,5 +729,95 @@
     "title": "Wind Farm",
     "left": 0,
     "top": 0    
-  }  
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/ess.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 80,
+    "title": "Energy Storage",
+    "left": 0,
+    "top": 0    
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/battery-100.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 40,
+    "height": 80,
+    "title": "Battery",
+    "left": 0,
+    "top": 0    
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/substation-isometric.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 80,
+    "title": "Substation",
+    "left": 0,
+    "top": 0    
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/weather.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 80,
+    "title": "Weather",
+    "left": 0,
+    "top": 0    
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/arrow-red-ne.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 80,
+    "title": "Arrow (NE)",
+    "left": 0,
+    "top": 0    
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/arrow-red-se.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 80,
+    "title": "Arrow (SE)",
+    "left": 0,
+    "top": 0    
+  }
 ]
