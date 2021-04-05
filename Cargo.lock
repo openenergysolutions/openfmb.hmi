@@ -299,6 +299,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0e4cec68f03f32e44924783795810fa50a7035d8c8ebe78580ad7e6c703fba38"
 
 [[package]]
+name = "bytes"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b700ce4376041dcd0a327fd0097c41095743c4c8af8887265942faf1100bd040"
+
+[[package]]
 name = "cache-padded"
 version = "1.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -347,7 +353,7 @@ version = "0.2.0"
 dependencies = [
  "base64 0.11.0",
  "bincode",
- "bytes",
+ "bytes 0.5.6",
  "cargo-husky",
  "chrono",
  "config",
@@ -940,7 +946,7 @@ version = "0.2.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5e4728fd124914ad25e99e3d15a9361a879f6620f63cb56bbb08f95abb97a535"
 dependencies = [
- "bytes",
+ "bytes 0.5.6",
  "fnv",
  "futures-core",
  "futures-sink",
@@ -968,7 +974,7 @@ checksum = "ed18eb2459bf1a09ad2d6b1547840c3e5e62882fa09b9a6a20b1de8e3228848f"
 dependencies = [
  "base64 0.12.3",
  "bitflags",
- "bytes",
+ "bytes 0.5.6",
  "headers-core",
  "http",
  "mime",
@@ -1007,7 +1013,7 @@ dependencies = [
 name = "hmi_server"
 version = "0.0.1"
 dependencies = [
- "bytes",
+ "bytes 0.5.6",
  "chrono",
  "circuit_segment_manager",
  "config",
@@ -1040,7 +1046,7 @@ version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "28d569972648b2c512421b5f2a405ad6ac9666547189d0c5477a3f200f3e02f9"
 dependencies = [
- "bytes",
+ "bytes 0.5.6",
  "fnv",
  "itoa",
 ]
@@ -1051,7 +1057,7 @@ version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "13d5ff830006f7646652e057693569bfe0d51760c0085a071769d142a205111b"
 dependencies = [
- "bytes",
+ "bytes 0.5.6",
  "http",
 ]
 
@@ -1088,7 +1094,7 @@ version = "0.13.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f6ad767baac13b44d4529fcf58ba2cd0995e36e7b435bc5b039de6f47e880dbf"
 dependencies = [
- "bytes",
+ "bytes 0.5.6",
  "futures-channel",
  "futures-core",
  "futures-util",
@@ -1183,7 +1189,7 @@ version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "19a8a95243d5a0398cae618ec29477c6e3cb631152be5c19481f80bc71559754"
 dependencies = [
- "bytes",
+ "bytes 0.5.6",
 ]
 
 [[package]]
@@ -1209,6 +1215,15 @@ name = "itertools"
 version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f56a2d0bc861f9165be4eb3442afd3c236d8a98afd426f65d92324ae1091a484"
+dependencies = [
+ "either",
+]
+
+[[package]]
+name = "itertools"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "284f18f85651fe11e8a991b2adb42cb078325c996ed026d994719efcfca1d54b"
 dependencies = [
  "either",
 ]
@@ -1591,25 +1606,38 @@ checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
 [[package]]
 name = "openfmb-codegen"
 version = "0.6.1"
+source = "git+https://github.com/openenergysolutions/openfmb-rs?branch=hmi-develop#340f6f08fe4f81b7c4652cf250785d68606fee5f"
 dependencies = [
- "bytes",
- "env_logger 0.7.1",
+ "bytes 0.5.6",
  "heck",
- "itertools",
+ "itertools 0.8.2",
  "log",
  "multimap",
+ "openfmb-descriptors",
  "petgraph",
  "prost",
  "proto-types",
  "tempfile",
- "which",
+ "which 3.1.1",
+]
+
+[[package]]
+name = "openfmb-descriptors"
+version = "0.1.0"
+source = "git+https://github.com/openenergysolutions/openfmb-rs?branch=hmi-develop#340f6f08fe4f81b7c4652cf250785d68606fee5f"
+dependencies = [
+ "lazy_static",
+ "prost",
+ "proto-types",
+ "which 4.1.0",
 ]
 
 [[package]]
 name = "openfmb-messages"
 version = "0.1.0"
+source = "git+https://github.com/openenergysolutions/openfmb-rs?branch=hmi-develop#340f6f08fe4f81b7c4652cf250785d68606fee5f"
 dependencies = [
- "bytes",
+ "bytes 0.5.6",
  "env_logger 0.8.1",
  "lazy_static",
  "openfmb-codegen",
@@ -1622,8 +1650,8 @@ dependencies = [
 [[package]]
 name = "openfmb-messages-ext"
 version = "0.0.1"
+source = "git+https://github.com/openenergysolutions/openfmb-rs?branch=hmi-develop#340f6f08fe4f81b7c4652cf250785d68606fee5f"
 dependencies = [
- "cargo-husky",
  "chrono",
  "log",
  "openfmb-messages",
@@ -1807,40 +1835,40 @@ dependencies = [
 
 [[package]]
 name = "prost"
-version = "0.6.1"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ce49aefe0a6144a45de32927c77bd2859a5f7677b55f220ae5b744e87389c212"
+checksum = "9e6984d2f1a23009bd270b8bb56d0926810a3d483f59c987d77969e9d8e840b2"
 dependencies = [
- "bytes",
+ "bytes 1.0.1",
  "prost-derive",
 ]
 
 [[package]]
 name = "prost-build"
-version = "0.6.1"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "02b10678c913ecbd69350e8535c3aef91a8676c0773fc1d7b95cdd196d7f2f26"
+checksum = "32d3ebd75ac2679c2af3a92246639f9fcc8a442ee420719cc4fe195b98dd5fa3"
 dependencies = [
- "bytes",
+ "bytes 1.0.1",
  "heck",
- "itertools",
+ "itertools 0.9.0",
  "log",
  "multimap",
  "petgraph",
  "prost",
  "prost-types",
  "tempfile",
- "which",
+ "which 4.1.0",
 ]
 
 [[package]]
 name = "prost-derive"
-version = "0.6.1"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "537aa19b95acde10a12fec4301466386f757403de4cd4e5b4fa78fb5ecb18f72"
+checksum = "169a15f3008ecb5160cba7d37bcd690a7601b6d30cfb87a117d45e59d52af5d4"
 dependencies = [
  "anyhow",
- "itertools",
+ "itertools 0.9.0",
  "proc-macro2 1.0.24",
  "quote 1.0.7",
  "syn 1.0.48",
@@ -1848,19 +1876,20 @@ dependencies = [
 
 [[package]]
 name = "prost-types"
-version = "0.6.1"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1834f67c0697c001304b75be76f67add9c89742eda3a085ad8ee0bb38c3417aa"
+checksum = "b518d7cdd93dab1d1122cf07fa9a60771836c668dde9d9e2a139f957f0d9f1bb"
 dependencies = [
- "bytes",
+ "bytes 1.0.1",
  "prost",
 ]
 
 [[package]]
 name = "proto-types"
-version = "0.6.1"
+version = "0.7.0"
+source = "git+https://github.com/openenergysolutions/openfmb-rs?branch=hmi-develop#340f6f08fe4f81b7c4652cf250785d68606fee5f"
 dependencies = [
- "bytes",
+ "bytes 1.0.1",
  "prost",
 ]
 
@@ -2626,7 +2655,7 @@ version = "0.2.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a6d7ad61edd59bfcc7e80dababf0f4aed2e6d5e0ba1659356ae889752dfc12ff"
 dependencies = [
- "bytes",
+ "bytes 0.5.6",
  "fnv",
  "futures-core",
  "iovec",
@@ -2681,7 +2710,7 @@ version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "be8242891f2b6cbef26a2d7e8605133c2c554cd35b3e4948ea892d6d68436499"
 dependencies = [
- "bytes",
+ "bytes 0.5.6",
  "futures-core",
  "futures-sink",
  "log",
@@ -2749,7 +2778,7 @@ checksum = "f0308d80d86700c5878b9ef6321f020f29b1bb9d5ff3cab25e75e23f3a492a23"
 dependencies = [
  "base64 0.12.3",
  "byteorder",
- "bytes",
+ "bytes 0.5.6",
  "http",
  "httparse",
  "input_buffer",
@@ -2905,7 +2934,7 @@ version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f41be6df54c97904af01aa23e613d4521eed7ab23537cede692d4058f6449407"
 dependencies = [
- "bytes",
+ "bytes 0.5.6",
  "futures",
  "headers",
  "http",
@@ -3029,6 +3058,16 @@ version = "3.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d011071ae14a2f6671d0b74080ae0cd8ebf3a6f8c9589a2cd45f23126fe29724"
 dependencies = [
+ "libc",
+]
+
+[[package]]
+name = "which"
+version = "4.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b55551e42cbdf2ce2bedd2203d0cc08dba002c27510f86dab6d0ce304cba3dfe"
+dependencies = [
+ "either",
  "libc",
 ]
 

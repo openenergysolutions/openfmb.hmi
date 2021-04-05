@@ -487,8 +487,8 @@ impl Receive<LoadControlProfile> for OpenFMBNATSSubscriber {
         //dbg!(msg.clone());
         //   let mut buffer = BufMut::default();
         //  buffer
-        let mut buffer = BytesMut::with_capacity(4096);
-        msg.encode(&mut buffer).unwrap();
+        //let mut buffer = BytesMut::with_capacity(4096);
+        //msg.encode(&mut buffer).unwrap();
         // self.nats_broker
         //     .as_ref()
         //     .unwrap()
