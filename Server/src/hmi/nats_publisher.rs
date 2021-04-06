@@ -90,7 +90,7 @@ impl Receive<DeviceControl> for NATSPublisher {
         let subject = "microgridui.device_control";
         info!("Sending {:?} to NATS topic {}", msg, subject);
         let mut buffer = Vec::<u8>::new();
-        let device_control_msg = microgrid_protobuf::DeviceControl { msg: msg.message.into() };
+        let device_control_msg = microgrid_protobuf::DeviceControl { mrid: "".to_string(), msg: msg.message.into() };
         device_control_msg.encode(&mut buffer).unwrap();
         self.nats_broker.publish(&subject, &mut buffer).unwrap();    
     } 

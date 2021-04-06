@@ -1,2 +1,2 @@
 [workspace]
-members = ["Server",  "microgrid-protobuf","circuit_segment_manager"]
+members = ["Server"]
