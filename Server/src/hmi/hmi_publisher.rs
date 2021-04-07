@@ -1,5 +1,5 @@
 use super::nats_publisher::{NATSPublisher, NATSPublisherMsg};
-use circuit_segment_manager::messages::*;
+use crate::messages::*;
 
 use openfmb_messages::breakermodule::BreakerDiscreteControlProfile;
 use openfmb_messages_ext::breaker::BreakerControlExt;
@@ -23,7 +23,7 @@ use openfmb_messages::resourcemodule::ResourceDiscreteControlProfile;
 use openfmb_messages_ext::resource::ResourceControlExt;
 
 use openfmb_messages::regulatormodule::RegulatorDiscreteControlProfile;
-use openfmb_messages_ext::regulator::RegulatorControlExt;
+use openfmb_messages_ext::regulator::RegulatorDiscreteControlExt;
 
 use prost::Message;
 use nats::Connection;

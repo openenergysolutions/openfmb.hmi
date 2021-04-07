@@ -1,5 +1,5 @@
 use riker::actors::*;
-use circuit_segment_manager::messages::OpenFMBMessage;
+use crate::messages::OpenFMBMessage;
 use super::processor::ProcessorMsg;
 
 #[actor(OpenFMBMessage)]

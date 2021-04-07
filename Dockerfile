@@ -2,10 +2,10 @@ FROM rust:latest AS build
 
 WORKDIR /usr/src
 
-COPY circuit_segment_manager ./circuit_segment_manager
 COPY deps ./deps
 COPY microgrid-protobuf ./microgrid-protobuf
 COPY Server ./Server
+COPY Server/Cargo-Docker.toml ./Server/Cargo.toml
 COPY Cargo.toml Cargo.toml
 
 RUN cargo build --release

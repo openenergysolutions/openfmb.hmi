@@ -1,5 +1,4 @@
-use circuit_segment_manager::actors::coordinator::openfmb::openfmb::OpenFMBDeviceMsg;
-use circuit_segment_manager::messages::*;
+use crate::messages::*;
 
 use super::hmi_publisher::HmiPublisherMsg;
 use crate::handler::*;
@@ -79,8 +78,7 @@ impl Node {
 #[actor(OpenFMBMessage, PublisherRefWrap, MicrogridControl, DeviceControl, GenericControl)]
 #[derive(Clone, Debug)]
 pub struct Processor {
-    message_count: u32,
-    openfmb_device: Option<ActorRef<OpenFMBDeviceMsg>>,            
+    message_count: u32,                
     publisher: ActorRef<HmiPublisherMsg>,
     clients: Clients,
 }
@@ -91,8 +89,7 @@ impl ActorFactoryArgs<(ActorRef<HmiPublisherMsg>, Clients)> for Processor
         args: (ActorRef<HmiPublisherMsg>, Clients),
     ) -> Self {
         Processor {
-            message_count: 0,
-            openfmb_device: None,                                   
+            message_count: 0,                                              
             publisher: args.0,
             clients: args.1           
         }

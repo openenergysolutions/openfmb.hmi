@@ -1,4 +1,4 @@
-use circuit_segment_manager::{
+use crate::{
     messages::*,
 };
 use super::processor::{ProcessorMsg};
@@ -51,12 +51,6 @@ impl
     }
 }
 
-// impl Debug for NATSSubscriber {
-//     fn fmt(&self, _f: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
-//         unimplemented!()
-//     }
-// }
-
 impl NATSSubscriber {
     fn connect_to_nats_broker(&mut self, ctx: &Context<<NATSSubscriber as Actor>::Msg>) {
         info!("Subscriber subscribing to nats");
@@ -81,31 +75,54 @@ impl NATSSubscriber {
     ) -> ActorRef<ProfileSubscriberMsg> {
         use OpenFMBMessage::*;
         match msg {
-            GenerationReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Generation),
-            GenerationStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Generation),
-            SwitchStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Switch),
-            SwitchReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Switch),
-            MeterReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Meter),
-            SolarReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Solar),
-            SolarStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Solar),
+            BreakerDiscreteControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Breaker),
+            BreakerEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Breaker),
+            BreakerReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Breaker),
+            BreakerStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Breaker),
+            CapBankControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::CapBank),
+            CapBankDiscreteControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::CapBank),
+            CapBankEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::CapBank),
+            CapBankReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::CapBank),
+            CapBankStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::CapBank),
+            CoordinationControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::CoordinationService),
+            CoordinationEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::CoordinationService),
+            CoordinationStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::CoordinationService),
+            ESSEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::ESS),
             ESSReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::ESS),
             ESSStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::ESS),
-            LoadStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Load),
-            LoadReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Load),            
-            RecloserStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Recloser),
-            RecloserReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Recloser),
-            BreakerStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Breaker),
-            BreakerReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Breaker),
-            RegulatorStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Regulator),
-            RegulatorReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Regulator),
-            ResourceStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Resource),
+            ESSControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::ESS),
+            GenerationControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Generation),
+            GenerationDiscreteControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Generation),
+            GenerationReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Generation),
+            GenerationEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Generation),
+            GenerationStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Generation),
             LoadControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Load),
-            SwitchControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Switch),
-            EssControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::ESS),
+            LoadEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Load),
+            LoadReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Load),
+            LoadStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Load),
+            MeterReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Meter),
+            RecloserDiscreteControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Recloser),
+            RecloserEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Recloser),
+            RecloserReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Recloser),
+            RecloserStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Recloser),
+            RegulatorControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Regulator),
+            RegulatorDiscreteControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Regulator),
+            RegulatorEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Regulator),
+            RegulatorReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Regulator),
+            RegulatorStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Regulator),
+            ResourceDiscreteControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Resource),
+            ResourceReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Resource),
+            ResourceEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Resource),
+            ResourceStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Resource),
             SolarControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Solar),
-            GeneratorControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Generation),
-            BreakerControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Breaker), 
-            ResourceControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Resource),
+            SolarEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Solar),
+            SolarReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Solar),
+            SolarStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Solar),
+            SwitchDiscreteControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Switch),
+            SwitchEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Switch),
+            SwitchReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Switch),
+            SwitchStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Switch),
+
         }
     }
 
@@ -178,8 +195,6 @@ impl Receive<OpenFMBMessage> for NATSSubscriber {
         actor.send_msg(msg.clone().into(), ctx.myself.clone());
     }
 }
-
-//use serde::export::Formatter;
 
 use nats::Connection;
 use std::fmt::Debug;

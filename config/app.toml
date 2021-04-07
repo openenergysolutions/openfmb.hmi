@@ -1,32 +1,12 @@
 [coordinator]
 environment = "dev"
 # environment = "prod"
-app_name = "CircuitSegmentCoordinator"
-modules = ["publisher", "subscriber", "persistor", "device"]
-cursive_ui_enabled = false
-circuit_segment_service_enabled = false
-
-
-[subscriber]
-source = "openfmb_file"
-
-[openfmb_file_subscriber]
-filename = "../datafiles/capture_10.txt"
-# filename = "capture-10072019.txt"
+app_name = "openfmb-hmi"
+log-level = "DEBUG"
 
 [openfmb_nats_subscriber]
 prod_uri = "172.16.1.34:4222"
 dev_uri = "192.168.86.26:4222"
-
-[battery]
-min_soc_soft = "0.26"
-min_soc_hard = "0.23"
-max_soc_soft = "0.8"
-max_soc_hard = "0.9"
-
-[tests]
-ess_start_discharge_rate = "19000"
-ess_start_charge_rate = "-122000"
 
 [hmi]
 server_uri = "0.0.0.0:32771"

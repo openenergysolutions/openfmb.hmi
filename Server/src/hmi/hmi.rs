@@ -1,4 +1,4 @@
-use circuit_segment_manager::messages::StartProcessing;
+use crate::messages::StartProcessing;
 
 use super::hmi_subscriber::HmiSubscriberMsg;
 use super::hmi_publisher::HmiPublisherMsg;

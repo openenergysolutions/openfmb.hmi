@@ -1,4 +1,4 @@
-use circuit_segment_manager::messages::*;
+use crate::messages::*;
 use prost::Message;
 use log::info;
 use riker::actors::*;

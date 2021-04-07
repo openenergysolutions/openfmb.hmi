@@ -1,33 +1,27 @@
 use log::info;
-use riker::actor::Tell;
+
 use std::collections::HashMap;
 use std::convert::Infallible;
 use std::sync::Arc;
-use tokio::sync::{RwLock};
-use warp::{Filter};
-use circuit_segment_manager::actors::Coordinator;
+use std::net::ToSocketAddrs;
+
+use tokio::sync::RwLock;
+use futures::executor::block_on;
+
+use warp::Filter;
+
+use hmi_server::logs::{SystemEventLog, setup_logger};
+use hmi_server::messages::StartProcessing;
+
 use hmi_server::{handler::*, auth::*};
 use hmi_server::hmi::{hmi::*, hmi_subscriber::*, hmi_publisher::*, processor::*};
-use circuit_segment_manager::util::init::setup_logger;
-use futures::executor::block_on;
+
 use riker::system::ActorSystem;
-use riker::actor::{ActorRef, ActorRefFactory, ActorSelectionFactory};
-use circuit_segment_manager::actors::{SystemEventLog, Publisher, Persistor, Microgrid};
-use std::time::Duration;
-use std::net::ToSocketAddrs;
+use riker::actor::{ActorRef, ActorRefFactory};
+use riker::actor::Tell;
+
 use nats::Connection;
 use config::Config;
-use circuit_segment_manager::actors::coordinator::subscriber::subscriber::Subscriber;
-use circuit_segment_manager::actors::PublisherMsg;
-use circuit_segment_manager::actors::PersistorMsg;
-use circuit_segment_manager::actors::MicrogridMsg;
-use circuit_segment_manager::messages::{StartProcessing, RequestActorStats};
-use circuit_segment_manager::actors::subscriber::subscriber::SubscriberMsg;
-use circuit_segment_manager::actors::CoordinatorMsg;
-use circuit_segment_manager::actors::Device;
-use circuit_segment_manager::actors::DeviceMsg;
-
-//const ASSETS: inpm::Dir = inpm::include_package!("Client/dist/openfmb-hmi/");
 
 #[tokio::main]
 async fn main() {    
@@ -56,73 +50,7 @@ async fn server_setup() {
         err => panic!("unsupported environment name: {}", err),
     };
     let nats_client = nats::connect(&nats_server_uri).unwrap();
-    info!("Connected to NATS server");
-
-    if config
-        .get_bool("coordinator.circuit_segment_service_enabled")
-        .unwrap_or(false)
-    {
-        let app_name = sys
-            .config()
-            .get_str("coordinator.app_name")
-            .unwrap();
-        std::thread::sleep(Duration::from_millis(1000));
-        let publisher = sys
-            .actor_of_args::<Publisher, Connection>("Publisher", nats_client.clone())
-            .unwrap();
-        let persistor = sys.actor_of::<Persistor>("Persistor").unwrap();
-        let microgrid = sys
-            .actor_of_args::<Microgrid, (Config, ActorRef<PublisherMsg>, ActorRef<PersistorMsg>)>(
-                "Microgrid",
-                (sys.config().clone(), publisher.clone(), persistor.clone()),
-            )
-            .unwrap();
-        let processor = sys
-            .actor_of_args::<Device, (
-                ActorRef<PublisherMsg>,
-                ActorRef<PersistorMsg>,
-                ActorRef<MicrogridMsg>,
-            )>(
-                "Device",
-                (publisher.clone(), persistor.clone(), microgrid.clone()),
-            )
-            .unwrap();
-        let subscriber = sys
-            .actor_of_args::<Subscriber, (
-                ActorRef<PublisherMsg>,
-                ActorRef<DeviceMsg>,
-                ActorRef<PersistorMsg>,
-                ActorRef<MicrogridMsg>,
-                Connection,
-            )>(
-                "Subscriber",
-                (
-                    publisher.clone(),
-                    processor.clone(),
-                    persistor.clone(),
-                    microgrid.clone(),
-                    nats_client.clone(),
-                ),
-            )
-            .unwrap();
-        
-        //The Coordinator is the root of our user actor tree, and is the only one we ever instantiate directly
-        let coordinator_actor = sys
-            .actor_of_args::<Coordinator, (
-                ActorRef<PublisherMsg>,
-                ActorRef<SubscriberMsg>,
-                ActorRef<PersistorMsg>,
-                ActorRef<DeviceMsg>,
-            )>(&app_name, (publisher.clone(), subscriber, persistor.clone(), processor))
-            .unwrap();
-    
-        let coordinator = sys.select("/user/CircuitSegmentCoordinator").unwrap();
-        std::thread::sleep(Duration::from_millis(500));
-        let start_processing_msg: CoordinatorMsg = StartProcessing.into();        
-        coordinator_actor.tell(start_processing_msg, Some(sys.user_root().clone()));    
-        let request_actor_stats_msg: CoordinatorMsg = RequestActorStats.into();
-        coordinator.try_tell(request_actor_stats_msg, Some(sys.user_root().clone()));
-    }
+    info!("Connected to NATS server");    
 
     // Start Hmi related 
     
@@ -164,12 +92,7 @@ async fn server_setup() {
         .unwrap();
 
     let start_processing_msg: HmiMsg = StartProcessing.into();
-    hmi_actor.tell(start_processing_msg, Some(sys.user_root().clone()));
-
-    //let static_route = warp::path("static").and(static_dir!("../Client/dist/openfmb-hmi/"));
-    //let static_route = inpm::warp::embedded(ASSETS);        
-
-    //let users = Arc::new(RwLock::new(init_users()));
+    hmi_actor.tell(start_processing_msg, Some(sys.user_root().clone()));  
 
     let login_routes = warp::path("login")
         .and(warp::post())
@@ -271,8 +194,7 @@ async fn server_setup() {
             "upgrade", 
             "authorization"]);   
 
-    let routes = login_routes
-        //.or(static_route) 
+    let routes = login_routes        
         .or(user_profile)       
         .or(get_users)
         .or(delete_user)
