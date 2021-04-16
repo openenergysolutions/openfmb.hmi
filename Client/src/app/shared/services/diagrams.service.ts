@@ -71,12 +71,6 @@ export class DiagramsService {
     );  
   }
 
-  getEquipmentList() : Observable<any> {
-    return this.httpClient.get<Equipment>(this.endpoint + 'equipment-list').pipe(
-      catchError(this.handleError)
-    );
-  }
-
   getCommandList() : Observable<any> {
     return this.httpClient.get<Command>(this.endpoint + 'command-list').pipe(
       catchError(this.handleError)
@@ -87,5 +81,31 @@ export class DiagramsService {
     return this.httpClient.post<Command>(this.endpoint + 'execute-command', command).pipe(
       catchError(this.handleError)
     );  
+  }
+
+  getEquipmentList() : Observable<any> {
+    return this.httpClient.get<Equipment>(this.endpoint + 'equipment-list').pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  updateEquipment(eq: Equipment) : Observable<any> {    
+    return this.httpClient.post<Equipment>(this.endpoint + 'update-equipment', eq).pipe(
+      catchError(this.handleError)
+    );  
+  }
+
+  deleteEquipment(id: string) : Observable<any>  {
+    var user : Equipment = {
+      mrid: id,
+      name: ""      
+    };
+    return this.httpClient.post<Equipment>(this.endpoint + 'delete-equipment', user);
+  }
+
+  createEquipment(eq: Equipment) : Observable<any> {
+    return this.httpClient.post<Equipment>(this.endpoint + 'create-equipment', eq).pipe(
+      catchError(this.handleError)
+    );      
   }
 }

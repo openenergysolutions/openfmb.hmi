@@ -1,3 +1,4 @@
+use crate::{error::Error};
 use std::sync::Arc;
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
@@ -9,7 +10,7 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::fs;
 use std::io::prelude::*;
-use log::info;
+use log::{info, error};
 use super::hmi;
 use hmi::processor::ProcessorMsg;
 
@@ -729,29 +730,94 @@ pub async fn list_handler() -> Result<impl Reply> {
 }
 
 // GET
-pub async fn equipment_handler() -> Result<impl Reply> {  
-    
-    let config = riker::load_config();
-    let mut equipment_list = vec![];
-
-    if let Ok(list) = config.get_array("circuit_segment_devices.all_devices") {
-        for item in list {
-            let device_name = item.into_str().unwrap();
-            
-            let eq = Equipment {
-                name: config.get_str(&format!("circuit_segment_devices.{}.name", device_name)).unwrap(),
-                mrid: config.get_str(&format!("circuit_segment_devices.{}.mrid", device_name)).unwrap(),
-                device_type: match config.get_str(&format!("circuit_segment_devices.{}.type", device_name)) {
-                    Ok(t) => Some(t),
-                    _ => None,
-                },
-            };
-            
-            equipment_list.push(eq);
-        }
-    }        
-      
+pub async fn equipment_handler(_id: String) -> Result<impl Reply> {          
+    let equipment_list : Vec<Equipment> = read_equipment_list(&get_equipment_file()).unwrap();
     Ok(json(&equipment_list))
+}
+
+// POST
+pub async fn create_equipment_handler(_id: String, eq: Equipment) -> Result<impl Reply> {
+    let mut list = read_equipment_list(&get_equipment_file()).unwrap();
+    if let Some(_pos) = list.iter().position(|x| *x.mrid == eq.mrid) {
+        // same user id/username already exists    
+        error!("Equipment with same MRID ({}/{}) already exists", eq.mrid, eq.name);
+        
+        return Err(warp::reject::custom(Error::AddDeviceError));
+    } 
+    else {
+        list.push(eq);
+        let _ = save_equipment_list(&list);
+    }
+
+    Ok(json(&list))
+}
+
+// POST
+pub async fn delete_equipment_handler(_id: String, equipment: Equipment) -> Result<impl Reply> {
+    let mut list = read_equipment_list(&get_equipment_file()).unwrap();
+
+    if let Some(pos) = list.iter().position(|x| *x.mrid == equipment.mrid) {
+        list.remove(pos);
+
+        let _ = save_equipment_list(&list);
+    }    
+
+    Ok(json(&list))
+}
+
+// POST
+pub async fn update_equipment_handler(_id: String, eq: Equipment) -> Result<impl Reply> {
+    let mut list = read_equipment_list(&get_equipment_file()).unwrap();
+
+    if let Some(pos) = list.iter().position(|x| *x.mrid == eq.mrid) {
+        
+        let mut e = list.get_mut(pos).unwrap();
+        e.name = eq.name;           
+
+        let _ = save_equipment_list(&list);
+    }
+
+    Ok(json(&list))
+}
+
+fn get_equipment_file() -> String {
+    let app_dir = std::env::var("APP_DIR_NAME").unwrap_or_else(|_| "".into());
+    if app_dir != "" {
+        return format!("/{}/equipment.json", app_dir);
+    }
+    "equipment.json".to_string()
+}
+
+fn read_equipment_list(file_path: &str) -> std::io::Result<Vec<Equipment>> {    
+
+    let equipment_list: Vec<Equipment> = vec![];   
+    
+    if let Ok(mut file) = File::open(file_path.clone()) {
+        let mut contents = String::new();
+        if let Ok(_) = file.read_to_string(&mut contents) {        
+            match serde_json::from_str(&contents) { 
+                Ok(equipment_list) => {
+                    return Ok(equipment_list);
+                }        
+                Err(e) => {
+                    error!("Unable to parse equipment file: {} [{}]", file_path, e);
+                }
+            }
+        } else {
+            error!("Unable to read equipment file: {}", file_path);
+        }
+    } else {
+        error!("Unable to open equipment file: {}", file_path);
+    }
+
+    Ok(equipment_list)
+}
+
+fn save_equipment_list(equipment_list: &Vec<Equipment>) -> std::io::Result<()> {
+    let json = serde_json::to_string(&equipment_list).unwrap();
+    fs::write(get_equipment_file(), json).expect("Unable to write file");
+
+    Ok(())
 }
 
 fn get_command_file() -> String {

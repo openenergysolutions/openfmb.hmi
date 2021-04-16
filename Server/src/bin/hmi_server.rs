@@ -166,13 +166,30 @@ async fn server_setup() {
         .and(warp::ws())
         .and(warp::path::param())
         .and(with_clients(clients.clone()))
-        .and_then(connect_handler);    
-
-    let equipment_list = warp::path("equipment-list");     
+        .and_then(connect_handler);            
         
-    let equipment_routes = equipment_list
-        .and(warp::get())                
+    let equipment_routes = warp::path("equipment-list")
+        .and(warp::get())  
+        .and(with_auth(Role::Admin))              
         .and_then(equipment_handler);
+
+    let delete_equipment = warp::path("delete-equipment")
+        .and(warp::post()) 
+        .and(with_auth(Role::Admin)) 
+        .and(warp::body::json())                     
+        .and_then(delete_equipment_handler);
+
+    let update_equipment = warp::path("update-equipment")
+        .and(warp::post()) 
+        .and(with_auth(Role::Admin)) 
+        .and(warp::body::json())                     
+        .and_then(update_equipment_handler);
+    
+    let create_equipment = warp::path("create-equipment")
+        .and(warp::post()) 
+        .and(with_auth(Role::Admin)) 
+        .and(warp::body::json())                     
+        .and_then(create_equipment_handler);
 
     let command_list = warp::path("command-list");     
         
@@ -204,6 +221,9 @@ async fn server_setup() {
         .or(delete_routes)
         .or(list_routes)
         .or(equipment_routes)
+        .or(delete_equipment)
+        .or(update_equipment)
+        .or(create_equipment)
         .or(command_routes)
         .or(design_routes)
         .or(data_route)        

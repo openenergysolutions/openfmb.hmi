@@ -10,10 +10,12 @@ import { SharedMaterialModule } from '../shared/shared-material.module';
 import { SharedModule } from '../shared/shared.module';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { DialogsComponent } from './users/dialogs/dialogs.component';
+import { DevicesComponent } from './devices/devices.component';
+import { DeviceDialogsComponent } from './devices/dialogs/devicedialogs.component';
 
 
 @NgModule({
-  declarations: [AppSettingsComponent, UsersComponent, TagsComponent, DialogsComponent],
+  declarations: [AppSettingsComponent, UsersComponent, TagsComponent, DialogsComponent, DevicesComponent, DeviceDialogsComponent],
   imports: [
     CommonModule,
     SettingsRoutingModule,

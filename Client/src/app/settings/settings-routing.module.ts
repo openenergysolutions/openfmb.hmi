@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { AppSettingsComponent } from './app-settings/app-settings.component';
 import { UsersComponent } from './users/users.component';
 import { TagsComponent } from './tags/tags.component';
+import { DevicesComponent } from './devices/devices.component';
 
 const routes: Routes = [
   {
@@ -20,6 +21,10 @@ const routes: Routes = [
         path: 'tags',
         component: TagsComponent,
         data: { title: 'TAGS' }
+      }, {
+        path: 'devices',
+        component: DevicesComponent,
+        data: { title: 'DEVICES' }
       }
     ]
   }

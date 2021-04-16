@@ -1,0 +1,40 @@
+<div class="m-333">
+    <button mat-raised-button class="mb-05" color="primary" (click)="addOrEdit({}, true)">ADD DEVICE</button>
+  </div>
+  <mat-form-field class="margin-333" style="width: 100%">
+    <input matInput placeholder="Type to filter" value="" (keyup)='updateFilter($event)'>
+  </mat-form-field>
+  
+  <mat-card class="p-0">
+    <mat-card-content class="p-0">
+      <ngx-datatable class="material ml-0 mr-0" [rows]="rows" [columnMode]="'force'" [headerHeight]="50"
+        [footerHeight]="50" [scrollbarH]="true" [limit]="10" [rowHeight]="50">
+        >
+        <ngx-datatable-column name="name" [flexGrow]="1">
+          <ng-template let-column="column" ngx-datatable-header-template> Name </ng-template>
+          <ng-template let-value="value" ngx-datatable-cell-template>
+            {{ value }}
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column name="mrid" [flexGrow]="1">
+          <ng-template let-column="column" ngx-datatable-header-template> MRID </ng-template>
+          <ng-template let-value="value" ngx-datatable-cell-template>
+            {{ value }}
+          </ng-template>
+        </ngx-datatable-column>                         
+        <ngx-datatable-column name="mrid" [flexGrow]="1">
+          <ng-template let-column="column" ngx-datatable-header-template>Actions</ng-template>
+          <ng-template let-value="mrid" let-row="row" ngx-datatable-cell-template>                       
+            <button mat-icon-button mat-sm-button color="primary" aria-label="Edit" matTooltip="Edit"
+              (click)="addOrEdit(row)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button mat-sm-button color="warn" aria-label="Delete" matTooltip="Delete"
+              (click)="delete(row.mrid)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </ng-template>
+        </ngx-datatable-column>
+      </ngx-datatable>
+    </mat-card-content>
+  </mat-card>

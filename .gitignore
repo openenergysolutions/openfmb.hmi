@@ -46,5 +46,6 @@ Thumbs.db
 /target
 /deps
 /diagrams
+equipment.json
 
 *.tar.gz

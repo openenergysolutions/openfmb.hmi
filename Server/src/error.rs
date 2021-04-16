@@ -16,6 +16,8 @@ pub enum Error {
     NoPermissionError,
     #[error("add user failed")]
     AddUserError,
+    #[error("add device failed")]
+    AddDeviceError,
 }
 
 impl warp::reject::Reject for Error {}

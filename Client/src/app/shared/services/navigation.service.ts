@@ -56,7 +56,8 @@ export class NavigationService {
       state: "settings",
       visible: Authorization.canUpdateSettings(this.userRole),
       sub: [        
-        { name: "Users", state: "users" }              
+        { name: "Users", state: "users" },
+        { name: "Devices", state: "devices" }              
       ]
     }
   ]
