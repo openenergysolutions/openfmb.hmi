@@ -29,7 +29,7 @@ COPY --from=build /usr/src/target/release/hmi_server /usr/local/bin/
 
 WORKDIR /hmi_server
 
-EXPOSE 80 8080 32771 42771
+EXPOSE 80 8080 443 32771 42771
 
 #ENTRYPOINT ["hmi_server"]
 CMD ["/bin/sh",  "-c",  " exec nginx -g 'daemon off;' & hmi_server" ]

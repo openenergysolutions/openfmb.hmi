@@ -4,4 +4,4 @@ mkdir deps
 cd deps
 git clone -b hmi-develop https://github.com/openenergysolutions/openfmb-rs
 cd ..
-docker build -t openfmb.hmi.server:testing .
+docker build -t openfmb.hmi .

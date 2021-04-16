@@ -14,7 +14,7 @@
       <div mat-dialog-content class="dialog-input-container">
         <strong>mRID</strong><br />
         <mat-form-field class="designer-form-field" floatLabel='never'>
-          <input matInput [value]="selectedEquipment?.mrid" placeholder="Enter Device mRID" [disabled]="true" name="symbol-mrid" />          
+          <input matInput [(ngModel)]="selectedEquipment.mrid" placeholder="Enter Device mRID" [disabled]="false" name="symbol-mrid" />          
         </mat-form-field>
       </div>     
       <div mat-dialog-content class="dialog-input-container pt-1">

@@ -68,8 +68,8 @@ export class PropertiesDialogComponent implements OnInit {
     private service: DiagramsService,
     @Inject(MAT_DIALOG_DATA) public data: DiagramData
   ) { 
-
-    this.mRID = this.data.mRID; 
+    this.selectedEquipment = { name: '', mrid: ''};
+    this.mRID = this.selectedEquipment.mrid = this.data.mRID; 
     this.getCommandList(); 
     this.getEquipmentList();               
   }
