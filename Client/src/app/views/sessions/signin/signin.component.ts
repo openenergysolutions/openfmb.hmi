@@ -52,7 +52,9 @@ export class SigninComponent implements OnInit, AfterViewInit, OnDestroy {
     const signinData = this.signinForm.value
 
     this.submitButton.disabled = true;
-    this.progressBar.mode = 'indeterminate';    
+    this.progressBar.mode = 'indeterminate';  
+    
+    this.errorMsg = '';
     
     this.jwtAuth.signin(signinData.username, signinData.password)
     .subscribe(response => {
@@ -60,7 +62,7 @@ export class SigninComponent implements OnInit, AfterViewInit, OnDestroy {
     }, err => {
       this.submitButton.disabled = false;
       this.progressBar.mode = 'determinate';
-      this.errorMsg = err.message;
+      this.errorMsg = "Invalid username or password";
       console.log(err);
     })
   }

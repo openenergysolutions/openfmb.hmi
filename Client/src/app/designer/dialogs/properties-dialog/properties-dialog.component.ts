@@ -6,6 +6,7 @@ import { Diagram } from '../../../shared/models/diagram.model';
 import { Symbol, ButtonFunction } from '../../../shared/hmi.constants'
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { Hmi } from '../../../shared/hmi.constants'
 
 @Component({
   selector: 'app-properties-dialog',
@@ -97,8 +98,8 @@ export class PropertiesDialogComponent implements OnInit {
     this.backgroundColor = this.data.backgroundColor;      
     this.changeBackgroundAllowed = this.data.type === Symbol.measureBox || this.data.type === Symbol.button;    
 
-    this.linkAllowed = this.data.type === Symbol.button;
-    this.dataConnectAllowed = this.data.type !== Symbol.label && this.data.type !== Symbol.button && this.data.type !== Symbol.rectangle;
+    this.linkAllowed = this.data.type === Symbol.button;    
+    this.dataConnectAllowed = Hmi.isDataConnectable(this.data.type);
     this.statusDefinitionAllowed = this.data.type === Symbol.statusIndicator;
     if (this.data.type === Symbol.label || this.data.type === Symbol.button) {
       this.textAlignAllowed = true;

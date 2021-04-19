@@ -7,3 +7,4 @@ Dockerfile
 README.md
 LICENSE
 .vscode
+/Client/node_modules

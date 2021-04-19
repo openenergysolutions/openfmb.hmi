@@ -69,6 +69,19 @@ export class DataConnectComponent implements OnInit {
     this.commands = getCommands();
   }
 
+  clamp(value, max) {
+    return Math.max(0, Math.min(max, value));
+  }
+
+  transferArrayItem(currentArray, targetArray, currentIndex, targetIndex) {
+    const from = this.clamp(currentIndex, currentArray.length - 1);
+    const to = this.clamp(targetIndex, targetArray.length);
+    if (currentArray.length) {
+        // override the default behavior: not remove item from current array        
+        targetArray.splice(to, 0, currentArray[from]);
+    }
+  }
+
   drop(event: CdkDragDrop<string[]>) {    
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
@@ -84,7 +97,7 @@ export class DataConnectComponent implements OnInit {
         }
         else 
         {
-          transferArrayItem(event.previousContainer.data,
+          this.transferArrayItem(event.previousContainer.data,
                           event.container.data,
                           event.previousIndex,
                           event.currentIndex);

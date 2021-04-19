@@ -33,14 +33,9 @@
     </div>
 
     <div fxFlex="50"  class="pr-1">
-        <mat-form-field class="full-width">
-          <!-- <input
-          matInput
-          name="role"
-          [formControl]="itemForm.controls['role']"
-          placeholder="Role"> -->
-          <mat-select [(ngModel)]="selectedRole" name="selectRole">
-            <mat-option *ngFor="let option of roles" value="[option">
+        <mat-form-field class="full-width">          
+          <mat-select [(formControl)]="itemForm.controls['role']" name="role" placeholder="User Role">
+            <mat-option *ngFor="let option of roles" value="{{option}}">
               {{option}}
             </mat-option>
           </mat-select>

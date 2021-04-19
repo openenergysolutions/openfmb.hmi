@@ -27,6 +27,12 @@ Make sure you have installed `node` and `npm` on your computer
 From the project directory, run the following (only needed for the first time):
 
 ```
+> cargo run
+```
+
+```
+> cd Client
+
 > npm install
 ```
 

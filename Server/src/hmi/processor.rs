@@ -204,6 +204,182 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                 else if topic.mrid == device_mrid {  
                     
                     let data : &BTreeMap<String, DataValue> = match &msg {
+                        OpenFMBMessage::BreakerEvent(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "BreakerEventProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }                  
+                        },
+                        OpenFMBMessage::BreakerReading(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "BreakerReadingProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }                  
+                        },
+                        OpenFMBMessage::BreakerStatus(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "BreakerStatusProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }                  
+                        },
+                        OpenFMBMessage::CapBankEvent(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "CapBankEventProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }                  
+                        },
+                        OpenFMBMessage::CapBankReading(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "CapBankReadingProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }                  
+                        },
+                        OpenFMBMessage::CapBankStatus(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "CapBankStatusProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }                  
+                        },
+                        OpenFMBMessage::CoordinationEvent(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "CoordinationEventProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }                  
+                        },
+                        OpenFMBMessage::CoordinationStatus(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "CoordinationStatusProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }                  
+                        },
+                        OpenFMBMessage::ESSEvent(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "ESSEventProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }                  
+                        },
+                        OpenFMBMessage::ESSReading(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "ESSReadingProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }                  
+                        },
+                        OpenFMBMessage::ESSStatus(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "ESSStatusProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }                  
+                        },
                         OpenFMBMessage::GenerationReading(message) => {
                             match data_maps.get(&topic.mrid) {
                                 Some(d) => d,
@@ -220,6 +396,22 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                                 }
                             }                  
                         },
+                        OpenFMBMessage::GenerationEvent(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "GenerationEventProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }                  
+                        },
                         OpenFMBMessage::GenerationStatus(message) => {
                             match data_maps.get(&topic.mrid) {
                                 Some(d) => d,
@@ -229,6 +421,278 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                                         let json: Value = serde_json::from_str(&my_msg_json).unwrap();
                                         let mut root = Node::new("mapping");
                                         root.path = "GenerationStatusProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }                  
+                        },
+                        OpenFMBMessage::LoadEvent(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "LoadEventProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }                  
+                        },
+                        OpenFMBMessage::LoadReading(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "LoadReadingProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }                  
+                        },
+                        OpenFMBMessage::LoadStatus(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "LoadStatusProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }                  
+                        },
+                        OpenFMBMessage::MeterReading(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "MeterReadingProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }                  
+                        },
+                        OpenFMBMessage::RecloserEvent(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "RecloserEventProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }                  
+                        },
+                        OpenFMBMessage::RecloserReading(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "RecloserReadingProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }                  
+                        },
+                        OpenFMBMessage::RecloserStatus(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "RecloserStatusProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }                  
+                        },
+                        OpenFMBMessage::RegulatorEvent(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "RegulatorEventProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }                  
+                        },
+                        OpenFMBMessage::RegulatorReading(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "RegulatorReadingProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }                  
+                        },
+                        OpenFMBMessage::RegulatorStatus(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "RegulatorStatusProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }                  
+                        },
+                        OpenFMBMessage::ResourceReading(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "ResourceReadingProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }                  
+                        },
+                        OpenFMBMessage::ResourceEvent(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "ResourceEventProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }                  
+                        },
+                        OpenFMBMessage::ResourceStatus(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "ResourceStatusProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }                  
+                        },
+                        OpenFMBMessage::SolarEvent(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "SolarEventProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }                  
+                        },
+                        OpenFMBMessage::SolarReading(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "SolarReadingProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }                  
+                        },
+                        OpenFMBMessage::SolarStatus(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "SolarStatusProfile.mapping".to_string();
+                                        root.from_json(&json, &mut d);  
+                                    }
+                                    data_maps.insert(topic.mrid.clone(), d);
+                                    data_maps.get(&topic.mrid).unwrap()
+                                }
+                            }                  
+                        },
+                        OpenFMBMessage::SwitchEvent(message) => {
+                            match data_maps.get(&topic.mrid) {
+                                Some(d) => d,
+                                _ => {
+                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
+                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
+                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
+                                        let mut root = Node::new("mapping");
+                                        root.path = "SwitchEventProfile.mapping".to_string();
                                         root.from_json(&json, &mut d);  
                                     }
                                     data_maps.insert(topic.mrid.clone(), d);
@@ -266,200 +730,8 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                                     data_maps.insert(topic.mrid.clone(), d);
                                     data_maps.get(&topic.mrid).unwrap()
                                 }
-                            }  
-                        },
-                        OpenFMBMessage::MeterReading(message) => {
-                            match data_maps.get(&topic.mrid) {
-                                Some(d) => d,
-                                _ => {
-                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
-                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
-                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
-                                        let mut root = Node::new("mapping");
-                                        root.path = "MeterReadingProfile.mapping".to_string();
-                                        root.from_json(&json, &mut d);  
-                                    }
-                                    data_maps.insert(topic.mrid.clone(), d);
-                                    data_maps.get(&topic.mrid).unwrap()
-                                }
-                            }  
-                        },
-                        OpenFMBMessage::SolarReading(message) => {
-                            match data_maps.get(&topic.mrid) {
-                                Some(d) => d,
-                                _ => {
-                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
-                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
-                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
-                                        let mut root = Node::new("mapping");
-                                        root.path = "SolarReadingProfile.mapping".to_string();
-                                        root.from_json(&json, &mut d);  
-                                    }
-                                    data_maps.insert(topic.mrid.clone(), d);
-                                    data_maps.get(&topic.mrid).unwrap()
-                                }
-                            }  
-                        },
-                        OpenFMBMessage::SolarStatus(message) => {
-                            match data_maps.get(&topic.mrid) {
-                                Some(d) => d,
-                                _ => {
-                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
-                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
-                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
-                                        let mut root = Node::new("mapping");
-                                        root.path = "SolarStatusProfile.mapping".to_string();
-                                        root.from_json(&json, &mut d);  
-                                    }
-                                    data_maps.insert(topic.mrid.clone(), d);
-                                    data_maps.get(&topic.mrid).unwrap()
-                                }
-                            }  
-                        },
-                        OpenFMBMessage::ESSReading(message) => {
-                            match data_maps.get(&topic.mrid) {
-                                Some(d) => d,
-                                _ => {
-                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
-                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
-                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
-                                        let mut root = Node::new("mapping");
-                                        root.path = "ESSReadingProfile.mapping".to_string();
-                                        root.from_json(&json, &mut d);  
-                                    }
-                                    data_maps.insert(topic.mrid.clone(), d);
-                                    data_maps.get(&topic.mrid).unwrap()
-                                }
-                            }  
-                        },
-                        OpenFMBMessage::ESSStatus(message) => {
-                            match data_maps.get(&topic.mrid) {
-                                Some(d) => d,
-                                _ => {
-                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
-                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
-                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
-                                        let mut root = Node::new("mapping");
-                                        root.path = "ESSStatusProfile.mapping".to_string();
-                                        root.from_json(&json, &mut d);  
-                                    }
-                                    data_maps.insert(topic.mrid.clone(), d);
-                                    data_maps.get(&topic.mrid).unwrap()
-                                }
-                            }  
-                        },
-                        OpenFMBMessage::LoadReading(message) => {
-                            match data_maps.get(&topic.mrid) {
-                                Some(d) => d,
-                                _ => {
-                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
-                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
-                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
-                                        let mut root = Node::new("mapping");
-                                        root.path = "LoadReadingProfile.mapping".to_string();
-                                        root.from_json(&json, &mut d);  
-                                    }
-                                    data_maps.insert(topic.mrid.clone(), d);
-                                    data_maps.get(&topic.mrid).unwrap()
-                                }
-                            }  
-                        },
-                        OpenFMBMessage::LoadStatus(message) => {
-                            match data_maps.get(&topic.mrid) {
-                                Some(d) => d,
-                                _ => {
-                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
-                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
-                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
-                                        let mut root = Node::new("mapping");
-                                        root.path = "LoadStatusProfile.mapping".to_string();
-                                        root.from_json(&json, &mut d);  
-                                    }
-                                    data_maps.insert(topic.mrid.clone(), d);
-                                    data_maps.get(&topic.mrid).unwrap()
-                                }
-                            }  
-                        },
-                        OpenFMBMessage::BreakerReading(message) => {
-                            match data_maps.get(&topic.mrid) {
-                                Some(d) => d,
-                                _ => {
-                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
-                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
-                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
-                                        let mut root = Node::new("mapping");
-                                        root.path = "BreakerReadingProfile.mapping".to_string();
-                                        root.from_json(&json, &mut d);  
-                                    }
-                                    data_maps.insert(topic.mrid.clone(), d);
-                                    data_maps.get(&topic.mrid).unwrap()
-                                }
-                            }  
-                        },
-                        OpenFMBMessage::BreakerStatus(message) => {
-                            match data_maps.get(&topic.mrid) {
-                                Some(d) => d,
-                                _ => {
-                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
-                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
-                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
-                                        let mut root = Node::new("mapping");
-                                        root.path = "BreakerStatusProfile.mapping".to_string();
-                                        root.from_json(&json, &mut d);  
-                                    }
-                                    data_maps.insert(topic.mrid.clone(), d);
-                                    data_maps.get(&topic.mrid).unwrap()
-                                }
-                            }  
-                        },
-                        OpenFMBMessage::RecloserReading(message) => {
-                            match data_maps.get(&topic.mrid) {
-                                Some(d) => d,
-                                _ => {
-                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
-                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
-                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
-                                        let mut root = Node::new("mapping");
-                                        root.path = "RecloserReadingProfile.mapping".to_string();
-                                        root.from_json(&json, &mut d);  
-                                    }
-                                    data_maps.insert(topic.mrid.clone(), d);
-                                    data_maps.get(&topic.mrid).unwrap()
-                                }
-                            }  
-                        },
-                        OpenFMBMessage::RecloserStatus(message) => {
-                            match data_maps.get(&topic.mrid) {
-                                Some(d) => d,
-                                _ => {
-                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
-                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
-                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
-                                        let mut root = Node::new("mapping");
-                                        root.path = "RecloserStatusProfile.mapping".to_string();
-                                        root.from_json(&json, &mut d);  
-                                    }
-                                    data_maps.insert(topic.mrid.clone(), d);
-                                    data_maps.get(&topic.mrid).unwrap()
-                                }
-                            }  
-                        },
-                        OpenFMBMessage::ResourceStatus(message) => {
-                            match data_maps.get(&topic.mrid) {
-                                Some(d) => d,
-                                _ => {
-                                    let mut d: BTreeMap<String, DataValue> = BTreeMap::new();
-                                    if let Ok(my_msg_json) = serde_json::to_string(message) {
-                                        let json: Value = serde_json::from_str(&my_msg_json).unwrap();
-                                        let mut root = Node::new("mapping");
-                                        root.path = "ResourceStatusProfile.mapping".to_string();
-                                        root.from_json(&json, &mut d);  
-                                    }
-                                    data_maps.insert(topic.mrid.clone(), d);
-                                    data_maps.get(&topic.mrid).unwrap()
-                                }
-                            }  
-                        },
+                            }                  
+                        },                        
                         _ => {
                             &dummy
                         }

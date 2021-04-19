@@ -85,7 +85,7 @@ export class JwtAuthService {
         const decodeToken = this.getDecodedAccessToken(token);        
         usr = {
           id: decodeToken.sub,
-          displayName: decodeToken.name,
+          displayname: decodeToken.name,
           role: decodeToken.role,
         };
       }    

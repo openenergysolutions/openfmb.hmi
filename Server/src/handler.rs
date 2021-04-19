@@ -74,6 +74,7 @@ pub struct RegisterRequest {
 pub struct Equipment {
     pub mrid: String,
     pub name: String,
+    #[serde(rename = "deviceType")]
     pub device_type: Option<String>,
 }
 
@@ -731,13 +732,13 @@ pub async fn list_handler() -> Result<impl Reply> {
 
 // GET
 pub async fn equipment_handler(_id: String) -> Result<impl Reply> {          
-    let equipment_list : Vec<Equipment> = read_equipment_list(&get_equipment_file()).unwrap();
+    let equipment_list : Vec<Equipment> = read_equipment_list().unwrap();
     Ok(json(&equipment_list))
 }
 
 // POST
 pub async fn create_equipment_handler(_id: String, eq: Equipment) -> Result<impl Reply> {
-    let mut list = read_equipment_list(&get_equipment_file()).unwrap();
+    let mut list = read_equipment_list().unwrap();
     if let Some(_pos) = list.iter().position(|x| *x.mrid == eq.mrid) {
         // same user id/username already exists    
         error!("Equipment with same MRID ({}/{}) already exists", eq.mrid, eq.name);
@@ -754,7 +755,7 @@ pub async fn create_equipment_handler(_id: String, eq: Equipment) -> Result<impl
 
 // POST
 pub async fn delete_equipment_handler(_id: String, equipment: Equipment) -> Result<impl Reply> {
-    let mut list = read_equipment_list(&get_equipment_file()).unwrap();
+    let mut list = read_equipment_list().unwrap();
 
     if let Some(pos) = list.iter().position(|x| *x.mrid == equipment.mrid) {
         list.remove(pos);
@@ -767,12 +768,14 @@ pub async fn delete_equipment_handler(_id: String, equipment: Equipment) -> Resu
 
 // POST
 pub async fn update_equipment_handler(_id: String, eq: Equipment) -> Result<impl Reply> {
-    let mut list = read_equipment_list(&get_equipment_file()).unwrap();
+    let mut list = read_equipment_list().unwrap();
 
     if let Some(pos) = list.iter().position(|x| *x.mrid == eq.mrid) {
         
         let mut e = list.get_mut(pos).unwrap();
-        e.name = eq.name;           
+        e.name = eq.name;
+        e.mrid = eq.mrid;
+        e.device_type = eq.device_type;           
 
         let _ = save_equipment_list(&list);
     }
@@ -788,8 +791,9 @@ fn get_equipment_file() -> String {
     "equipment.json".to_string()
 }
 
-fn read_equipment_list(file_path: &str) -> std::io::Result<Vec<Equipment>> {    
+pub fn read_equipment_list() -> std::io::Result<Vec<Equipment>> {    
 
+    let file_path = &get_equipment_file();
     let equipment_list: Vec<Equipment> = vec![];   
     
     if let Ok(mut file) = File::open(file_path.clone()) {

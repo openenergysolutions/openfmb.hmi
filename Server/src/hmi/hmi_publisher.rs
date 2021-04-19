@@ -45,8 +45,7 @@ pub struct HmiPublisher {
     pub message_count: u32,
     pub nats_client: nats::Connection,    
     pub openfmb_nats_publisher: Option<ActorRef<NATSPublisherMsg>>,
-    pub cfg: Config,
-    pub devices: Vec<Equipment>,
+    pub cfg: Config,    
 }
 
 impl ActorFactoryArgs<(Connection, Config)> for HmiPublisher {
@@ -54,32 +53,10 @@ impl ActorFactoryArgs<(Connection, Config)> for HmiPublisher {
         HmiPublisher {
             message_count: 0,
             nats_client: args,            
-            openfmb_nats_publisher: None,             
-            devices: initial_devices(&config),
+            openfmb_nats_publisher: None,                         
             cfg: config,
         }
     }
-}
-
-fn initial_devices(config: &Config) -> Vec<Equipment> {          
-    let mut equipment_list = vec![];
-
-    if let Ok(list) = config.get_array("circuit_segment_devices.all_devices") {
-        for item in list {
-            let device_name = item.into_str().unwrap();
-            
-            let eq = Equipment {
-                name: config.get_str(&format!("circuit_segment_devices.{}.name", device_name)).unwrap(),
-                mrid: config.get_str(&format!("circuit_segment_devices.{}.mrid", device_name)).unwrap(),
-                device_type: match config.get_str(&format!("circuit_segment_devices.{}.type", device_name)) {
-                    Ok(t) => Some(t),
-                    _ => None,
-                },
-            };            
-            equipment_list.push(eq);
-        }
-    }        
-    equipment_list
 }
 
 impl HmiPublisher {
@@ -90,7 +67,8 @@ impl HmiPublisher {
         self.openfmb_nats_publisher.clone()                    
     }
     fn get_device_type_by_mrid(&self, mrid: String) -> Option<String> {
-        for eq in self.devices.iter() {
+        let devices = read_equipment_list().ok()?;
+        for eq in devices.iter() {
            if eq.mrid == mrid {
                return eq.device_type.clone();
            }

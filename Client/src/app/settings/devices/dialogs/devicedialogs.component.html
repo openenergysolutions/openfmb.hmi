@@ -11,15 +11,29 @@
       </mat-form-field>
     </div>
 
+        
     <div fxFlex="50"  class="pr-1">
-        <mat-form-field class="full-width">
-          <input
-          matInput          
-          name="mrid"
-          [formControl]="itemForm.controls['mrid']"
-          placeholder="MRID">
-        </mat-form-field>
+      <mat-form-field class="full-width">       
+        <mat-select [(formControl)]="itemForm.controls['deviceType']" name="deviceType" placeholder="Device Type">
+          <mat-option *ngFor="let option of deviceTypes" value="{{option}}">
+            {{option}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div fxFlex="50"  class="pr-1">
+      <mat-form-field class="full-width">
+        <input
+        matInput          
+        name="mrid"        
+        [formControl]="itemForm.controls['mrid']"        
+        placeholder="MRID">
+      </mat-form-field>      
     </div>    
+    <div fxFlex="50" class="pr-1" *ngIf="canEditMrid">
+      <button mat-raised-button type="button" (click)="idGenerator()">Generate New MRID</button>
+    </div>
 
     <div fxFlex="100" class="mt-1">
       <button mat-raised-button color="primary" [disabled]="itemForm.invalid">SAVE</button>

@@ -67,7 +67,7 @@ export const Hmi = {
         return false;
     },
     isDataConnectable: (type: string) => {
-        return type  && type !== Symbol.label /*&& type !== Symbol.setPointButton*/ && type !== Symbol.button;
+        return type && type !== Symbol.label && type !== Symbol.text && type !== Symbol.rectangle && type !== Symbol.button;
     },
     isMeasureBox: (type: string) => {
         return type === Symbol.measureBox;

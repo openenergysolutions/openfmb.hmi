@@ -35,7 +35,7 @@ export class DialogsComponent implements OnInit {
     this.selectedRole = item.role;
   }
 
-  submit() {
+  submit() {    
     this.dialogRef.close(this.itemForm.value)
   }
 }

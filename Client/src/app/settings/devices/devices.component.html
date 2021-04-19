@@ -20,8 +20,14 @@
           <ng-template let-column="column" ngx-datatable-header-template> MRID </ng-template>
           <ng-template let-value="value" ngx-datatable-cell-template>
             {{ value }}
+          </ng-template>          
+        </ngx-datatable-column>
+        <ngx-datatable-column name="deviceType" [flexGrow]="1">
+          <ng-template let-column="column" ngx-datatable-header-template> Device Type </ng-template>
+          <ng-template let-value="value" ngx-datatable-cell-template>
+            {{ value }}
           </ng-template>
-        </ngx-datatable-column>                         
+        </ngx-datatable-column>                                         
         <ngx-datatable-column name="mrid" [flexGrow]="1">
           <ng-template let-column="column" ngx-datatable-header-template>Actions</ng-template>
           <ng-template let-value="mrid" let-row="row" ngx-datatable-cell-template>                       

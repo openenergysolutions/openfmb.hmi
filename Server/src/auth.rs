@@ -17,6 +17,7 @@ use warp::{
     http::header::{HeaderMap, HeaderValue, AUTHORIZATION},
     reject, Filter, Rejection, Reply, reply
 };
+use pwhash::bcrypt;
 
 pub type Result<T> = std::result::Result<T, Rejection>;
 
@@ -29,7 +30,7 @@ pub type Users = Arc<RwLock<HashMap<String, User>>>;
 pub struct User {
     pub id: String,
     pub username: String,    
-    pub pwd: String,    
+    pub pwd: String,       
     pub displayname: String,
     pub role: String,
 }
@@ -151,6 +152,19 @@ fn jwt_from_header(headers: &HeaderMap<HeaderValue>) -> std::result::Result<Stri
     Ok(auth_header.trim_start_matches(BEARER).to_owned())
 }
 
+fn hash_password(password: &str) -> String {
+    match bcrypt::hash(password) {
+        Ok(s) => s,
+        Err(e) => {
+            panic!("Unable to hash password: {}", e)            
+        }
+    }    
+}
+
+fn verify_password(password: &str, hash: &str) -> bool {
+    bcrypt::verify(password, hash)
+}
+
 pub async fn login_handler(body: LoginRequest) -> Result<impl Reply> {
 
     let users = Arc::new(RwLock::new(init_users()));
@@ -164,7 +178,7 @@ pub async fn login_handler(body: LoginRequest) -> Result<impl Reply> {
         .await
         .iter()
         .filter(|(_, user)| user.username == body.username)
-        .filter(|(_, user)| user.pwd == body.pwd)
+        .filter(|(_, user)| verify_password(&body.pwd, &user.pwd))
         .for_each(|(uid, user)| {
             token = create_jwt(&uid, &user.displayname, &Role::from_str(&user.role))
                 .map_err(|e| reject::custom(e)).unwrap(); 
@@ -234,7 +248,7 @@ fn get_user_list(file_path: String) -> std::io::Result<Vec<User>> {
                     User {
                         id: String::from("e2a1eaff-c4ea-4f28-bd59-d88fc2882f39"),
                         username: String::from("admin"),                    
-                        pwd: String::from("hm1admin"),
+                        pwd: hash_password("hm1admin"),
                         displayname: String::from("Administrator"),
                         role: String::from("Admin"),
                     }
@@ -270,7 +284,9 @@ pub async fn delete_user_handler(_id: String, user: User) -> Result<impl Reply> 
 
         let _ = save_user_list(get_user_file(), &list);
     }    
-
+    for usr in list.iter_mut() {
+        usr.pwd.clear();
+    }
     Ok(json(&list))
 }
 
@@ -280,11 +296,14 @@ pub async fn update_user_handler(_id: String, user: User) -> Result<impl Reply> 
     if let Some(pos) = list.iter().position(|x| *x.id == user.id) {
         
         let mut usr = list.get_mut(pos).unwrap();
-        usr.displayname = user.displayname;   
-        
+        usr.displayname = user.displayname; 
+        usr.role = user.role;
+        usr.pwd = hash_password(&user.pwd);                  
         let _ = save_user_list(get_user_file(), &list);
     }
-
+    for usr in list.iter_mut() {
+        usr.pwd.clear();
+    }
     Ok(json(&list))
 }
 
@@ -297,9 +316,13 @@ pub async fn create_user_handler(_id: String, user: User) -> Result<impl Reply> 
         return Err(reject::custom(Error::AddUserError));
     } 
     else {
-        list.push(user);
+        let mut usr = user.clone();
+        usr.pwd = hash_password(&user.pwd);  
+        list.push(usr);
         let _ = save_user_list(get_user_file(), &list);
     }
-
+    for usr in list.iter_mut() {
+        usr.pwd.clear();
+    }
     Ok(json(&list))
 }

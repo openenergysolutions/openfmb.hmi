@@ -38,7 +38,7 @@ export class DevicesComponent implements OnInit, OnDestroy {
   getData() {
     this.getItemSub = this.service.getEquipmentList()
       .subscribe(data => {
-        this.rows = this.temp = data;
+        this.rows = this.temp = data;        
       })
   }
 
@@ -97,8 +97,7 @@ export class DevicesComponent implements OnInit, OnDestroy {
           return;
         }
         this.loader.open();
-        if (isNew) {
-          res.id = uuidv4();
+        if (isNew) {          
           this.service.createEquipment(res)
             .subscribe(
               data => {
@@ -111,7 +110,7 @@ export class DevicesComponent implements OnInit, OnDestroy {
                 this.snack.open('Unable to add device!', 'OK', { duration: 4000 });                
               }
             )
-        } else {          
+        } else {           
           this.service.updateEquipment(res)
             .subscribe(
               data => {
