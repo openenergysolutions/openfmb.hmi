@@ -7,8 +7,9 @@ edition = "2018"
 name="hmi_server"
 
 [dependencies]
-tokio = { version = "0.2", features = ["macros", "sync", "rt-threaded"] }
-warp = { version = "0.2.4", features = ["tls"] }
+tokio = { version = "1.5.0", features = ["macros", "sync", "rt-multi-thread"] }
+tokio-stream = "0.1.5"
+warp = { version = "0.3", features = ["tls"] }
 openfmb-messages = {git="https://github.com/openenergysolutions/openfmb-rs", branch="hmi-develop"}
 openfmb-messages-ext = {git="https://github.com/openenergysolutions/openfmb-rs", branch="hmi-develop"}
 microgrid-protobuf = {path = "../microgrid-protobuf"}
@@ -20,7 +21,6 @@ log = "0.4.11"
 fern = { version = "0.6", features = ["colored"] }
 env_logger = "0.8.3"
 static_dir = "0.1.3"
-inpm = { version="0.2.0", features=["warp"]}
 pretty_env_logger = "0.4.0"
 riker = {git="https://github.com/bfrog/riker", branch="0.4.1_stable_dashmap"}
 nats = "0.8"

@@ -6,7 +6,6 @@ use std::sync::Arc;
 use std::net::ToSocketAddrs;
 
 use tokio::sync::RwLock;
-use futures::executor::block_on;
 
 use warp::Filter;
 
@@ -26,8 +25,7 @@ use config::Config;
 #[tokio::main]
 async fn main() {    
         
-    let future = server_setup(); 
-    block_on(future); 
+    server_setup().await;      
 }
 
 async fn server_setup() {   
@@ -209,9 +207,12 @@ async fn server_setup() {
             "Access-Control-Request-Headers", 
             "content-type",
             "upgrade", 
-            "authorization"]);   
+            "authorization"]);                 
+        
+    let static_route = warp::fs::dir("Client/dist/openfmb-hmi/");
 
-    let routes = login_routes        
+    let routes = static_route
+        .or(login_routes)        
         .or(user_profile)       
         .or(get_users)
         .or(delete_user)
@@ -230,7 +231,7 @@ async fn server_setup() {
         .or(update)
         .or(execute)        
         .with(cors)
-        .with(warp::log("openfmb"));  
+        .with(warp::log("warp::server"));  
      
     let mut server_uri = "0.0.0.0:32771".to_string();
     

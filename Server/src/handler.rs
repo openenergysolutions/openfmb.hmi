@@ -3,6 +3,7 @@ use std::sync::Arc;
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
 use tokio::sync::{mpsc, RwLock};
+use tokio_stream::wrappers::UnboundedReceiverStream;
 use warp::{http::StatusCode, reply::json, ws::Message, ws::WebSocket, Reply, Rejection};
 use riker::actors::*;
 use futures::{FutureExt, StreamExt};
@@ -733,7 +734,7 @@ pub async fn list_handler() -> Result<impl Reply> {
 // GET
 pub async fn equipment_handler(_id: String) -> Result<impl Reply> {          
     let equipment_list : Vec<Equipment> = read_equipment_list().unwrap();
-    Ok(json(&equipment_list))
+    Ok(json(&equipment_list))    
 }
 
 // POST
@@ -868,7 +869,7 @@ pub async fn client_connection(ws: WebSocket, id: String, clients: Clients) {
 
     let (client_ws_sender, mut client_ws_rcv) = ws.split();
     let (client_sender, client_rcv) = mpsc::unbounded_channel();
-
+    let client_rcv = UnboundedReceiverStream::new(client_rcv);
     tokio::task::spawn(client_rcv.forward(client_ws_sender).map(|result| {
         if let Err(e) = result {
             eprintln!("ERROR::Error sending websocket msg: {}", e);

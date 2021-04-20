@@ -1,40 +1,11 @@
 [coordinator]
-environment = "dev"
-# environment = "prod"
-app_name = "openfmb-hmi"
-log-level = "DEBUG"
+environment = "dev" # dev or prod
+app_name = "openfmb-hmi" # name of the application
+log-level = "Debug" # Off, Error, Info, Debug, Trace
 
 [openfmb_nats_subscriber]
-prod_uri = "172.16.1.34:4222"
+prod_uri = "10.10.0.01:4222"
 dev_uri = "192.168.86.26:4222"
 
 [hmi]
-server_uri = "0.0.0.0:32771"
-
-[circuit_segment_devices]
-way1 = {mrid="abee538d-94cf-4684-8a8d-2e0a854a608c", name="Way 1", type="switch"}
-way2 = {mrid="805d6f7e-83f6-4484-8fdf-1fe80eee8b61", name="Way 2", type="switch"}
-way3 = {mrid="6e463a2d-4766-4d38-bd4f-ebe3122d24d0", name="Way 3", type="switch"}
-way4 = {mrid="ba01ba1b-6b2e-4a0b-8782-d31f1d08f9e0", name="Way 4", type="switch"}
-351s = { mrid="80f996ab-fabe-4ccb-837b-0189c0d74a1a", name="351s", type="breaker" }
-487 = { mrid="abee538d-94cf-4684-8a8d-2e0a854a608c", name="487", type="switch" }
-battery = { mrid="01234204-39a5-4ff6-9b5b-d6a1c6682542", name="ess" }
-generator = { mrid="972565ff-5bc5-4be7-b488-41ecad726d8d", name="generator", type="generator" }
-grid-fault-1 = { mrid="4db6da76-4596-47f9-b929-368ba0fc203d", name="grid-fault-1" }
-load1 = { mrid="a2c2d58e-0f49-44ec-a7cf-984d108ec8ce", name="load1", type="load" }
-load2 = { mrid="80919f44-9421-443b-8f13-c89a9357d996", name="load2", type="load" }
-load3 = { mrid="8c5b522c-61fa-464c-8604-51f6b750487d", name="load3", type="load" }
-load4 = { mrid="9cddc4c1-48ff-4e8b-a299-dab7fbb6117e", name="load4", type="load" }
-load5 = { mrid="ccaa6484-5a61-45b4-aa03-baa0c7f4fe9c", name="load5", type="load" }
-load6 = { mrid="3c76f880-39d6-4bea-91ad-791e088016de", name="load6", type="load" }
-load7 = { mrid="d23f88e4-5c8e-4aac-b489-05c9666b0324", name="load7", type="load" }
-load-bank = { mrid="2427d0b2-f812-487d-a27a-30319a9cabf1", name="load-bank", type="load" }
-ngpv = { mrid="c51a1549-1304-4c1f-a32a-d1f199a7aea5", name="ngpv", type="solar" }
-pv = { mrid="4596ea8f-b183-4189-93de-de697fd357a1", name="pv", type="solar" }
-recloser-a = { mrid="cd2d3c79-74c0-4d8d-a4ed-c710f0ceaf47", name="recloser-a", type="recloser" }
-recloser-b = { mrid="1ee6ca2d-fcc1-4ee9-8d8c-52eae5ca769b", name="recloser-b", type="recloser" }
-recloser-c = { mrid="152caf05-34a6-48bd-bd1e-4e45d4f4d421", name="recloser-c", type="recloser" }
-regulator = { mrid="7e271447-79df-42ce-a854-9e3ec42b42fa", name="regulator", type="regulator" }
-shop-building = { mrid="a8b6eb02-d8ab-416e-ab31-2b3f488b0208", name="shop-building", type="meter" }
-all_devices = ["way1", "way2", "way3", "way4", "351s", "487", "battery", "generator", "grid-fault-1", "load1", "load2", "load3", "load4", "load5", "load6", "load7", "load-bank", "ngpv", "pv", "recloser-a", "recloser-b", "recloser-c", "regulator", "shop-building" ]
-
+server_uri = "0.0.0.0:80"
