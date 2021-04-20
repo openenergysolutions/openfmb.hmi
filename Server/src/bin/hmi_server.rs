@@ -207,11 +207,112 @@ async fn server_setup() {
             "Access-Control-Request-Headers", 
             "content-type",
             "upgrade", 
-            "authorization"]);                 
-        
-    let static_route = warp::fs::dir("Client/dist/openfmb-hmi/");
+            "authorization"]);
+            
+    let static_dir = "Client/dist/openfmb-hmi/";
+    let index = "Client/dist/openfmb-hmi/index.html";
+
+    let static_route = warp::fs::dir(static_dir);   
+    let is_spa = true;
+
+    // These filters are needed so that when hit "F5" on browser, pages are refreshed correctly
+    let home = warp::path("home")
+        .and_then(move || async move {
+            if is_spa {
+                Ok(is_spa)
+            } else {
+                Err(warp::reject::not_found())
+            }
+        })
+        .and(warp::fs::file(index))
+        .map(|_, file| file);
+    
+    let hmi = warp::path("hmi")
+        .and_then(move || async move {
+            if is_spa {
+                Ok(is_spa)
+            } else {
+                Err(warp::reject::not_found())
+            }
+        })
+        .and(warp::fs::file(index))
+        .map(|_, file| file);
+
+    let diagrams = warp::path("diagrams")
+        .and_then(move || async move {
+            if is_spa {
+                Ok(is_spa)
+            } else {
+                Err(warp::reject::not_found())
+            }
+        })
+        .and(warp::fs::file(index))
+        .map(|_, file| file);
+
+    let data_connect = warp::path("data-connect")
+        .and_then(move || async move {
+            if is_spa {
+                Ok(is_spa)
+            } else {
+                Err(warp::reject::not_found())
+            }
+        })
+        .and(warp::fs::file(index))
+        .map(|_, file| file);
+    
+    let designer = warp::path("designer")
+        .and_then(move || async move {
+            if is_spa {
+                Ok(is_spa)
+            } else {
+                Err(warp::reject::not_found())
+            }
+        })
+        .and(warp::fs::file(index))
+        .map(|_, file| file);
+
+    let inspector = warp::path("inspector")
+        .and_then(move || async move {
+            if is_spa {
+                Ok(is_spa)
+            } else {
+                Err(warp::reject::not_found())
+            }
+        })
+        .and(warp::fs::file(index))
+        .map(|_, file| file);
+
+    let settings = warp::path("settings")
+        .and_then(move || async move {
+            if is_spa {
+                Ok(is_spa)
+            } else {
+                Err(warp::reject::not_found())
+            }
+        })
+        .and(warp::fs::file(index))
+        .map(|_, file| file);
+    
+    let sessions = warp::path("sessions")
+        .and_then(move || async move {
+            if is_spa {
+                Ok(is_spa)
+            } else {
+                Err(warp::reject::not_found())
+            }
+        })
+        .and(warp::fs::file(index))
+        .map(|_, file| file);
 
     let routes = static_route
+        .or(home)
+        .or(hmi)         
+        .or(diagrams)
+        .or(data_connect)
+        .or(designer)
+        .or(inspector)
+        .or(settings)
+        .or(sessions)
         .or(login_routes)        
         .or(user_profile)       
         .or(get_users)
@@ -229,9 +330,9 @@ async fn server_setup() {
         .or(design_routes)
         .or(data_route)        
         .or(update)
-        .or(execute)        
-        .with(cors)
-        .with(warp::log("warp::server"));  
+        .or(execute)               
+        .with(cors)       
+        .with(warp::log("warp::server"));          
      
     let mut server_uri = "0.0.0.0:32771".to_string();
     

@@ -126,7 +126,7 @@ impl Receive<OpenFMBMessage> for Processor {
     type Msg = ProcessorMsg;    
 
     fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: OpenFMBMessage, _sender: Sender) {      
-        let mut rt = tokio::runtime::Runtime::new().unwrap();
+        let rt = tokio::runtime::Runtime::new().unwrap();
         rt.block_on(handle_openfmb_message(&self.clients, msg));
     }  
 }
@@ -154,7 +154,7 @@ impl Receive<GenericControl> for Processor {
 
     fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: GenericControl, _sender: Sender) {      
         println!("Received generic control message {:?}", msg);
-        let mut rt = tokio::runtime::Runtime::new().unwrap();
+        let rt = tokio::runtime::Runtime::new().unwrap();
         rt.block_on(handle_generic_control(self, msg));
     } 
 }
