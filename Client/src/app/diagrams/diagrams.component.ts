@@ -59,15 +59,13 @@ export class DiagramsComponent implements OnInit, OnDestroy {
     var columns = Object.keys(this.temp[0]);
     // Removes last "$$index" from "column"
     columns.splice(columns.length - 1);
-
-    // console.log(columns);
+    
     if (!columns.length)
       return;
 
     const rows = this.temp.filter(function(d) {
       for (let i = 0; i <= columns.length; i++) {
-        let column = columns[i];
-        // console.log(d[column]);
+        let column = columns[i];       
         if (d[column] && d[column].toString().toLowerCase().indexOf(val) > -1) {
           return true;
         }
@@ -77,8 +75,7 @@ export class DiagramsComponent implements OnInit, OnDestroy {
     this.rows = rows;
   }
 
-  open(id: string) {
-    console.log("open diagram: " + id);        
+  open(id: string) {         
     this.router.navigateByUrl('/designer?id=' + id);
   }
 
@@ -142,8 +139,7 @@ export class DiagramsComponent implements OnInit, OnDestroy {
           if (isNew) {
             this.service.create(diagram)
               .subscribe(data => {                              
-                this.snack.open('Diagram Added!', 'OK', { duration: 4000 });
-                //this.router.navigateByUrl("/designer?id=" + diagram.diagramId);
+                this.snack.open('Diagram Added!', 'OK', { duration: 4000 });                
                 this.getData();
               }, error => {
                 console.error(error);

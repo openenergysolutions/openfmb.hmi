@@ -103,8 +103,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     this.jwtAuth.checkTokenIsValid().subscribe();
     
     this.router.queryParams.subscribe(params => {
-      this.diagramId = params['id'];
-      console.log("Designer:: diagramId = " + this.diagramId);
+      this.diagramId = params['id'];      
     });
   }
 
@@ -204,9 +203,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
       mxEvent.consume(evt);
     });
 
-    this.graph.getModel().addListener(mxEvent.CHANGE, (evt: Event) => {
-      console.log("Graph model has changed!");
-
+    this.graph.getModel().addListener(mxEvent.CHANGE, (evt: Event) => {     
       // register with backend
       this.register();          
     });

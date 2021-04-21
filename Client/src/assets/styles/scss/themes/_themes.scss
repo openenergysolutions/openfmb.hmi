@@ -2,7 +2,7 @@
 @include mat-core();
 
 // Keep atleast one file
-@import "egret-navy";
+@import "hmi-navy";
 
-$background: map-get($egret-theme, background);
-$foreground: map-get($egret-theme, foreground);
+$background: map-get($hmi-theme, background);
+$foreground: map-get($hmi-theme, foreground);

@@ -14,13 +14,13 @@ import { MatSidenav } from "@angular/material/sidenav";
 import { MediaObserver } from "@angular/flex-layout";
 
 @Directive({
-  selector: "[egretSidenavHelper]"
+  selector: "[sidenavHelper]"
 })
 export class SidenavHelperDirective implements OnInit, OnDestroy {
   @HostBinding("class.is-open")
   isOpen: boolean;
 
-  @Input("egretSidenavHelper")
+  @Input("sidenavHelper")
   id: string;
 
   @Input("isOpen")

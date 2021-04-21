@@ -1,17 +1,17 @@
 $mat-primary: map-get($material-colors, dark-blue);
 $mat-accent: map-get($material-colors, amber);
 
-$egret-primary: mat-palette($mat-primary);
-$egret-accent: mat-palette($mat-accent);
+$hmi-primary: mat-palette($mat-primary);
+$hmi-accent: mat-palette($mat-accent);
 
 // custom theme palettes are passed into a theme function
-$egret-theme: mat-light-theme($egret-primary, $egret-accent);
+$hmi-theme: mat-light-theme($hmi-primary, $hmi-accent);
 
 $primary-dark: darken(map-get($mat-primary, 500), 8%);
 
 // Material theme is wrapped by a parent class
-.egret-navy {
-  @include angular-material-theme($egret-theme);
+.hmi-navy {
+  @include angular-material-theme($hmi-theme);
 
   .mat-bg-primary,
   .topbar:not(.topbar-white),

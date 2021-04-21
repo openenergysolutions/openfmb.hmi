@@ -21,7 +21,7 @@ import { takeUntil } from "rxjs/operators";
     "[class.hljs]": "true",
     "[innerHTML]": "highlightedCode"
   },
-  selector: "[egretHighlight]"
+  selector: "[hmiHighlight]"
 })
 export class HighlightDirective implements OnInit, OnChanges, OnDestroy {
   constructor(
@@ -36,7 +36,7 @@ export class HighlightDirective implements OnInit, OnChanges, OnDestroy {
   highlightedCode: string;
 
   @Input() path: string;
-  @Input("egretHighlight") code: string;
+  @Input("hmiHighlight") code: string;
   private unsubscribeAll: Subject<any>;
   @Input() languages: string[];
 

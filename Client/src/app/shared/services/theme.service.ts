@@ -11,8 +11,8 @@ export interface ITheme {
 export class ThemeService {
   public onThemeChange :EventEmitter<ITheme> = new EventEmitter();
 
-  public egretThemes :ITheme[]  = [{
-    "name": "egret-navy",
+  public mainThemes :ITheme[]  = [{
+    "name": "hmi-navy",
     "baseColor": "#10174c",
     "isActive": false 
   }];
@@ -28,7 +28,7 @@ export class ThemeService {
   // Invoked in AppComponent and apply 'activatedTheme' on startup
   applyMatTheme( themeName: string) {
 
-    this.activatedTheme = this.egretThemes.find(t => t.name === themeName); 
+    this.activatedTheme = this.mainThemes.find(t => t.name === themeName); 
     this.flipActiveFlag(themeName);
 
     // this.changeTheme(themeName);
@@ -44,7 +44,7 @@ export class ThemeService {
   }
 
   flipActiveFlag(themeName:string) {
-    this.egretThemes.forEach((t) => {
+    this.mainThemes.forEach((t) => {
       t.isActive = false;
       if(t.name === themeName) {
         t.isActive = true;

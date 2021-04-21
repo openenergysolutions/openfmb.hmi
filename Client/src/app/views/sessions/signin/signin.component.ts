@@ -4,7 +4,6 @@ import { MatButton } from '@angular/material/button';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { Validators, FormGroup, FormControl } from '@angular/forms';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 import { AppLoaderService } from '../../../shared/services/app-loader/app-loader.service';
 import { JwtAuthService } from '../../../shared/services/auth/jwt-auth.service';
 
@@ -19,13 +18,12 @@ export class SigninComponent implements OnInit, AfterViewInit, OnDestroy {
 
   signinForm: FormGroup;
   errorMsg = '';
-  // return: string;
-
+  
   private _unsubscribeAll: Subject<any>;
 
   constructor(
     private jwtAuth: JwtAuthService,
-    private egretLoader: AppLoaderService,
+    private loader: AppLoaderService,
     private router: Router,
     private route: ActivatedRoute
   ) {
@@ -71,11 +69,10 @@ export class SigninComponent implements OnInit, AfterViewInit, OnDestroy {
     if(this.jwtAuth.return === '/') {
       return
     }
-    this.egretLoader.open(`Automatically Signing you in! \n Return url: ${this.jwtAuth.return.substring(0, 20)}...`, {width: '320px'});
+    this.loader.open(`Logging in! \n Return url: ${this.jwtAuth.return.substring(0, 20)}...`, {width: '320px'});
     setTimeout(() => {
-      this.signin();
-      console.log('autoSignIn');
-      this.egretLoader.close()
+      this.signin();      
+      this.loader.close()
     }, 2000);
   }
 

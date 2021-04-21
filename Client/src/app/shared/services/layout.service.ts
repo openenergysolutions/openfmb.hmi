@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { ThemeService } from "./theme.service";
+import { LocalStoreService } from "./local-store.service";
 
 export interface ILayoutConf {
   navigationPos?: string; // side, top
@@ -34,28 +35,30 @@ export class LayoutService {
   public layoutConf: ILayoutConf;  
   layoutConfSubject = null;
   layoutConf$ = null;
+  isCompact: boolean;
   public isMobile: boolean;
   public currentRoute: string;
   public fullWidthRoutes = ["shop"];
 
-  constructor(private themeService: ThemeService) {
+  constructor(private themeService: ThemeService, private ls: LocalStoreService) {     
+    this.isCompact = ls.getItem("sidebarCompactToggle") == null ? false : ls.getItem("sidebarCompactToggle");    
     this.setAppLayout(      
       {
         navigationPos: "side", // side, top
-        sidebarStyle: "full", // full, compact, closed
+        sidebarStyle: this.isCompact ? "compact" : "full", // full, compact, closed
         sidebarColor: "slate", 
-        sidebarCompactToggle: false, // applied when "sidebarStyle" is "compact"
+        sidebarCompactToggle: this.isCompact, // applied when "sidebarStyle" is "compact"
         dir: "ltr", // ltr, rtl
         useBreadcrumb: false,
         topbarFixed: false,
         footerFixed: false,
         topbarColor: "white", 
         footerColor: "slate",
-        matTheme: "egret-navy",
+        matTheme: "hmi-navy",
         breadcrumb: "simple", // simple, title
         perfectScrollbar: true
       }
-    );
+    );    
 
     this.layoutConfSubject = new BehaviorSubject<ILayoutConf>(this.layoutConf);
     this. layoutConf$ = this.layoutConfSubject.asObservable();
@@ -66,13 +69,13 @@ export class LayoutService {
     this.applyMatTheme(this.layoutConf.matTheme);
   }
 
-  publishLayoutChange(lc: ILayoutConf, opt: ILayoutChangeOptions = {}) {
+  publishLayoutChange(lc: ILayoutConf, opt: ILayoutChangeOptions = {}) {    
     if (this.layoutConf.matTheme !== lc.matTheme && lc.matTheme) {
       this.themeService.changeTheme(this.layoutConf.matTheme, lc.matTheme);
     }
-
-    this.layoutConf = Object.assign(this.layoutConf, lc);
+    this.layoutConf = Object.assign(this.layoutConf, lc);      
     this.layoutConfSubject.next(this.layoutConf);
+    this.isCompact = this.ls.getItem("sidebarCompactToggle") == null ? false : this.ls.getItem("sidebarCompactToggle");    
   }
 
   applyMatTheme(theme) {
@@ -83,7 +86,7 @@ export class LayoutService {
     let sidebarStyle: string;
     this.isMobile = this.isSm();
     this.currentRoute = options.route || this.currentRoute;
-    sidebarStyle = this.isMobile ? "closed" : "full";
+    sidebarStyle = this.isMobile ? "closed" : this.isCompact ? "compact" : "full";
 
     if (this.currentRoute) {
       this.fullWidthRoutes.forEach(route => {

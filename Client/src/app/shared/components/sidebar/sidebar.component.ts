@@ -17,7 +17,7 @@ import { takeUntil } from "rxjs/operators";
 import { SidebarHelperService } from "./sidebar-helper.service";
 
 @Component({
-  selector: "egret-sidebar",
+  selector: "hmi-sidebar",
   templateUrl: "./sidebar.component.html",
   styleUrls: ["./sidebar.component.scss"]
 })
@@ -105,7 +105,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   showBackdrop() {
     this.backdrop = this._renderer.createElement("div");
-    this.backdrop.classList.add("egret-sidebar-overlay");
+    this.backdrop.classList.add("hmi-sidebar-overlay");
 
     this._renderer.appendChild(
       this._elementRef.nativeElement.parentElement,
@@ -137,10 +137,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
 }
 
 @Directive({
-  selector: "[egretSidebarToggler]"
+  selector: "[sidebarToggler]"
 })
 export class SidebarTogglerDirective {
-  @Input("egretSidebarToggler")
+  @Input("sidebarToggler")
   public id: any;
 
   constructor(private sidebarHelperService: SidebarHelperService) {}

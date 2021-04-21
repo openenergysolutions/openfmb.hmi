@@ -89,8 +89,6 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private destroy$ = new Subject();
 
-  private interval;
-
   constructor(
     private renderer: Renderer2,
     private store: Store<fromRoot.State>,

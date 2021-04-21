@@ -4,6 +4,7 @@ import { ThemeService } from "../../services/theme.service";
 import { Subscription } from "rxjs";
 import { ILayoutConf, LayoutService } from "../../../../app/shared/services/layout.service";
 import { JwtAuthService } from "../../../../app/shared/services/auth/jwt-auth.service";
+import { LocalStoreService } from "../../services/local-store.service";
 
 @Component({
   selector: "app-sidebar-side",
@@ -21,7 +22,8 @@ export class SidebarSideComponent implements OnInit, OnDestroy, AfterViewInit {
     private navService: NavigationService,
     public themeService: ThemeService,
     private layout: LayoutService,
-    public jwtAuth: JwtAuthService
+    public jwtAuth: JwtAuthService,
+    private ls: LocalStoreService
   ) {}
 
   ngOnInit() {
@@ -49,17 +51,17 @@ export class SidebarSideComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   toggleCollapse() {
-    if (
-      this.layoutConf.sidebarCompactToggle
-    ) {
-        this.layout.publishLayoutChange({
+    if (this.layoutConf.sidebarCompactToggle) {
+      this.ls.setItem("sidebarCompactToggle", false);
+      this.layout.publishLayoutChange({
         sidebarCompactToggle: false
       });
-    } else {
-        this.layout.publishLayoutChange({
-            // sidebarStyle: "compact",
-            sidebarCompactToggle: true
-          });
+    } 
+    else {
+      this.ls.setItem("sidebarCompactToggle", true);
+      this.layout.publishLayoutChange({          
+        sidebarCompactToggle: true
+      });
     }
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Input, Output, Renderer2 } from '@angular/core';
+import { Component, OnInit, Input, Renderer2 } from '@angular/core';
 import { ThemeService } from '../../services/theme.service';
 import { LayoutService } from '../../services/layout.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -31,7 +31,7 @@ export class HeaderSideComponent implements OnInit {
     public jwtAuth: JwtAuthService
   ) {}
   ngOnInit() {
-    this.myThemes = this.themeService.egretThemes;
+    this.myThemes = this.themeService.mainThemes;
     this.layoutConf = this.layout.layoutConf;
     this.translate.use(this.currentLang.code);
   }
