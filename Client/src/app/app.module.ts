@@ -1,12 +1,9 @@
 import { NgModule, ErrorHandler } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { BrowserModule, HAMMER_GESTURE_CONFIG } from '@angular/platform-browser';
+import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { PerfectScrollbarModule, PERFECT_SCROLLBAR_CONFIG, PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
-
-import { InMemoryWebApiModule } from 'angular-in-memory-web-api';
-import { InMemoryDataService } from './shared/inmemory-db/inmemory-db.service';
 
 import { rootRouterConfig } from './app.routing';
 import { SharedModule } from './shared/shared.module';
@@ -31,13 +28,11 @@ import { entityConfig } from './entity-metadata';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { AuthEffects } from './store/effects/auth.effects';
 import { AuthModule } from './auth/auth.module';
-import { fakeBackendProvider } from './core/helpers/fake-backend';
 import { ErrorInterceptor } from './core/helpers/error-interceptor';
 import { LoadingInterceptor } from './core/helpers/loading-interceptor';
 import { DesignerEffects } from './store/effects/designer.effects';
 import { WebSocketModule } from './web-socket/web-socket.module';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
-//import { NgxMatColorPickerModule, MAT_COLOR_FORMATS, NGX_MAT_COLOR_FORMATS } from '@angular-material-components/color-picker'
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(httpClient: HttpClient) {
@@ -62,8 +57,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         useFactory: HttpLoaderFactory,
         deps: [HttpClient]
       }
-    }),
-    InMemoryWebApiModule.forRoot(InMemoryDataService, { passThruUnknownUrl: true}),
+    }),    
     RouterModule.forRoot(rootRouterConfig, { useHash: false }),
     StoreModule.forRoot(reducers, {
       metaReducers,
@@ -80,8 +74,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     NgxSpinnerModule,
     NgxDatatableModule,
     HttpClientModule,
-    AuthModule, 
-    //NgxMatColorPickerModule,   
+    AuthModule,        
     WebSocketModule.config({
       url: environment.ws
     })
@@ -110,8 +103,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     { 
       provide: Window, 
       useValue: window 
-    },
-    fakeBackendProvider
+    }    
   ],
   bootstrap: [AppComponent]
 })

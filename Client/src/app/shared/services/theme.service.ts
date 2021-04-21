@@ -1,6 +1,5 @@
 import { Injectable, Inject, Renderer2, RendererFactory2, EventEmitter } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import  { getQueryParam } from '../helpers/url.helper';
 
 export interface ITheme {
   name: string,
@@ -32,10 +31,6 @@ export class ThemeService {
     this.activatedTheme = this.egretThemes.find(t => t.name === themeName); 
     this.flipActiveFlag(themeName);
 
-    // *********** ONLY FOR DEMO **********
-    this.setThemeFromQuery();
-    // ************************************
-
     // this.changeTheme(themeName);
     this.renderer.addClass(this.document.body, themeName);
 
@@ -56,16 +51,5 @@ export class ThemeService {
         this.activatedTheme = t;
       }
     });
-  }
-
-  // *********** ONLY FOR DEMO **********
-  setThemeFromQuery() {
-    let themeStr = getQueryParam('theme');
-    try {
-      this.activatedTheme = JSON.parse(themeStr);
-      console.log(this.activatedTheme);
-      
-      this.flipActiveFlag(this.activatedTheme.name);
-    } catch(e) {}
-  }
+  }  
 }

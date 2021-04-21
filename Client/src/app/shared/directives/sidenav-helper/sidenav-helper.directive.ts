@@ -75,10 +75,10 @@ export class SidenavHelperDirective implements OnInit, OnDestroy {
 }
 
 @Directive({
-  selector: "[egretSidenavToggler]"
+  selector: "[sidenavToggler]"
 })
 export class SidenavTogglerDirective {
-  @Input("egretSidenavToggler")
+  @Input("sidenavToggler")
   public id: any;
 
   constructor(private sidenavHelperService: SidenavHelperService) {}

@@ -1,6 +1,5 @@
-import { Injectable, Renderer2 } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
-import { getQueryParam } from "../helpers/url.helper";
 import { ThemeService } from "./theme.service";
 
 export interface ILayoutConf {
@@ -32,16 +31,15 @@ interface IAdjustScreenOptions {
   providedIn: "root"
 })
 export class LayoutService {
-  public layoutConf: ILayoutConf;
-  layoutConfSubject = new BehaviorSubject<ILayoutConf>(this.layoutConf);
-  layoutConf$ = this.layoutConfSubject.asObservable();
+  public layoutConf: ILayoutConf;  
+  layoutConfSubject = null;
+  layoutConf$ = null;
   public isMobile: boolean;
   public currentRoute: string;
   public fullWidthRoutes = ["shop"];
 
   constructor(private themeService: ThemeService) {
-    this.setAppLayout(
-      //******** SET YOUR LAYOUT OPTIONS HERE *********
+    this.setAppLayout(      
       {
         navigationPos: "side", // side, top
         sidebarStyle: "full", // full, compact, closed
@@ -58,15 +56,14 @@ export class LayoutService {
         perfectScrollbar: true
       }
     );
+
+    this.layoutConfSubject = new BehaviorSubject<ILayoutConf>(this.layoutConf);
+    this. layoutConf$ = this.layoutConfSubject.asObservable();
   }
 
   setAppLayout(layoutConf: ILayoutConf) {
     this.layoutConf = { ...this.layoutConf, ...layoutConf };
     this.applyMatTheme(this.layoutConf.matTheme);
-
-    //******* Only for demo purpose ***
-    this.setLayoutFromQuery();
-    //**********************
   }
 
   publishLayoutChange(lc: ILayoutConf, opt: ILayoutChangeOptions = {}) {
@@ -79,16 +76,7 @@ export class LayoutService {
   }
 
   applyMatTheme(theme) {
-    this.themeService.applyMatTheme(this.layoutConf.matTheme);
-  }
-
-  setLayoutFromQuery() {
-    let layoutConfString = getQueryParam("layout");
-    let prevTheme = this.layoutConf.matTheme;
-    try {
-      this.layoutConf = JSON.parse(layoutConfString);
-      this.themeService.changeTheme(prevTheme, this.layoutConf.matTheme);
-    } catch (e) {}
+    this.themeService.applyMatTheme(theme);
   }
 
   adjustLayout(options: IAdjustScreenOptions = {}) {

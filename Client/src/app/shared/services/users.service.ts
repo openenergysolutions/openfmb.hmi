@@ -24,29 +24,11 @@ export class UserService {
     return throwError('An error occurred.  Check if the server is running and accessible.');    
   }
 
-  userList = [
-    {
-        "id": "f033d088-8ace-48a6-8cec-31befd43308f",
-        "username": "admin",
-        "displayname": "Administrator",        
-        "role": "Admin"
-    }
-  ];
-
   getAll() : Observable<any> {        
     return this.httpClient.get<User>(this.endpoint + 'get-users').pipe(
       catchError(this.handleError)
     );
   }
-
-  // get(id: string) : any {
-  //   for(var i = 0; i < this.userList.length; ++i) {
-  //     if (this.userList[i].id === id) {
-  //       return this.userList[i];
-  //     }
-  //   }
-  //   return null;
-  // }
 
   update(user: User) : Observable<any> {    
     return this.httpClient.post<User>(this.endpoint + 'update-user', user).pipe(

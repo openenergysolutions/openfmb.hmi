@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { LocalStoreService } from "../local-store.service";
 import { HttpClient } from "@angular/common/http";
 import { Router, ActivatedRoute } from "@angular/router";
-import { map, catchError, delay } from "rxjs/operators";
+import { map, catchError } from "rxjs/operators";
 import { User } from "../../models/user.model";
 import { of, BehaviorSubject, throwError } from "rxjs";
 import { environment } from "../../../../environments/environment";
