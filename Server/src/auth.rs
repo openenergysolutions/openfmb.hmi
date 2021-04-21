@@ -7,6 +7,7 @@ use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, 
 use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::fs::File;
+use std::path::Path;
 use std::fs;
 use std::io::prelude::*;
 use log::error;
@@ -210,6 +211,21 @@ pub fn init_users() -> HashMap<String, User> {
     
     let file = get_user_file();
 
+    if !Path::new(&file).exists() {
+        let mut users: Vec<User> = vec!();
+
+        users.push(
+            User {
+                id: String::from("e2a1eaff-c4ea-4f28-bd59-d88fc2882f39"),
+                username: String::from("admin"),                    
+                pwd: hash_password("hm1admin"),
+                displayname: String::from("Administrator"),
+                role: String::from("Admin"),
+            }
+        );
+
+        let _ = save_user_list(file.clone(), &users);
+    }    
     load_users(file).unwrap()
 }
 
@@ -242,18 +258,7 @@ fn get_user_list(file_path: String) -> std::io::Result<Vec<User>> {
     if let Ok(mut file) = File::open(file_path.clone()) {
         let mut contents = String::new();
         if let Ok(_) = file.read_to_string(&mut contents) {        
-            let mut users : Vec<User> = serde_json::from_str(&contents).expect("User json file was not well-formatted");
-            if users.len() == 0 {
-                users.push(
-                    User {
-                        id: String::from("e2a1eaff-c4ea-4f28-bd59-d88fc2882f39"),
-                        username: String::from("admin"),                    
-                        pwd: hash_password("hm1admin"),
-                        displayname: String::from("Administrator"),
-                        role: String::from("Admin"),
-                    }
-                );
-            } 
+            let users : Vec<User> = serde_json::from_str(&contents).expect("User json file was not well-formatted");            
             return Ok(users);
 
         } else {

@@ -17,6 +17,9 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "allowedCommonJsDependencies": [
+            "rxjs/internal/operators",
+            "rxjs/BehaviorSubject",
+            "highlight.js",
             "hammerjs",
             "json2yaml",
             "ts-mxgraph",
@@ -40,6 +43,16 @@
               "node_modules/jquery/dist/jquery.js",
               "src/assets/js/env.js",
               "src/assets/js/openfmb.hmi.js"              
+            ],
+            "allowedCommonJsDependencies": [
+              "rxjs/internal/operators",
+              "rxjs/BehaviorSubject",
+              "highlight.js",
+              "hammerjs",
+              "json2yaml",
+              "ts-mxgraph",
+              "xml-js",
+              "debug"
             ]
           },
           "configurations": {
