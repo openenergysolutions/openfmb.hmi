@@ -10,8 +10,8 @@ name="hmi_server"
 tokio = { version = "1.5.0", features = ["macros", "sync", "rt-multi-thread"] }
 tokio-stream = "0.1.5"
 warp = { version = "0.3", features = ["tls"] }
-openfmb-messages = {git="https://github.com/openenergysolutions/openfmb-rs", branch="hmi-develop"}
-openfmb-messages-ext = {git="https://github.com/openenergysolutions/openfmb-rs", branch="hmi-develop"}
+openfmb-messages = {git="https://github.com/openenergysolutions/openfmb-rs"}
+openfmb-messages-ext = {git="https://github.com/openenergysolutions/openfmb-rs"}
 microgrid-protobuf = {path = "../microgrid-protobuf"}
 serde = {version = "1.0.114", features = ["derive"] }
 serde_json = "1.0.57"
