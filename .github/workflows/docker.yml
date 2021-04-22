@@ -35,7 +35,7 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: 
-            oesinc/openfmb.hmi:latest,oesinc/openfmb.hmi:${GITHUB_SHA::7}
+            oesinc/openfmb.hmi:latest,oesinc/openfmb.hmi:$GIT_SHORT_SHA
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
