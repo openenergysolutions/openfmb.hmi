@@ -1,4 +1,4 @@
-name: CI to Docker Hub Test
+name: CI to Docker Hub
 on:
   push:
     # branches: [master]
@@ -29,8 +29,7 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: 
-            oesinc/openfmb.hmi:latest
-            oesinc/openfmb.hmi:${GITHUB_SHA::7}
+            oesinc/openfmb.hmi:latest,oesinc/openfmb.hmi:${GITHUB_SHA::7}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
