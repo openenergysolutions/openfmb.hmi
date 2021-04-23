@@ -15,8 +15,8 @@ FROM node:latest AS build2
 COPY Client ./Client
 
 WORKDIR /Client
-RUN npm install
-RUN npm run build
+RUN yarn install
+RUN yarn run build
 
 FROM debian:buster-slim
 
