@@ -3,7 +3,7 @@ on:
   push:
     # branches: [master]
 env:
-  GIT_TAGS: oesinc/openfmb.hmi:latest,oesinc/openfmb.hmi:${{ github.sha | cut -c1-7}}
+  GIT_TAGS: oesinc/openfmb.hmi:latest,oesinc/openfmb.hmi:${{ github.sha }}
 jobs:
   build:
     runs-on: ubuntu-latest
