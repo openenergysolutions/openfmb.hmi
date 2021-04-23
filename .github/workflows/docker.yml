@@ -11,11 +11,15 @@ jobs:
     steps:
       - name: Check Out Repo
         uses: actions/checkout@v2
+
+      - name: Clone submodule
+        uses: actions/checkout@v2
         with:
+          repository: openenergysolutions/openfmb-rs
+          path: deps/openfmb-rs
           ssh-key: ${{ secrets.GH_OPENFMB_RS_KEY }}
           persist-credentials: true
-
-      - name: checkout submodule
+      - name: Checkout submodule
         run: |
           git submodule init
           git submodule update
