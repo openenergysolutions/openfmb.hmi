@@ -44,7 +44,6 @@ testem.log
 Thumbs.db
 
 /target
-#/deps
 /diagrams
 equipment.json
 
