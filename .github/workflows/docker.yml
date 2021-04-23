@@ -33,6 +33,7 @@ jobs:
         with:
           context: ./
           file: ./Dockerfile
+          no-cache: true
           push: true
           tags: 
             oesinc/openfmb.hmi:latest,oesinc/openfmb.hmi:env.GIT_SHORT_SHA
