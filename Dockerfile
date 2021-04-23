@@ -8,7 +8,7 @@ COPY Server ./Server
 COPY Server/Cargo-Docker.toml ./Server/Cargo.toml
 COPY Cargo.toml Cargo.toml
 
-RUN cargo build --release
+# RUN cargo build --release
 
 # FROM node:latest AS build2
 
