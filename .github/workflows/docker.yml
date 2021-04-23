@@ -1,7 +1,7 @@
 name: CI to Docker Hub
 on:
   push:
-    # branches: [master]
+    branches: [master]
 env:
   GIT_TAGS: oesinc/openfmb.hmi:latest,oesinc/openfmb.hmi:${{ github.sha }}
 jobs:
