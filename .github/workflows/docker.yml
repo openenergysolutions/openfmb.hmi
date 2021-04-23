@@ -12,7 +12,13 @@ jobs:
       - name: Check Out Repo
         uses: actions/checkout@v2
         with:
-          submodules: true
+          ssh-key: ${{ secrets.GH_OPENFMB_RS_KEY }}
+          persist-credentials: true
+
+      - name: checkout submodule
+        run: |
+          git submodule init
+          git submodule update
 
       - name: Test GitHASH
         shell: bash
