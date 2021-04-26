@@ -2,7 +2,6 @@
   "name": "openfmb-hmi",
   "version": "1.0.0",
   "scripts": {
-    "postinstall": "ngcc",
     "ng": "ng",
     "start": "node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng serve -o",
     "serveProd": "ng serve --environment=prod",
