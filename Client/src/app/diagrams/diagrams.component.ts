@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2021 Open Energy Solutions Inc
+//
+// SPDX-License-Identifier: Apache-2.0
+
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DiagramsService } from '../shared/services/diagrams.service';
 import { Router } from '@angular/router';

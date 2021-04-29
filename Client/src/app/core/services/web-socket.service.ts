@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2021 Open Energy Solutions Inc
+//
+// SPDX-License-Identifier: Apache-2.0
+
 import { Inject, Injectable, OnDestroy } from '@angular/core';
 import { WebSocketSubject, WebSocketSubjectConfig } from 'rxjs/webSocket';
 import { interval, Observable, Observer, Subject, SubscriptionLike } from 'rxjs';

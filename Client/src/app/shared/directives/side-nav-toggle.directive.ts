@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2021 Open Energy Solutions Inc
+//
+// SPDX-License-Identifier: Apache-2.0
+
 import { Directive, Host, Self, Optional, OnDestroy, OnInit } from '@angular/core';
 import { MediaChange, MediaObserver } from "@angular/flex-layout";
 import { Subscription } from "rxjs";

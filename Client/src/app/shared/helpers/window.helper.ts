@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2021 Open Energy Solutions Inc
+//
+// SPDX-License-Identifier: Apache-2.0
+
 import { ClassProvider, FactoryProvider, InjectionToken } from "@angular/core";
 
 export function _window(): any {

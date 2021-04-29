@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2021 Open Energy Solutions Inc
+//
+// SPDX-License-Identifier: Apache-2.0
+
 use log::warn;
 use openfmb_messages_ext::OpenFMBExt;
 use openfmb_messages_ext::error::OpenFMBError;

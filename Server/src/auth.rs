@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2021 Open Energy Solutions Inc
+//
+// SPDX-License-Identifier: Apache-2.0
+
 use crate::{error::Error};
 use std::sync::{Arc};
 use tokio::sync::{RwLock};

@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2021 Open Energy Solutions Inc
+//
+// SPDX-License-Identifier: Apache-2.0
+
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { SearchInputOverComponent } from "./search-input-over/search-input-over.component";

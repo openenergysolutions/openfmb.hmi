@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2021 Open Energy Solutions Inc
+//
+// SPDX-License-Identifier: Apache-2.0
+
 import { Action, createReducer, on } from '@ngrx/store';
 import { DesignerConstant } from '../../core/constants/designer-constant';
 import * as designerActions from '../actions/designer.actions';

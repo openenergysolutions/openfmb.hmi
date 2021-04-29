@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2021 Open Energy Solutions Inc
+//
+// SPDX-License-Identifier: Apache-2.0
+
 import { Injectable, Inject, Renderer2, RendererFactory2, EventEmitter } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 

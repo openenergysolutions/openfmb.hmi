@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2021 Open Energy Solutions Inc
+//
+// SPDX-License-Identifier: Apache-2.0
+
 export function getIndexBy(array: Array<{}>, { name, value }): number {
   for (let i = 0; i < array.length; i++) {
     if (array[i][name] === value) {

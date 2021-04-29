@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2021 Open Energy Solutions Inc
+//
+// SPDX-License-Identifier: Apache-2.0
+
 import { Component, OnInit } from '@angular/core';
 import { JwtAuthService } from "../shared/services/auth/jwt-auth.service";
 import { Authorization } from '../shared/models/user.model';

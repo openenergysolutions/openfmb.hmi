@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2021 Open Energy Solutions Inc
+//
+// SPDX-License-Identifier: Apache-2.0
+
 import { Routes } from "@angular/router";
 
 import { SigninComponent } from "./signin/signin.component";
