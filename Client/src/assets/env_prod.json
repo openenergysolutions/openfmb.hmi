@@ -1,0 +1,4 @@
+{
+    "apiUrl": "http://HOST_PORT/",
+    "ws": "ws://HOST_PORT/data/"
+}

@@ -8,4 +8,5 @@ prod_uri = "10.10.0.01:4222"
 dev_uri = "192.168.86.26:4222"
 
 [hmi]
-server_uri = "0.0.0.0:32771"
+server_host = "192.168.86.26"
+server_port = 8080 # available ports are: 80 8080 443 32771 42771

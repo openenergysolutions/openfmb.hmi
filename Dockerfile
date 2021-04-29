@@ -10,7 +10,7 @@ COPY Cargo.toml Cargo.toml
 
 RUN cargo build --release
 
-FROM node:latest AS build2
+FROM node:15.14.0 AS build2
 
 COPY Client ./Client
 

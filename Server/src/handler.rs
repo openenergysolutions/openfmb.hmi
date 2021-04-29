@@ -10,6 +10,7 @@ use futures::{FutureExt, StreamExt};
 use std::collections::HashMap;
 use std::fs::File;
 use std::fs;
+use std::path::Path;
 use std::io::prelude::*;
 use log::{info, error};
 use super::hmi;
@@ -698,10 +699,21 @@ pub async fn execute_command(update: Command, _clients: Clients) -> Result<impl 
 
 fn get_diagram_folder() -> String {
     let app_dir = std::env::var("APP_DIR_NAME").unwrap_or_else(|_| "".into());
+    let mut diagrams_dir = "diagrams".to_string();
     if app_dir != "" {
-        return format!("/{}/diagrams", app_dir);
+        diagrams_dir = format!("/{}/diagrams", app_dir);        
     }
-    "diagrams".to_string()
+
+    if !Path::new(&diagrams_dir).exists() {
+        match fs::create_dir(&diagrams_dir) {
+            Ok(_) => {},
+            Err(e) => {
+                error!("{}", e);
+            }
+        }
+        
+    }
+    diagrams_dir
 }
 
 // POST

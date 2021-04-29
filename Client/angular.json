@@ -40,8 +40,7 @@
               "src/styles.scss"                          
             ],
             "scripts": [
-              "node_modules/jquery/dist/jquery.js",
-              "src/assets/js/env.js",
+              "node_modules/jquery/dist/jquery.js",              
               "src/assets/js/openfmb.hmi.js"              
             ],
             "allowedCommonJsDependencies": [
@@ -75,8 +74,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "2mb",
-                  "maximumError": "5mb"
+                  "maximumWarning": "4mb",
+                  "maximumError": "6mb"
                 },
                 {
                   "type": "anyComponentStyle",

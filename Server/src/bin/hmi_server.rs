@@ -4,6 +4,8 @@ use std::collections::HashMap;
 use std::convert::Infallible;
 use std::sync::Arc;
 use std::net::ToSocketAddrs;
+use std::path::Path;
+use std::fs;
 
 use tokio::sync::RwLock;
 
@@ -332,14 +334,16 @@ async fn server_setup() {
         .or(update)
         .or(execute)               
         .with(cors)       
-        .with(warp::log("warp::server"));          
-     
-    let mut server_uri = "0.0.0.0:32771".to_string();
-    
-    if let Ok(ip) = config.get_str("hmi.server_uri") {
-        server_uri = ip.clone();
-    }    
+        .with(warp::log("warp::server"));                   
 
+    let host = config.get_str("hmi.server_host").unwrap_or("127.0.0.1".to_string());  
+    let port = config.get_int("hmi.server_port").unwrap_or(80); 
+    
+    let hmi_local_ip = format!("{}:{}", host, port);
+
+    let _ = write_hmi_env(&hmi_local_ip);
+
+    let server_uri = format!("0.0.0.0:{}", port);
     warp::serve(routes).run(server_uri.to_socket_addrs().unwrap().next().unwrap()).await;
 
 }
@@ -350,4 +354,28 @@ fn with_clients(clients: Clients) -> impl Filter<Extract = (Clients,), Error = I
 
 fn with_processor(process: ActorRef<ProcessorMsg>) -> impl Filter<Extract = (ActorRef<ProcessorMsg>,), Error = Infallible> + Clone {
     warp::any().map(move || process.clone())
+}
+
+fn write_hmi_env(hmi_local_ip: &str) -> std::io::Result<()> {
+    
+    for entry in fs::read_dir("Client/dist/openfmb-hmi")? {
+        let entry = entry?;                
+        if let Some(file_name) = entry.path().as_path().file_name() {            
+            if let Some(file_name) = file_name.to_str() {                
+                if file_name.starts_with("main-") && !file_name.ends_with("-backup") {
+                    // check if backup exists
+                    let backup_file_name = format!("Client/dist/openfmb-hmi/{}-backup", file_name);
+                    let backup = Path::new(&backup_file_name);
+                    if !&backup.exists() {
+                        fs::copy(entry.path().as_path(), backup)?;
+                    }
+                    let mut contents = fs::read_to_string(backup)?;
+                    contents = contents.replace("HOST_PORT", hmi_local_ip);
+                    fs::write(entry.path().as_path(), contents)?;                    
+                }
+            }
+        }
+    }           
+
+    Ok(())
 }
