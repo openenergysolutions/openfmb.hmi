@@ -758,7 +758,24 @@
     "height": 80,
     "title": "Battery",
     "left": 0,
-    "top": 0    
+    "top": 0,
+    "type": "battery"
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/battery-horizontal-100.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 40,
+    "title": "Battery (Horizontal)",
+    "left": 0,
+    "top": 0,
+    "type": "battery-horizontal"    
   },
   {
     "shape": "image",
@@ -789,10 +806,74 @@
     "title": "Weather",
     "left": 0,
     "top": 0    
+  },  
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/arrow-east.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 80,
+    "title": "Arrow (East)",
+    "left": 0,
+    "top": 0,
+    "type": "arrow"
   },
   {
     "shape": "image",
-    "image": "assets/images/toolbar/arrow-red-ne.svg",
+    "image": "assets/images/toolbar/arrow-west.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 80,
+    "title": "Arrow (West)",
+    "left": 0,
+    "top": 0,
+    "type": "arrow"    
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/arrow-south.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 80,
+    "title": "Arrow (South)",
+    "left": 0,
+    "top": 0,
+    "type": "arrow"    
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/arrow-north.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 80,
+    "title": "Arrow (North)",
+    "left": 0,
+    "top": 0,
+    "type": "arrow"    
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/arrow-ne.svg",
     "points": [
       [1, 0.5],
       [0, 0.5],
@@ -803,11 +884,12 @@
     "height": 80,
     "title": "Arrow (NE)",
     "left": 0,
-    "top": 0    
+    "top": 0,
+    "type": "arrow"    
   },
   {
     "shape": "image",
-    "image": "assets/images/toolbar/arrow-red-se.svg",
+    "image": "assets/images/toolbar/arrow-se.svg",
     "points": [
       [1, 0.5],
       [0, 0.5],
@@ -817,6 +899,54 @@
     "width": 80,
     "height": 80,
     "title": "Arrow (SE)",
+    "left": 0,
+    "top": 0,
+    "type": "arrow"    
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/arrow-nw.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 80,
+    "title": "Arrow (NW)",
+    "left": 0,
+    "top": 0,
+    "type": "arrow"    
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/arrow-sw.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 80,
+    "title": "Arrow (SW)",
+    "left": 0,
+    "top": 0,
+    "type": "arrow"    
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/dots.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 80,
+    "title": "Power Flow",
     "left": 0,
     "top": 0    
   }

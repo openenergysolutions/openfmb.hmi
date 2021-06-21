@@ -415,7 +415,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
           this.renderer.appendChild(span, labelText);
           
           return span;
-        }
+        }        
         else {
           if (userObject.label) {
             const label = this.renderer.createElement('div');
@@ -425,7 +425,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
             this.renderer.appendChild(wrapper, label);
           }
           if (displayData && displayData.length > 0) {
-            // write mrid to the wraper
+            // write mrid to the wraper            
             this.renderer.setAttribute(wrapper, 'svg-id', cell.id);
             this.renderer.setAttribute(wrapper, 'mrid', userObject.mRID);            
             
@@ -451,6 +451,20 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
               }
               const baseToolbarImagePath = '../../assets/images/toolbar/'; 
               image.setAttribute("href", baseToolbarImagePath + userObject.type + '-invalid.svg');
+            }
+          }
+          else if (Hmi.isBattery(userObject.type)) {
+            var state = this.graph.view.getState(cell, false);
+            if (state) {
+              var node = state.shape.node;
+              var image = node.getElementsByTagName("image")[0];
+              var ref = image.getAttribute('href');
+              if (!ref) {
+                ref = image.getAttribute('xlink:href');
+                image.removeAttribute('xlink:href');
+              }
+              const baseToolbarImagePath = '../../assets/images/toolbar/'; 
+              image.setAttribute("href", baseToolbarImagePath + userObject.type + '-0.svg');
             }
           }
         }        
@@ -737,11 +751,11 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     if (domElement.length > 0) {
       for(let update of message.updates) {            
         for(let i = 0; i < domElement.length; ++i) {
-          if (update.topic?.mrid === domElement[i].getAttribute('mrid') && update.topic?.name === domElement[i].getAttribute('path')) {
+          if (update.topic?.mrid === domElement[i].getAttribute('mrid') && update.topic?.name === domElement[i].getAttribute('path')) {            
             // check if there is 'svg-id' reference
             const svgId = domElement[i].getAttribute('svg-id');
             var objType = domElement[i].getAttribute('obj-type');
-            if (svgId) {  // actual symbol
+            if (svgId) {  // actual symbol              
               try {
                 if (Hmi.isSwitchgear(objType)) {
                   var cell = this.graph.getModel().getCell(svgId);
@@ -749,7 +763,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
                     var diagramData = cell.value.userObject;
                     if (Hmi.isControllable(diagramData.type)) {
                       var state = this.graph.view.getState(cell, false);
-                      if (state) {
+                      if (state) {                        
                         var node = state.shape.node;                                            
                         var image = node.getElementsByTagName("image")[0];                        
                         var ref = image.getAttribute('href');
@@ -765,6 +779,63 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
                         image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '.svg');                                      
                       }
                     }
+                  }
+                }
+                else if (Hmi.isBattery(objType)) {
+                  var cell = this.graph.getModel().getCell(svgId);
+                  if (cell) {
+                    var diagramData = cell.value.userObject;                    
+                    var state = this.graph.view.getState(cell, false);
+                    if (state) {
+                      var node = state.shape.node;                                            
+                      var image = node.getElementsByTagName("image")[0];                        
+                      var ref = image.getAttribute('href');
+                      if (!ref) {
+                        ref = image.getAttribute('xlink:href');
+                        image.removeAttribute('xlink:href');
+                      }
+                      const val = Helpers.getBatteryPercentage(update.topic.value?.Double);
+                      cell.value.userObject.tag = val;
+                      cell.value.userObject.lastUpdate = ts;
+
+                      image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '.svg');                                      
+                    }                    
+                  }
+                }
+                else if (Hmi.isArrow(objType)) {
+                  var cell = this.graph.getModel().getCell(svgId);
+                  if (cell) {
+                    var diagramData = cell.value.userObject;                    
+                    var state = this.graph.view.getState(cell, false);
+                    if (state) {
+                      var node = state.shape.node;                                            
+                      var image = node.getElementsByTagName("image")[0];                        
+                      var ref = image.getAttribute('href');
+                      if (!ref) {
+                        ref = image.getAttribute('xlink:href');
+                        image.removeAttribute('xlink:href');
+                      }
+                      
+                      var val = '';
+
+                      if (cell.value.userObject.arrowDirection) {
+                        if (update.topic.value?.Double > 0.0)
+                        {
+                          val = cell.value.userObject.arrowDirection.positive;
+                          image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '.svg'); 
+                        }
+                        else if (update.topic.value?.Double < 0.0) {
+                          val = cell.value.userObject.arrowDirection.negative;
+                          image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '.svg'); 
+                        }
+                        else {
+                          val = cell.value.userObject.arrowDirection.neutral;
+                          image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '-grayed.svg'); 
+                        }
+                      }
+                      
+                      cell.value.userObject.lastUpdate = ts;                                                                                
+                    }                    
                   }
                 }
               }

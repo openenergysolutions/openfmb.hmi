@@ -20,5 +20,10 @@
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
     "strictInjectionParameters": true
-  }
+  },
+  "exclude": [
+    "dist",
+    "node_modules",
+    ".git"
+  ]
 }

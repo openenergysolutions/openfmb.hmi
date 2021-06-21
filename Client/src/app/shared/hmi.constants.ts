@@ -17,7 +17,10 @@ export const Symbol = {
     rectangle: "rectangle",
     image: "image",
     line: "line",
-    curve: "curve"
+    curve: "curve",
+    arrow: "arrow",
+    battery: "battery",
+    batteryHorizontal: "battery-horizontal"
 }
 
 export const CommandAction = {
@@ -90,6 +93,15 @@ export const Hmi = {
             return true;
         }
         return false;
+    },
+    isBattery: (type: string) => {
+        if (type === Symbol.battery || type === Symbol.batteryHorizontal) {
+            return true;
+        }
+        return false;
+    },
+    isArrow: (type: string) => {
+        return type.startsWith(Symbol.arrow);
     }
 }
 
@@ -104,6 +116,15 @@ export const Helpers = {
         else {
             return PosString.invalid;
         }
+    },
+    getBatteryPercentage: (val: number) => {
+        if (1 < val && val <= 25) return 20;
+        if (25 < val && val <= 50) return 40;
+        if (50 < val && val <= 79) return 60;
+        if (79 < val && val <= 96) return 80;
+        if (96 < val && val <= 100) return 100;
+        if (val > 100) return 100;
+        return 0;
     },
     currentTimestamp: () => {
         return new Date().toLocaleString();

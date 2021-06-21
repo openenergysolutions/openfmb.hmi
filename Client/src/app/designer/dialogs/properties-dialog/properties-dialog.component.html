@@ -104,7 +104,39 @@
           </div>        
         </div> 
       </div>           
-    </mat-tab>    
+    </mat-tab>
+    
+    <mat-tab label="Flow Definition" *ngIf="flowDefinitionAllowed">      
+      <div mat-dialog-content class="dialog-input-container pt-1" style="min-height: 300px;max-height: 300px;overflow: auto;">
+        <strong>Positive measurement</strong><br />
+        <mat-form-field class="designer-form-field" floatLabel='never'>
+          <mat-select [(ngModel)]="arrowDirection.positive" name="select=positive">
+            <mat-option *ngFor="let option of arrowDirections" [value]="option">
+              {{option}}
+            </mat-option>
+          </mat-select>  
+        </mat-form-field>
+        <br />
+        <strong>Negative measurement</strong><br />
+        <mat-form-field class="designer-form-field" floatLabel='never'>
+          <mat-select [(ngModel)]="arrowDirection.negative" name="select=negative">
+            <mat-option *ngFor="let option of arrowDirections" [value]="option">
+              {{option}}
+            </mat-option>
+          </mat-select>  
+        </mat-form-field>
+        <br />
+        <strong>Zero measurement</strong><br />
+        <mat-form-field class="designer-form-field" floatLabel='never'>
+          <mat-select [(ngModel)]="arrowDirection.neutral" name="select=neutral">
+            <mat-option *ngFor="let option of arrowDirections" [value]="option">
+              {{option}}
+            </mat-option>
+          </mat-select>  
+        </mat-form-field>
+      </div>           
+    </mat-tab>
+    
     <mat-tab label="Styles" *ngIf="changeStyleAllowed">
       <div mat-dialog-content class="dialog-input-container pt-1" *ngIf="changeWidthAllowed">
         <strong>Container Width</strong><br />

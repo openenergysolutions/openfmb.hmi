@@ -25,6 +25,7 @@ export interface DiagramData {
     tag?: any,
     lastUpdate?: any,
     statusDefinition?: StatusDefinition[],
+    arrowDirection?: ArrowDirection,
     displayData: any[],
     controlData: any[]    
 };
@@ -38,4 +39,10 @@ export interface LinkData {
 export interface StatusDefinition {
     value?: any,    
     color?: string
+}
+
+export interface ArrowDirection {
+    positive?: string,
+    negative?: string,
+    neutral?: string,
 }

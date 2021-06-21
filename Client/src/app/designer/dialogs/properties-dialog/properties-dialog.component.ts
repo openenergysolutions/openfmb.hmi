@@ -5,7 +5,7 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DiagramsService } from '../../../shared/services/diagrams.service';
-import { DiagramData, LinkData, StatusDefinition } from '../../../shared/models/userobject.model'
+import { ArrowDirection, DiagramData, LinkData, StatusDefinition } from '../../../shared/models/userobject.model'
 import { Diagram } from '../../../shared/models/diagram.model';
 import { Symbol, ButtonFunction } from '../../../shared/hmi.constants'
 import { Router } from '@angular/router';
@@ -40,7 +40,8 @@ export class PropertiesDialogComponent implements OnInit {
   mRIdOptions: string[] = [];
   navigateToDataConnection: boolean = false;
   dataConnectAllowed: boolean;
-  statusDefinitionAllowed: boolean = false;  
+  statusDefinitionAllowed: boolean = false;
+  flowDefinitionAllowed: boolean = false;  
   equipmentList: any[];  
   selectedEquipment: any;
   textAlign: string;
@@ -66,6 +67,10 @@ export class PropertiesDialogComponent implements OnInit {
   statusDefinitions: StatusDefinition[];
   statusColors: string[] = ['gray', 'green', 'yellow', 'red'];
   isStatusDefinitionNumericDataType: boolean = false;
+
+  // arrow definition
+  arrowDirections: string[] = ['', 'east', 'west', 'south', 'north', 'se', 'sw', 'ne', 'nw'];
+  arrowDirection: ArrowDirection;
 
   constructor(
     public dialogRef: MatDialogRef<PropertiesDialogComponent>,
@@ -105,6 +110,7 @@ export class PropertiesDialogComponent implements OnInit {
     this.linkAllowed = this.data.type === Symbol.button;    
     this.dataConnectAllowed = Hmi.isDataConnectable(this.data.type);
     this.statusDefinitionAllowed = this.data.type === Symbol.statusIndicator;
+    this.flowDefinitionAllowed = Hmi.isArrow(this.data.type);
     if (this.data.type === Symbol.label || this.data.type === Symbol.button) {
       this.textAlignAllowed = true;
       this.textAlign = this.data.textAlign || 'center';
@@ -155,6 +161,19 @@ export class PropertiesDialogComponent implements OnInit {
     if (this.data.controlData) {
       this.controlData = [...this.data.controlData];
     } 
+
+    if (this.flowDefinitionAllowed) {
+      if (this.data.arrowDirection) {
+        this.arrowDirection = this.data.arrowDirection;
+      }
+      else {
+        this.arrowDirection= {
+          positive: '',
+          negative: '',
+          neutral: ''
+        }
+      }
+    }
   }
 
   getDiagrams() {
@@ -245,6 +264,7 @@ export class PropertiesDialogComponent implements OnInit {
       deviceTypeMapping: this.deviceTypeMapping,
       navigateToDataConnection: this.navigateToDataConnection,
       statusDefinition: this.statusDefinitions,
+      arrowDirection: this.arrowDirection,
       selectedCommand: this.selectedCommand,
       func: this.buttonFunction
     });
