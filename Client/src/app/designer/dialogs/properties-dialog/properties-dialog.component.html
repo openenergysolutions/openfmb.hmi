@@ -116,11 +116,25 @@
             </mat-option>
           </mat-select>  
         </mat-form-field>
+        <mat-form-field class="designer-form-field" floatLabel='never'>
+          <mat-select [(ngModel)]="arrowDirection.positiveColor" name="select=positiveColor">
+            <mat-option *ngFor="let option of arrowColors" [value]="option">
+              {{option}}
+            </mat-option>
+          </mat-select>  
+        </mat-form-field>
         <br />
         <strong>Negative measurement</strong><br />
         <mat-form-field class="designer-form-field" floatLabel='never'>
           <mat-select [(ngModel)]="arrowDirection.negative" name="select=negative">
             <mat-option *ngFor="let option of arrowDirections" [value]="option">
+              {{option}}
+            </mat-option>
+          </mat-select>  
+        </mat-form-field>
+        <mat-form-field class="designer-form-field" floatLabel='never'>
+          <mat-select [(ngModel)]="arrowDirection.negativeColor" name="select=negativeColor">
+            <mat-option *ngFor="let option of arrowColors" [value]="option">
               {{option}}
             </mat-option>
           </mat-select>  

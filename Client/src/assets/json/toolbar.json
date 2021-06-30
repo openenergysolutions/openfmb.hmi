@@ -624,37 +624,7 @@
     "title": "Substation",
     "left": 0,
     "top": 0    
-  },
-  {
-    "shape": "image",
-    "image": "assets/images/toolbar/building.svg",
-    "points": [
-      [1, 0.5],
-      [0, 0.5],
-      [0.5, 0],
-      [0.5, 1]
-    ],
-    "width": 80,
-    "height": 80,
-    "title": "Building",
-    "left": 0,
-    "top": 0    
-  }, 
-  {
-    "shape": "image",
-    "image": "assets/images/toolbar/home.svg",
-    "points": [
-      [1, 0.5],
-      [0, 0.5],
-      [0.5, 0],
-      [0.5, 1]
-    ],
-    "width": 80,
-    "height": 80,
-    "title": "House",
-    "left": 0,
-    "top": 0    
-  }, 
+  },   
   {
     "shape": "image",
     "image": "assets/images/toolbar/gas.svg",
@@ -760,7 +730,7 @@
     "left": 0,
     "top": 0,
     "type": "battery"
-  },
+  }, 
   {
     "shape": "image",
     "image": "assets/images/toolbar/battery-horizontal-100.svg",
@@ -776,6 +746,22 @@
     "left": 0,
     "top": 0,
     "type": "battery-horizontal"    
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/battery3d-100.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 160,
+    "title": "Battery (3D)",
+    "left": 0,
+    "top": 0,
+    "type": "battery3d"
   },
   {
     "shape": "image",
@@ -937,16 +923,280 @@
   },
   {
     "shape": "image",
-    "image": "assets/images/toolbar/dots.svg",
+    "image": "assets/images/toolbar/flow-east-red.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]      
+    ],
+    "width": 320,
+    "height": 40,
+    "title": "Flow (east)",
+    "left": 0,
+    "top": 0,
+    "type": "flow"    
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/flow-west-red.svg",
     "points": [
       [1, 0.5],
       [0, 0.5],
       [0.5, 0],
       [0.5, 1]
     ],
-    "width": 80,
-    "height": 80,
-    "title": "Power Flow",
+    "width": 320,
+    "height": 40,
+    "title": "Flow (West)",
+    "left": 0,
+    "top": 0,
+    "type": "flow"    
+  },  
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/flow-south-red.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 40,
+    "height": 320,
+    "title": "Flow (South)",
+    "left": 0,
+    "top": 0,
+    "type": "flow"    
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/flow-north-red.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 40,
+    "height": 320,
+    "title": "Flow (North)",
+    "left": 0,
+    "top": 0,
+    "type": "flow"    
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/flow-ne-red.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 240,
+    "height": 240,
+    "title": "Flow (NE)",
+    "left": 0,
+    "top": 0,
+    "type": "flow"    
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/flow-nw-red.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 240,
+    "height": 240,
+    "title": "Flow (NW)",
+    "left": 0,
+    "top": 0,
+    "type": "flow"    
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/flow-se-red.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 240,
+    "height": 240,
+    "title": "Flow (SE)",
+    "left": 0,
+    "top": 0,
+    "type": "flow"    
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/flow-sw-red.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 240,
+    "height": 240,
+    "title": "Flow (SW)",
+    "left": 0,
+    "top": 0,
+    "type": "flow"    
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/base.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 240,
+    "height": 240,
+    "title": "Base",
+    "left": 0,
+    "top": 0    
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/solar-large.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 240,
+    "height": 240,
+    "title": "Solar",
+    "left": 0,
+    "top": 0    
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/generator-large.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 240,
+    "height": 240,
+    "title": "Generator",
+    "left": 0,
+    "top": 0    
+  },  
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/battery.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 240,
+    "height": 240,
+    "title": "Battery",
+    "left": 0,
+    "top": 0    
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/building.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 240,
+    "height": 240,
+    "title": "Building",
+    "left": 0,
+    "top": 0    
+  }, 
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/warehouse.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 240,
+    "height": 240,
+    "title": "Warehouse",
+    "left": 0,
+    "top": 0    
+  }, 
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/home.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 240,
+    "height": 240,
+    "title": "House",
+    "left": 0,
+    "top": 0    
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/pcc-closed.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 240,
+    "height": 240,
+    "title": "PCC (Connected/Islanded)",
+    "left": 0,
+    "top": 0,
+    "type": "pcc"    
+  },  
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/pad-mounted-xfmr.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 240,
+    "height": 240,
+    "title": "Pad-mounted Transformer",
+    "left": 0,
+    "top": 0        
+  },  
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/ev.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 240,
+    "height": 240,
+    "title": "EV",
     "left": 0,
     "top": 0    
   }

@@ -71,6 +71,7 @@ export class PropertiesDialogComponent implements OnInit {
   // arrow definition
   arrowDirections: string[] = ['', 'east', 'west', 'south', 'north', 'se', 'sw', 'ne', 'nw'];
   arrowDirection: ArrowDirection;
+  arrowColors: string[] = ['red', 'green'];
 
   constructor(
     public dialogRef: MatDialogRef<PropertiesDialogComponent>,
@@ -110,7 +111,7 @@ export class PropertiesDialogComponent implements OnInit {
     this.linkAllowed = this.data.type === Symbol.button;    
     this.dataConnectAllowed = Hmi.isDataConnectable(this.data.type);
     this.statusDefinitionAllowed = this.data.type === Symbol.statusIndicator;
-    this.flowDefinitionAllowed = Hmi.isArrow(this.data.type);
+    this.flowDefinitionAllowed = Hmi.isPowerFlow(this.data.type);
     if (this.data.type === Symbol.label || this.data.type === Symbol.button) {
       this.textAlignAllowed = true;
       this.textAlign = this.data.textAlign || 'center';

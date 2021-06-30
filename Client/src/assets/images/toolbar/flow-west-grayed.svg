@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 225 16" style="enable-background:new 0 0 225 16;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#878787;stroke-width:5;stroke-miterlimit:5;}	
+	svg #animated-stroke {
+		
+		stroke-dasharray: 8;
+		stroke-dashoffset: 8;
+		animation: 1 move-lines 1 linear; 
+		
+	}	
+	@keyframes move-lines {
+		from {
+			stroke-dashoffset: -8;
+		}
+		to {
+			stroke-dashoffset: 8;
+		}
+	}
+</style>
+<g>
+	<g>
+		<line id="animated-stroke" class="st0" x1="0" y1="9" x2="225" y2="9"/>
+	</g>
+</g>
+</svg>

@@ -339,5 +339,16 @@
       "type": "",
       "measurement": ""
     }
+  },
+  {
+    "type": "element",
+    "name": "Object",
+    "attributes": {
+      "label": "",
+      "name": "ToggleSwitch",
+      "path": "ToggleSwitch",
+      "type": "",
+      "measurement": ""
+    }
   }
 ]

@@ -19,8 +19,12 @@ export const Symbol = {
     line: "line",
     curve: "curve",
     arrow: "arrow",
+    flow: "flow",
     battery: "battery",
-    batteryHorizontal: "battery-horizontal"
+    batteryHorizontal: "battery-horizontal",
+    battery3D : "battery3d",
+    pcc: "pcc",
+    pcc2: "pcc2"
 }
 
 export const CommandAction = {
@@ -68,13 +72,15 @@ export const Hmi = {
             type === Symbol.setPointButton || 
             type === Symbol.statusIndicator ||
             type === Symbol.recloser || 
-            type === Symbol.regulator) {
+            type === Symbol.regulator ||
+            type === Symbol.pcc ||
+            type === Symbol.button) {
             return true;
         }
         return false;
     },
     isDataConnectable: (type: string) => {
-        return type && type !== Symbol.label && type !== Symbol.text && type !== Symbol.rectangle && type !== Symbol.button;
+        return type && type !== Symbol.label && type !== Symbol.text && type !== Symbol.rectangle;
     },
     isMeasureBox: (type: string) => {
         return type === Symbol.measureBox;
@@ -82,8 +88,9 @@ export const Hmi = {
     isSwitchgear: (type: string) => {
         if (type === Symbol.breaker || 
             type === Symbol.switchVertical || 
-            type == Symbol.switchHorizontal || 
-            type == Symbol.recloser) {
+            type === Symbol.switchHorizontal || 
+            type === Symbol.recloser ||
+            type === Symbol.pcc) {
             return true;
         }
         return false;
@@ -95,14 +102,17 @@ export const Hmi = {
         return false;
     },
     isBattery: (type: string) => {
-        if (type === Symbol.battery || type === Symbol.batteryHorizontal) {
+        if (type === Symbol.battery || type === Symbol.batteryHorizontal || type === Symbol.battery3D) {
             return true;
         }
         return false;
     },
-    isArrow: (type: string) => {
-        return type.startsWith(Symbol.arrow);
-    }
+    isPowerFlow: (type: string) => {
+        return type && (type.startsWith(Symbol.arrow) || type.startsWith(Symbol.flow));
+    },
+    isPCC: (type: string) => {
+        return type === Symbol.pcc
+    }    
 }
 
 export const Helpers = {

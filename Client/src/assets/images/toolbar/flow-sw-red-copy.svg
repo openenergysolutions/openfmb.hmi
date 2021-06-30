@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 25.3.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 160 160" style="enable-background:new 0 0 160 160;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#F76D6D;stroke-width:5;stroke-miterlimit:5;stroke-dasharray:8;stroke-dashoffset:8;}
+	svg #animated-stroke {
+		
+		stroke-dasharray: 8;
+		stroke-dashoffset: 8;
+		animation: 500ms move-lines infinite linear; 
+		
+	}	
+	@keyframes move-lines {
+		from {
+			stroke-dashoffset: -8;
+		}
+		to {
+			stroke-dashoffset: 8;
+		}
+</style>
+<g>
+	<g>
+		<line id="animated-stroke" class="st0" x1="-10" y1="160" x2="170" y2="0"/>
+	</g>
+</g>
+</svg>

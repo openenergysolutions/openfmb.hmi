@@ -45,4 +45,7 @@ export interface ArrowDirection {
     positive?: string,
     negative?: string,
     neutral?: string,
+    positiveColor?: string,
+    negativeColor?: string,
+    neutralColor?: string
 }
