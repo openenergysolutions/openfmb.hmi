@@ -247,6 +247,91 @@
                                     </div>
                                 </div>
                             </mat-tab>
+                            <mat-tab label="Visibility" *ngIf="graphItemDataVisibility">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="48" cdkDropList #currentVisiblityPointsList="cdkDropList"
+                                        [cdkDropListData]="currentVisibilityPoints" class="data-connect-list"
+                                        (cdkDropListDropped)="drop($event)">
+                                        <div class="data-connect-box" *ngFor="let item of currentVisibilityPoints" cdkDrag>
+                                            <div>
+                                                <div class="data-header">{{item.attributes.name}}</div>
+                                                <div class="data-detail">                                                    
+                                                    <input matInput [value]="item.attributes.path" (input)="item.attributes.path = $event.target.value" />
+                                                </div>
+                                                <div class="data-detail">
+                                                    <mat-form-field class="example-full-width pr-1">
+                                                        <mat-label>Visible when</mat-label>
+                                                        <mat-select [(ngModel)]="item.attributes.label" name="select-comparison">
+                                                            <mat-option *ngFor="let option of comparisons" [value]="option">
+                                                                {{option}}
+                                                            </mat-option>
+                                                        </mat-select>                                                        
+                                                    </mat-form-field>
+                                                    <mat-form-field class="example-full-width">
+                                                        <mat-label>Value</mat-label>
+                                                        <input matInput [value]="item.attributes.measurement"
+                                                            (input)="item.attributes.measurement = $event.target.value" />
+                                                    </mat-form-field>
+                                                </div>
+                                            </div>
+                                            <button mat-icon-button aria-label="Delete" style="cursor: pointer;"
+                                                (click)="removeVisibilityPoint(item)">
+                                                <mat-icon>delete</mat-icon>
+                                            </button>                                            
+                                        </div>
+                                    </div>
+                                    <div fxFlex="2">&nbsp;</div>
+                                    <div fxFlex="48">
+                                        <div fxLayout="row" fxLayout.lt-sm="column" class="pt-1">
+                                            <div class="pr-1">
+                                                <h4>Select Module</h4>
+                                                <mat-form-field>
+                                                    <mat-select [(ngModel)]="selectedModule" name="select-module"
+                                                        (selectionChange)="onModuleChanged($event.value)">
+                                                        <mat-option *ngFor="let option of modules" [value]="option">
+                                                            {{option}}
+                                                        </mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+                                            </div>
+                                            <div class="pr-1">
+                                                <h4>Select Profile</h4>
+                                                <mat-form-field>
+                                                    <mat-select [(ngModel)]="selectedProfile" name="select-profile"
+                                                        (selectionChange)="onProfileChanged($event.value)">
+                                                        <mat-option *ngFor="let option of profiles"
+                                                            [value]="option.name">
+                                                            {{option.name}}
+                                                        </mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+                                            </div>
+                                        </div>
+                                        <div class="pb-1">
+                                            <mat-form-field class="margin-333" style="width: 100%">
+                                                <input matInput placeholder="Type to filter" [(ngModel)]='filter'
+                                                    (keyup)='updateFilter($event)' name="filter">
+                                            </mat-form-field>
+                                        </div>
+                                        <div cdkDropList #availablePointsList="cdkDropList"
+                                            [cdkDropListData]="availablePoints"
+                                            [cdkDropListConnectedTo]="[currentVisiblityPointsList]" class="data-connect-list"
+                                            (cdkDropListDropped)="drop($event)">
+                                            <div class="data-connect-box" *ngFor="let item of availablePoints"
+                                                cdkDrag>
+                                                <div>
+                                                    <div class="data-header">{{item.attributes.name}}</div>
+                                                    <div class="data-detail">{{truncateString(item.attributes.path)}}</div>
+                                                </div>
+                                                <button mat-icon-button aria-label="Add" style="cursor: pointer;"
+                                                    (click)="addVisibilityPoint(item)">
+                                                    <mat-icon>add</mat-icon>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </mat-tab>
                         </mat-tab-group>
                     </mat-expansion-panel>
                 </mat-accordion>

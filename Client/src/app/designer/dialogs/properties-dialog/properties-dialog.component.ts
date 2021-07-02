@@ -21,7 +21,8 @@ export class PropertiesDialogComponent implements OnInit {
   label: string;
   name: string;
   displayDataLabel = "Reading/Status";
-  controlDataLabel = "Control";  
+  controlDataLabel = "Control";
+  visibilityDataLabel = "Visibility";
   mRID: string;
   fontSize: number;
   containerWidth: number;
@@ -35,6 +36,7 @@ export class PropertiesDialogComponent implements OnInit {
   deviceTypeMapping: string;
   displayData: any[];
   controlData: any[];
+  visibilityData: any[];
   defaultFields = [];
   deviceTypeOptions = [];
   mRIdOptions: string[] = [];
@@ -163,6 +165,10 @@ export class PropertiesDialogComponent implements OnInit {
       this.controlData = [...this.data.controlData];
     } 
 
+    if (this.data.visibilityData) {
+      this.visibilityData = [...this.data.visibilityData];
+    }
+
     if (this.flowDefinitionAllowed) {
       if (this.data.arrowDirection) {
         this.arrowDirection = this.data.arrowDirection;
@@ -253,6 +259,7 @@ export class PropertiesDialogComponent implements OnInit {
       name: this.selectedEquipment?.name || this.name,
       displayData: this.displayData,
       controlData: this.controlData,
+      visibilityData: this.visibilityData,
       mRID: this.selectedEquipment?.mrid,
       fontSize: this.fontSize,
       fontStyle: this.fontStyle,

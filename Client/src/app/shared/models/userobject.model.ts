@@ -23,11 +23,13 @@ export interface DiagramData {
     containerHeight?: number,
     changeStyleAllowed?: boolean,    
     tag?: any,
+    visible?: boolean,
     lastUpdate?: any,
     statusDefinition?: StatusDefinition[],
     arrowDirection?: ArrowDirection,
     displayData: any[],
-    controlData: any[]    
+    controlData: any[],
+    visibilityData: any[]    
 };
 
 export interface LinkData {
@@ -38,7 +40,8 @@ export interface LinkData {
 
 export interface StatusDefinition {
     value?: any,    
-    color?: string
+    color?: string,
+    text?: string
 }
 
 export interface ArrowDirection {

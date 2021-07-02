@@ -24,7 +24,7 @@ export const Symbol = {
     batteryHorizontal: "battery-horizontal",
     battery3D : "battery3d",
     pcc: "pcc",
-    pcc2: "pcc2"
+    buttonpcc: "button-pcc"
 }
 
 export const CommandAction = {
@@ -73,7 +73,7 @@ export const Hmi = {
             type === Symbol.statusIndicator ||
             type === Symbol.recloser || 
             type === Symbol.regulator ||
-            type === Symbol.pcc ||
+            type === Symbol.pcc || type === Symbol.buttonpcc ||
             type === Symbol.button) {
             return true;
         }
@@ -90,7 +90,7 @@ export const Hmi = {
             type === Symbol.switchVertical || 
             type === Symbol.switchHorizontal || 
             type === Symbol.recloser ||
-            type === Symbol.pcc) {
+            type === Symbol.pcc || type === Symbol.buttonpcc) {
             return true;
         }
         return false;
@@ -109,10 +109,10 @@ export const Hmi = {
     },
     isPowerFlow: (type: string) => {
         return type && (type.startsWith(Symbol.arrow) || type.startsWith(Symbol.flow));
-    },
-    isPCC: (type: string) => {
-        return type === Symbol.pcc
-    }    
+    },   
+    isVisibilitySupport: (type: string) => {
+        return Hmi.isPowerFlow(type) || Hmi.isMeasureBox(type);
+    }
 }
 
 export const Helpers = {

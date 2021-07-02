@@ -250,7 +250,8 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
         type: Symbol.line,                           
         backgroundColor: '',
         displayData: [],
-        controlData: []
+        controlData: [],
+        visibilityData: []
       };
       params[1] = this.idGenerator();      
       params[5] = `strokeColor=${color};`;
@@ -411,7 +412,10 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
           this.renderer.appendChild(span, img);
 
           const labelText = this.renderer.createText(userObject.label);
-          this.renderer.appendChild(span, labelText);
+          const textSpan = this.renderer.createElement('span');
+          this.renderer.setStyle(textSpan, 'vertical-align', 'middle');
+          this.renderer.appendChild(textSpan, labelText);
+          this.renderer.appendChild(span, textSpan);
           
           return span;
         }        
@@ -583,7 +587,8 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
           foreColor: '',
           backgroundColor: '',
           displayData: [],
-          controlData: []
+          controlData: [],
+          visibilityData: []
         };
         model.beginUpdate();
         try {
@@ -891,6 +896,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
           arrowDirection: result.arrowDirection,     
           displayData: result.displayData,
           controlData: result.controlData,
+          visibilityData: result.visibilityData,
           mRID: result.mRID,
           fontSize: result.fontSize,
           fontStyle: result.fontStyle,

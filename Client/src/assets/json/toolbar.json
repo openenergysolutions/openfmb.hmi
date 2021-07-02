@@ -609,190 +609,7 @@
     "left": 0,
     "top": 0,
     "type": "rectangle"   
-  }, 
-  {
-    "shape": "image",
-    "image": "assets/images/toolbar/substation.svg",
-    "points": [
-      [1, 0.5],
-      [0, 0.5],
-      [0.5, 0],
-      [0.5, 1]
-    ],
-    "width": 80,
-    "height": 80,
-    "title": "Substation",
-    "left": 0,
-    "top": 0    
-  },   
-  {
-    "shape": "image",
-    "image": "assets/images/toolbar/gas.svg",
-    "points": [
-      [1, 0.5],
-      [0, 0.5],
-      [0.5, 0],
-      [0.5, 1]
-    ],
-    "width": 80,
-    "height": 80,
-    "title": "Gas Generator",
-    "left": 0,
-    "top": 0    
-  },  
-  {
-    "shape": "image",
-    "image": "assets/images/toolbar/tower.svg",
-    "points": [
-      [1, 0.5],
-      [0, 0.5],
-      [0.5, 0],
-      [0.5, 1]
-    ],
-    "width": 80,
-    "height": 80,
-    "title": "Tower",
-    "left": 0,
-    "top": 0    
-  }, 
-  {
-    "shape": "image",
-    "image": "assets/images/toolbar/solar.svg",
-    "points": [
-      [1, 0.5],
-      [0, 0.5],
-      [0.5, 0],
-      [0.5, 1]
-    ],
-    "width": 80,
-    "height": 80,
-    "title": "Solar Panel",
-    "left": 0,
-    "top": 0    
-  },
-  {
-    "shape": "image",
-    "image": "assets/images/toolbar/power.svg",
-    "points": [
-      [1, 0.5],
-      [0, 0.5],
-      [0.5, 0],
-      [0.5, 1]
-    ],
-    "width": 80,
-    "height": 80,
-    "title": "Power Plant",
-    "left": 0,
-    "top": 0    
-  },    
-  {
-    "shape": "image",
-    "image": "assets/images/toolbar/wind.svg",
-    "points": [
-      [1, 0.5],
-      [0, 0.5],
-      [0.5, 0],
-      [0.5, 1]
-    ],
-    "width": 80,
-    "height": 80,
-    "title": "Wind Farm",
-    "left": 0,
-    "top": 0    
-  },
-  {
-    "shape": "image",
-    "image": "assets/images/toolbar/ess.svg",
-    "points": [
-      [1, 0.5],
-      [0, 0.5],
-      [0.5, 0],
-      [0.5, 1]
-    ],
-    "width": 80,
-    "height": 80,
-    "title": "Energy Storage",
-    "left": 0,
-    "top": 0    
-  },
-  {
-    "shape": "image",
-    "image": "assets/images/toolbar/battery-100.svg",
-    "points": [
-      [1, 0.5],
-      [0, 0.5],
-      [0.5, 0],
-      [0.5, 1]
-    ],
-    "width": 40,
-    "height": 80,
-    "title": "Battery",
-    "left": 0,
-    "top": 0,
-    "type": "battery"
-  }, 
-  {
-    "shape": "image",
-    "image": "assets/images/toolbar/battery-horizontal-100.svg",
-    "points": [
-      [1, 0.5],
-      [0, 0.5],
-      [0.5, 0],
-      [0.5, 1]
-    ],
-    "width": 80,
-    "height": 40,
-    "title": "Battery (Horizontal)",
-    "left": 0,
-    "top": 0,
-    "type": "battery-horizontal"    
-  },
-  {
-    "shape": "image",
-    "image": "assets/images/toolbar/battery3d-100.svg",
-    "points": [
-      [1, 0.5],
-      [0, 0.5],
-      [0.5, 0],
-      [0.5, 1]
-    ],
-    "width": 80,
-    "height": 160,
-    "title": "Battery (3D)",
-    "left": 0,
-    "top": 0,
-    "type": "battery3d"
-  },
-  {
-    "shape": "image",
-    "image": "assets/images/toolbar/substation-isometric.svg",
-    "points": [
-      [1, 0.5],
-      [0, 0.5],
-      [0.5, 0],
-      [0.5, 1]
-    ],
-    "width": 80,
-    "height": 80,
-    "title": "Substation",
-    "left": 0,
-    "top": 0    
-  },
-  {
-    "shape": "image",
-    "image": "assets/images/toolbar/weather.svg",
-    "points": [
-      [1, 0.5],
-      [0, 0.5],
-      [0.5, 0],
-      [0.5, 1]
-    ],
-    "width": 80,
-    "height": 80,
-    "title": "Weather",
-    "left": 0,
-    "top": 0    
-  },  
+  },     
   {
     "shape": "image",
     "image": "assets/images/toolbar/arrow-east.svg",
@@ -1051,6 +868,189 @@
   },
   {
     "shape": "image",
+    "image": "assets/images/toolbar/substation.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 80,
+    "title": "Substation",
+    "left": 0,
+    "top": 0    
+  },   
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/gas.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 80,
+    "title": "Gas Generator",
+    "left": 0,
+    "top": 0    
+  },  
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/tower.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 80,
+    "title": "Tower",
+    "left": 0,
+    "top": 0    
+  }, 
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/solar.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 80,
+    "title": "Solar Panel",
+    "left": 0,
+    "top": 0    
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/power.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 80,
+    "title": "Power Plant",
+    "left": 0,
+    "top": 0    
+  },    
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/wind.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 80,
+    "title": "Wind Farm",
+    "left": 0,
+    "top": 0    
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/ess.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 80,
+    "title": "Energy Storage",
+    "left": 0,
+    "top": 0    
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/battery-100.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 40,
+    "height": 80,
+    "title": "Battery",
+    "left": 0,
+    "top": 0,
+    "type": "battery"
+  }, 
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/battery-horizontal-100.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 40,
+    "title": "Battery (Horizontal)",
+    "left": 0,
+    "top": 0,
+    "type": "battery-horizontal"    
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/battery3d-100.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 160,
+    "title": "Battery (3D)",
+    "left": 0,
+    "top": 0,
+    "type": "battery3d"
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/substation-isometric.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 80,
+    "title": "Substation",
+    "left": 0,
+    "top": 0    
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/weather.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 80,
+    "height": 80,
+    "title": "Weather",
+    "left": 0,
+    "top": 0    
+  },
+  {
+    "shape": "image",
     "image": "assets/images/toolbar/base.svg",
     "points": [
       [1, 0.5],
@@ -1169,7 +1169,23 @@
     "left": 0,
     "top": 0,
     "type": "pcc"    
-  },  
+  }, 
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/button-pcc-closed.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 200,
+    "height": 80,
+    "title": "Button (Connected/Islanded)",
+    "left": 0,
+    "top": 0,
+    "type": "button-pcc"    
+  }, 
   {
     "shape": "image",
     "image": "assets/images/toolbar/pad-mounted-xfmr.svg",

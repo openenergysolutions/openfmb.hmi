@@ -29,6 +29,7 @@ export class DataConnectComponent implements OnInit {
   dataPoints: any[] = [];
   graphModelData: any;
   commands: any[] = [];
+  comparisons: string[] = ['equals', 'not-equals'];
 
   // Filter
   filter: "";
@@ -50,12 +51,14 @@ export class DataConnectComponent implements OnInit {
   availablePoints = [];   
   currentPoints = [];
   currentControlPoints = [];
+  currentVisibilityPoints = [];
 
   availableCommands = [];
   selectedCommand: string;
 
   graphItemControllable: boolean = false;
   graphItemDataConnectable: boolean = false;
+  graphItemDataVisibility: boolean = false;
 
   constructor(
     private service: DiagramsService,
@@ -149,6 +152,7 @@ export class DataConnectComponent implements OnInit {
       this.selectedGraphItemMRID = null;     
       this.currentPoints = [];
       this.currentControlPoints = [];
+      this.currentVisibilityPoints = [];
   
       for(var i = 0; i < elem.elements.length; ++i) {
         var e = elem.elements[i];
@@ -170,6 +174,7 @@ export class DataConnectComponent implements OnInit {
                         
                         var displayData = null;
                         var controlData = null;
+                        var visibilityData = null;
 
                         for(var j = 0; j < objElement.elements.length; ++j) {
                           if (objElement.elements[j].attributes.as == "displayData")
@@ -186,7 +191,20 @@ export class DataConnectComponent implements OnInit {
                               controlData.elements = [];
                             }  
                           }
-                        }                        
+                          else if (objElement.elements[j].attributes.as == "visibilityData")
+                          {
+                            visibilityData = objElement.elements[j];
+                            if (!visibilityData.elements) {
+                              visibilityData.elements = [];
+                            }  
+                          }
+                        } 
+                        
+                        if (visibilityData == null) {  // backward compability
+                          visibilityData = {
+                            elements: []
+                          };
+                        }
                         
                         var vertex = {
                           id: e.attributes.id,
@@ -194,7 +212,8 @@ export class DataConnectComponent implements OnInit {
                           label: objElement.attributes.label || "label",                          
                           mRID: objElement.attributes.mRID,                        
                           displayData: displayData,  
-                          controlData: controlData,                         
+                          controlData: controlData,
+                          visibilityData: visibilityData,                         
                           type: objElement.attributes.type
                         };
   
@@ -226,14 +245,17 @@ export class DataConnectComponent implements OnInit {
   onGraphItemChanged(id: string) {    
     this.currentPoints = [];
     this.currentControlPoints = [];
+    this.currentVisibilityPoints = [];
     for(var i = 0; i < this.graphItems.length; ++i) {
-      if (this.graphItems[i].id === id) {
+      if (this.graphItems[i].id === id) {        
         this.selectedGraphItem = this.graphItems[i];
         this.selectedGraphItemMRID = this.selectedGraphItem.mRID;
         this.currentPoints = this.graphItems[i].displayData.elements;
         this.currentControlPoints = this.graphItems[i].controlData.elements; 
+        this.currentVisibilityPoints = this.graphItems[i].visibilityData.elements;         
         this.graphItemControllable = Hmi.isControllable(this.graphItems[i].type);
         this.graphItemDataConnectable = Hmi.isDataConnectable(this.graphItems[i].type);
+        this.graphItemDataVisibility = Hmi.isVisibilitySupport(this.graphItems[i].type);
         break;
       }
     }
@@ -272,6 +294,23 @@ export class DataConnectComponent implements OnInit {
     }
   }
 
+  removeVisibilityPoint(item) {
+    console.log("remove data:: " + item);
+
+    if (item) {
+      for(let index = this.currentVisibilityPoints.length - 1; index >=0; --index) {
+        var obj = this.currentVisibilityPoints[index];
+        if (obj === item) {        
+          this.currentVisibilityPoints.splice(index, 1);
+          break;
+        }
+      }
+    }
+    else {
+      console.error("Unable to delete connected data point.  item=" + item);
+    }
+  }
+
   addPoint(item: any) {
     console.log("add data:: " + item);
     if (this.selectedGraphItem.type !== 'measure-box' && this.currentPoints.length > 0) {
@@ -290,6 +329,11 @@ export class DataConnectComponent implements OnInit {
     else {
       this.currentControlPoints.push(item);
     }
+  }
+
+  addVisibilityPoint(item: any) {
+    console.log("add visibility data:: " + item);
+    this.currentVisibilityPoints.push({ ...item});
   }
 
   onModuleChanged(name: string) {    
