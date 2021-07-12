@@ -3,13 +3,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use crate::messages::*;
+use crate::handler::*;
 
 use super::hmi_publisher::HmiPublisherMsg;
-use crate::handler::*;
+use super::pubsub::PubSubStatus;
 
 use riker::actors::*;
 use serde_json::Value;
 use std::collections::btree_map::BTreeMap;
+
+use log::debug;
 
 pub struct Node {
     name: String,
@@ -79,12 +82,12 @@ impl Node {
     }    
 }
 
-#[actor(OpenFMBMessage, PublisherRefWrap, MicrogridControl, DeviceControl, GenericControl)]
+#[actor(OpenFMBMessage, PublisherRefWrap, MicrogridControl, DeviceControl, GenericControl, PubSubStatus)]
 #[derive(Clone, Debug)]
 pub struct Processor {
     message_count: u32,                
     publisher: ActorRef<HmiPublisherMsg>,
-    clients: Clients,
+    clients: Clients,    
 }
 
 impl ActorFactoryArgs<(ActorRef<HmiPublisherMsg>, Clients)> for Processor
@@ -95,7 +98,7 @@ impl ActorFactoryArgs<(ActorRef<HmiPublisherMsg>, Clients)> for Processor
         Processor {
             message_count: 0,                                              
             publisher: args.0,
-            clients: args.1           
+            clients: args.1          
         }
     }
 }
@@ -103,8 +106,7 @@ impl ActorFactoryArgs<(ActorRef<HmiPublisherMsg>, Clients)> for Processor
 impl Actor for Processor {
     type Msg = ProcessorMsg;
 
-    fn pre_start(&mut self, _ctx: &Context<Self::Msg>) {   
-    }
+    fn pre_start(&mut self, _ctx: &Context<Self::Msg>) {}
 
     fn recv(&mut self, ctx: &Context<Self::Msg>, msg: Self::Msg, sender: Option<BasicActorRef>) {
         self.message_count += 1;
@@ -139,7 +141,7 @@ impl Receive<MicrogridControl> for Processor {
     type Msg = ProcessorMsg;    
 
     fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: MicrogridControl, sender: Sender) {      
-        println!("Received microgrid control message {:?}", msg);
+        debug!("Received microgrid control message {:?}", msg);
         self.publisher.tell(msg, sender)
     } 
 }
@@ -148,8 +150,21 @@ impl Receive<DeviceControl> for Processor {
     type Msg = ProcessorMsg;    
 
     fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: DeviceControl, sender: Sender) {      
-        println!("Received device control message {:?}", msg);
+        debug!("Received device control message {:?}", msg);
         self.publisher.tell(msg, sender)
+    } 
+}
+
+impl Receive<PubSubStatus> for Processor {
+    type Msg = ProcessorMsg;    
+
+    fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: PubSubStatus, _sender: Sender) {              
+        //debug!("Received pub/sub status {:?}", msg);
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        let clients = self.clients.clone();
+        rt.spawn(async {            
+            let _ = send_status(msg, clients).await;
+        });        
     } 
 }
 
@@ -157,7 +172,7 @@ impl Receive<GenericControl> for Processor {
     type Msg = ProcessorMsg;    
 
     fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: GenericControl, _sender: Sender) {      
-        println!("Received generic control message {:?}", msg);
+        debug!("Received generic control message {:?}", msg);
         let rt = tokio::runtime::Runtime::new().unwrap();
         rt.block_on(handle_generic_control(self, msg));
     } 

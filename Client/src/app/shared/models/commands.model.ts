@@ -377,5 +377,18 @@ export const COMMANDS = {
 				"measurement": ""               
             }
         }          
+    ],
+    "HmiControl": [
+        {   
+            "type": "element",
+			"name": "Object",         
+            "attributes": {
+                "label": "",
+                "name": "ToggleEnvironment",
+                "path": "ToggleEnvironment",
+                "type": "",
+				"measurement": ""               
+            }
+        }
     ]
 };

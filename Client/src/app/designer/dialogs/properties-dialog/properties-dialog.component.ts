@@ -48,6 +48,7 @@ export class PropertiesDialogComponent implements OnInit {
   selectedEquipment: any;
   textAlign: string;
   fontStyle: string;
+  fontStyles: string[] = ['Normal', 'Bold', 'Italic', 'Bold+Italic'];
   textAlignAllowed: boolean = false; 
   fontSizeAllowed: boolean = true; 
   buttonFunction: string;
@@ -114,11 +115,12 @@ export class PropertiesDialogComponent implements OnInit {
     this.dataConnectAllowed = Hmi.isDataConnectable(this.data.type);
     this.statusDefinitionAllowed = this.data.type === Symbol.statusIndicator;
     this.flowDefinitionAllowed = Hmi.isPowerFlow(this.data.type);
-    if (this.data.type === Symbol.label || this.data.type === Symbol.button) {
+    if (this.data.type === Symbol.label || this.data.type === Symbol.button || this.data.type === Symbol.statusIndicator) {
       this.textAlignAllowed = true;
       this.textAlign = this.data.textAlign || 'center';
       this.fontStyle = this.data.fontStyle || '0';
     }
+    console.log("FONT STYLE: " + this.fontStyle);
 
     if (this.data.type == Symbol.button) {
       this.buttonFunction = this.data.func;

@@ -80,7 +80,8 @@ export const Hmi = {
         return false;
     },
     isDataConnectable: (type: string) => {
-        return type && type !== Symbol.label && type !== Symbol.text && type !== Symbol.rectangle;
+        //return type && type !== Symbol.label && type !== Symbol.text && type !== Symbol.rectangle;
+        return type && type !== Symbol.text && type !== Symbol.rectangle;
     },
     isMeasureBox: (type: string) => {
         return type === Symbol.measureBox;
@@ -109,9 +110,12 @@ export const Hmi = {
     },
     isPowerFlow: (type: string) => {
         return type && (type.startsWith(Symbol.arrow) || type.startsWith(Symbol.flow));
-    },   
+    },
+    isLabel: (type: string) => {
+        return type == Symbol.label;
+    },
     isVisibilitySupport: (type: string) => {
-        return Hmi.isPowerFlow(type) || Hmi.isMeasureBox(type);
+        return Hmi.isPowerFlow(type) || Hmi.isMeasureBox(type) || Hmi.isLabel(type);
     }
 }
 

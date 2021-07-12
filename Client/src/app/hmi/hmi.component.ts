@@ -352,10 +352,17 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
           }          
 
           const span = this.renderer.createElement('span');
+          this.renderer.setAttribute(span, 'mrid', userObject.mRID);
+          if (visibilityMapping) {
+            this.renderer.setAttribute(span, 'visibility', visibilityMapping.path); 
+            this.renderer.setAttribute(span, 'visibility-comparison', visibilityMapping.label); 
+            this.renderer.setAttribute(span, 'visibility-comparison-value', visibilityMapping.measurement);
+          }
           this.renderer.addClass(span, 'label-text');
 
           if (style != '') {
             this.renderer.setAttribute(span, "style", style);
+            this.renderer.setAttribute(span, "default-style", style);
           }
           const labelText = this.renderer.createText(userObject.label);
           this.renderer.appendChild(span, labelText);          
@@ -1027,8 +1034,8 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
                       cell.value.userObject.visible = update.topic.value?.Double.toString() != "" + domElement[i].getAttribute('visibility-comparison-value');
                     }            
                   }
-                }                
-              }              
+                }                              
+              }                            
             }
             catch (e) {
               console.error(e);
@@ -1037,9 +1044,9 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
     }
-    const divs = document.querySelectorAll('div[mrid]');
+    const divs = document.querySelectorAll('[visibility]');
     // this is for measurement boxes
-    if (divs.length > 0) {
+    if (divs.length > 0) {      
       for(let update of message.updates) {
         for(let i = 0; i < divs.length; ++i) {
           if (update.topic?.mrid === divs[i].getAttribute('mrid') && update.topic?.name === divs[i].getAttribute('visibility')) { 
@@ -1047,15 +1054,25 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
             var visible: boolean = true;
             if (comparison == "equals") {                                         
               visible = update.topic.value?.Double.toString() == "" + divs[i].getAttribute('visibility-comparison-value');
-              divs[i].setAttribute("style", visible ? "display:block;" : "display:none;");  
+              var styles = divs[i].getAttribute('default-style');
+              
+              if (!styles) {
+                styles = '';
+              }
+              divs[i].setAttribute("style", visible ? "display:block;" + styles : "display:none;" + styles); 
             } 
             else if (comparison == "not-equals") {
               visible = update.topic.value?.Double.toString() != "" + divs[i].getAttribute('visibility-comparison-value');
-              divs[i].setAttribute("style", visible ? "block" : "none");
+              var styles = divs[i].getAttribute('default-style');
+              
+              if (!styles) {
+                styles = '';
+              }
+              divs[i].setAttribute("style", visible ? "display:block;" + styles : "display:none;" + styles);              
             } 
           }
         }
-      }
+      }      
     }
   }  
 

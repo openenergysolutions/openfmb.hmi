@@ -4,8 +4,10 @@ app_name = "openfmb-hmi" # name of the application
 log-level = "Debug" # Off, Error, Info, Debug, Trace
 
 [openfmb_nats_subscriber]
-prod_uri = "172.16.1.69:4222"
+prod_uri = "192.168.86.34:4222"
 dev_uri = "192.168.86.36:4222"
+send_status_update = true
+server_id = "741df6b5-5bdd-4ea6-a6aa-541fba744721"
 
 [hmi]
 server_host = "127.0.0.1"

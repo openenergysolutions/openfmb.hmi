@@ -860,6 +860,7 @@ dependencies = [
  "fern",
  "futures",
  "jsonwebtoken",
+ "lazy_static",
  "log",
  "microgrid-protobuf",
  "nats",

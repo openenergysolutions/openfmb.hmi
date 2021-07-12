@@ -105,3 +105,12 @@ message GenericControl
         TapChangeRaisePhsC = 15;
     }
 }
+
+message HmiControl
+{
+    string args = 1;
+    ControlType control_type = 2;
+    enum ControlType {
+        ToggleEnvironment  = 0;
+    }
+}

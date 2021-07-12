@@ -912,7 +912,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
         };
         
         this.graph.model.setValue(cell, { ...currentValue, userObject });
-        if (currentCellData.type === Symbol.label) {
+        if (currentCellData.type === Symbol.label || currentCellData.type === Symbol.statusIndicator) {
           let style = this.defaultLabelStyle;
           if (userObject.textAlign) {
             style = style + 'align=' + userObject.textAlign + ';'            

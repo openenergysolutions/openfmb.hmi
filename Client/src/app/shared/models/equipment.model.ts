@@ -13,6 +13,7 @@ export const getEquipmentTypeList = () => {
 }
 
 const EQUIPMENT_TYPES = [
+    "generic",
     "breaker",
     "capbank",
     "coordinationservice",

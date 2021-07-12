@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-use log::info;
-
 use std::collections::HashMap;
 use std::convert::Infallible;
 use std::sync::Arc;
@@ -19,13 +17,12 @@ use hmi_server::logs::{SystemEventLog, setup_logger};
 use hmi_server::messages::StartProcessing;
 
 use hmi_server::{handler::*, auth::*};
-use hmi_server::hmi::{hmi::*, hmi_subscriber::*, hmi_publisher::*, processor::*};
+use hmi_server::hmi::{hmi::*, hmi_subscriber::*, hmi_publisher::*, processor::*, pubsub::*, monitor::*};
 
 use riker::system::ActorSystem;
 use riker::actor::{ActorRef, ActorRefFactory};
 use riker::actor::Tell;
 
-use nats::Connection;
 use config::Config;
 
 #[tokio::main]
@@ -46,20 +43,12 @@ async fn server_setup() {
     let sys = ActorSystem::with_config("coordinator", config.clone()).unwrap();
 
     // System event logger before other actors are started
-    sys.actor_of::<SystemEventLog>("SysEventLogger").unwrap();
-
-    let nats_server_uri = match config.get_str("coordinator.environment").unwrap().as_str() {
-        "prod" => config.get_str("openfmb_nats_subscriber.prod_uri").unwrap(),
-        "dev" => config.get_str("openfmb_nats_subscriber.dev_uri").unwrap(),
-        err => panic!("unsupported environment name: {}", err),
-    };
-    let nats_client = nats::connect(&nats_server_uri).unwrap();
-    info!("Connected to NATS server");    
-
+    sys.actor_of::<SystemEventLog>("SysEventLogger").unwrap();    
+    
     // Start Hmi related 
     
     let publisher = sys
-        .actor_of_args::<HmiPublisher, (Connection, Config)>("HmiPublisher", (nats_client.clone(), sys.config().clone()))
+        .actor_of_args::<HmiPublisher, Config>("HmiPublisher", sys.config().clone())
         .unwrap();
 
     let processor = sys
@@ -76,27 +65,29 @@ async fn server_setup() {
         .unwrap();
 
     let subscriber = sys
-        .actor_of_args::<HmiSubscriber, (            
-            ActorRef<ProcessorMsg>,            
-            Connection,
-        )>(
-            "HmiSubscriber",
-            (                
-                processor.clone(),                
-                nats_client.clone(),
-            ),
-        )
-        .unwrap();           
+        .actor_of_args::<HmiSubscriber, ActorRef<ProcessorMsg>>("HmiSubscriber", processor.clone())
+        .unwrap();  
+    if let Ok(send_status_update) = config.get_bool("openfmb_nats_subscriber.send_status_update") {
+        if send_status_update {
+            let _monitor = sys
+                .actor_of_args::<Monitor, ActorRef<ProcessorMsg>>("HmiMonitor", processor.clone())
+                .unwrap();
+        }
+    }
 
     let hmi_actor = sys
         .actor_of_args::<Hmi, (
             ActorRef<HmiPublisherMsg>,
             ActorRef<HmiSubscriberMsg>                                                   
         )>("HMI", (publisher.clone(), subscriber.clone()))
-        .unwrap();
+        .unwrap();    
+           
+    let run_mode = StartProcessing {
+        pubsub_options: PubSubOptions::new(),
+    };
 
-    let start_processing_msg: HmiMsg = StartProcessing.into();
-    hmi_actor.tell(start_processing_msg, Some(sys.user_root().clone()));  
+    let start_processing_msg: HmiMsg = run_mode.into();
+    hmi_actor.tell(start_processing_msg, Some(sys.user_root().clone()));   
 
     let login_routes = warp::path("login")
         .and(warp::post())
@@ -158,7 +149,8 @@ async fn server_setup() {
     let update = warp::path!("update-data")
         .and(warp::body::json())
         .and(with_clients(clients.clone()))
-        .and(with_processor(processor.clone()))        
+        .and(with_processor(processor.clone()))
+        .and(with_hmi(hmi_actor.clone()))       
         .and_then(data_handler);
     
     let execute = warp::path!("execute-command")
@@ -358,6 +350,10 @@ fn with_clients(clients: Clients) -> impl Filter<Extract = (Clients,), Error = I
 
 fn with_processor(process: ActorRef<ProcessorMsg>) -> impl Filter<Extract = (ActorRef<ProcessorMsg>,), Error = Infallible> + Clone {
     warp::any().map(move || process.clone())
+}
+
+fn with_hmi(hmi: ActorRef<HmiMsg>) -> impl Filter<Extract = (ActorRef<HmiMsg>,), Error = Infallible> + Clone {
+    warp::any().map(move || hmi.clone())
 }
 
 fn write_hmi_env(hmi_local_ip: &str) -> std::io::Result<()> {

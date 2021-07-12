@@ -70,7 +70,7 @@ ActorFactoryArgs<(
         Hmi {
             message_count: 0,            
             publisher: args.0,
-            subscriber: args.1                        
+            subscriber: args.1,                                   
         }
     }
 }
@@ -105,7 +105,9 @@ impl Actor for Hmi {
 impl Receive<StartProcessing> for Hmi {
     type Msg = HmiMsg;
 
-    fn receive(&mut self, _ctx: &Context<Self::Msg>, _msg: StartProcessing, _sender: Sender) {
-        self.subscriber.tell(StartProcessing, None);
+    fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: StartProcessing, _sender: Sender) { 
+        log::debug!("Received start processing message: {:?}", msg);
+        self.subscriber.tell(msg.clone(), None);
+        self.publisher.tell(msg.clone(), None);
     }
 }

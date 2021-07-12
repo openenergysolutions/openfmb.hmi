@@ -93,7 +93,7 @@
             </mat-form-field>
             <mat-form-field fxFlex="25" class="designer-line-form-field" floatLabel='never'>
               <div style="padding-right: 10px;">
-                <mat-select [(value)]="statusDefinitions[i].color" name="input-color{{i}}">
+                <mat-select [(value)]="statusDefinitions[i].color" name="input-color">
                   <mat-option *ngFor="let option of statusColors" [value]="option">
                     {{option}}
                   </mat-option>
@@ -183,11 +183,10 @@
       <div mat-dialog-content class="dialog-input-container pt-1" *ngIf="textAlignAllowed">
         <strong>Font Weight</strong><br />
         <mat-form-field class="designer-form-field" floatLabel='never'>
-          <mat-select [(ngModel)]="fontStyle" name="weight">
-            <mat-option value="0">Normal</mat-option>
-            <mat-option value="1">Bold</mat-option>
-            <mat-option value="2">Italic</mat-option>
-            <mat-option value="3">Bold+Italic</mat-option>
+          <mat-select [(ngModel)]="fontStyle" name="weight">            
+            <mat-option *ngFor="let option of fontStyles; let x = index" [value]="x">
+              {{option}}
+            </mat-option> 
           </mat-select>
         </mat-form-field>
       </div>

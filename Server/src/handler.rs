@@ -19,6 +19,9 @@ use std::io::prelude::*;
 use log::{info, error};
 use super::hmi;
 use hmi::processor::ProcessorMsg;
+use hmi::hmi::HmiMsg;
+use hmi::pubsub::{PubSubOptions, PubSubStatus};
+use crate::messages::StartProcessing;
 
 use microgrid_protobuf as microgrid;
 
@@ -157,7 +160,13 @@ impl UpdateMessages {
     }
 }
 
-pub async fn data_handler(update: UpdateMessage, clients: Clients, processor: ActorRef<ProcessorMsg>) -> Result<impl Reply> {
+pub async fn data_handler(
+    update: UpdateMessage, 
+    clients: Clients, 
+    processor: ActorRef<ProcessorMsg>,
+    hmi: ActorRef<HmiMsg>
+) -> Result<impl Reply> {
+
     info!("Handle data: {:?}", update);
     clients
         .read()
@@ -503,6 +512,14 @@ pub async fn data_handler(update: UpdateMessage, clients: Clients, processor: Ac
                         );
                     }
                 }
+                else if update.topic.name == "ToggleEnvironment" {                    
+                    hmi.tell(
+                        StartProcessing {
+                            pubsub_options: PubSubOptions::toggle_environment(),
+                        },
+                        None,
+                    );
+                }
                 else {
 
                     if let Some(action) = &update.topic.action {
@@ -639,7 +656,7 @@ pub async fn data_handler(update: UpdateMessage, clients: Clients, processor: Ac
                                 },
                                 None,
                             );
-                        }
+                        }                        
                         else {
                             info!("Received unknown action: {}", action);
                         }
@@ -679,7 +696,51 @@ pub async fn send_updates(updates: UpdateMessages, clients: Clients) -> Result<i
     Ok(StatusCode::OK)
 }
 
-pub async fn send_inspector_messages(messages: &Vec<String>, clients: Clients) -> Result<impl Reply> {
+pub async fn send_status(status: PubSubStatus, clients: Clients) -> Result<impl Reply> {
+
+    let updates = UpdateMessages {
+        updates: vec![
+            UpdateMessage {
+                profile: None,
+                session_id: None,
+                topic: Topic {
+                    name: "hmi.pubsub.status.connected".to_string(),
+                    mrid: status.server_id.clone(),
+                    value: Some(DataValue::Bool(status.connected)),
+                    action: None,
+                    args: None
+                }
+            },
+            UpdateMessage {
+                profile: None,
+                session_id: None,
+                topic: Topic {
+                    name: "hmi.pubsub.status.environment".to_string(),
+                    mrid: status.server_id.clone(),
+                    value: Some(DataValue::Double((status.env as u8) as f64)),
+                    action: None,
+                    args: None
+                }
+            }
+        ],
+        session_id: None,
+    };
+    
+    clients
+        .read()
+        .await
+        .iter()               
+        .for_each(|(_, client)| {
+            if let Some(sender) = &client.sender {                          
+                let json = serde_json::to_string(&updates).unwrap();
+                let _ = sender.send(Ok(Message::text(json)));                
+            }
+        });
+
+    Ok(StatusCode::OK)
+}
+
+pub async fn send_inspector_messages(messages: &Vec<String>, clients: &Clients) -> Result<impl Reply> {
     
     clients
         .read()
