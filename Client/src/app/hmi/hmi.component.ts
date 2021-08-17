@@ -469,6 +469,12 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
           this.renderer.setAttribute(textSpan, 'default-text', userObject.label);
           this.renderer.appendChild(textSpan, labelText);
           this.renderer.appendChild(span, textSpan);
+
+          if (visibilityMapping) {
+            this.renderer.setAttribute(span, 'visibility', visibilityMapping.path); 
+            this.renderer.setAttribute(span, 'visibility-comparison', visibilityMapping.label); 
+            this.renderer.setAttribute(span, 'visibility-comparison-value', visibilityMapping.measurement);
+          }
           
           return span;
         }        
@@ -548,6 +554,20 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
               }
               const baseToolbarImagePath = '../../assets/images/toolbar/'; 
               image.setAttribute("href", baseToolbarImagePath + userObject.type + '-0.svg');
+            }
+          }
+          else if (Hmi.isWeather(userObject.type)) {
+            var state = this.graph.view.getState(cell, false);
+            if (state) {
+              var node = state.shape.node;
+              var image = node.getElementsByTagName("image")[0];
+              var ref = image.getAttribute('href');
+              if (!ref) {
+                ref = image.getAttribute('xlink:href');
+                image.removeAttribute('xlink:href');
+              }
+              const baseToolbarImagePath = '../../assets/images/toolbar/'; 
+              image.setAttribute("href", baseToolbarImagePath + userObject.type + '.svg');
             }
           }
         }        
@@ -944,6 +964,27 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
                     }                    
                   }
                 } 
+                else if (Hmi.isWeather(objType)) {
+                  var cell = this.graph.getModel().getCell(svgId);
+                  if (cell) {
+                    var diagramData = cell.value.userObject;                    
+                    var state = this.graph.view.getState(cell, false);
+                    if (state) {
+                      var node = state.shape.node;                                            
+                      var image = node.getElementsByTagName("image")[0];                        
+                      var ref = image.getAttribute('href');
+                      if (!ref) {
+                        ref = image.getAttribute('xlink:href');
+                        image.removeAttribute('xlink:href');
+                      }
+                      const val = Helpers.getWeatherStatusIcon(update.topic.value?.Double, diagramData.weatherDefinition);
+                      cell.value.userObject.tag = val;
+                      cell.value.userObject.lastUpdate = ts;
+
+                      image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '.svg');                                      
+                    }                    
+                  }
+                }
                 else if (Symbol.button === objType) {
                   var cell = this.graph.getModel().getCell(svgId);
                   if (cell) {                    
@@ -994,7 +1035,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
                       }
                     }
                   }
-                  // Get img element                  
+                  // Get img element
                   var img = domElement[i].getElementsByTagName('img')[0];
                   img.setAttribute('src', baseImagePath + color + '.svg');
                   cell.value.userObject.lastUpdate = ts;
@@ -1025,14 +1066,16 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
               if (svgId) {
                 if (Hmi.isPowerFlow(objType)) {
                   var cell = this.graph.getModel().getCell(svgId);
-                  if (cell) {                    
-                    const comparison = domElement[i].getAttribute('visibility-comparison');
-                    if (comparison == "equals") {                                         
-                      cell.value.userObject.visible = update.topic.value?.Double.toString() == "" + domElement[i].getAttribute('visibility-comparison-value');  
-                    } 
-                    else if (comparison == "not-equals") {
-                      cell.value.userObject.visible = update.topic.value?.Double.toString() != "" + domElement[i].getAttribute('visibility-comparison-value');
-                    }            
+                  if (cell) {   
+                    cell.value.userObject.visible = this.getVisibility(update, domElement[i]);
+
+                    // const comparison = domElement[i].getAttribute('visibility-comparison');
+                    // if (comparison == "equals") {                                         
+                    //   cell.value.userObject.visible = update.topic.value?.Double.toString() == "" + domElement[i].getAttribute('visibility-comparison-value');  
+                    // } 
+                    // else if (comparison == "not-equals") {
+                    //   cell.value.userObject.visible = update.topic.value?.Double.toString() != "" + domElement[i].getAttribute('visibility-comparison-value');
+                    // }            
                   }
                 }                              
               }                            
@@ -1045,36 +1088,36 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
     const divs = document.querySelectorAll('[visibility]');
-    // this is for measurement boxes
+    // this is for visibility
     if (divs.length > 0) {      
       for(let update of message.updates) {
-        for(let i = 0; i < divs.length; ++i) {
-          if (update.topic?.mrid === divs[i].getAttribute('mrid') && update.topic?.name === divs[i].getAttribute('visibility')) { 
-            const comparison = divs[i].getAttribute('visibility-comparison');
-            var visible: boolean = true;
-            if (comparison == "equals") {                                         
-              visible = update.topic.value?.Double.toString() == "" + divs[i].getAttribute('visibility-comparison-value');
-              var styles = divs[i].getAttribute('default-style');
-              
-              if (!styles) {
-                styles = '';
-              }
-              divs[i].setAttribute("style", visible ? "display:block;" + styles : "display:none;" + styles); 
-            } 
-            else if (comparison == "not-equals") {
-              visible = update.topic.value?.Double.toString() != "" + divs[i].getAttribute('visibility-comparison-value');
-              var styles = divs[i].getAttribute('default-style');
-              
-              if (!styles) {
-                styles = '';
-              }
-              divs[i].setAttribute("style", visible ? "display:block;" + styles : "display:none;" + styles);              
-            } 
+        for(let i = 0; i < divs.length; ++i) {          
+          if (/*update.topic?.mrid === divs[i].getAttribute('mrid') &&*/ update.topic?.name === divs[i].getAttribute('visibility')) {             
+            var styles = divs[i].getAttribute('default-style');
+            if (!styles) {
+              styles = '';
+            }
+            var visible: boolean = this.getVisibility(update, divs[i]);
+            divs[i].setAttribute("style", visible ? "display:block;" + styles : "display:none;" + styles);
           }
         }
       }      
     }
-  }  
+  } 
+  
+  getVisibility(update: any, element: Element) {
+    var visible: boolean = true;
+    const comparison = element.getAttribute('visibility-comparison');
+
+    if (comparison == "equals") {                                         
+      visible = update.topic.value?.Double.toString() == "" + element.getAttribute('visibility-comparison-value');      
+    } 
+    else if (comparison == "not-equals") {
+      visible = update.topic.value?.Double.toString() != "" + element.getAttribute('visibility-comparison-value');                    
+    } 
+
+    return visible;
+  }
 
   sendWsData(data: any) {    
     this.wsService.sendWsData(data);

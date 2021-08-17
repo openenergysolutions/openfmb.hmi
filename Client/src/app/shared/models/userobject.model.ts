@@ -27,6 +27,7 @@ export interface DiagramData {
     lastUpdate?: any,
     statusDefinition?: StatusDefinition[],
     arrowDirection?: ArrowDirection,
+    weatherDefinition?: WeatherStatusDefinition[],
     displayData: any[],
     controlData: any[],
     visibilityData: any[]    
@@ -51,4 +52,10 @@ export interface ArrowDirection {
     positiveColor?: string,
     negativeColor?: string,
     neutralColor?: string
+}
+
+export interface WeatherStatusDefinition {
+    from?: number,
+    to?: number,
+    text?: string
 }

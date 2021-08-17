@@ -19,6 +19,9 @@ use openfmb_messages_ext::ess::EssControlExt;
 use openfmb_messages::loadmodule::LoadControlProfile;
 use openfmb_messages_ext::load::LoadControlExt;
 
+use openfmb_messages::generationmodule::GenerationControlProfile;
+use openfmb_messages_ext::generation::GenerationControlExt;
+
 use openfmb_messages::solarmodule::SolarControlProfile;
 use openfmb_messages_ext::solar::SolarControlExt;
 
@@ -489,6 +492,23 @@ impl Receive<GenericControl> for HmiPublisher {
                         warn!("Unsupport control type: {:?}", msg.message)
                     }                   
                 } 
+            },
+            "GenerationControlProfile" => {
+                let subject = format!("openfmb.generationmodule.GenerationControlProfile.{}", &msg.mrid);
+                match msg.message {                   
+                    microgrid::generic_control::ControlType::SetWNetMag | microgrid::generic_control::ControlType::SetValue => {                             
+                        let profile = GenerationControlProfile::generator_on_msg(
+                            &msg.mrid,
+                            msg.args.unwrap().abs(),
+                        ); 
+                        let mut buffer = Vec::<u8>::new();                        
+                        profile.encode(&mut buffer).unwrap();                                                                  
+                        self.publish(&subject, &mut buffer);
+                    }
+                    _ => {
+                        warn!("Unsupport control type: {:?}", msg.message)
+                    }                   
+                }
             }
             _ => {
                 println!("Unsupported generic control for profile {}", profile_name);                

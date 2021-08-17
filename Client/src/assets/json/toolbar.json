@@ -1047,7 +1047,8 @@
     "height": 80,
     "title": "Weather",
     "left": 0,
-    "top": 0    
+    "top": 0,
+    "type": "weather"
   },
   {
     "shape": "image",

@@ -5,7 +5,7 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DiagramsService } from '../../../shared/services/diagrams.service';
-import { ArrowDirection, DiagramData, LinkData, StatusDefinition } from '../../../shared/models/userobject.model'
+import { ArrowDirection, DiagramData, LinkData, StatusDefinition, WeatherStatusDefinition } from '../../../shared/models/userobject.model'
 import { Diagram } from '../../../shared/models/diagram.model';
 import { Symbol, ButtonFunction } from '../../../shared/hmi.constants'
 import { Router } from '@angular/router';
@@ -43,7 +43,8 @@ export class PropertiesDialogComponent implements OnInit {
   navigateToDataConnection: boolean = false;
   dataConnectAllowed: boolean;
   statusDefinitionAllowed: boolean = false;
-  flowDefinitionAllowed: boolean = false;  
+  flowDefinitionAllowed: boolean = false; 
+  weatherDefinitionAllowed: boolean = false; 
   equipmentList: any[];  
   selectedEquipment: any;
   textAlign: string;
@@ -75,6 +76,10 @@ export class PropertiesDialogComponent implements OnInit {
   arrowDirections: string[] = ['', 'east', 'west', 'south', 'north', 'se', 'sw', 'ne', 'nw'];
   arrowDirection: ArrowDirection;
   arrowColors: string[] = ['red', 'green'];
+
+  // weather definition
+  weatherDefinitions: WeatherStatusDefinition[];
+  weatherConditions: string[] = ['clear', 'cloudy', 'rainy', 'storm', 'snow', 'partly-sunny', 'sunny'];
 
   constructor(
     public dialogRef: MatDialogRef<PropertiesDialogComponent>,
@@ -115,9 +120,10 @@ export class PropertiesDialogComponent implements OnInit {
     this.dataConnectAllowed = Hmi.isDataConnectable(this.data.type);
     this.statusDefinitionAllowed = this.data.type === Symbol.statusIndicator;
     this.flowDefinitionAllowed = Hmi.isPowerFlow(this.data.type);
+    this.weatherDefinitionAllowed = Hmi.isWeather(this.data.type);
     if (this.data.type === Symbol.label || this.data.type === Symbol.button || this.data.type === Symbol.statusIndicator) {
       this.textAlignAllowed = true;
-      this.textAlign = this.data.textAlign || 'center';
+      this.textAlign = this.data.textAlign || 'left';
       this.fontStyle = this.data.fontStyle || '0';
     }
     console.log("FONT STYLE: " + this.fontStyle);
@@ -154,6 +160,15 @@ export class PropertiesDialogComponent implements OnInit {
       }
       else {
         this.statusDefinitions = [];
+      }
+    }
+
+    if (this.weatherDefinitionAllowed) {
+      if (this.data.weatherDefinition) {
+        this.weatherDefinitions = this.data.weatherDefinition;
+      }
+      else {
+        this.weatherDefinitions = [];
       }
     }
   
@@ -274,6 +289,7 @@ export class PropertiesDialogComponent implements OnInit {
       deviceTypeMapping: this.deviceTypeMapping,
       navigateToDataConnection: this.navigateToDataConnection,
       statusDefinition: this.statusDefinitions,
+      weatherDefinition: this.weatherDefinitions,
       arrowDirection: this.arrowDirection,
       selectedCommand: this.selectedCommand,
       func: this.buttonFunction
@@ -324,6 +340,29 @@ export class PropertiesDialogComponent implements OnInit {
     }
     else {
       console.error("Unable to delete status definition.  item=" + item);
+    }
+  }
+
+  addWeatherDefinition() {
+    const def: WeatherStatusDefinition = {
+      from: 0,
+      to: 0,
+      text: 'clear'
+    };
+    this.weatherDefinitions.push(def);
+  }
+
+  removeWeatherDefinition(item: WeatherStatusDefinition) {
+    if (item) {
+      for(let index = this.weatherDefinitions.length - 1; index >=0; --index) {
+        var obj = this.weatherDefinitions[index];
+        if (obj === item) {        
+          this.weatherDefinitions.splice(index, 1);
+        }
+      }
+    }
+    else {
+      console.error("Unable to delete weather definition.  item=" + item);
     }
   }
 

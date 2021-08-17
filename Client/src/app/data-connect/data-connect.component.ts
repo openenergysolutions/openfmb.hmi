@@ -175,7 +175,7 @@ export class DataConnectComponent implements OnInit {
                         var displayData = null;
                         var controlData = null;
                         var visibilityData = null;
-
+                                                
                         for(var j = 0; j < objElement.elements.length; ++j) {
                           if (objElement.elements[j].attributes.as == "displayData")
                           {
@@ -202,8 +202,14 @@ export class DataConnectComponent implements OnInit {
                         
                         if (visibilityData == null) {  // backward compability
                           visibilityData = {
-                            elements: []
-                          };
+                            type: "element",
+                            name: "Array",
+                            attributes: {
+                              as: 'visibilityData'
+                            },
+                            elements: []                            
+                          };  
+                          objElement.elements.push(visibilityData);                          
                         }
                         
                         var vertex = {

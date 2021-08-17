@@ -112,6 +112,40 @@
         </div> 
       </div>           
     </mat-tab>
+
+    <mat-tab label="Weather Definition" *ngIf="weatherDefinitionAllowed">
+      <button mat-raised-button (click)="addWeatherDefinition()" style="margin-top:15px;" cdkFocusInitial>
+        Add
+      </button>
+      <div style="min-height: 300px;max-height: 300px;overflow: auto;">
+        <div *ngFor="let item of weatherDefinitions; let i = index">          
+          <div fxLayout="row">
+            <mat-form-field fxFlex="25" class="designer-line-form-field" floatLabel='never'>
+              <div style="padding-right: 10px;">
+                <mat-select [(value)]="weatherDefinitions[i].text" name="input-text">
+                  <mat-option *ngFor="let option of weatherConditions" [value]="option">
+                    {{option}}
+                  </mat-option>
+                </mat-select>  
+              </div>
+            </mat-form-field>
+            <mat-form-field fxFlex="30" class="designer-line-form-field" floatLabel='never'>
+              <input type="number" [(ngModel)]="weatherDefinitions[i].from" style="margin-right: 5px;" min="0" max="65535" matInput name="weather-status-from{{i}}"
+                  placeholder="From" />
+            </mat-form-field>
+            <mat-form-field fxFlex="30" class="designer-line-form-field" floatLabel='never'>
+              <input type="number" [(ngModel)]="weatherDefinitions[i].to" min="0" max="65535" matInput name="weather-status-to{{i}}"
+                  placeholder="To" />
+            </mat-form-field>                           
+            <div fxFlex="5">
+              <button mat-icon-button aria-label="Delete" style="cursor: pointer;padding-top: 10px !important;" (click)="removeWeatherDefinition(item)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>          
+          </div>        
+        </div> 
+      </div>      
+    </mat-tab>
     
     <mat-tab label="Flow Definition" *ngIf="flowDefinitionAllowed">      
       <div mat-dialog-content class="dialog-input-container pt-1" style="min-height: 300px;max-height: 300px;overflow: auto;">

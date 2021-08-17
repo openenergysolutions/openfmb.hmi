@@ -335,12 +335,26 @@ async fn server_setup() {
     let host = config.get_str("hmi.server_host").unwrap_or("127.0.0.1".to_string());  
     let port = config.get_int("hmi.server_port").unwrap_or(80); 
     
+    let ssl = config.get_bool("hmi.ssl").unwrap_or(false);
+    
     let hmi_local_ip = format!("{}:{}", host, port);
 
-    let _ = write_hmi_env(&hmi_local_ip);
+    let _ = write_hmi_env(&hmi_local_ip, ssl);
 
     let server_uri = format!("0.0.0.0:{}", port);
-    warp::serve(routes).run(server_uri.to_socket_addrs().unwrap().next().unwrap()).await;
+    
+    if ssl {
+        warp::serve(routes)
+            .tls()
+            .cert_path(config.get_str("hmi.ssl_cert").unwrap())
+            .key_path(config.get_str("hmi.ssl_key").unwrap())
+            .run(server_uri.to_socket_addrs().unwrap().next().unwrap()).await;
+    }
+    else {
+        warp::serve(routes)
+            .run(server_uri.to_socket_addrs()
+            .unwrap().next().unwrap()).await;
+    }
 
 }
 
@@ -356,7 +370,7 @@ fn with_hmi(hmi: ActorRef<HmiMsg>) -> impl Filter<Extract = (ActorRef<HmiMsg>,),
     warp::any().map(move || hmi.clone())
 }
 
-fn write_hmi_env(hmi_local_ip: &str) -> std::io::Result<()> {
+fn write_hmi_env(hmi_local_ip: &str, ssl: bool) -> std::io::Result<()> {
     
     for entry in fs::read_dir("Client/dist/openfmb-hmi")? {
         let entry = entry?;                
@@ -370,7 +384,19 @@ fn write_hmi_env(hmi_local_ip: &str) -> std::io::Result<()> {
                         fs::copy(entry.path().as_path(), backup)?;
                     }
                     let mut contents = fs::read_to_string(backup)?;
-                    contents = contents.replace("HOST_PORT", hmi_local_ip);
+
+                    // search for
+                    let http_scheme = "http://HOST_PORT/";
+                    let ws_schema = "ws://HOST_PORT/";
+
+                    let mut http_uri = format!("https://{}/", hmi_local_ip);
+                    let mut ws_uri = format!("wss://{}/", hmi_local_ip);
+                    
+                    if !ssl {
+                        http_uri = format!("http://{}/", hmi_local_ip);
+                        ws_uri = format!("ws://{}/", hmi_local_ip);
+                    }
+                    contents = contents.replace(http_scheme, &http_uri).replace(ws_schema, &ws_uri);
                     fs::write(entry.path().as_path(), contents)?;                    
                 }
             }

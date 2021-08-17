@@ -168,6 +168,18 @@ pub async fn data_handler(
 ) -> Result<impl Reply> {
 
     info!("Handle data: {:?}", update);
+
+    // This action is applied to all client sessions
+    if update.topic.name == "ToggleEnvironment" {                    
+        hmi.tell(
+            StartProcessing {
+                pubsub_options: PubSubOptions::toggle_environment(),
+            },
+            None,
+        ); 
+        return Ok(StatusCode::OK);                   
+    }
+
     clients
         .read()
         .await
@@ -262,6 +274,7 @@ pub async fn data_handler(
                 }
                 // Device controls
                 else if update.topic.name == "EnableSolarInverter" {
+                    println!("!!!!!!!!!!!!!!!!!!!!!!@@@@@@@@@@@@@@@@@@@@@@@@@@@");
                     processor.tell(
                         DeviceControl {
                             text: update.topic.name.clone(),
@@ -511,15 +524,7 @@ pub async fn data_handler(
                             None,
                         );
                     }
-                }
-                else if update.topic.name == "ToggleEnvironment" {                    
-                    hmi.tell(
-                        StartProcessing {
-                            pubsub_options: PubSubOptions::toggle_environment(),
-                        },
-                        None,
-                    );
-                }
+                }                
                 else {
 
                     if let Some(action) = &update.topic.action {

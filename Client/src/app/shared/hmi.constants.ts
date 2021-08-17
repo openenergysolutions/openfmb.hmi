@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+import { WeatherStatusDefinition } from "./models/userobject.model"
+
 export const Symbol = {
     breaker: "breaker",
     statusIndicator: "state-indicator",
@@ -24,7 +26,8 @@ export const Symbol = {
     batteryHorizontal: "battery-horizontal",
     battery3D : "battery3d",
     pcc: "pcc",
-    buttonpcc: "button-pcc"
+    buttonpcc: "button-pcc",
+    weather: "weather"
 }
 
 export const CommandAction = {
@@ -112,10 +115,16 @@ export const Hmi = {
         return type && (type.startsWith(Symbol.arrow) || type.startsWith(Symbol.flow));
     },
     isLabel: (type: string) => {
-        return type == Symbol.label;
+        return type === Symbol.label;
+    },
+    isStatusIndicator: (type: string) => {
+        return type === Symbol.statusIndicator;
+    },
+    isWeather: (type: string) => {
+        return type === Symbol.weather;
     },
     isVisibilitySupport: (type: string) => {
-        return Hmi.isPowerFlow(type) || Hmi.isMeasureBox(type) || Hmi.isLabel(type);
+        return Hmi.isPowerFlow(type) || Hmi.isMeasureBox(type) || Hmi.isLabel(type) || Hmi.isStatusIndicator(type);
     }
 }
 
@@ -139,6 +148,20 @@ export const Helpers = {
         if (96 < val && val <= 100) return 100;
         if (val > 100) return 100;
         return 0;
+    },
+    getWeatherStatusIcon: (val: number, definitions: WeatherStatusDefinition[]) => {
+        var ret = "";
+
+        if (definitions) {
+            for(var j = 0; j < definitions.length; ++j) {
+                if (definitions[j].from <= val && val <= definitions[j].to) {
+                    ret = definitions[j].text;
+                    break;
+                }
+            }
+        }
+
+        return ret;
     },
     currentTimestamp: () => {
         return new Date().toLocaleString();
