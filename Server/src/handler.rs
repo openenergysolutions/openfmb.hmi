@@ -215,6 +215,15 @@ pub async fn data_handler(
             None,
         );
     }
+    else if update.topic.name == "PccControl" {
+        processor.tell(
+            MicrogridControl {
+                text: update.topic.name.clone(),
+                message:  microgrid::microgrid_control::ControlMessage::PccControl("".to_string()),
+            },
+            None,
+        );
+    }
     else if update.topic.name == "EnableNetZero" {
         processor.tell(
             MicrogridControl {
@@ -450,6 +459,70 @@ pub async fn data_handler(
             None,
         );
     }
+    else if update.topic.name == "ResetSwitchOne" {
+        processor.tell(
+            DeviceControl {
+                text: update.topic.name.clone(),
+                message:  microgrid::device_control::DeviceControlMessage::ResetSwitchOne,
+            },
+            None,
+        );
+    }
+    else if update.topic.name == "ResetSwitchTwo" {
+        processor.tell(
+            DeviceControl {
+                text: update.topic.name.clone(),
+                message:  microgrid::device_control::DeviceControlMessage::ResetSwitchTwo,
+            },
+            None,
+        );
+    }
+    else if update.topic.name == "ResetSwitchThree" {
+        processor.tell(
+            DeviceControl {
+                text: update.topic.name.clone(),
+                message:  microgrid::device_control::DeviceControlMessage::ResetSwitchThree,
+            },
+            None,
+        );
+    }
+    else if update.topic.name == "ResetSwitchFour" {
+        processor.tell(
+            DeviceControl {
+                text: update.topic.name.clone(),
+                message:  microgrid::device_control::DeviceControlMessage::ResetSwitchFour,
+            },
+            None,
+        );
+    }
+    else if update.topic.name == "ResetBreakerThree" {
+        processor.tell(
+            DeviceControl {
+                text: update.topic.name.clone(),
+                message:  microgrid::device_control::DeviceControlMessage::ResetBreakerThree,
+            },
+            None,
+        );
+    }
+    else if update.topic.name == "ResetEss" {
+        processor.tell(
+            DeviceControl {
+                text: update.topic.name.clone(),
+                message:  microgrid::device_control::DeviceControlMessage::ResetEss,
+            },
+            None,
+        );
+    }
+    else if update.topic.name == "ResetSolar" {
+        processor.tell(
+            DeviceControl {
+                text: update.topic.name.clone(),
+                message:  microgrid::device_control::DeviceControlMessage::ResetSolar,
+            },
+            None,
+        );
+    }
+    // generic_control
     else if update.topic.name == "Trip" {
         processor.tell(
             GenericControl {
@@ -655,8 +728,7 @@ pub async fn data_handler(
         else {
             info!("Received unknown command: {}", update.topic.name);
         }
-    } 
-    
+    }     
 
     Ok(StatusCode::OK)
 }

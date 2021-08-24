@@ -179,13 +179,22 @@ impl Receive<GenericControl> for Processor {
 }
 
 async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
+    let device_mrid = match msg.device_mrid() {
+        Ok(mrid) => {
+            mrid.to_hyphenated().to_string()
+        },
+        Err(_) => {
+            "".to_string()
+        }
+    };
+    if device_mrid.len() == 0 {
+        return;
+    }
 
     let mut update_messages: BTreeMap<String, Vec<UpdateMessage>> = BTreeMap::new();    
 
     let mut data_maps : BTreeMap<String, BTreeMap<String, DataValue>> = BTreeMap::new();
-    let dummy : BTreeMap<String, DataValue> = BTreeMap::new();
-
-    let device_mrid = format!("{}", msg.device_mrid().unwrap());
+    let dummy : BTreeMap<String, DataValue> = BTreeMap::new();             
 
     clients
         .read()

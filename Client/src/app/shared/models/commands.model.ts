@@ -47,6 +47,17 @@ export const COMMANDS = {
         }, 
         {   
             "type": "element",
+			"name": "Object",         
+            "attributes": {
+                "label": "",
+                "name": "PccControl",
+                "path": "PccControl",
+                "type": "",
+				"measurement": ""               
+            }
+        },
+        {   
+            "type": "element",
 			"name": "Object",          
             "attributes": {
                 "label": "",
@@ -340,6 +351,83 @@ export const COMMANDS = {
                 "label": "",
                 "name": "SwitchFourClosed",
                 "path": "SwitchFourClosed",
+                "type": "",
+				"measurement": ""               
+            }
+        },
+        { 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
+                "name": "ResetSwitchOne",
+                "path": "ResetSwitchOne",
+                "type": "",
+				"measurement": ""               
+            }
+        },
+        { 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
+                "name": "ResetSwitchTwo",
+                "path": "ResetSwitchTwo",
+                "type": "",
+				"measurement": ""               
+            }
+        },
+        { 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
+                "name": "ResetSwitchThree",
+                "path": "ResetSwitchThree",
+                "type": "",
+				"measurement": ""               
+            }
+        },
+        { 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
+                "name": "ResetSwitchFour",
+                "path": "ResetSwitchFour",
+                "type": "",
+				"measurement": ""               
+            }
+        },
+        { 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
+                "name": "ResetBreakerThree",
+                "path": "ResetBreakerThree",
+                "type": "",
+				"measurement": ""               
+            }
+        },
+        { 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
+                "name": "ResetEss",
+                "path": "ResetEss",
+                "type": "",
+				"measurement": ""               
+            }
+        },
+        { 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
+                "name": "ResetSolar",
+                "path": "ResetSolar",
                 "type": "",
 				"measurement": ""               
             }

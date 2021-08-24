@@ -17,6 +17,7 @@ message MicrogridControl
         string ReconnectPretestOne = 7;
         string ReconnectPretestTwo = 8;
         string ReconnectTest = 9;
+        string PccControl = 10;
     }
 }
 
@@ -46,6 +47,13 @@ message DeviceControl
         BreakerThreeClosed = 18;
         SwitchFourOpen = 19;
         SwitchFourClosed = 20;
+        ResetSwitchOne = 21;
+        ResetSwitchTwo = 22;
+        ResetSwitchThree = 23;
+        ResetSwitchFour = 24;
+        ResetBreakerThree = 25;
+        ResetEss = 26;
+        ResetSolar = 27;
     }
 }
 
