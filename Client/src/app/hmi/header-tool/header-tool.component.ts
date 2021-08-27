@@ -29,6 +29,7 @@ export class HeaderToolComponent implements OnInit {
   readonly DesignerConstant = DesignerConstant;
   selectedMode$: Observable<number>;
   selectedConnectColor$: Observable<string>;
+  isMoveSelected = false;
   autoTicks = false;
   disabled = false;
   invert = false;
@@ -61,11 +62,21 @@ export class HeaderToolComponent implements OnInit {
 
   ngOnInit() {
     this.selectedMode$ = this.store.select(state => state.designer.mode);
+    this.selectedMode$.subscribe(
+      x => this.isMoveSelected = x === 2,
+      err => console.error('Observer got an error: ' + err),
+      () => console.log('Observer got a complete notification')
+    );
     this.selectedConnectColor$ = this.store.select(state => state.designer.connectColor);
   }
 
-  onModeSelect(mode: number) {
-    this.store.dispatch(designerActions.selectMode({ mode }));
+  onModeSelect() { 
+    if (this.isMoveSelected) {    
+      this.store.dispatch(designerActions.selectMode({ mode: DesignerConstant.SELECT_MODE }));  
+    }
+    else {
+      this.store.dispatch(designerActions.selectMode({ mode: DesignerConstant.MOVE_MODE })); 
+    }  
   }
 
   onColorSelect(connectColor: string) {

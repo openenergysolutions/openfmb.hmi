@@ -12,6 +12,12 @@
       &nbsp;
     </div>
     <div fxLayout="row" fxLayoutAlign="end center" fxFlex="0" fxFlexAlign="center">
+      <div class="mode-button mode-button-move" [ngClass]="{
+          active: (selectedMode$ | async) === DesignerConstant.MOVE_MODE
+        }" fxLayout="column" fxLayoutAlign="center center" (click)="onModeSelect()">
+        <mat-icon svgIcon="move-icon" aria-hidden="false" aria-label="Example thumbs up SVG icon"></mat-icon>
+        <span class="title">Pan</span>
+      </div>
       <div fxItemAlign="center" class="zoom-control">
         Zoom:&nbsp;&nbsp;&nbsp;&nbsp;
         <a [routerLink]="" class="zoom-button zoom-out" (click)="zoomOut()">

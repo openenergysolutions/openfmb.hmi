@@ -120,6 +120,12 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     // load default styles
     this.defaultGraphStyles();
 
+    // change mode according to selection.
+    this.store.select(state => state.designer.mode).pipe(takeUntil(this.destroy$)).subscribe(data => {
+      this.mode = data;
+      this.changeMode(this.mode);
+    });
+
     // load graph
     if (this.diagramId) {
       this.loadGraphFromServer(this.diagramId);      
@@ -662,6 +668,27 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     return false; 
   }  
 
+  // change selection mode.
+  private changeMode(mode: number) {
+    if (mode === this.DESIGNER_CONST.MOVE_MODE) {
+      this.dialog.closeAll();
+      this.graph.setPanning(true);
+      this.graph.panningHandler.useLeftButtonForPanning = true;
+      this.graph.setConnectable(false);
+      this.graph.getSelectionModel().clear();
+      this.graph.setCellsSelectable(false);
+      this.graph.setDropEnabled(false);
+      this.graph.setCellsMovable(false);
+    } else {
+      this.dialog.closeAll();
+      this.graph.setPanning(false);
+      this.graph.setConnectable(false);
+      this.graph.setCellsSelectable(false);
+      this.graph.setDropEnabled(false);
+      this.graph.setCellsMovable(false);
+    }
+  }
+
   // set default styles for graph.
   private defaultGraphStyles() {
     // Changes some default colors
@@ -1083,9 +1110,8 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     // this is for visibility
     if (divs.length > 0) {      
       for(let update of message.updates) {
-        for(let i = 0; i < divs.length; ++i) {    
-          console.log(update.topic?.name);      
-          if (/*update.topic?.mrid === divs[i].getAttribute('mrid') &&*/ update.topic?.name === divs[i].getAttribute('visibility')) {             
+        for(let i = 0; i < divs.length; ++i) {                    
+          if (update.topic?.name === divs[i].getAttribute('visibility')) {             
             var styles = divs[i].getAttribute('default-style');
             if (!styles) {
               styles = '';
@@ -1102,12 +1128,10 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     var visible: boolean = true;
     const comparison = element.getAttribute('visibility-comparison');
 
-    if (comparison == "equals") {                                         
-      //visible = update.topic.value?.Double.toString() == "" + element.getAttribute('visibility-comparison-value');       
+    if (comparison == "equals") {             
       visible = parseFloat(update.topic.value?.Double.toString()) == parseFloat(element.getAttribute('visibility-comparison-value')); 
     } 
-    else if (comparison == "not-equals") {
-      //visible = update.topic.value?.Double.toString() != "" + element.getAttribute('visibility-comparison-value'); 
+    else if (comparison == "not-equals") {      
       visible = parseFloat(update.topic.value?.Double.toString()) != parseFloat(element.getAttribute('visibility-comparison-value'));                    
     }     
     return visible;
