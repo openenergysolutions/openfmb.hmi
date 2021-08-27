@@ -62,6 +62,24 @@ export const PosString = {
     invalid: 'invalid' 
 }
 
+export const NetZeroState = {
+    normal: 0,
+    loadDischarge: 1,
+    essDischarge: 2,
+    essCharge: 3,
+    disabled: 4,
+    shuttingDown: 5
+}
+
+export const NetZeroStateString = {
+    normal: 'normal',
+    loadDischarge: 'load bank activated',
+    essDischarge: 'ess discharging',
+    essCharge: 'ess charging',
+    disabled: 'disabled',
+    shuttingDown: 'shutting down'
+}
+
 export const ButtonFunction = {
     link: 'link',
     command: 'command'
@@ -138,6 +156,29 @@ export const Helpers = {
         }
         else {
             return PosString.invalid;
+        }
+    },
+    convertNetZeroState: (pos: number) => {
+        if (pos === NetZeroState.normal) {
+            return NetZeroStateString.normal;
+        }
+        else if (pos === NetZeroState.loadDischarge) {
+            return NetZeroStateString.loadDischarge;
+        }
+        else if (pos === NetZeroState.essDischarge) {
+            return NetZeroStateString.essDischarge;
+        }
+        else if (pos === NetZeroState.essCharge) {
+            return NetZeroStateString.essCharge;
+        }
+        else if (pos === NetZeroState.disabled) {
+            return NetZeroStateString.disabled;
+        }
+        else if (pos === NetZeroState.shuttingDown) {
+            return NetZeroStateString.shuttingDown;
+        }
+        else {
+            return 'Unknown';
         }
     },
     getBatteryPercentage: (val: number) => {

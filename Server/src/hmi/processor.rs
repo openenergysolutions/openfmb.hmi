@@ -190,6 +190,10 @@ macro_rules! extract {
                     root.path = format!("{}.mapping", $profile_name);
                     root.from_json(&json, &mut d);  
                 }
+                else {
+                    debug!("Unable to save message to json string: {:?}", $message);
+                } 
+                
                 $data_maps.insert($topic.mrid.clone(), d);
                 $data_maps.get(&$topic.mrid).unwrap()
             }
@@ -355,13 +359,13 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                     };
 
                     match data.get(&topic.name.to_lowercase()) {
-                        Some(v) => {
+                        Some(v) => {                           
                             let mut update_msg = UpdateMessage::create(topic.clone(), client.session_id.clone(), None);
                             update_msg.topic.value = Some(v.clone()); 
                             update_messages.entry(client.session_id.clone()).or_insert(Vec::new()).push(update_msg);
                         },
                         _ => {
-                            // ignore
+                            // Ignore
                         }
                     }
                 }                
