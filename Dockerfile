@@ -1,12 +1,11 @@
-FROM rust:latest AS build
+FROM rust:1.52 AS build
 
-WORKDIR /usr/src
+COPY microgrid-protobuf /openfmb.hmi/microgrid-protobuf
+COPY Server /openfmb.hmi/Server
+COPY Cargo.toml /openfmb.hmi/Cargo.toml
+COPY Cargo.lock /openfmb.hmi/Cargo.lock
 
-COPY deps ./deps
-COPY microgrid-protobuf ./microgrid-protobuf
-COPY Server ./Server
-COPY Server/Cargo-Docker.toml ./Server/Cargo.toml
-COPY Cargo.toml Cargo.toml
+WORKDIR /openfmb.hmi
 
 RUN cargo build --release
 
@@ -22,7 +21,7 @@ FROM debian:buster-slim
 
 COPY --from=build2 /Client/dist/openfmb-hmi /hmi_server/Client/dist/openfmb-hmi
 
-COPY --from=build /usr/src/target/release/hmi_server /usr/local/bin/
+COPY --from=build /openfmb.hmi/target/release/hmi_server /usr/local/bin/
 
 WORKDIR /hmi_server
 
