@@ -22,7 +22,7 @@ use super::hmi;
 use hmi::processor::ProcessorMsg;
 use hmi::hmi::HmiMsg;
 use hmi::pubsub::{PubSubOptions, PubSubStatus};
-use crate::messages::StartProcessing;
+use crate::messages::StartProcessingMessages;
 
 use microgrid_protobuf as microgrid;
 
@@ -160,8 +160,9 @@ pub async fn data_handler(
     // This action is applied to all client sessions
     if update.topic.name == "ToggleEnvironment" {                    
         hmi.tell(
-            StartProcessing {
+            StartProcessingMessages {
                 pubsub_options: PubSubOptions::toggle_environment(),
+                nats_client: None,
             },
             None,
         ); 

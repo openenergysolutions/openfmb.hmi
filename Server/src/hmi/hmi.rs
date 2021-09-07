@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-use crate::messages::StartProcessing;
+use crate::messages::StartProcessingMessages;
 
 use super::hmi_subscriber::HmiSubscriberMsg;
 use super::hmi_publisher::HmiPublisherMsg;
@@ -48,7 +48,7 @@ use openfmb_messages::{
     },
 };
 
-#[actor(StartProcessing)]
+#[actor(StartProcessingMessages)]
 #[derive(Clone, Debug)]
 pub struct Hmi {
     pub message_count: u32,            
@@ -102,10 +102,10 @@ impl Actor for Hmi {
     }
 }
 
-impl Receive<StartProcessing> for Hmi {
+impl Receive<StartProcessingMessages> for Hmi {
     type Msg = HmiMsg;
 
-    fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: StartProcessing, _sender: Sender) { 
+    fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: StartProcessingMessages, _sender: Sender) { 
         log::debug!("Received start processing message: {:?}", msg);
         self.subscriber.tell(msg.clone(), None);
         self.publisher.tell(msg.clone(), None);

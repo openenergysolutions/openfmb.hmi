@@ -1,5 +1,5 @@
 [coordinator]
-environment = "dev" # dev or prod
+environment = "prod" # dev or prod
 app_name = "openfmb-hmi" # name of the application
 log-level = "Debug" # Off, Error, Info, Debug, Trace
 
@@ -9,7 +9,7 @@ dev_uri = "192.168.86.36:4222"
 send_status_update = true
 server_id = "741df6b5-5bdd-4ea6-a6aa-541fba744721"
 # authentication_type = "creds"
-creds = "meter.creds"
+# creds = "meter.creds"
 
 [hmi]
 server_host = "192.168.86.36"

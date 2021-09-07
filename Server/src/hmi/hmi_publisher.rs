@@ -48,7 +48,7 @@ use super::utils::*;
     MicrogridControl,
     DeviceControl,
     GenericControl,
-    StartProcessing
+    StartProcessingMessages
 )]
 #[derive(Clone, Debug)]
 pub struct HmiPublisher {
@@ -68,23 +68,23 @@ impl ActorFactoryArgs<Config> for HmiPublisher {
 }
 
 impl HmiPublisher { 
-    fn connect_to_nats_broker(&mut self, _ctx: &Context<<HmiPublisher as Actor>::Msg>, msg: &StartProcessing) {               
-        if let Some(c) = &self.nats_client{
-            if let Ok(_) = c.flush() {                
-                self.nats_client.as_ref().unwrap().clone().close();
-            }
+    fn connect_to_nats_broker(&mut self, _ctx: &Context<<HmiPublisher as Actor>::Msg>, msg: &StartProcessingMessages) {               
+        if let Some(c) = &msg.nats_client{
+            self.nats_client = Some(c.clone());
         }
-        info!("HmiPublisher connects to NATS with options: {:?}", msg.pubsub_options);
-        match msg.pubsub_options.connect() {
-            Ok(connection) => {
-                info!("****** HmiPublisher successfully connected");                
+        else {
+            info!("HmiPublisher connects to NATS with options: {:?}", msg.pubsub_options);
+            match msg.pubsub_options.connect() {
+                Ok(connection) => {
+                    info!("****** HmiPublisher successfully connected");                
 
-                self.nats_client = Some(connection);
-            }
-            Err(e) => {
-                error!("Unable to connect to nats.  {:?}", e);
-            }
-        } 
+                    self.nats_client = Some(connection);
+                }
+                Err(e) => {
+                    error!("Unable to connect to nats.  {:?}", e);
+                }
+            }  
+        }   
     }
 
     fn get_device_type_by_mrid(&self, mrid: String) -> Option<String> {
@@ -536,10 +536,10 @@ impl Receive<GenericControl> for HmiPublisher {
     } 
 }
 
-impl Receive<StartProcessing> for HmiPublisher {
+impl Receive<StartProcessingMessages> for HmiPublisher {
     type Msg = HmiPublisherMsg;
 
-    fn receive(&mut self, ctx: &Context<Self::Msg>, msg: StartProcessing, _sender: Sender) {        
+    fn receive(&mut self, ctx: &Context<Self::Msg>, msg: StartProcessingMessages, _sender: Sender) {        
         self.connect_to_nats_broker(ctx, &msg);
     }
 }

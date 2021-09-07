@@ -14,7 +14,7 @@ use tokio::sync::RwLock;
 use warp::Filter;
 
 use hmi_server::logs::{SystemEventLog, setup_logger};
-use hmi_server::messages::StartProcessing;
+use hmi_server::messages::StartProcessingMessages;
 
 use hmi_server::{handler::*, auth::*};
 use hmi_server::hmi::{hmi::*, hmi_subscriber::*, hmi_publisher::*, processor::*, pubsub::*, monitor::*};
@@ -81,9 +81,25 @@ async fn server_setup() {
             ActorRef<HmiSubscriberMsg>                                                   
         )>("HMI", (publisher.clone(), subscriber.clone()))
         .unwrap();    
-           
-    let run_mode = StartProcessing {
+    
+    let nats_server_uri = match config.get_str("coordinator.environment").unwrap().as_str() {
+        "prod" => config.get_str("openfmb_nats_subscriber.prod_uri").unwrap(),
+        "dev" => config.get_str("openfmb_nats_subscriber.dev_uri").unwrap(),
+        err => panic!("unsupported environment name: {}", err),
+    };
+
+    let creds = config.get_str("openfmb_nats_subscriber.creds").unwrap_or("".to_string());
+
+    let nats_client = match creds.len() > 0 {
+        true => nats::Options::with_credentials(creds).connect(&nats_server_uri).unwrap(),
+        false => nats::connect(&nats_server_uri).unwrap()
+    };  
+
+    log::info!("Connected to NATS server");
+  
+    let run_mode = StartProcessingMessages {
         pubsub_options: PubSubOptions::new(),
+        nats_client: Some(nats_client),
     };
 
     let start_processing_msg: HmiMsg = run_mode.into();

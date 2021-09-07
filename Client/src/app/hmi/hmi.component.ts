@@ -948,41 +948,55 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
                       
                       var val = '';
 
-                      if (cell.value.userObject.arrowDirection) {
-                        if (update.topic.value?.Double > 0.0)
-                        {
-                          val = cell.value.userObject.arrowDirection.positive;
-                          var c = cell.value.userObject.arrowDirection.positiveColor;
-                          if (!c) {
-                            c = 'red';
-                          }
-                          image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '-' + c + '.svg'); 
+                      if (typeof cell.value.userObject.visible !== 'undefined') {
+                        if (cell.value.userObject.visible === false) {
+                          image.setAttribute("href", baseToolbarImagePath + 'flow-empty.svg');
                         }
-                        else if (update.topic.value?.Double < 0.0) {
-                          val = cell.value.userObject.arrowDirection.negative;
-                          var c = cell.value.userObject.arrowDirection.negativeColor;
-                          if (!c) {
-                            c = 'red';
-                          }
-                          image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '-' + c + '.svg'); 
-                        }                                                
-                        else {
-                          val = cell.value.userObject.arrowDirection.neutral;
-                          if (typeof cell.value.userObject.visible !== 'undefined') {
-                            if (cell.value.userObject.visible === true) {
-                              image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '-grayed.svg'); 
+                      }
+                      else {
+                        if (cell.value.userObject.arrowDirection) {
+                          if (update.topic.value?.Double > 0.0)
+                          {
+                            val = cell.value.userObject.arrowDirection.positive;
+                            var c = cell.value.userObject.arrowDirection.positiveColor;
+                            if (!c) {
+                              c = 'red';
                             }
-                            else {
-                              image.setAttribute("href", baseToolbarImagePath + 'flow-empty.svg'); 
-                            }
+                            image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '-' + c + '.svg'); 
                           }
-                          else {                            
+                          else if (update.topic.value?.Double < 0.0) {
+                            val = cell.value.userObject.arrowDirection.negative;
+                            var c = cell.value.userObject.arrowDirection.negativeColor;
+                            if (!c) {
+                              c = 'red';
+                            }
+                            image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '-' + c + '.svg'); 
+                          }                                                
+                          else {
+                            val = cell.value.userObject.arrowDirection.neutral;
                             if (val && val != '') {
                               image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '-grayed.svg'); 
                             }
                             else {
                               image.setAttribute("href", baseToolbarImagePath + 'flow-empty.svg'); 
                             }
+                            
+                            // if (typeof cell.value.userObject.visible !== 'undefined') {
+                            //   if (cell.value.userObject.visible === true) {
+                            //     image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '-grayed.svg'); 
+                            //   }
+                            //   else {
+                            //     image.setAttribute("href", baseToolbarImagePath + 'flow-empty.svg'); 
+                            //   }
+                            // }
+                            // else {                            
+                            //   if (val && val != '') {
+                            //     image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '-grayed.svg'); 
+                            //   }
+                            //   else {
+                            //     image.setAttribute("href", baseToolbarImagePath + 'flow-empty.svg'); 
+                            //   }
+                            // }
                           }
                         }
                       }
@@ -1094,7 +1108,8 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
                 if (Hmi.isPowerFlow(objType)) {
                   var cell = this.graph.getModel().getCell(svgId);
                   if (cell) {   
-                    cell.value.userObject.visible = this.getVisibility(update, domElement[i]);     
+                    cell.value.userObject.visible = this.getVisibility(update, domElement[i]);  
+                    console.log("Visibility for cell: " + cell.value.userObject);
                   }
                 }                              
               }                            
