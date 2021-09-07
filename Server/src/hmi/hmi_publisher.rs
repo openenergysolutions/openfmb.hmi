@@ -4,6 +4,8 @@
 
 use crate::messages::*;
 
+use openfmb_messages::commonmodule::ScheduleParameterKind;
+
 use openfmb_messages::breakermodule::BreakerDiscreteControlProfile;
 use openfmb_messages_ext::breaker::BreakerControlExt;
 
@@ -35,9 +37,11 @@ use prost::Message;
 
 use riker::actors::*;
 use std::fmt::Debug;
+use std::time::SystemTime;
 use config::Config;
 use log::{debug, info, warn, error};
 use crate::handler::*;
+use super::utils::*;
 
 #[actor(
     OpenFMBMessage, 
@@ -70,10 +74,10 @@ impl HmiPublisher {
                 self.nats_client.as_ref().unwrap().clone().close();
             }
         }
-
+        info!("HmiPublisher connects to NATS with options: {:?}", msg.pubsub_options);
         match msg.pubsub_options.connect() {
             Ok(connection) => {
-                info!("HmiPublisher successfully connected");                
+                info!("****** HmiPublisher successfully connected");                
 
                 self.nats_client = Some(connection);
             }
@@ -175,7 +179,7 @@ impl Receive<MicrogridControl> for HmiPublisher {
     type Msg = HmiPublisherMsg;    
 
     fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: MicrogridControl, _sender: Sender) {      
-        let subject = "microgridui.microgrid_control";
+        let subject = "openfmb.microgridui.microgrid_control";
         info!("Sending {:?} to NATS topic {}", msg, subject);
         let mut buffer = Vec::<u8>::new();
         msg.message.encode(&mut buffer);
@@ -187,7 +191,7 @@ impl Receive<DeviceControl> for HmiPublisher {
     type Msg = HmiPublisherMsg;    
 
     fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: DeviceControl, _sender: Sender) {           
-        let subject = "microgridui.device_control";
+        let subject = "openfmb.microgridui.device_control";
         info!("Sending {:?} to NATS topic {}", msg, subject);
         let mut buffer = Vec::<u8>::new();
         let device_control_msg = microgrid_protobuf::DeviceControl { mrid: "".to_string(), msg: msg.message.into() };
@@ -200,14 +204,17 @@ impl Receive<GenericControl> for HmiPublisher {
     type Msg = HmiPublisherMsg;    
    
     fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: GenericControl, _sender: Sender) {           
-                            
+        let token:  Vec<&str> = msg.text.split(".").collect();                    
         let mut profile_name = String::from("");
         if let Some(p) = msg.profile_name.clone() {
             profile_name = p.clone();
         }
+        else if token.len() > 1 && token[0].ends_with("Profile") {
+            profile_name = token[0].to_string()
+        }
         else if let Some(p) = self.get_common_control_profile(msg.mrid.clone().to_string()){
             profile_name = p.clone();
-        }
+        }        
         
         use microgrid_protobuf as microgrid;
         match profile_name.as_str() {
@@ -327,6 +334,18 @@ impl Receive<GenericControl> for HmiPublisher {
                             &msg.mrid,
                             msg.args.unwrap()
                         ); 
+                        let mut buffer = Vec::<u8>::new();                        
+                        profile.encode(&mut buffer).unwrap();                                                                 
+                        self.publish(&subject, &mut buffer);
+                    }
+                    microgrid::generic_control::ControlType::SetWNetMag => {                        
+                        let profile = schedule_ess_control(&msg.mrid, ScheduleParameterKind::WNetMag, msg.args.unwrap(), SystemTime::now());
+                        let mut buffer = Vec::<u8>::new();                        
+                        profile.encode(&mut buffer).unwrap();                                                                 
+                        self.publish(&subject, &mut buffer);
+                    }
+                    microgrid::generic_control::ControlType::SetVarNetMag => {                        
+                        let profile = schedule_ess_control(&msg.mrid, ScheduleParameterKind::VArNetMag, msg.args.unwrap(), SystemTime::now());
                         let mut buffer = Vec::<u8>::new();                        
                         profile.encode(&mut buffer).unwrap();                                                                 
                         self.publish(&subject, &mut buffer);

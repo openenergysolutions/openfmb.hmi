@@ -75,12 +75,6 @@ export class DiagramsService {
     );  
   }
 
-  getCommandList() : Observable<any> {
-    return this.httpClient.get<Command>(this.endpoint + 'command-list').pipe(
-      catchError(this.handleError)
-    );
-  }
-
   executeCommand(command: Command) {
     return this.httpClient.post<Command>(this.endpoint + 'execute-command', command).pipe(
       catchError(this.handleError)

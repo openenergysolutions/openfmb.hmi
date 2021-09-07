@@ -147,16 +147,10 @@ async fn server_setup() {
         .and_then(diagram_handler);
 
     let update = warp::path!("update-data")
-        .and(warp::body::json())
-        .and(with_clients(clients.clone()))
+        .and(warp::body::json())        
         .and(with_processor(processor.clone()))
         .and(with_hmi(hmi_actor.clone()))       
-        .and_then(data_handler);
-    
-    let execute = warp::path!("execute-command")
-        .and(warp::body::json())
-        .and(with_clients(clients.clone()))
-        .and_then(execute_command);
+        .and_then(data_handler);        
 
     let data_route = warp::path("data")
         .and(warp::ws())
@@ -186,12 +180,6 @@ async fn server_setup() {
         .and(with_auth(Role::Admin)) 
         .and(warp::body::json())                     
         .and_then(create_equipment_handler);
-
-    let command_list = warp::path("command-list");     
-        
-    let command_routes = command_list
-        .and(warp::get())                
-        .and_then(command_handler);
 
     let cors = warp::cors()        
         .allow_methods(vec!["POST", "GET", "OPTIONS"])        
@@ -323,12 +311,10 @@ async fn server_setup() {
         .or(equipment_routes)
         .or(delete_equipment)
         .or(update_equipment)
-        .or(create_equipment)
-        .or(command_routes)
+        .or(create_equipment)        
         .or(design_routes)
         .or(data_route)        
-        .or(update)
-        .or(execute)               
+        .or(update)                       
         .with(cors)       
         .with(warp::log("warp::server"));                   
 
@@ -336,18 +322,22 @@ async fn server_setup() {
     let port = config.get_int("hmi.server_port").unwrap_or(80); 
     
     let ssl = config.get_bool("hmi.ssl").unwrap_or(false);
+    let ssl_cert = config.get_str("hmi.ssl_cert").unwrap_or("".to_string());
+    let ssl_key = config.get_str("hmi.ssl_key").unwrap_or("".to_string());
+    let http_scheme = config.get_str("hmi.http_scheme").unwrap_or("http".to_string());
+    let ws_scheme = config.get_str("hmi.ws_scheme").unwrap_or("ws".to_string());
     
     let hmi_local_ip = format!("{}:{}", host, port);
 
-    let _ = write_hmi_env(&hmi_local_ip, ssl);
+    let _ = write_hmi_env(&hmi_local_ip, &http_scheme, &ws_scheme);
 
     let server_uri = format!("0.0.0.0:{}", port);
     
-    if ssl {
+    if ssl && ssl_cert.len() > 0 && ssl_key.len() > 0 {
         warp::serve(routes)
             .tls()
-            .cert_path(config.get_str("hmi.ssl_cert").unwrap())
-            .key_path(config.get_str("hmi.ssl_key").unwrap())
+            .cert_path(ssl_cert)
+            .key_path(ssl_key)
             .run(server_uri.to_socket_addrs().unwrap().next().unwrap()).await;
     }
     else {
@@ -370,7 +360,7 @@ fn with_hmi(hmi: ActorRef<HmiMsg>) -> impl Filter<Extract = (ActorRef<HmiMsg>,),
     warp::any().map(move || hmi.clone())
 }
 
-fn write_hmi_env(hmi_local_ip: &str, ssl: bool) -> std::io::Result<()> {
+fn write_hmi_env(hmi_local_ip: &str, http_scheme: &str, ws_scheme: &str) -> std::io::Result<()> {
     
     for entry in fs::read_dir("Client/dist/openfmb-hmi")? {
         let entry = entry?;                
@@ -386,17 +376,13 @@ fn write_hmi_env(hmi_local_ip: &str, ssl: bool) -> std::io::Result<()> {
                     let mut contents = fs::read_to_string(backup)?;
 
                     // search for
-                    let http_scheme = "http://HOST_PORT/";
-                    let ws_schema = "ws://HOST_PORT/";
+                    let http_search = "http://HOST_PORT/";
+                    let ws_search = "ws://HOST_PORT/";
 
-                    let mut http_uri = format!("https://{}/", hmi_local_ip);
-                    let mut ws_uri = format!("wss://{}/", hmi_local_ip);
+                    let http_uri = format!("{}://{}/", http_scheme, hmi_local_ip);
+                    let ws_uri = format!("{}://{}/", ws_scheme, hmi_local_ip);
                     
-                    if !ssl {
-                        http_uri = format!("http://{}/", hmi_local_ip);
-                        ws_uri = format!("ws://{}/", hmi_local_ip);
-                    }
-                    contents = contents.replace(http_scheme, &http_uri).replace(ws_schema, &ws_uri);
+                    contents = contents.replace(http_search, &http_uri).replace(ws_search, &ws_uri);
                     fs::write(entry.path().as_path(), contents)?;                    
                 }
             }

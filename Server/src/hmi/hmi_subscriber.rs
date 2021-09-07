@@ -56,13 +56,14 @@ impl HmiSubscriber {
             }
         }
 
+        info!("HmiSubscriber connects to NATS with options: {:?}", msg.pubsub_options);
         match msg.pubsub_options.connect() {
             Ok(connection) => {
-                info!("Subscriber successfully connected");                
+                info!("****** HmiSubscriber successfully connected");                
 
                 self.nats_client = Some(connection);
 
-                let sub = self.nats_client.as_ref().unwrap().subscribe("openfmb.*.*.*").unwrap();
+                let sub = self.nats_client.as_ref().unwrap().subscribe("openfmb.>").unwrap();
 
                 let myself = ctx.myself.clone();
                 // dropping the returned Handler does not unsubscribe here

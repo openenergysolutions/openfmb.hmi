@@ -19,7 +19,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "ResetDevices",
                 "path": "ResetDevices",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         }, 
@@ -30,7 +30,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "InitiateIsland",
                 "path": "InitiateIsland",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         },        
@@ -41,7 +41,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "InitiateGridConnect",
                 "path": "InitiateGridConnect",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         }, 
@@ -52,7 +52,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "PccControl",
                 "path": "PccControl",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         },
@@ -63,7 +63,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "EnableNetZero",
                 "path": "EnableNetZero",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         }, 
@@ -74,54 +74,10 @@ export const COMMANDS = {
                 "label": "",
                 "name": "DisableNetZero",
                 "path": "DisableNetZero",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
-        },            
-        {   
-            "type": "element",
-			"name": "Object",          
-            "attributes": {
-                "label": "",
-                "name": "ReconnectPretestOne",
-                "path": "ReconnectPretestOne",
-                "type": "",
-				"measurement": ""               
-            }
-        },
-        {    
-            "type": "element",
-			"name": "Object",        
-            "attributes": {
-                "label": "",
-                "name": "ReconnectPretestTwo",
-                "path": "ReconnectPretestTwo",
-                "type": "",
-				"measurement": ""               
-            }
-        },
-        {     
-            "type": "element",
-			"name": "Object",       
-            "attributes": {
-                "label": "",
-                "name": "ReconnectTest",
-                "path": "ReconnectTest",
-                "type": "",
-				"measurement": ""               
-            }
-        },
-        {  
-            "type": "element",
-			"name": "Object",          
-            "attributes": {
-                "label": "",
-                "name": "SubscribeDevice",
-                "path": "SubscribeDevice",
-                "type": "",
-				"measurement": ""              
-            }
-        }       
+        }                  
     ],
     "DeviceControl": [
         {   
@@ -131,7 +87,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "EnableSolarInverter",
                 "path": "EnableSolarInverter",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         },
@@ -142,7 +98,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "DisableSolarInverter",
                 "path": "DisableSolarInverter",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         },
@@ -153,7 +109,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "EnableLoadbank",
                 "path": "EnableLoadbank",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         },
@@ -164,7 +120,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "DisableLoadbank",
                 "path": "DisableLoadbank",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         },
@@ -175,7 +131,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "EssStart",
                 "path": "EssStart",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         },
@@ -186,7 +142,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "EssDischarge",
                 "path": "EssDischarge",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         },
@@ -197,7 +153,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "EssSocManage",
                 "path": "EssSocManage",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         },
@@ -208,7 +164,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "EssSocLimits",
                 "path": "EssSocLimits",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         },         
@@ -219,7 +175,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "EssStop",
                 "path": "EssStop",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         },
@@ -230,7 +186,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "GeneratorOn",
                 "path": "GeneratorOn",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         },
@@ -241,7 +197,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "GeneratorDisabled",
                 "path": "GeneratorDisabled",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         },
@@ -252,7 +208,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "GeneratorEnabled",
                 "path": "GeneratorEnabled",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         },
@@ -263,7 +219,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "GeneratorOff",
                 "path": "GeneratorOff",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         },
@@ -274,7 +230,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "SwitchOneOpen",
                 "path": "SwitchOneOpen",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         },
@@ -285,7 +241,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "SwitchOneClosed",
                 "path": "SwitchOneClosed",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         },        
@@ -296,7 +252,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "SwitchTwoOpen",
                 "path": "SwitchTwoOpen",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         },
@@ -307,7 +263,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "SwitchTwoClosed",
                 "path": "SwitchTwoClosed",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         },        
@@ -318,7 +274,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "BreakerThreeOpen",
                 "path": "BreakerThreeOpen",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         },
@@ -329,7 +285,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "BreakerThreeClosed",
                 "path": "BreakerThreeClosed",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         },        
@@ -340,7 +296,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "SwitchFourOpen",
                 "path": "SwitchFourOpen",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         },
@@ -351,7 +307,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "SwitchFourClosed",
                 "path": "SwitchFourClosed",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         },
@@ -362,7 +318,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "ResetSwitchOne",
                 "path": "ResetSwitchOne",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         },
@@ -373,7 +329,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "ResetSwitchTwo",
                 "path": "ResetSwitchTwo",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         },
@@ -384,7 +340,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "ResetSwitchThree",
                 "path": "ResetSwitchThree",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         },
@@ -395,7 +351,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "ResetSwitchFour",
                 "path": "ResetSwitchFour",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         },
@@ -406,7 +362,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "ResetBreakerThree",
                 "path": "ResetBreakerThree",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         },
@@ -417,7 +373,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "ResetEss",
                 "path": "ResetEss",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         },
@@ -428,7 +384,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "ResetSolar",
                 "path": "ResetSolar",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         },
@@ -439,7 +395,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "SetModBlkOn",
                 "path": "SetModBlkOn",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         },
@@ -450,7 +406,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "SetModBlkOff",
                 "path": "SetModBlkOff",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         },
@@ -461,10 +417,21 @@ export const COMMANDS = {
                 "label": "",
                 "name": "SetWNetMag",
                 "path": "SetWNetMag",
-                "type": "",
+                "type": "set-point",
 				"measurement": ""               
             }
-        }          
+        }, 
+        { 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
+                "name": "SetVarNetMag",
+                "path": "SetVarNetMag",
+                "type": "set-point",
+				"measurement": ""               
+            }
+        } 
     ],
     "HmiControl": [
         {   
@@ -474,7 +441,7 @@ export const COMMANDS = {
                 "label": "",
                 "name": "ToggleEnvironment",
                 "path": "ToggleEnvironment",
-                "type": "",
+                "type": "command",
 				"measurement": ""               
             }
         }

@@ -371,11 +371,14 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
           }
           if (userObject.foreColor) {
             style += 'color: ' + userObject.foreColor + ';';
-          }                 
+          } 
+          
+          style += ";vertical-align:top !important;";
+
           const div = this.renderer.createElement('div');
 
           const span = this.renderer.createElement('span');
-          this.renderer.addClass(span, 'button-text');
+          this.renderer.addClass(span, 'button-text');          
           
           if (style != '') {
             this.renderer.setAttribute(span, "style", style);

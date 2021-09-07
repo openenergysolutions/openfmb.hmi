@@ -9,6 +9,7 @@ use config::Config;
 use lazy_static::lazy_static;
 use std::fmt;
 use serde::{Deserialize, Serialize};
+use log::info;
 
 lazy_static! {
 	static ref SETTINGS: RwLock<Config> = RwLock::new(riker::load_config());    
@@ -269,15 +270,19 @@ impl PubSubOptions {
 
         match self.authentication_type {
             Authentication::UserPwd => {
+                info!("NATS with default username/pwd");
                 options = nats::Options::with_user_pass(self.username.as_ref().unwrap(), self.password.as_ref().unwrap());
             }
             Authentication::Token => {
+                info!("NATS options with token: {:?}", self.token);
                 options = nats::Options::with_token(self.token.as_ref().unwrap());
             }
             Authentication::Creds => {
+                info!("NATS options with credential file: {:?}", self.creds_file);
                 options = nats::Options::with_credentials(self.creds_file.as_ref().unwrap());
             }            
             Authentication::None => {
+                info!("NATS with default option");
                 options = nats::Options::new();
             }
         }

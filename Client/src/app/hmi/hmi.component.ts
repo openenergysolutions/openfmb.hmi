@@ -193,7 +193,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
         else if (currentCellData.type === Symbol.statusIndicator) {
           this.openControlDialog(x < centerX ? x + cell.getGeometry().width + 250 : x, y - 100 > centerY ? centerY : y, cell);
         }
-        else if (currentCellData.type === Symbol.button && currentCellData.func === ButtonFunction.command) {
+        else if (currentCellData.type === Symbol.button && currentCellData.func !== ButtonFunction.link) {
           if (currentCellData.controlData && currentCellData.verb == "ToggleSwitch") {
             this.openSwitchgearDialog(x < centerX ? x + cell.getGeometry().width + 250 : x, y - 100 > centerY ? centerY : y, cell);
           }
@@ -382,10 +382,12 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
           }
           if (userObject.foreColor) {
             style += 'color: ' + userObject.foreColor + ';';
-          }                 
+          } 
+          
+          style += ";vertical-align:top !important;";
 
           const span = this.renderer.createElement('span');
-          this.renderer.addClass(span, 'button-text');
+          this.renderer.addClass(span, 'button-text');          
           this.renderer.setAttribute(span, 'mrid', userObject.mRID);
           this.renderer.setAttribute(span, 'cell-id', cell.id);
 
@@ -405,19 +407,17 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
   
             return span;
           }
-          else if (userObject.func == ButtonFunction.command) {
+          else {
             if (displayData && displayData.length > 0) {              
               // write mrid to the wraper            
               this.renderer.setAttribute(wrapper, 'svg-id', cell.id);
               this.renderer.setAttribute(wrapper, 'mrid', userObject.mRID);                           
 
-              displayData.forEach(elem => {                              
-                //const field = this.renderer.createElement('span');
+              displayData.forEach(elem => {
                 this.renderer.setAttribute(span, 'svg-id', cell.id);
                 this.renderer.setAttribute(span, 'mrid', userObject.mRID);
                 this.renderer.setAttribute(span, 'path', elem.path);                
                 this.renderer.setAttribute(span, 'obj-type', userObject.type);
-                //this.renderer.appendChild(span, field);                 
               });  
               
               var state = this.graph.view.getState(cell, false);
@@ -1171,12 +1171,18 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log("Sending command with action " + action + " with value: " + value);         
     
     if (action == CommandAction.VERB)
-    {
-      let command: Command = {
-        name: value
+    {      
+      const t : Topic = {
+        name: value,
+        mrid: userObject.mRID,                    
       };
-      this.diagramService.executeCommand(command)
-        .subscribe(data => {                              
+
+      const data: UpdateData = {
+        topic: t
+      };
+
+      this.diagramService.updateData(data)
+        .subscribe(_data => {                              
           this.snack.open("Command executed successfully.", 'OK', { duration: 4000 });
         }, error => {
           console.error(error);
@@ -1205,8 +1211,8 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
       };
 
       this.diagramService.updateData( data)
-        .subscribe(data => {                              
-          // success
+        .subscribe(_data => {                              
+          this.snack.open("Command executed successfully.", 'OK', { duration: 4000 });
         }, error => {
           console.error(error);
           this.snack.open(error, 'OK', { duration: 4000 });

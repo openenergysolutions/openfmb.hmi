@@ -82,7 +82,13 @@ impl Node {
     }    
 }
 
-#[actor(OpenFMBMessage, PublisherRefWrap, MicrogridControl, DeviceControl, GenericControl, PubSubStatus)]
+#[actor(
+    OpenFMBMessage, 
+    PublisherRefWrap, 
+    MicrogridControl, 
+    DeviceControl, 
+    GenericControl, 
+    PubSubStatus)]
 #[derive(Clone, Debug)]
 pub struct Processor {
     message_count: u32,                

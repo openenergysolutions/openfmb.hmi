@@ -11,6 +11,7 @@ import { Symbol, ButtonFunction } from '../../../shared/hmi.constants'
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Hmi } from '../../../shared/hmi.constants'
+import { getCommands, getCommandsByType } from '../../../shared/models/commands.model';
 
 @Component({
   selector: 'app-properties-dialog',
@@ -53,10 +54,10 @@ export class PropertiesDialogComponent implements OnInit {
   textAlignAllowed: boolean = false; 
   fontSizeAllowed: boolean = true; 
   buttonFunction: string;
-  buttonFunctionOptions: string[] = [ButtonFunction.link, ButtonFunction.command];
+  buttonFunctionOptions: string[] = [ButtonFunction.link, ButtonFunction.command, ButtonFunction.setPoint];
   showLink: boolean = true;
   selectedCommand: string;  
-  commandList: any[];
+  commandList: any[] = [];
   
   // For link
   selectedDiagramId: string;
@@ -89,7 +90,6 @@ export class PropertiesDialogComponent implements OnInit {
   ) { 
     this.selectedEquipment = { name: '', mrid: ''};
     this.mRID = this.selectedEquipment.mrid = this.data.mRID; 
-    this.getCommandList(); 
     this.getEquipmentList();               
   }
 
@@ -125,9 +125,9 @@ export class PropertiesDialogComponent implements OnInit {
       this.textAlignAllowed = true;
       this.textAlign = this.data.textAlign || 'left';
       this.fontStyle = this.data.fontStyle || '0';
-    }
-    console.log("FONT STYLE: " + this.fontStyle);
+    }    
 
+    // Button: link, command, set-point
     if (this.data.type == Symbol.button) {
       this.buttonFunction = this.data.func;
       if (!this.buttonFunction) {
@@ -136,6 +136,7 @@ export class PropertiesDialogComponent implements OnInit {
       }
       else {
         this.showLink = this.buttonFunction === ButtonFunction.link;
+        this.getCommandList(this.buttonFunction);
       }
       this.selectedCommand = this.data.verb;
     }
@@ -225,11 +226,18 @@ export class PropertiesDialogComponent implements OnInit {
       });
   }
 
-  getCommandList() {
-    this.getCommandSub = this.service.getCommandList()
-      .subscribe(data => {
-        this.commandList = data;            
-      });
+  getCommandList(type: String) {    
+    this.commandList = [];      
+    let commandTypes = getCommands();
+    for (let entry of commandTypes) {
+      let a = getCommandsByType(entry);
+
+      for (let cmd of a) {        
+        if (cmd.attributes.type === type) {          
+          this.commandList.push(cmd);
+        }
+      }      
+    }    
   }
 
   // save all grid item data
@@ -369,5 +377,13 @@ export class PropertiesDialogComponent implements OnInit {
   buttonFunctionChanged(event: any) {
     this.showLink = event.value === ButtonFunction.link;
     this.buttonFunction = event.value;
+    if (this.buttonFunction === ButtonFunction.command) {
+      this.getCommandList(ButtonFunction.command);
+      this.selectedCommand = "";
+    }
+    else if (this.buttonFunction === ButtonFunction.setPoint) {
+      this.getCommandList(ButtonFunction.setPoint);
+      this.selectedCommand = "";
+    }
   }
 }

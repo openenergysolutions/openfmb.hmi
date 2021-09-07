@@ -31,19 +31,19 @@ export const Symbol = {
 }
 
 export const CommandAction = {
-    OPEN: "OPEN",
-    CLOSE: "CLOSE",
-    TAP_LOWER_PHS3: "TAP-LOWER-PHS3",
-    TAP_RAISE_PHS3: "TAP-RAISE-PHS3",
-    TAP_LOWER_PHSA: "TAP-LOWER-PHSA",
-    TAP_RAISE_PHSA: "TAP-RAISE-PHSA",
-    TAP_LOWER_PHSB: "TAP-LOWER-PHSB",
-    TAP_RAISE_PHSB: "TAP-RAISE-PHSB",
-    TAP_LOWER_PHSC: "TAP-LOWER-PHSC",
-    TAP_RAISE_PHSC: "TAP-RAISE-PHSC",
-    SETVALUE: "SET-VALUE",
-    PRECONFIGURED: "PRECONFIGURED",
-    VERB: "VERB",
+    OPEN:           "Open",
+    CLOSE:          "Close",
+    TAP_LOWER_PHS3: "TapChangeLowerPhs3",
+    TAP_RAISE_PHS3: "TapChangeRaisePhs3",
+    TAP_LOWER_PHSA: "TapChangeLowerPhsA",
+    TAP_RAISE_PHSA: "TapChangeRaisePhsA",
+    TAP_LOWER_PHSB: "TapChangeLowerPhsB",
+    TAP_RAISE_PHSB: "TapChangeRaisePhsB",
+    TAP_LOWER_PHSC: "TapChangeLowerPhsC",
+    TAP_RAISE_PHSC: "TapChangeRaisePhsC",
+    SETVALUE:       "SetValue",
+    PRECONFIGURED:  "PRECONFIGURED",
+    VERB:           "VERB",
 }
 
 export const Pos = {
@@ -82,7 +82,8 @@ export const NetZeroStateString = {
 
 export const ButtonFunction = {
     link: 'link',
-    command: 'command'
+    command: 'command',
+    setPoint: 'set-point'
 }
 
 export const Hmi = {

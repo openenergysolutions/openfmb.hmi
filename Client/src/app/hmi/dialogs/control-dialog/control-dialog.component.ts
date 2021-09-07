@@ -17,7 +17,7 @@ import { getCommands, getCommandsByType } from '../../../shared/models/commands.
 export class ControlDialogComponent implements OnInit {  
   setpointValue: number;
   controlValue: any;
-  isSetPoint: boolean;
+  isSetPoint: boolean = false;
   isFixedCommand: boolean;
   name: string;  
   diagramId: string;
@@ -59,45 +59,55 @@ export class ControlDialogComponent implements OnInit {
     }   
     
     this.type = this.diagramData.type;        
-    this.isSetPoint = this.type === Symbol.setPointButton;
+    //this.isSetPoint = this.type === Symbol.setPointButton;
     
     if (this.type == Symbol.button) {
-      if (this.diagramData.func === ButtonFunction.command && this.diagramData.verb)
+      if (this.diagramData.func === ButtonFunction.command)
       {
-        this.hasDataMapped = true; 
-        this.controlValue = this.diagramData.verb;       
+        this.hasDataMapped = this.diagramData.verb && this.diagramData.verb !== ""; 
+        this.controlValue = this.diagramData.verb; 
+        this.isSetPoint = false;      
+      }
+      else if (this.diagramData.func === ButtonFunction.setPoint)
+      {
+        this.hasDataMapped = this.diagramData.verb && this.diagramData.verb !== "";
+        this.isControllable = true; 
+        this.isSetPoint = true;             
       }
       else {
+        // this is link button, not controllable
         this.isControllable = false;
         this.hasDataMapped = false;
+        this.isSetPoint = false; 
       }
     }
     else if (!this.diagramData.controlData || this.diagramData.controlData.length == 0) {
+      // No data mapping (mapped from "Data Connect" screen, Control tab)
       this.isControllable = false;
       this.hasDataMapped = false;
     }
     else {
+      // Has control data mapping (mapped from "Data Connect" screen, Control tab)
       this.hasDataMapped = true;
-      if (!this.isSetPoint) {
-        var dataType = this.diagramData.controlData[0].type;
-        if (dataType === 'binary') {
-          this.controlValue = this.diagramData.controlData[0].measurement;
-          if (!this.controlValue || this.controlValue === '') {
-            this.isControllable = false;
-          }
-        }
-        else if (dataType === 'analog') {
-          this.isSetPoint = true;
-          this.setpointValue = this.diagramData.controlData[0].measurement;
-        }    
-        else if (this.commands.includes(this.diagramData.controlData[0].path)) {            
-            this.isControllable = true;
-            this.hasDataMapped = true;            
-        }
-        else {
-          console.error('Data type for control point is not supported: ' + dataType);
+      var dataType = this.diagramData.controlData[0].type;
+      
+      if (dataType === 'binary') {
+        this.controlValue = this.diagramData.controlData[0].measurement;
+        if (!this.controlValue || this.controlValue === '') {
           this.isControllable = false;
         }
+      }
+      else if (dataType === 'analog') {
+        this.isSetPoint = true;
+        this.setpointValue = this.diagramData.controlData[0].measurement;
+      }    
+      else if (this.commands.includes(this.diagramData.controlData[0].path)) {                    
+          this.isControllable = true;
+          this.hasDataMapped = true;            
+      }
+      else {
+        console.error('Data type for control point is not supported: ' + dataType);
+        this.isControllable = false;
       }
     }     
   }

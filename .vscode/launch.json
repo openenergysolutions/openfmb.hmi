@@ -13,15 +13,12 @@
             "runtimeArgs": []
         },
         {
-            "name": "server-launch",
-            "type": "cppvsdbg",
+            "type": "lldb",
             "request": "launch",
-            "program": "${workspaceFolder}/target/debug/hmi_server.exe",
-            "args": [],               
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
-            "environment": [],
-            "console": "externalTerminal"
+            "name": "Debug",
+            "program": "${workspaceFolder}/target/debug/hmi_server",
+            "args": [],
+            "cwd": "${workspaceFolder}"
         },
     ]
 }

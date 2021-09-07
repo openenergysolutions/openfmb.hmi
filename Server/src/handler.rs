@@ -16,6 +16,7 @@ use std::fs::File;
 use std::fs;
 use std::path::Path;
 use std::io::prelude::*;
+use std::str::FromStr;
 use log::{info, error};
 use super::hmi;
 use hmi::processor::ProcessorMsg;
@@ -87,18 +88,6 @@ pub struct Equipment {
     pub device_type: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Command {      
-    name: String,
-    attributes: Option<CommandAttributes>
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct CommandAttributes {    
-    name: String,
-    path: String
-}
-
 #[allow(non_snake_case)]
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Diagram {
@@ -162,12 +151,11 @@ impl UpdateMessages {
 
 pub async fn data_handler(
     update: UpdateMessage, 
-    _clients: Clients, 
     processor: ActorRef<ProcessorMsg>,
     hmi: ActorRef<HmiMsg>
 ) -> Result<impl Reply> {
 
-    info!("Handle data: {:?}", update);
+    info!("Handle data: {:?}", update);   
 
     // This action is applied to all client sessions
     if update.topic.name == "ToggleEnvironment" {                    
@@ -179,556 +167,57 @@ pub async fn data_handler(
         ); 
         return Ok(StatusCode::OK);                   
     }
-    else if update.topic.name == "ResetDevices" {
+
+    if let Ok(microgrid_control) = microgrid::microgrid_control::ControlMessage::from_str(&update.topic.name) {
         processor.tell(
             MicrogridControl {
                 text: update.topic.name.clone(),
-                message:  microgrid::microgrid_control::ControlMessage::ResetDevices("".to_string()),
+                message:  microgrid_control,
             },
             None,
         );
     }
-    else if update.topic.name == "Shutdown" {
-        processor.tell(
-            MicrogridControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::microgrid_control::ControlMessage::Shutdown("".to_string()),
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "InitiateIsland" {
-        processor.tell(
-            MicrogridControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::microgrid_control::ControlMessage::InitiateIsland("".to_string()),
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "InitiateGridConnect" {
-        processor.tell(
-            MicrogridControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::microgrid_control::ControlMessage::InitiateGridConnect("".to_string()),
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "PccControl" {
-        processor.tell(
-            MicrogridControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::microgrid_control::ControlMessage::PccControl("".to_string()),
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "EnableNetZero" {
-        processor.tell(
-            MicrogridControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::microgrid_control::ControlMessage::EnableNetZero("".to_string()),
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "DisableNetZero" {
-        processor.tell(
-            MicrogridControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::microgrid_control::ControlMessage::DisableNetZero("".to_string()),
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "ReconnectPretestOne" {
-        processor.tell(
-            MicrogridControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::microgrid_control::ControlMessage::ReconnectPretestOne("".to_string()),
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "ReconnectPretestTwo" {
-        processor.tell(
-            MicrogridControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::microgrid_control::ControlMessage::ReconnectPretestTwo("".to_string()),
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "ReconnectTest" {
-        processor.tell(
-            MicrogridControl {
-                text:update.topic.name.clone(),
-                message:  microgrid::microgrid_control::ControlMessage::ReconnectTest("".to_string()),
-            },
-            None,
-        );
-    }
-    // Device controls
-    else if update.topic.name == "EnableSolarInverter" {
+    else if let Ok(device_control) = microgrid::device_control::DeviceControlMessage::from_str(&update.topic.name) {
         processor.tell(
             DeviceControl {
                 text: update.topic.name.clone(),
-                message:  microgrid::device_control::DeviceControlMessage::EnableSolarInverter,
+                message:  device_control,
             },
             None,
         );
     }
-    else if update.topic.name == "DisableSolarInverter" {
-        processor.tell(
-            DeviceControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::device_control::DeviceControlMessage::DisableSolarInverter,
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "EnableLoadbank" {
-        processor.tell(
-            DeviceControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::device_control::DeviceControlMessage::EnableLoadbank,
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "DisableLoadbank" {
-        processor.tell(
-            DeviceControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::device_control::DeviceControlMessage::DisableLoadbank,
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "EssStart" {
-        processor.tell(
-            DeviceControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::device_control::DeviceControlMessage::EssStart,
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "EssDischarge" {
-        processor.tell(
-            DeviceControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::device_control::DeviceControlMessage::EssDischarge,
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "EssSocManage" {
-        processor.tell(
-            DeviceControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::device_control::DeviceControlMessage::EssSocManage,
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "EssSocLimits" {
-        processor.tell(
-            DeviceControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::device_control::DeviceControlMessage::EssSocLimits,
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "EssStop" {
-        processor.tell(
-            DeviceControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::device_control::DeviceControlMessage::EssStop,
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "GeneratorOn" {
-        processor.tell(
-            DeviceControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::device_control::DeviceControlMessage::GeneratorOn,
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "GeneratorDisabled" {
-        processor.tell(
-            DeviceControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::device_control::DeviceControlMessage::GeneratorDisabled,
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "GeneratorEnabled" {
-        processor.tell(
-            DeviceControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::device_control::DeviceControlMessage::GeneratorEnabled,
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "GeneratorOff" {
-        processor.tell(
-            DeviceControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::device_control::DeviceControlMessage::GeneratorOff,
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "SwitchOneOpen" {
-        processor.tell(
-            DeviceControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::device_control::DeviceControlMessage::SwitchOneOpen,
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "SwitchOneClosed" {
-        processor.tell(
-            DeviceControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::device_control::DeviceControlMessage::SwitchOneClosed,
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "SwitchTwoOpen" {
-        processor.tell(
-            DeviceControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::device_control::DeviceControlMessage::SwitchTwoOpen,
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "SwitchTwoClosed" {
-        processor.tell(
-            DeviceControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::device_control::DeviceControlMessage::SwitchTwoClosed,
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "BreakerThreeOpen" {
-        processor.tell(
-            DeviceControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::device_control::DeviceControlMessage::BreakerThreeOpen,
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "BreakerThreeClosed" {
-        processor.tell(
-            DeviceControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::device_control::DeviceControlMessage::BreakerThreeClosed,
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "SwitchFourOpen" {
-        processor.tell(
-            DeviceControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::device_control::DeviceControlMessage::SwitchFourOpen,
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "SwitchFourClosed" {
-        processor.tell(
-            DeviceControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::device_control::DeviceControlMessage::SwitchFourClosed,
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "ResetSwitchOne" {
-        processor.tell(
-            DeviceControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::device_control::DeviceControlMessage::ResetSwitchOne,
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "ResetSwitchTwo" {
-        processor.tell(
-            DeviceControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::device_control::DeviceControlMessage::ResetSwitchTwo,
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "ResetSwitchThree" {
-        processor.tell(
-            DeviceControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::device_control::DeviceControlMessage::ResetSwitchThree,
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "ResetSwitchFour" {
-        processor.tell(
-            DeviceControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::device_control::DeviceControlMessage::ResetSwitchFour,
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "ResetBreakerThree" {
-        processor.tell(
-            DeviceControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::device_control::DeviceControlMessage::ResetBreakerThree,
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "ResetEss" {
-        processor.tell(
-            DeviceControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::device_control::DeviceControlMessage::ResetEss,
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "ResetSolar" {
-        processor.tell(
-            DeviceControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::device_control::DeviceControlMessage::ResetSolar,
-            },
-            None,
-        );
-    }
-    // generic_control
-    else if update.topic.name == "Trip" {
+    else if let Ok(generic_control) = microgrid::generic_control::ControlType::from_str(&update.topic.name) {
         processor.tell(
             GenericControl {
                 text: update.topic.name.clone(),
-                message:  microgrid::generic_control::ControlType::Open,
+                message:  generic_control,
                 mrid: update.topic.mrid.clone(),
                 profile_name: None,
-                args: None,
+                args: update.topic.args.clone(),
             },
             None,
         );
     }
-    else if update.topic.name == "Close" {
-        processor.tell(
-            GenericControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::generic_control::ControlType::Close,
-                mrid: update.topic.mrid.clone(),
-                profile_name: None,
-                args: None,
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "SetModBlkOn" {
-        processor.tell(
-            GenericControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::generic_control::ControlType::SetModBlkOn,
-                mrid: update.topic.mrid.clone(),
-                profile_name: None,
-                args: None,
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "SetModBlkOff" {
-        processor.tell(
-            GenericControl {
-                text: update.topic.name.clone(),
-                message:  microgrid::generic_control::ControlType::SetModBlkOff,
-                mrid: update.topic.mrid.clone(),
-                profile_name: None,
-                args: None,
-            },
-            None,
-        );
-    }
-    else if update.topic.name == "SetWNetMag" {
-        if let Some(args) = &update.topic.args {
+    else if let Some(action) = &update.topic.action {
+        if let Ok(generic_control) = microgrid::generic_control::ControlType::from_str(action) {
             processor.tell(
                 GenericControl {
                     text: update.topic.name.clone(),
-                    message:  microgrid::generic_control::ControlType::SetWNetMag,
+                    message:  generic_control,
                     mrid: update.topic.mrid.clone(),
                     profile_name: None,
-                    args: Some(*args)
+                    args: update.topic.args.clone(),
                 },
                 None,
             );
-        }
-    }                
-    else {
-        if let Some(action) = &update.topic.action {
-            if action == "SET-VALUE" {
-                if let Some(args) = &update.topic.args {
-                    processor.tell(
-                        GenericControl {
-                            text: update.topic.name.clone(),
-                            message:  microgrid::generic_control::ControlType::SetValue,
-                            mrid: update.topic.mrid.clone(),
-                            profile_name: Some(get_profile_name(&update.topic.name)),
-                            args: Some(*args)
-                        },
-                        None,
-                    );
-                }
-            }
-            else if action == "OPEN" {
-                processor.tell(
-                    GenericControl {
-                        text: update.topic.name.clone(),
-                        message:  microgrid::generic_control::ControlType::Open,
-                        mrid: update.topic.mrid.clone(),
-                        profile_name: None,
-                        args: None,
-                    },
-                    None,
-                );
-            }
-            else if action == "CLOSE" {
-                processor.tell(
-                    GenericControl {
-                        text: update.topic.name.clone(),
-                        message:  microgrid::generic_control::ControlType::Close,
-                        mrid: update.topic.mrid.clone(),
-                        profile_name: None,
-                        args: None,
-                    },
-                    None,
-                );
-            }
-            else if action == "TAP-LOWER-PHS3" {
-                processor.tell(
-                    GenericControl {
-                        text: update.topic.name.clone(),
-                        message:  microgrid::generic_control::ControlType::TapChangeLowerPhs3,
-                        mrid: update.topic.mrid.clone(),
-                        profile_name: None,
-                        args: None,
-                    },
-                    None,
-                );
-            }
-            else if action == "TAP-RAISE-PHS3" {
-                processor.tell(
-                    GenericControl {
-                        text: update.topic.name.clone(),
-                        message:  microgrid::generic_control::ControlType::TapChangeRaisePhs3,
-                        mrid: update.topic.mrid.clone(),
-                        profile_name: None,
-                        args: None,
-                    },
-                    None,
-                );
-            }
-            else if action == "TAP-LOWER-PHSA" {
-                processor.tell(
-                    GenericControl {
-                        text: update.topic.name.clone(),
-                        message:  microgrid::generic_control::ControlType::TapChangeLowerPhsA,
-                        mrid: update.topic.mrid.clone(),
-                        profile_name: None,
-                        args: None,
-                    },
-                    None,
-                );
-            }
-            else if action == "TAP-RAISE-PHSA" {
-                processor.tell(
-                    GenericControl {
-                        text: update.topic.name.clone(),
-                        message:  microgrid::generic_control::ControlType::TapChangeRaisePhsA,
-                        mrid: update.topic.mrid.clone(),
-                        profile_name: None,
-                        args: None,
-                    },
-                    None,
-                );
-            }
-            else if action == "TAP-LOWER-PHSB" {
-                processor.tell(
-                    GenericControl {
-                        text: update.topic.name.clone(),
-                        message:  microgrid::generic_control::ControlType::TapChangeLowerPhsB,
-                        mrid: update.topic.mrid.clone(),
-                        profile_name: None,
-                        args: None,
-                    },
-                    None,
-                );
-            }
-            else if action == "TAP-RAISE-PHSB" {
-                processor.tell(
-                    GenericControl {
-                        text: update.topic.name.clone(),
-                        message:  microgrid::generic_control::ControlType::TapChangeRaisePhsB,
-                        mrid: update.topic.mrid.clone(),
-                        profile_name: None,
-                        args: None,
-                    },
-                    None,
-                );
-            }
-            else if action == "TAP-LOWER-PHSC" {
-                processor.tell(
-                    GenericControl {
-                        text: update.topic.name.clone(),
-                        message:  microgrid::generic_control::ControlType::TapChangeLowerPhsC,
-                        mrid: update.topic.mrid.clone(),
-                        profile_name: None,
-                        args: None,
-                    },
-                    None,
-                );
-            }
-            else if action == "TAP-RAISE-PHSC" {
-                processor.tell(
-                    GenericControl {
-                        text: update.topic.name.clone(),
-                        message:  microgrid::generic_control::ControlType::TapChangeRaisePhsC,
-                        mrid: update.topic.mrid.clone(),
-                        profile_name: None,
-                        args: None,
-                    },
-                    None,
-                );
-            }                        
-            else {
-                info!("Received unknown action: {}", action);
-            }
-        }
+        }        
         else {
-            info!("Received unknown command: {}", update.topic.name);
+            info!("Received unknown action: {}", action);
         }
-    }     
+    }
+    else {
+        info!("Received unknown command: {} (action={:?})", update.topic.name, update.topic.action);
+    }        
 
     Ok(StatusCode::OK)
 }
@@ -819,11 +308,6 @@ pub async fn send_inspector_messages(messages: &Vec<String>, clients: &Clients) 
     Ok(StatusCode::OK)
 }
 
-pub async fn execute_command(update: Command, _clients: Clients) -> Result<impl Reply> {
-    println!("Received command '{}'", update.name);
-    Ok(StatusCode::OK)
-}
-
 fn get_diagram_folder() -> String {
     let app_dir = std::env::var("APP_DIR_NAME").unwrap_or_else(|_| "".into());
     let mut diagrams_dir = "diagrams".to_string();
@@ -850,7 +334,7 @@ pub async fn save_handler(request: Diagram) -> Result<impl Reply> {
 
     write_json(format!("{}/{}.json", get_diagram_folder(), request.diagramId), j).unwrap();
 
-     Ok(json(&Response {
+    Ok(json(&Response {
         success: true,
         message: "".to_string()
     }))
@@ -964,19 +448,6 @@ fn save_equipment_list(equipment_list: &Vec<Equipment>) -> std::io::Result<()> {
     Ok(())
 }
 
-fn get_command_file() -> String {
-    let app_dir = std::env::var("APP_DIR_NAME").unwrap_or_else(|_| "".into());
-    if app_dir != "" {
-        return format!("/{}/command.json", app_dir);
-    }
-    "command.json".to_string()
-}
-
-// GET
-pub async fn command_handler() -> Result<impl Reply> {  
-    Ok(json(&read_commands(get_command_file()).unwrap()))   
-}
-
 // GET
 pub async fn diagram_handler(id: DiagramQuery) -> Result<impl Reply> {    
     let list = read_json(format!("{}", get_diagram_folder())).unwrap();
@@ -1079,17 +550,6 @@ fn read_json(file_path: String) -> std::io::Result<Vec<Diagram>> {
         } 
     }    
     Ok(diagrams)
-}
-
-fn read_commands(file_path: String) -> std::io::Result<Vec<Command>> {
-    let mut file = File::open(file_path)?;
-    let mut contents = String::new();
-    file.read_to_string(&mut contents)?;
-
-    let eqs: Vec<Command> =
-        serde_json::from_str(&contents).expect("JSON was not well-formatted");
-
-    Ok(eqs)
 }
 
 fn write_json(file_path: String, json: String) -> std::io::Result<()> {

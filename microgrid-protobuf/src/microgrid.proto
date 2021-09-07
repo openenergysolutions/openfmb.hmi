@@ -111,6 +111,7 @@ message GenericControl
         TapChangeRaisePhsB = 13;
         TapChangeLowerPhsC = 14;
         TapChangeRaisePhsC = 15;
+        SetVarNetMag = 16;
     }
 }
 

@@ -9,6 +9,8 @@ pub mod hmi_publisher;
 pub mod profile_subscriber;
 pub mod pubsub;
 pub mod monitor;
+pub mod utils;
 
+pub use utils::*;
 pub use pubsub::*;
  
