@@ -980,23 +980,6 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
                             else {
                               image.setAttribute("href", baseToolbarImagePath + 'flow-empty.svg'); 
                             }
-                            
-                            // if (typeof cell.value.userObject.visible !== 'undefined') {
-                            //   if (cell.value.userObject.visible === true) {
-                            //     image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '-grayed.svg'); 
-                            //   }
-                            //   else {
-                            //     image.setAttribute("href", baseToolbarImagePath + 'flow-empty.svg'); 
-                            //   }
-                            // }
-                            // else {                            
-                            //   if (val && val != '') {
-                            //     image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '-grayed.svg'); 
-                            //   }
-                            //   else {
-                            //     image.setAttribute("href", baseToolbarImagePath + 'flow-empty.svg'); 
-                            //   }
-                            // }
                           }
                         }
                       }
@@ -1093,11 +1076,13 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
               }              
               else {
                 // This is measurement box
-                domElement[i].textContent = this.setDataFieldValue(domElement[i], update.topic?.value);
                 const cellId = domElement[i].getAttribute('cell-id');
                 var cell = this.graph.getModel().getCell(cellId);
                 if (cell) {
                   cell.value.userObject.lastUpdate = ts;
+
+                  // This is measurement box
+                  domElement[i].textContent = this.setDataFieldValue(domElement[i], cell.value.userObject, update.topic);                  
                 }
               }
             }
@@ -1311,7 +1296,29 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     this.sendWsData(request);
   }
 
-  setDataFieldValue(element: Element, value: any): string {    
+  setDataFieldValue(element: Element, userObject: any, topic: any): string { 
+    var value = topic?.value;
+    var scale = 1.0;
+
+    if (userObject.displayData)  {
+      userObject.displayData.forEach(elem => {        
+        if (elem.path === topic.name) {
+          if (elem.scale) {
+            var temp = parseFloat(elem.scale);
+            if (!isNaN(temp)) {
+              scale = temp;              
+            }
+            else if (elem.scale === "toFahrenheit") {
+              value.Double = (value.Double * 9/5) + 32.0;
+            }
+            else if (elem.scale === "toCelsius") {
+              value.Double = (value.Double - 32.0) * 5/9;              
+            }
+          }
+        }
+      });
+    }
+    
     if (typeof value.Double !== 'undefined') {
       if (element.className.match(/\bfield-item-value-state\b/)) {
         if (value.Double === 0.0 ) {
@@ -1342,7 +1349,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
           return 'VSI_ISO';
         }
       }  
-      return parseFloat(value.Double).toFixed(2).toString();
+      return (parseFloat(value.Double) * scale).toFixed(2).toString();
     }
     else if (value.String) {
       return value.String
