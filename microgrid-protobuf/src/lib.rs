@@ -54,7 +54,8 @@ impl FromStr for device_control::DeviceControlMessage {
             "ResetSwitchFour"  => Ok(device_control::DeviceControlMessage::ResetSwitchFour),
             "ResetBreakerThree"  => Ok(device_control::DeviceControlMessage::ResetBreakerThree),
             "ResetEss"  => Ok(device_control::DeviceControlMessage::ResetEss),
-            "ResetSolar"  => Ok(device_control::DeviceControlMessage::ResetSolar),                               
+            "ResetSolar"  => Ok(device_control::DeviceControlMessage::ResetSolar),
+            "ResetLoadbank"  => Ok(device_control::DeviceControlMessage::ResetLoadbank),                             
             _ => Err(()),
         }
     }

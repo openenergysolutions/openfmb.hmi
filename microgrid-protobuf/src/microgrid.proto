@@ -54,6 +54,7 @@ message DeviceControl
         ResetBreakerThree = 25;
         ResetEss = 26;
         ResetSolar = 27;
+        ResetLoadbank = 28;
     }
 }
 

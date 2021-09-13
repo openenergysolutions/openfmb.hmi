@@ -39,6 +39,7 @@ import { Hmi, Symbol } from '../shared/hmi.constants'
 import { Topic, UpdateData } from '../shared/models/topic.model'
 import { Command } from '../shared/models/command.model';
 import { JwtAuthService } from '../shared/services/auth/jwt-auth.service';
+import { ValueConverter } from '@angular/compiler/src/render3/view/template';
 
 const {
   mxGraph,
@@ -946,41 +947,41 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
                         image.removeAttribute('xlink:href');
                       }
                       
-                      var val = '';
+                      var val = ''; 
+                      var scaledValue = this.scaleValue(diagramData.displayData, update.topic.name, parseFloat(update.topic.value?.Double));                     
+                      if (cell.value.userObject.arrowDirection) {
+                        if (scaledValue[0] > 0.0)
+                        {
+                          val = cell.value.userObject.arrowDirection.positive;
+                          var c = cell.value.userObject.arrowDirection.positiveColor;
+                          if (!c) {
+                            c = 'red';
+                          }
+                          image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '-' + c + '.svg'); 
+                        }
+                        else if (scaledValue[0] < 0.0) {
+                          val = cell.value.userObject.arrowDirection.negative;
+                          var c = cell.value.userObject.arrowDirection.negativeColor;
+                          if (!c) {
+                            c = 'red';
+                          }
+                          image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '-' + c + '.svg'); 
+                        }                                                
+                        else {
+                          val = cell.value.userObject.arrowDirection.neutral;
+                          if (val && val != '') {
+                            image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '-grayed.svg'); 
+                          }
+                          else {
+                            image.setAttribute("href", baseToolbarImagePath + 'flow-empty.svg'); 
+                          }
+                        }
+                      }
 
+                      // Check visibility last
                       if (typeof cell.value.userObject.visible !== 'undefined') {
                         if (cell.value.userObject.visible === false) {
                           image.setAttribute("href", baseToolbarImagePath + 'flow-empty.svg');
-                        }
-                      }
-                      else {
-                        if (cell.value.userObject.arrowDirection) {
-                          if (update.topic.value?.Double > 0.0)
-                          {
-                            val = cell.value.userObject.arrowDirection.positive;
-                            var c = cell.value.userObject.arrowDirection.positiveColor;
-                            if (!c) {
-                              c = 'red';
-                            }
-                            image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '-' + c + '.svg'); 
-                          }
-                          else if (update.topic.value?.Double < 0.0) {
-                            val = cell.value.userObject.arrowDirection.negative;
-                            var c = cell.value.userObject.arrowDirection.negativeColor;
-                            if (!c) {
-                              c = 'red';
-                            }
-                            image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '-' + c + '.svg'); 
-                          }                                                
-                          else {
-                            val = cell.value.userObject.arrowDirection.neutral;
-                            if (val && val != '') {
-                              image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '-grayed.svg'); 
-                            }
-                            else {
-                              image.setAttribute("href", baseToolbarImagePath + 'flow-empty.svg'); 
-                            }
-                          }
                         }
                       }
                       
@@ -1093,8 +1094,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
                 if (Hmi.isPowerFlow(objType)) {
                   var cell = this.graph.getModel().getCell(svgId);
                   if (cell) {   
-                    cell.value.userObject.visible = this.getVisibility(update, domElement[i]);  
-                    console.log("Visibility for cell: " + cell.value.userObject);
+                    cell.value.userObject.visible = this.getVisibility(update, domElement[i]);                      
                   }
                 }                              
               }                            
@@ -1268,10 +1268,10 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
         if (cellValue.userObject.displayData) {                  
           for (let displayData of cellValue.userObject.displayData) {
             if (displayData.path && displayData.path !== "" && cellValue.userObject.mRID && cellValue.userObject.mRID !== "")
-            {
+            {              
               var topic = {
                 name: displayData.path,
-                mrid: cellValue.userObject.mRID
+                mrid: cellValue.userObject.mRID                
               };
               request.topics.push(topic);
             }
@@ -1285,7 +1285,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
             {
               var topic = {
                 name: displayData.path,
-                mrid: cellValue.userObject.mRID
+                mrid: cellValue.userObject.mRID                
               };
               request.topics.push(topic);
             }
@@ -1296,28 +1296,54 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     this.sendWsData(request);
   }
 
-  setDataFieldValue(element: Element, userObject: any, topic: any): string { 
-    var value = topic?.value;
-    var scale = 1.0;
+  scaleValue(displayData: any, topic: string, value: number): [number, number] {  
+    var scaled = value;
+    var decimals = 2; // default at 2 decimal places 
+    var deadband = 0.0; // default deadband is 0
 
-    if (userObject.displayData)  {
-      userObject.displayData.forEach(elem => {        
-        if (elem.path === topic.name) {
-          if (elem.scale) {
-            var temp = parseFloat(elem.scale);
+    if (displayData)  {
+      for(var i = 0; i < displayData.length; ++i) { 
+        var elem = displayData[i];        
+        if (elem.path === topic) {
+          // get number of decimal places, if any
+          if (typeof(elem.decimals) != "undefined") {
+            var temp = parseInt(elem.decimals);
             if (!isNaN(temp)) {
-              scale = temp;              
-            }
-            else if (elem.scale === "toFahrenheit") {
-              value.Double = (value.Double * 9/5) + 32.0;
-            }
-            else if (elem.scale === "toCelsius") {
-              value.Double = (value.Double - 32.0) * 5/9;              
+              decimals = temp;
             }
           }
+          if (typeof(elem.deadband) != "undefined") {
+            var temp = parseFloat(elem.deadband);
+            if (!isNaN(temp)) {
+              deadband = temp;
+            }
+          }
+          if (typeof(elem.scale) != "undefined") {
+            var temp = parseFloat(elem.scale);
+            if (!isNaN(temp)) {
+              scaled = value * temp;                          
+            }
+            else if (elem.scale === "toFahrenheit") {
+              scaled = (value * 9/5) + 32.0;              
+            }
+            else if (elem.scale === "toCelsius") {
+              scaled = (value - 32.0) * 5/9;                           
+            }            
+          }
+          break;
         }
-      });
+      }
     }
+
+    if (deadband * -1 <= scaled && scaled <= deadband) {
+      scaled = 0.0;
+    }
+
+    return [scaled, decimals];
+  }
+
+  setDataFieldValue(element: Element, userObject: any, topic: any): string {     
+    var value = topic?.value;    
     
     if (typeof value.Double !== 'undefined') {
       if (element.className.match(/\bfield-item-value-state\b/)) {
@@ -1349,10 +1375,12 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
           return 'VSI_ISO';
         }
       }  
-      return (parseFloat(value.Double) * scale).toFixed(2).toString();
+
+      var scaledValue = this.scaleValue(userObject.displayData, topic.name, parseFloat(topic.value.Double));
+      return scaledValue[0].toFixed(scaledValue[1]).toString();
     }
     else if (value.String) {
-      return value.String
+      return value.String;
     }
     else if (typeof value.Bool !== 'undefined') {
       if (value.Bool === true) {

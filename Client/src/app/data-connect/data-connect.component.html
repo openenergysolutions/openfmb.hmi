@@ -58,20 +58,30 @@
                                                     <input matInput [value]="item.attributes.path" (input)="item.attributes.path = $event.target.value" />
                                                 </div>
                                                 <div class="data-detail">
-                                                    <mat-form-field class="example-full-width pr-1" style="width:40%;">
+                                                    <mat-form-field class="example-full-width pr-1">
                                                         <mat-label>Custom Label</mat-label>
                                                         <input matInput [value]="item.attributes.label"
                                                             (input)="item.attributes.label = $event.target.value" />
                                                     </mat-form-field>
-                                                    <mat-form-field class="example-full-width pr-1" style="width:20%;">
+                                                    <mat-form-field class="example-full-width pr-1" style="width:10%;">
                                                         <mat-label>Unit</mat-label>
                                                         <input matInput [value]="item.attributes.measurement"
                                                             (input)="item.attributes.measurement = $event.target.value" />
                                                     </mat-form-field>
-                                                    <mat-form-field class="example-full-width" style="width:10%;">
+                                                    <mat-form-field class="example-full-width pr-1" style="width:10%;">
                                                         <mat-label>Scale</mat-label>
                                                         <input matInput [value]="item.attributes.scale"
                                                             (input)="item.attributes.scale = $event.target.value" />
+                                                    </mat-form-field>
+                                                    <mat-form-field class="example-full-width pr-1" style="width:10%;">
+                                                        <mat-label>Deadband</mat-label>
+                                                        <input matInput [value]="item.attributes.deadband" type="number" min="0" max="1000000"
+                                                            (input)="item.attributes.deadband = $event.target.value" />
+                                                    </mat-form-field>
+                                                    <mat-form-field class="example-full-width" style="width:10%;">
+                                                        <mat-label>Decimals</mat-label>
+                                                        <input matInput [value]="item.attributes.decimals" type="number" min="0" max="4"
+                                                            (input)="item.attributes.decimals = $event.target.value" />
                                                     </mat-form-field>
                                                 </div>
                                             </div>

@@ -393,6 +393,17 @@ export const COMMANDS = {
 			"name": "Object",           
             "attributes": {
                 "label": "",
+                "name": "ResetLoadbank",
+                "path": "ResetLoadbank",
+                "type": "command",
+				"measurement": ""               
+            }
+        },
+        { 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
                 "name": "SetModBlkOn",
                 "path": "SetModBlkOn",
                 "type": "command",
