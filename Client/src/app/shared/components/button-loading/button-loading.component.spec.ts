@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { ButtonLoadingComponent } from './button-loading.component';
 
@@ -10,7 +10,7 @@ describe('ButtonLoadingComponent', () => {
   let component: ButtonLoadingComponent;
   let fixture: ComponentFixture<ButtonLoadingComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ButtonLoadingComponent ]
     })

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { SearchInputOverComponent } from './search-input-over.component';
 
@@ -10,7 +10,7 @@ describe('SearchInputOverComponent', () => {
   let component: SearchInputOverComponent;
   let fixture: ComponentFixture<SearchInputOverComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ SearchInputOverComponent ]
     })
