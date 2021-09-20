@@ -41,8 +41,8 @@ export class ControlDialogComponent implements OnInit {
       let a = getCommandsByType(entry);
 
       for (let cmd of a) {
-        if (cmd.attributes && cmd.attributes.name) {
-          this.commands.push(cmd.attributes.name);
+        if (cmd.attributes && cmd.attributes.name) {          
+          this.commands.push(cmd);
         }
       }      
     }
@@ -72,7 +72,7 @@ export class ControlDialogComponent implements OnInit {
       {
         this.hasDataMapped = this.diagramData.verb && this.diagramData.verb !== "";
         this.isControllable = true; 
-        this.isSetPoint = true;             
+        this.isSetPoint = true;        
       }
       else {
         // this is link button, not controllable
@@ -88,7 +88,7 @@ export class ControlDialogComponent implements OnInit {
     }
     else {
       // Has control data mapping (mapped from "Data Connect" screen, Control tab)
-      this.hasDataMapped = true;
+      this.hasDataMapped = true;      
       var dataType = this.diagramData.controlData[0].type;
       
       if (dataType === 'binary') {
@@ -100,16 +100,30 @@ export class ControlDialogComponent implements OnInit {
       else if (dataType === 'analog') {
         this.isSetPoint = true;
         this.setpointValue = this.diagramData.controlData[0].measurement;
-      }    
-      else if (this.commands.includes(this.diagramData.controlData[0].path)) {                    
-          this.isControllable = true;
-          this.hasDataMapped = true;            
-      }
+      }          
       else {
-        console.error('Data type for control point is not supported: ' + dataType);
-        this.isControllable = false;
+
+        var cmd = this.findCommand(this.diagramData.controlData[0].path);
+        if (cmd != null) {
+          this.isControllable = true;
+          this.hasDataMapped = true; 
+          this.isSetPoint = cmd.attributes.type == "set-point";
+        }
+        else {
+          console.error('Data type for control point is not supported: ' + dataType);
+          this.isControllable = false;
+        }
       }
     }     
+  }
+
+  findCommand(name: String) : any {
+    for(var i = 0; i < this.commands.length; ++i) {
+      if (this.commands[i].attributes.name == name) {
+        return this.commands[i];
+      }
+    }
+    return null;
   }
   
   onClose(): void {    
@@ -131,7 +145,8 @@ export class ControlDialogComponent implements OnInit {
 
       this.dialogRef.close({
         proceed: true,
-        action: CommandAction.SETVALUE,
+        //action: CommandAction.SETVALUE,
+        action: this.diagramData.verb ? this.diagramData.verb : CommandAction.SETVALUE,
         value: this.setpointValue  
       });
     }

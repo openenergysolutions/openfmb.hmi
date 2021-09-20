@@ -31,8 +31,14 @@ export const Symbol = {
 }
 
 export const CommandAction = {
-    OPEN:           "Open",
+    OPEN:           "Open",    
+    OPEN_PHSA:      "OpenPhsA",
+    OPEN_PHSB:      "OpenPhsB",
+    OPEN_PHSC:      "OpenPhsC",
     CLOSE:          "Close",
+    CLOSE_PHSA:     "ClosePhsA",
+    CLOSE_PHSB:     "ClosePhsB",
+    CLOSE_PHSC:     "ClosePhsC",
     TAP_LOWER_PHS3: "TapChangeLowerPhs3",
     TAP_RAISE_PHS3: "TapChangeRaisePhs3",
     TAP_LOWER_PHSA: "TapChangeLowerPhsA",

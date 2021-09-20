@@ -442,7 +442,194 @@ export const COMMANDS = {
                 "type": "set-point",
 				"measurement": ""               
             }
-        } 
+        },
+        { 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
+                "name": "SetValue",
+                "path": "SetValue",
+                "type": "set-point",
+				"measurement": ""               
+            }
+        },            
+        { 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
+                "name": "BlackStartEnable",
+                "path": "BlackStartEnable",
+                "type": "command",
+				"measurement": ""               
+            }
+        },
+        { 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
+                "name": "BlackStartDisable",
+                "path": "BlackStartDisable",
+                "type": "command",
+				"measurement": ""               
+            }
+        },
+        { 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
+                "name": "FrequencySetPointEnable",
+                "path": "FrequencySetPointEnable",
+                "type": "command",
+				"measurement": ""               
+            }
+        },
+        { 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
+                "name": "FrequencySetPointDisable",
+                "path": "FrequencySetPointDisable",
+                "type": "command",
+				"measurement": ""               
+            }
+        },
+        { 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
+                "name": "ReactivePowerSetPointEnable",
+                "path": "ReactivePowerSetPointEnable",
+                "type": "command",
+				"measurement": ""               
+            }
+        },
+        { 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
+                "name": "ReactivePowerSetPointDisable",
+                "path": "ReactivePowerSetPointDisable",
+                "type": "command",
+				"measurement": ""               
+            }
+        },
+        { 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
+                "name": "RealPowerSetPointEnable",
+                "path": "RealPowerSetPointEnable",
+                "type": "command",
+				"measurement": ""               
+            }
+        },
+        { 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
+                "name": "RealPowerSetPointDisable",
+                "path": "RealPowerSetPointDisable",
+                "type": "command",
+				"measurement": ""               
+            }
+        },
+        { 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
+                "name": "TransToIslandOnGridLossEnable",
+                "path": "TransToIslandOnGridLossEnable",
+                "type": "command",
+				"measurement": ""               
+            }
+        },
+        { 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
+                "name": "TransToIslandOnGridLossDisable",
+                "path": "TransToIslandOnGridLossDisable",
+                "type": "command",
+				"measurement": ""               
+            }
+        },
+        { 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
+                "name": "VoltageSetPointEnable",
+                "path": "VoltageSetPointEnable",
+                "type": "command",
+				"measurement": ""               
+            }
+        },
+        { 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
+                "name": "VoltageSetPointDisable",
+                "path": "VoltageSetPointDisable",
+                "type": "command",
+				"measurement": ""               
+            }
+        },
+        { 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
+                "name": "SetStateKindUndefined",
+                "path": "SetStateKindUndefined",
+                "type": "command",
+				"measurement": ""               
+            }
+        },
+        { 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
+                "name": "SetStateKindOff",
+                "path": "SetStateKindOff",
+                "type": "command",
+				"measurement": ""               
+            }
+        },
+        { 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
+                "name": "SetStateKindOn",
+                "path": "SetStateKindOn",
+                "type": "command",
+				"measurement": ""               
+            }
+        },
+        { 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
+                "name": "SetStateKindStandBy",
+                "path": "SetStateKindStandBy",
+                "type": "command",
+				"measurement": ""               
+            }
+        }
     ],
     "HmiControl": [
         {   

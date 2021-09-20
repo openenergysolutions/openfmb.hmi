@@ -151,7 +151,10 @@
                                         <div class="data-connect-box" *ngFor="let item of currentControlPoints" cdkDrag>
                                             <div>
                                                 <div class="data-header">{{item.attributes.name}}</div>
-                                                <div class="data-detail">{{truncateString(item.attributes.path)}}</div>
+                                                <div class="data-detail">
+                                                    <!-- {{truncateString(item.attributes.path)}} -->
+                                                    <input matInput [value]="item.attributes.path" (input)="item.attributes.path = $event.target.value" />                                                    
+                                                </div>
                                                 <div class="data-detail">                                                    
                                                     <mat-form-field class="example-full-width pr-1">
                                                         <mat-label>Data Type</mat-label>

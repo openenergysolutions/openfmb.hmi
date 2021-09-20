@@ -6,6 +6,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CommandAction, PosString } from '../../../shared/hmi.constants'
 import { DiagramData } from '../../../shared/models/userobject.model';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-switchgear-dialog',
@@ -26,7 +27,8 @@ export class SwitchgearDialogComponent implements OnInit {
   hasLastUpdate: boolean = false;    
 
   constructor(
-    public dialogRef: MatDialogRef<SwitchgearDialogComponent>,    
+    public dialogRef: MatDialogRef<SwitchgearDialogComponent>,
+    private snack: MatSnackBar,    
     @Inject(MAT_DIALOG_DATA) public data: any
   ) { }
 
@@ -49,11 +51,11 @@ export class SwitchgearDialogComponent implements OnInit {
     }    
     
     if (this.status && this.status.toLowerCase() === PosString.open) {
-      this.actionText = CommandAction.CLOSE;
+      this.actionText = this.getActionType(true); //CommandAction.CLOSE;
       this.actionColor = "red";
     }
     else if (this.status && this.status.toLowerCase() === PosString.closed){
-      this.actionText = CommandAction.OPEN;
+      this.actionText = this.getActionType(false); // CommandAction.OPEN;
       this.actionColor = "green";
     }
     else {
@@ -61,6 +63,29 @@ export class SwitchgearDialogComponent implements OnInit {
       this.actionColor = "gray";
       this.actionEnabled = false;
     }
+  }
+
+  getActionType(close: boolean) : string {
+    if (this.diagramData.controlData && this.diagramData.controlData.length > 0) {      
+      var controlData = this.diagramData.controlData[0];
+      if (controlData) {
+        if (("" + controlData.path).indexOf(".Pos.phs3.ctlVal") > 0) {
+          return close ? CommandAction.CLOSE : CommandAction.OPEN;
+        }
+        if (("" + controlData.path).indexOf(".Pos.phsA.ctlVal") > 0) {
+          return close ? CommandAction.CLOSE_PHSA : CommandAction.OPEN_PHSA;
+        }
+        if (("" + controlData.path).indexOf(".Pos.phsB.ctlVal") > 0) {
+          return close ? CommandAction.CLOSE_PHSB : CommandAction.OPEN_PHSB;
+        }
+        if (("" + controlData.path).indexOf(".Pos.phsC.ctlVal") > 0) {
+          return close ? CommandAction.CLOSE_PHSC : CommandAction.OPEN_PHSC;
+        }
+      }
+    }
+    this.hasDataMapped = false;
+    this.snack.open('Invalid data mapping.  Mapping to DbPosKind is required.', 'OK', { duration: 4000 });
+    return "";
   }
   
   onClose(): void {    

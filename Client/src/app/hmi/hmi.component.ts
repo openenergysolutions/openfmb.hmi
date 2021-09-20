@@ -66,7 +66,7 @@ const {
 @Component({
   selector: 'app-hmi',
   templateUrl: './hmi.component.html',
-  styleUrls: ['../designer/designer.component.scss']
+  styleUrls: ['../hmi/hmi.component.scss']
 })
 export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('graphContainer', { static: false }) graphContainer: ElementRef;
@@ -129,7 +129,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // load graph
     if (this.diagramId) {
-      this.loadGraphFromServer(this.diagramId);      
+      this.loadGraphFromServer(this.diagramId); 
     }
 
     this.sessionId = uuidv4();    
@@ -286,7 +286,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         if (userObject.containerHeight) {
           style += 'height: ' + userObject.containerHeight + 'px;';
-        }
+        }        
         
         if (userObject.type === Symbol.measureBox) {          
           if (displayData) {
@@ -654,7 +654,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     try {
       this.graph.getModel().beginUpdate();
       this.graph.getStylesheet().getDefaultEdgeStyle().edgeStyle = 'orthogonalEdgeStyle';
-      this.graph.getStylesheet().getDefaultEdgeStyle().endArrow = 'none';
+      this.graph.getStylesheet().getDefaultEdgeStyle().endArrow = 'none';      
     } finally {
       this.graph.getModel().endUpdate();
     }
@@ -1231,13 +1231,20 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
   loadGraphFromServer(id: string) {
     this.diagramService.get(id).subscribe(
       data => {
-        this.currentDiagram = data;
-
+        this.currentDiagram = data;        
         try {
           if (this.currentDiagram.data && this.currentDiagram.data != "") {
             var xml = mxUtils.parseXml(this.currentDiagram.data);
             var dec = new mxCodec(xml);
-            dec.decode(xml.documentElement, this.graph.getModel());
+            dec.decode(xml.documentElement, this.graph.getModel());            
+          }
+        }
+        catch (e) {
+          console.error(e);
+        }
+        try {
+          if (this.currentDiagram.backgroundColor && this.currentDiagram.backgroundColor.length > 0) {
+            this.graphContainer.nativeElement.style.backgroundColor = this.currentDiagram.backgroundColor;
           }
         }
         catch (e) {

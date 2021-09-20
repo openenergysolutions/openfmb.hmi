@@ -228,7 +228,7 @@ impl Receive<GenericControl> for HmiPublisher {
                         let mut buffer = Vec::<u8>::new();                        
                         profile.encode(&mut buffer).unwrap();                                                
                         self.publish(&subject, &mut buffer);
-                    }
+                    }                    
                     microgrid::generic_control::ControlType::Close => {
                         let profile = BreakerDiscreteControlProfile::breaker_close_msg(
                             &msg.mrid
@@ -349,9 +349,19 @@ impl Receive<GenericControl> for HmiPublisher {
                         let mut buffer = Vec::<u8>::new();                        
                         profile.encode(&mut buffer).unwrap();                                                                 
                         self.publish(&subject, &mut buffer);
-                    }
+                    }                    
                     _ => {
-                        warn!("Unsupport control type: {:?}", msg.message)
+
+                        match set_ess_csg(&msg.mrid, msg.message, SystemTime::now()) {
+                            Some(profile) => {
+                                let mut buffer = Vec::<u8>::new();                        
+                                profile.encode(&mut buffer).unwrap();                                                                 
+                                self.publish(&subject, &mut buffer);
+                            }
+                            None => {
+                                warn!("Unsupport control type: {:?}", msg.message)
+                            }
+                        }                        
                     }                  
                 } 
             },

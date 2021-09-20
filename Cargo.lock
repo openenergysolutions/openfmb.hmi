@@ -1483,7 +1483,7 @@ checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
 [[package]]
 name = "openfmb-codegen"
 version = "0.6.1"
-source = "git+https://github.com/openenergysolutions/openfmb-rs#a09899e53a15493d2aaa55b4d24a2126892f96e2"
+source = "git+https://github.com/openenergysolutions/openfmb-rs#c10bf227c69f9169e1f7e5f451ddee600414fa28"
 dependencies = [
  "bytes 0.5.6",
  "heck",
@@ -1501,7 +1501,7 @@ dependencies = [
 [[package]]
 name = "openfmb-descriptors"
 version = "0.1.0"
-source = "git+https://github.com/openenergysolutions/openfmb-rs#a09899e53a15493d2aaa55b4d24a2126892f96e2"
+source = "git+https://github.com/openenergysolutions/openfmb-rs#c10bf227c69f9169e1f7e5f451ddee600414fa28"
 dependencies = [
  "lazy_static",
  "prost",
@@ -1512,7 +1512,7 @@ dependencies = [
 [[package]]
 name = "openfmb-messages"
 version = "0.1.0"
-source = "git+https://github.com/openenergysolutions/openfmb-rs#a09899e53a15493d2aaa55b4d24a2126892f96e2"
+source = "git+https://github.com/openenergysolutions/openfmb-rs#c10bf227c69f9169e1f7e5f451ddee600414fa28"
 dependencies = [
  "bytes 0.5.6",
  "env_logger 0.8.4",
@@ -1527,7 +1527,7 @@ dependencies = [
 [[package]]
 name = "openfmb-messages-ext"
 version = "0.0.1"
-source = "git+https://github.com/openenergysolutions/openfmb-rs#a09899e53a15493d2aaa55b4d24a2126892f96e2"
+source = "git+https://github.com/openenergysolutions/openfmb-rs#c10bf227c69f9169e1f7e5f451ddee600414fa28"
 dependencies = [
  "chrono",
  "log",
@@ -1746,7 +1746,7 @@ dependencies = [
 [[package]]
 name = "proto-types"
 version = "0.7.0"
-source = "git+https://github.com/openenergysolutions/openfmb-rs#a09899e53a15493d2aaa55b4d24a2126892f96e2"
+source = "git+https://github.com/openenergysolutions/openfmb-rs#c10bf227c69f9169e1f7e5f451ddee600414fa28"
 dependencies = [
  "bytes 1.1.0",
  "prost",

@@ -78,7 +78,13 @@ impl FromStr for generic_control::ControlType {
     fn from_str(input: &str) -> Result<generic_control::ControlType, Self::Err> {
         match input {
             "Open"  => Ok(generic_control::ControlType::Open),
+            "OpenPhsA"  => Ok(generic_control::ControlType::OpenPhsA),
+            "OpenPhsB"  => Ok(generic_control::ControlType::OpenPhsB),
+            "OpenPhsC"  => Ok(generic_control::ControlType::OpenPhsC),
             "Close"  => Ok(generic_control::ControlType::Close),
+            "ClosePhsA"  => Ok(generic_control::ControlType::ClosePhsA),
+            "ClosePhsB"  => Ok(generic_control::ControlType::ClosePhsB),
+            "ClosePhsC"  => Ok(generic_control::ControlType::ClosePhsC),
             "SetModBlkOn"  => Ok(generic_control::ControlType::SetModBlkOn),
             "SetModBlkOff"  => Ok(generic_control::ControlType::SetModBlkOff),
             "StateOn"  => Ok(generic_control::ControlType::StateOn),
@@ -93,8 +99,27 @@ impl FromStr for generic_control::ControlType {
             "TapChangeLowerPhsB"  => Ok(generic_control::ControlType::TapChangeLowerPhsB), 
             "TapChangeRaisePhsB"  => Ok(generic_control::ControlType::TapChangeRaisePhsB), 
             "TapChangeLowerPhsC"  => Ok(generic_control::ControlType::TapChangeLowerPhsC), 
-            "TapChangeRaisePhsC"  => Ok(generic_control::ControlType::TapChangeRaisePhsC),  
-            _ => Err(()),
+            "TapChangeRaisePhsC"  => Ok(generic_control::ControlType::TapChangeRaisePhsC),             
+            "BlackStartEnable"  => Ok(generic_control::ControlType::BlackStartEnable), 
+            "BlackStartDisable"  => Ok(generic_control::ControlType::BlackStartDisable), 
+            "FrequencySetPointEnable"  => Ok(generic_control::ControlType::FrequencySetPointEnable), 
+            "FrequencySetPointDisable"  => Ok(generic_control::ControlType::FrequencySetPointDisable), 
+            "ReactivePowerSetPointEnable"  => Ok(generic_control::ControlType::ReactivePowerSetPointEnable), 
+            "ReactivePowerSetPointDisable"  => Ok(generic_control::ControlType::ReactivePowerSetPointDisable), 
+            "RealPowerSetPointEnable"  => Ok(generic_control::ControlType::RealPowerSetPointEnable), 
+            "RealPowerSetPointDisable"  => Ok(generic_control::ControlType::RealPowerSetPointDisable), 
+            "TransToIslandOnGridLossEnable"  => Ok(generic_control::ControlType::TransToIslandOnGridLossEnable), 
+            "TransToIslandOnGridLossDisable"  => Ok(generic_control::ControlType::TransToIslandOnGridLossDisable), 
+            "VoltageSetPointEnable"  => Ok(generic_control::ControlType::VoltageSetPointEnable), 
+            "VoltageSetPointDisable"  => Ok(generic_control::ControlType::VoltageSetPointDisable), 
+            "SetStateKindUndefined"  => Ok(generic_control::ControlType::SetStateKindUndefined), 
+            "SetStateKindOff"  => Ok(generic_control::ControlType::SetStateKindOff),
+            "SetStateKindOn"  => Ok(generic_control::ControlType::SetStateKindOn),
+            "SetStateKindStandBy"  => Ok(generic_control::ControlType::SetStateKindStandBy),
+            _ => {
+                println!("Unsupport Generic control {}", input);
+                Err(())
+            }
         }
     }
 }

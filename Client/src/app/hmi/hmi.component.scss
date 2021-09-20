@@ -49,10 +49,9 @@
         }
       }
 
-      .canvas-area-wrapper {
-        margin-left: 5px;
+      .canvas-area-wrapper {        
         #graphContainer {
-          background-color: #f2f1e9;
+          background-color: #ffffff;
           overflow: hidden;
           > * {
             z-index: 2;
@@ -96,12 +95,21 @@
   line-height: 0 !important;
 }
 
-.button-text {
+.button-text {   
+  height: auto;
+  line-height: 0 !important;
+  font-size: 14px;  
+  cursor: pointer; 
+}
+
+.two-state-button-text {
   position: relative;
   top: 0px;
   height: auto;
   line-height: 0 !important;
+  font-size: 16px;  
   cursor: pointer;
+  margin: 5px;
 }
 
 .display-data-container {
@@ -109,12 +117,12 @@
   top: 5px;
   padding: 8px;
   box-sizing: border-box;
-  width: 160px;
+  width: 110px;
   border-radius: 5px;
   background-color: #0e0f21;
   font-family: Roboto;
-  color:#a6a6af;  
-  font-size: 14px;
+  color:#ffffff;  
+  font-size: 11px;
   .data-title {
     white-space: break-spaces;
     text-transform: uppercase;

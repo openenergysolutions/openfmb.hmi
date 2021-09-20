@@ -112,7 +112,29 @@ message GenericControl
         TapChangeRaisePhsB = 13;
         TapChangeLowerPhsC = 14;
         TapChangeRaisePhsC = 15;
-        SetVarNetMag = 16;
+        SetVarNetMag = 16;        
+        BlackStartEnable = 17;
+        BlackStartDisable = 18;
+        FrequencySetPointEnable = 19;
+        FrequencySetPointDisable = 20;
+        ReactivePowerSetPointEnable = 21;
+        ReactivePowerSetPointDisable = 22;
+        RealPowerSetPointEnable = 23;
+        RealPowerSetPointDisable = 24;
+        TransToIslandOnGridLossEnable = 25;
+        TransToIslandOnGridLossDisable = 26;
+        VoltageSetPointEnable = 27;
+        VoltageSetPointDisable = 28;
+        SetStateKindUndefined = 29; 
+        SetStateKindOff = 30;
+        SetStateKindOn = 31;
+        SetStateKindStandBy = 32;
+        OpenPhsA = 33;
+        OpenPhsB = 34;
+        OpenPhsC = 35;
+        ClosePhsA = 36;
+        ClosePhsB = 37;
+        ClosePhsC = 38;
     }
 }
 

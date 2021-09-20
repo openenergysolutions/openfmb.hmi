@@ -1,5 +1,5 @@
 [coordinator]
-environment = "prod" # dev or prod
+environment = "dev" # dev or prod
 app_name = "openfmb-hmi" # name of the application
 log-level = "Debug" # Off, Error, Info, Debug, Trace
 

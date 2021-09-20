@@ -5,7 +5,7 @@
 use crate::messages::*;
 use super::processor::ProcessorMsg;
 
-use log::{info, warn, error};
+use log::{info, debug, error};
 
 use riker::actors::*;
 use std::fmt::Debug;
@@ -233,7 +233,7 @@ impl Receive<NatsMessage> for HmiSubscriber {
                     actor.send_msg(msg.clone().into(), ctx.myself.clone()); 
                 }    
                 else {
-                    warn!("Message is not supported.");
+                    debug!("Ignore message: {:?}.", msg);
                 }                              
             }
         }        
