@@ -2,9 +2,9 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-pub mod handler;
 pub mod auth;
 pub mod error;
+pub mod handler;
 pub mod hmi;
 pub mod logs;
 pub mod messages;

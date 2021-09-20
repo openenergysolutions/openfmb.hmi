@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use log::{error, info, warn};
-use std::str::FromStr;
 use riker::actors::*;
 use snafu::Snafu;
+use std::str::FromStr;
 
 use config::Config;
 
@@ -53,15 +53,17 @@ impl Actor for SystemEventLog {
 pub fn setup_logger(config: &Config) -> Result<(), fern::InitError> {
     use fern::colors::{Color, ColoredLevelConfig};
 
-    let s = config.get_str("coordinator.log-level").unwrap_or("INFO".into());    
+    let s = config
+        .get_str("coordinator.log-level")
+        .unwrap_or("INFO".into());
     let level = log::LevelFilter::from_str(&s).unwrap_or(log::LevelFilter::Info);
 
     // configure colors for the whole line
     let colors_level = ColoredLevelConfig::new()
         .error(Color::Red)
-        .warn(Color::Yellow)        
+        .warn(Color::Yellow)
         .info(Color::Green)
-        .debug(Color::White)        
+        .debug(Color::White)
         .trace(Color::Blue);
 
     let mut dispatch = fern::Dispatch::new()

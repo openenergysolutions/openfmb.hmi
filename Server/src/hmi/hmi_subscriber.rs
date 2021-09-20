@@ -2,10 +2,10 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-use crate::messages::*;
 use super::processor::ProcessorMsg;
+use crate::messages::*;
 
-use log::{info, debug, error};
+use log::{debug, error, info};
 
 use riker::actors::*;
 use std::fmt::Debug;
@@ -13,47 +13,48 @@ use std::fmt::Debug;
 use super::profile_subscriber::{ProfileSubscriber, ProfileSubscriberMsg};
 
 use snafu::Snafu;
-use std::{    
-    collections::HashMap,       
-    sync::Arc
-};
+use std::{collections::HashMap, sync::Arc};
 
 use std::convert::TryInto;
 
 #[derive(Debug, Clone)]
 pub struct NatsMessage(Arc<nats::Message>);
 
-#[actor(
-    StartProcessingMessages,
-    OpenFMBMessage,
-    NatsMessage
-)]
+#[actor(StartProcessingMessages, OpenFMBMessage, NatsMessage)]
 #[derive(Clone, Debug)]
 pub struct HmiSubscriber {
     pub message_count: u32,
-    pub nats_client: Option<nats::Connection>,       
-    openfmb_profile_actors: HashMap<OpenFMBProfileType, ActorRef<ProfileSubscriberMsg>>,        
-    pub processor: ActorRef<ProcessorMsg>,       
+    pub nats_client: Option<nats::Connection>,
+    openfmb_profile_actors: HashMap<OpenFMBProfileType, ActorRef<ProfileSubscriberMsg>>,
+    pub processor: ActorRef<ProcessorMsg>,
 }
 
-impl ActorFactoryArgs<ActorRef<ProcessorMsg>> for HmiSubscriber
-{
+impl ActorFactoryArgs<ActorRef<ProcessorMsg>> for HmiSubscriber {
     fn create_args(args: ActorRef<ProcessorMsg>) -> Self {
         HmiSubscriber {
-            message_count: 0,                                                           
-            processor: args,            
+            message_count: 0,
+            processor: args,
             nats_client: None,
-            openfmb_profile_actors: Default::default(),          
+            openfmb_profile_actors: Default::default(),
         }
     }
 }
 
 impl HmiSubscriber {
-    fn connect_to_nats_broker(&mut self, ctx: &Context<<HmiSubscriber as Actor>::Msg>, msg: &StartProcessingMessages) {         
-        if let Some(c) = &msg.nats_client{
+    fn connect_to_nats_broker(
+        &mut self,
+        ctx: &Context<<HmiSubscriber as Actor>::Msg>,
+        msg: &StartProcessingMessages,
+    ) {
+        if let Some(c) = &msg.nats_client {
             self.nats_client = Some(c.clone());
 
-            let sub = self.nats_client.as_ref().unwrap().subscribe("openfmb.>").unwrap();
+            let sub = self
+                .nats_client
+                .as_ref()
+                .unwrap()
+                .subscribe("openfmb.>")
+                .unwrap();
 
             let myself = ctx.myself.clone();
             // dropping the returned Handler does not unsubscribe here
@@ -61,17 +62,24 @@ impl HmiSubscriber {
                 let nats_msg = NatsMessage(Arc::new(msg));
                 myself.send_msg(nats_msg.into(), None);
                 Ok(())
-            }); 
-        }
-        else {
-            info!("HmiSubscriber connects to NATS with options: {:?}", msg.pubsub_options);
+            });
+        } else {
+            info!(
+                "HmiSubscriber connects to NATS with options: {:?}",
+                msg.pubsub_options
+            );
             match msg.pubsub_options.connect() {
                 Ok(connection) => {
-                    info!("****** HmiSubscriber successfully connected");                
+                    info!("****** HmiSubscriber successfully connected");
 
                     self.nats_client = Some(connection);
 
-                    let sub = self.nats_client.as_ref().unwrap().subscribe("openfmb.>").unwrap();
+                    let sub = self
+                        .nats_client
+                        .as_ref()
+                        .unwrap()
+                        .subscribe("openfmb.>")
+                        .unwrap();
 
                     let myself = ctx.myself.clone();
                     // dropping the returned Handler does not unsubscribe here
@@ -79,13 +87,13 @@ impl HmiSubscriber {
                         let nats_msg = NatsMessage(Arc::new(msg));
                         myself.send_msg(nats_msg.into(), None);
                         Ok(())
-                    }); 
+                    });
                 }
                 Err(e) => {
                     error!("Unable to connect to nats.  {:?}", e);
                 }
-            }  
-        }                     
+            }
+        }
     }
 
     fn ensure_actor(
@@ -95,24 +103,36 @@ impl HmiSubscriber {
     ) -> ActorRef<ProfileSubscriberMsg> {
         use OpenFMBMessage::*;
         match msg {
-            BreakerDiscreteControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Breaker),
+            BreakerDiscreteControl(_msg) => {
+                self.ensure_actor_type(ctx, OpenFMBProfileType::Breaker)
+            }
             BreakerEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Breaker),
             BreakerReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Breaker),
             BreakerStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Breaker),
             CapBankControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::CapBank),
-            CapBankDiscreteControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::CapBank),
+            CapBankDiscreteControl(_msg) => {
+                self.ensure_actor_type(ctx, OpenFMBProfileType::CapBank)
+            }
             CapBankEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::CapBank),
             CapBankReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::CapBank),
             CapBankStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::CapBank),
-            CoordinationControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::CoordinationService),
-            CoordinationEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::CoordinationService),
-            CoordinationStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::CoordinationService),
+            CoordinationControl(_msg) => {
+                self.ensure_actor_type(ctx, OpenFMBProfileType::CoordinationService)
+            }
+            CoordinationEvent(_msg) => {
+                self.ensure_actor_type(ctx, OpenFMBProfileType::CoordinationService)
+            }
+            CoordinationStatus(_msg) => {
+                self.ensure_actor_type(ctx, OpenFMBProfileType::CoordinationService)
+            }
             ESSEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::ESS),
             ESSReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::ESS),
             ESSStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::ESS),
             ESSControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::ESS),
             GenerationControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Generation),
-            GenerationDiscreteControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Generation),
+            GenerationDiscreteControl(_msg) => {
+                self.ensure_actor_type(ctx, OpenFMBProfileType::Generation)
+            }
             GenerationReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Generation),
             GenerationEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Generation),
             GenerationStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Generation),
@@ -121,16 +141,22 @@ impl HmiSubscriber {
             LoadReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Load),
             LoadStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Load),
             MeterReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Meter),
-            RecloserDiscreteControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Recloser),
+            RecloserDiscreteControl(_msg) => {
+                self.ensure_actor_type(ctx, OpenFMBProfileType::Recloser)
+            }
             RecloserEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Recloser),
             RecloserReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Recloser),
             RecloserStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Recloser),
             RegulatorControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Regulator),
-            RegulatorDiscreteControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Regulator),
+            RegulatorDiscreteControl(_msg) => {
+                self.ensure_actor_type(ctx, OpenFMBProfileType::Regulator)
+            }
             RegulatorEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Regulator),
             RegulatorReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Regulator),
             RegulatorStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Regulator),
-            ResourceDiscreteControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Resource),
+            ResourceDiscreteControl(_msg) => {
+                self.ensure_actor_type(ctx, OpenFMBProfileType::Resource)
+            }
             ResourceReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Resource),
             ResourceEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Resource),
             ResourceStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Resource),
@@ -150,9 +176,7 @@ impl HmiSubscriber {
         ctx: &Context<HmiSubscriberMsg>,
         profile_type: OpenFMBProfileType,
     ) -> ActorRef<ProfileSubscriberMsg> {
-        let actor = self
-            .openfmb_profile_actors
-            .get(&profile_type);
+        let actor = self.openfmb_profile_actors.get(&profile_type);
         match actor {
             Some(_) => actor.unwrap().clone(),
             None => {
@@ -162,11 +186,12 @@ impl HmiSubscriber {
                         self.processor.clone(),
                     )
                     .unwrap();
-                self.openfmb_profile_actors.insert(profile_type, actor_ref.clone());
+                self.openfmb_profile_actors
+                    .insert(profile_type, actor_ref.clone());
                 actor_ref
             }
         }
-    }    
+    }
 }
 
 impl Actor for HmiSubscriber {
@@ -199,7 +224,7 @@ impl Actor for HmiSubscriber {
 impl Receive<StartProcessingMessages> for HmiSubscriber {
     type Msg = HmiSubscriberMsg;
 
-    fn receive(&mut self, ctx: &Context<Self::Msg>, msg: StartProcessingMessages, _sender: Sender) {        
+    fn receive(&mut self, ctx: &Context<Self::Msg>, msg: StartProcessingMessages, _sender: Sender) {
         self.connect_to_nats_broker(ctx, &msg);
     }
 }
@@ -207,7 +232,6 @@ impl Receive<StartProcessingMessages> for HmiSubscriber {
 impl Receive<OpenFMBMessage> for HmiSubscriber {
     type Msg = HmiSubscriberMsg;
     fn receive(&mut self, ctx: &Context<Self::Msg>, msg: OpenFMBMessage, _sender: Sender) {
-        
         let actor = self.ensure_actor(ctx, &msg);
         actor.send_msg(msg.clone().into(), ctx.myself.clone());
     }
@@ -224,18 +248,16 @@ pub enum Error {
 impl Receive<NatsMessage> for HmiSubscriber {
     type Msg = HmiSubscriberMsg;
     fn receive(&mut self, ctx: &Context<Self::Msg>, msg: NatsMessage, _sender: Sender) {
-        match msg.0.subject.as_str() {            
+        match msg.0.subject.as_str() {
             _ => {
-                
                 let result: Result<OpenFMBMessage, _> = msg.0.as_ref().try_into();
-                if let Ok(msg) = result {                    
+                if let Ok(msg) = result {
                     let actor = self.ensure_actor(ctx, &msg);
-                    actor.send_msg(msg.clone().into(), ctx.myself.clone()); 
-                }    
-                else {
+                    actor.send_msg(msg.clone().into(), ctx.myself.clone());
+                } else {
                     debug!("Ignore message: {:?}.", msg);
-                }                              
+                }
             }
-        }        
+        }
     }
 }

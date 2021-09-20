@@ -2,23 +2,23 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-use std::convert::TryFrom;
-use std::str::FromStr;
-use std::sync::RwLock;
 use config::Config;
 use lazy_static::lazy_static;
-use std::fmt;
-use serde::{Deserialize, Serialize};
 use log::info;
+use serde::{Deserialize, Serialize};
+use std::convert::TryFrom;
+use std::fmt;
+use std::str::FromStr;
+use std::sync::RwLock;
 
 lazy_static! {
-	static ref SETTINGS: RwLock<Config> = RwLock::new(riker::load_config());    
+    static ref SETTINGS: RwLock<Config> = RwLock::new(riker::load_config());
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub enum Environment {
     Dev = 0,
-    Prod = 1
+    Prod = 1,
 }
 
 impl TryFrom<i32> for Environment {
@@ -27,19 +27,19 @@ impl TryFrom<i32> for Environment {
     fn try_from(v: i32) -> Result<Self, Self::Error> {
         match v {
             x if x == Environment::Dev as i32 => Ok(Environment::Dev),
-            x if x == Environment::Prod as i32 => Ok(Environment::Prod),            
+            x if x == Environment::Prod as i32 => Ok(Environment::Prod),
             _ => Err(()),
         }
     }
 }
 
 impl FromStr for Environment {
-    type Err  = ();
+    type Err = ();
 
     fn from_str(input: &str) -> Result<Environment, Self::Err> {
         match input {
-            "dev"  => Ok(Environment::Dev),
-            "prod"  => Ok(Environment::Prod),            
+            "dev" => Ok(Environment::Dev),
+            "prod" => Ok(Environment::Prod),
             _ => Err(()),
         }
     }
@@ -47,7 +47,7 @@ impl FromStr for Environment {
 
 impl fmt::Display for Environment {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{:?}", self)        
+        write!(f, "{:?}", self)
     }
 }
 
@@ -56,7 +56,7 @@ pub enum Authentication {
     None = 0,
     UserPwd = 1,
     Token = 2,
-    Creds = 3,        
+    Creds = 3,
 }
 
 impl TryFrom<i32> for Authentication {
@@ -67,21 +67,21 @@ impl TryFrom<i32> for Authentication {
             x if x == Authentication::None as i32 => Ok(Authentication::None),
             x if x == Authentication::UserPwd as i32 => Ok(Authentication::UserPwd),
             x if x == Authentication::Token as i32 => Ok(Authentication::Token),
-            x if x == Authentication::Creds as i32 => Ok(Authentication::Creds),            
+            x if x == Authentication::Creds as i32 => Ok(Authentication::Creds),
             _ => Err(()),
         }
     }
 }
 
 impl FromStr for Authentication {
-    type Err  = ();
+    type Err = ();
 
     fn from_str(input: &str) -> Result<Authentication, Self::Err> {
         match input {
-            "none"  => Ok(Authentication::None),
-            "user_pwd"  => Ok(Authentication::UserPwd), 
-            "token"  => Ok(Authentication::Token),
-            "creds"  => Ok(Authentication::Creds),                       
+            "none" => Ok(Authentication::None),
+            "user_pwd" => Ok(Authentication::UserPwd),
+            "token" => Ok(Authentication::Token),
+            "creds" => Ok(Authentication::Creds),
             _ => Err(()),
         }
     }
@@ -89,7 +89,7 @@ impl FromStr for Authentication {
 
 impl fmt::Display for Authentication {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{:?}", self)        
+        write!(f, "{:?}", self)
     }
 }
 
@@ -97,7 +97,7 @@ impl fmt::Display for Authentication {
 pub enum Security {
     None = 0,
     TlsServer = 1,
-    TlsMutual = 2,        
+    TlsMutual = 2,
 }
 
 impl TryFrom<i32> for Security {
@@ -107,20 +107,20 @@ impl TryFrom<i32> for Security {
         match v {
             x if x == Security::None as i32 => Ok(Security::None),
             x if x == Security::TlsServer as i32 => Ok(Security::TlsServer),
-            x if x == Security::TlsMutual as i32 => Ok(Security::TlsMutual),                        
+            x if x == Security::TlsMutual as i32 => Ok(Security::TlsMutual),
             _ => Err(()),
         }
     }
 }
 
 impl FromStr for Security {
-    type Err  = ();
+    type Err = ();
 
     fn from_str(input: &str) -> Result<Security, Self::Err> {
         match input {
-            "none"  => Ok(Security::None),
-            "tls_server"  => Ok(Security::TlsServer), 
-            "tls_mutual"  => Ok(Security::TlsMutual),                                  
+            "none" => Ok(Security::None),
+            "tls_server" => Ok(Security::TlsServer),
+            "tls_mutual" => Ok(Security::TlsMutual),
             _ => Err(()),
         }
     }
@@ -128,7 +128,7 @@ impl FromStr for Security {
 
 impl fmt::Display for Security {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{:?}", self)        
+        write!(f, "{:?}", self)
     }
 }
 
@@ -149,53 +149,81 @@ pub struct PubSubOptions {
     pub creds_file: Option<String>,
     pub username: Option<String>,
     pub password: Option<String>,
-    pub security_type: Security, 
-    pub root_cert: Option<String>,   
+    pub security_type: Security,
+    pub root_cert: Option<String>,
     pub client_cert: Option<String>,
-    pub client_key: Option<String>,    
+    pub client_key: Option<String>,
 }
 
 impl PubSubOptions {
-
     pub fn new() -> PubSubOptions {
-        
-        let env = Environment::from_str(SETTINGS.read().unwrap().get_str("coordinator.environment").unwrap().as_str()).unwrap();
-        let _ = SETTINGS.write().unwrap().set_default("openfmb_nats_subscriber.connected", true);
+        let env = Environment::from_str(
+            SETTINGS
+                .read()
+                .unwrap()
+                .get_str("coordinator.environment")
+                .unwrap()
+                .as_str(),
+        )
+        .unwrap();
+        let _ = SETTINGS
+            .write()
+            .unwrap()
+            .set_default("openfmb_nats_subscriber.connected", true);
 
         PubSubOptions::get_options(env)
     }
 
-    pub fn get_options(env: Environment) -> PubSubOptions {        
-        
+    pub fn get_options(env: Environment) -> PubSubOptions {
         let nats_server_uri = match env {
             Environment::Prod => {
-                let _ = SETTINGS.write().unwrap().set("coordinator.environment", "prod");
-                SETTINGS.read().unwrap().get_str("openfmb_nats_subscriber.prod_uri").unwrap()
-            },
-            Environment::Dev => {
-                let _ = SETTINGS.write().unwrap().set("coordinator.environment", "dev");
-                SETTINGS.read().unwrap().get_str("openfmb_nats_subscriber.dev_uri").unwrap()
+                let _ = SETTINGS
+                    .write()
+                    .unwrap()
+                    .set("coordinator.environment", "prod");
+                SETTINGS
+                    .read()
+                    .unwrap()
+                    .get_str("openfmb_nats_subscriber.prod_uri")
+                    .unwrap()
             }
-        };   
-        
+            Environment::Dev => {
+                let _ = SETTINGS
+                    .write()
+                    .unwrap()
+                    .set("coordinator.environment", "dev");
+                SETTINGS
+                    .read()
+                    .unwrap()
+                    .get_str("openfmb_nats_subscriber.dev_uri")
+                    .unwrap()
+            }
+        };
+
         let mut authentication_type = Authentication::None;
 
-        if let Ok(s) = SETTINGS.read().unwrap().get_str("openfmb_nats_subscriber.authentication_type") {
+        if let Ok(s) = SETTINGS
+            .read()
+            .unwrap()
+            .get_str("openfmb_nats_subscriber.authentication_type")
+        {
             if let Ok(sec) = Authentication::from_str(&s) {
                 authentication_type = sec;
-            }
-            else {
+            } else {
                 log::error!("Invalid authentication type {}", s);
             }
         }
 
         let mut security_type = Security::None;
 
-        if let Ok(s) = SETTINGS.read().unwrap().get_str("openfmb_nats_subscriber.security_type") {
+        if let Ok(s) = SETTINGS
+            .read()
+            .unwrap()
+            .get_str("openfmb_nats_subscriber.security_type")
+        {
             if let Ok(sec) = Security::from_str(&s) {
                 security_type = sec;
-            }
-            else {
+            } else {
                 log::error!("Invalid security type {}", s);
             }
         }
@@ -208,43 +236,71 @@ impl PubSubOptions {
             creds_file: None,
             username: None,
             password: None,
-            security_type: security_type,            
+            security_type: security_type,
             client_cert: None,
             client_key: None,
             root_cert: None,
-        };                
+        };
 
-        if let Ok(s) = SETTINGS.read().unwrap().get_str("openfmb_nats_subscriber.token") {
+        if let Ok(s) = SETTINGS
+            .read()
+            .unwrap()
+            .get_str("openfmb_nats_subscriber.token")
+        {
             if s.len() > 0 {
                 options.token = Some(s);
             }
         }
-        if let Ok(s) = SETTINGS.read().unwrap().get_str("openfmb_nats_subscriber.creds") {
+        if let Ok(s) = SETTINGS
+            .read()
+            .unwrap()
+            .get_str("openfmb_nats_subscriber.creds")
+        {
             if s.len() > 0 {
                 options.creds_file = Some(s);
             }
         }
-        if let Ok(s) = SETTINGS.read().unwrap().get_str("openfmb_nats_subscriber.username") {
+        if let Ok(s) = SETTINGS
+            .read()
+            .unwrap()
+            .get_str("openfmb_nats_subscriber.username")
+        {
             if s.len() > 0 {
                 options.username = Some(s);
             }
         }
-        if let Ok(s) = SETTINGS.read().unwrap().get_str("openfmb_nats_subscriber.password") {
+        if let Ok(s) = SETTINGS
+            .read()
+            .unwrap()
+            .get_str("openfmb_nats_subscriber.password")
+        {
             if s.len() > 0 {
                 options.password = Some(s);
             }
-        }        
-        if let Ok(s) = SETTINGS.read().unwrap().get_str("openfmb_nats_subscriber.client_cert") {
+        }
+        if let Ok(s) = SETTINGS
+            .read()
+            .unwrap()
+            .get_str("openfmb_nats_subscriber.client_cert")
+        {
             if s.len() > 0 {
                 options.client_cert = Some(s);
             }
         }
-        if let Ok(s) = SETTINGS.read().unwrap().get_str("openfmb_nats_subscriber.client_key") {
+        if let Ok(s) = SETTINGS
+            .read()
+            .unwrap()
+            .get_str("openfmb_nats_subscriber.client_key")
+        {
             if s.len() > 0 {
                 options.client_key = Some(s);
             }
         }
-        if let Ok(s) = SETTINGS.read().unwrap().get_str("openfmb_nats_subscriber.root_cert") {
+        if let Ok(s) = SETTINGS
+            .read()
+            .unwrap()
+            .get_str("openfmb_nats_subscriber.root_cert")
+        {
             if s.len() > 0 {
                 options.root_cert = Some(s);
             }
@@ -254,11 +310,18 @@ impl PubSubOptions {
     }
 
     pub fn toggle_environment() -> PubSubOptions {
-        let mut env = Environment::from_str(SETTINGS.read().unwrap().get_str("coordinator.environment").unwrap().as_str()).unwrap();
+        let mut env = Environment::from_str(
+            SETTINGS
+                .read()
+                .unwrap()
+                .get_str("coordinator.environment")
+                .unwrap()
+                .as_str(),
+        )
+        .unwrap();
         if env == Environment::Prod {
             env = Environment::Dev;
-        }
-        else {
+        } else {
             env = Environment::Prod;
         }
 
@@ -271,7 +334,10 @@ impl PubSubOptions {
         match self.authentication_type {
             Authentication::UserPwd => {
                 info!("NATS with default username/pwd");
-                options = nats::Options::with_user_pass(self.username.as_ref().unwrap(), self.password.as_ref().unwrap());
+                options = nats::Options::with_user_pass(
+                    self.username.as_ref().unwrap(),
+                    self.password.as_ref().unwrap(),
+                );
             }
             Authentication::Token => {
                 info!("NATS options with token: {:?}", self.token);
@@ -280,7 +346,7 @@ impl PubSubOptions {
             Authentication::Creds => {
                 info!("NATS options with credential file: {:?}", self.creds_file);
                 options = nats::Options::with_credentials(self.creds_file.as_ref().unwrap());
-            }            
+            }
             Authentication::None => {
                 info!("NATS with default option");
                 options = nats::Options::new();
@@ -288,37 +354,42 @@ impl PubSubOptions {
         }
 
         match self.security_type {
-            Security::TlsServer => {
-                options
-                    .add_root_certificate(self.root_cert.as_ref().unwrap())
-                    .disconnect_callback(|| PubSubOptions::on_disconnect())
-                    .reconnect_callback(|| PubSubOptions::on_reconnect())
-                    .connect(&self.connection_url)
-            }
-            Security::TlsMutual => {
-                options
-                    .add_root_certificate(self.root_cert.as_ref().unwrap())
-                    .client_cert(self.client_cert.as_ref().unwrap(), self.client_key.as_ref().unwrap())
-                    .disconnect_callback(|| PubSubOptions::on_disconnect())
-                    .reconnect_callback(|| PubSubOptions::on_reconnect())
-                    .connect(&self.connection_url)
-            }
-            Security::None => {
-                options
-                    .disconnect_callback(|| PubSubOptions::on_disconnect())
-                    .reconnect_callback(|| PubSubOptions::on_reconnect())
-                    .connect(&self.connection_url)
-            }
-        }                
+            Security::TlsServer => options
+                .add_root_certificate(self.root_cert.as_ref().unwrap())
+                .disconnect_callback(|| PubSubOptions::on_disconnect())
+                .reconnect_callback(|| PubSubOptions::on_reconnect())
+                .connect(&self.connection_url),
+            Security::TlsMutual => options
+                .add_root_certificate(self.root_cert.as_ref().unwrap())
+                .client_cert(
+                    self.client_cert.as_ref().unwrap(),
+                    self.client_key.as_ref().unwrap(),
+                )
+                .disconnect_callback(|| PubSubOptions::on_disconnect())
+                .reconnect_callback(|| PubSubOptions::on_reconnect())
+                .connect(&self.connection_url),
+            Security::None => options
+                .disconnect_callback(|| PubSubOptions::on_disconnect())
+                .reconnect_callback(|| PubSubOptions::on_reconnect())
+                .connect(&self.connection_url),
+        }
     }
 
     pub fn current_status() -> PubSubStatus {
-        let mut send_update_status = match SETTINGS.read().unwrap().get_bool("openfmb_nats_subscriber.send_status_update") {
+        let mut send_update_status = match SETTINGS
+            .read()
+            .unwrap()
+            .get_bool("openfmb_nats_subscriber.send_status_update")
+        {
             Ok(b) => b,
-            _ => false
+            _ => false,
         };
 
-        let server_id = match SETTINGS.read().unwrap().get_str("openfmb_nats_subscriber.server_id") {
+        let server_id = match SETTINGS
+            .read()
+            .unwrap()
+            .get_str("openfmb_nats_subscriber.server_id")
+        {
             Ok(b) => b,
             _ => {
                 if send_update_status {
@@ -327,23 +398,41 @@ impl PubSubOptions {
                 }
                 "".to_string()
             }
-        };        
+        };
 
         PubSubStatus {
-            env: Environment::from_str(SETTINGS.read().unwrap().get_str("coordinator.environment").unwrap().as_str()).unwrap(),
-            connected: SETTINGS.read().unwrap().get_bool("openfmb_nats_subscriber.connected").unwrap(),
+            env: Environment::from_str(
+                SETTINGS
+                    .read()
+                    .unwrap()
+                    .get_str("coordinator.environment")
+                    .unwrap()
+                    .as_str(),
+            )
+            .unwrap(),
+            connected: SETTINGS
+                .read()
+                .unwrap()
+                .get_bool("openfmb_nats_subscriber.connected")
+                .unwrap(),
             send_status_update: send_update_status,
-            server_id: server_id
+            server_id: server_id,
         }
     }
 
     fn on_disconnect() {
         log::debug!("Connection to pub/sub broker has lost!");
-        let _ = SETTINGS.write().unwrap().set("openfmb_nats_subscriber.connected", false);
+        let _ = SETTINGS
+            .write()
+            .unwrap()
+            .set("openfmb_nats_subscriber.connected", false);
     }
 
     fn on_reconnect() {
         log::debug!("Reconnected to pub/sub broker.");
-        let _ = SETTINGS.write().unwrap().set("openfmb_nats_subscriber.connected", true);
+        let _ = SETTINGS
+            .write()
+            .unwrap()
+            .set("openfmb_nats_subscriber.connected", true);
     }
 }

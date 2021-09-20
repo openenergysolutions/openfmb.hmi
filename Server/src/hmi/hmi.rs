@@ -4,8 +4,8 @@
 
 use crate::messages::StartProcessingMessages;
 
-use super::hmi_subscriber::HmiSubscriberMsg;
 use super::hmi_publisher::HmiPublisherMsg;
+use super::hmi_subscriber::HmiSubscriberMsg;
 
 use riker::actors::*;
 use std::fmt::Debug;
@@ -21,8 +21,8 @@ use openfmb_messages::{
         ControlScheduleFsch, ControlTimestamp, DbPosKind, DynamicTestKind, EnergyConsumer,
         EngGridConnectModeKind, EngScheduleParameter, EnsDynamicTestKind, Ess, GridConnectModeKind,
         IdentifiedObject, MessageInfo, NamedObject, OptionalStateKind, ScheduleCsg,
-        ScheduleParameterKind, SchedulePoint, StateKind, StatusMessageInfo,
-        SwitchCsg, SwitchPoint, Timestamp,
+        ScheduleParameterKind, SchedulePoint, StateKind, StatusMessageInfo, SwitchCsg, SwitchPoint,
+        Timestamp,
     },
     essmodule::{
         EssControl, EssControlFscc, EssControlProfile, EssControlScheduleFsch, EssPoint,
@@ -43,34 +43,24 @@ use openfmb_messages::{
         SolarInverter, SolarPoint, SolarReadingProfile, SolarStatusProfile,
     },
     switchmodule::{
-        ProtectedSwitch, SwitchDiscreteControl, SwitchDiscreteControlProfile,
-        SwitchReadingProfile, SwitchStatusProfile, SwitchStatusXswi,
+        ProtectedSwitch, SwitchDiscreteControl, SwitchDiscreteControlProfile, SwitchReadingProfile,
+        SwitchStatusProfile, SwitchStatusXswi,
     },
 };
 
 #[actor(StartProcessingMessages)]
 #[derive(Clone, Debug)]
 pub struct Hmi {
-    pub message_count: u32,            
-    pub publisher: ActorRef<HmiPublisherMsg>,    
-    pub subscriber: ActorRef<HmiSubscriberMsg>,    
+    pub message_count: u32,
+    pub publisher: ActorRef<HmiPublisherMsg>,
+    pub subscriber: ActorRef<HmiSubscriberMsg>,
 }
-impl
-ActorFactoryArgs<(
-    ActorRef<HmiPublisherMsg>,
-    ActorRef<HmiSubscriberMsg>
-)> for Hmi
-{
-    fn create_args(
-        args: (
-            ActorRef<HmiPublisherMsg>,
-            ActorRef<HmiSubscriberMsg>                      
-        ),
-    ) -> Self {
+impl ActorFactoryArgs<(ActorRef<HmiPublisherMsg>, ActorRef<HmiSubscriberMsg>)> for Hmi {
+    fn create_args(args: (ActorRef<HmiPublisherMsg>, ActorRef<HmiSubscriberMsg>)) -> Self {
         Hmi {
-            message_count: 0,            
+            message_count: 0,
             publisher: args.0,
-            subscriber: args.1,                                   
+            subscriber: args.1,
         }
     }
 }
@@ -78,7 +68,7 @@ ActorFactoryArgs<(
 impl Actor for Hmi {
     type Msg = HmiMsg;
 
-    fn pre_start(&mut self, _ctx: &Context<Self::Msg>) {}          
+    fn pre_start(&mut self, _ctx: &Context<Self::Msg>) {}
 
     fn post_start(&mut self, _ctx: &Context<Self::Msg>) {}
 
@@ -105,7 +95,12 @@ impl Actor for Hmi {
 impl Receive<StartProcessingMessages> for Hmi {
     type Msg = HmiMsg;
 
-    fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: StartProcessingMessages, _sender: Sender) { 
+    fn receive(
+        &mut self,
+        _ctx: &Context<Self::Msg>,
+        msg: StartProcessingMessages,
+        _sender: Sender,
+    ) {
         log::debug!("Received start processing message: {:?}", msg);
         self.subscriber.tell(msg.clone(), None);
         self.publisher.tell(msg.clone(), None);

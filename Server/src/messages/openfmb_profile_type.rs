@@ -15,5 +15,5 @@ pub enum OpenFMBProfileType {
     Regulator,
     Resource,
     Solar,
-    Switch,    
+    Switch,
 }

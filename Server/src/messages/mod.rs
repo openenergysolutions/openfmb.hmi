@@ -3,13 +3,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 mod actor_ref;
-mod openfmb;
 mod config;
-mod openfmb_profile_type;
 mod message_type;
+mod openfmb;
+mod openfmb_profile_type;
 
-pub use actor_ref::*;
-pub use openfmb::*;
 pub use self::config::*;
-pub use openfmb_profile_type::*;
+pub use actor_ref::*;
 pub use message_type::*;
+pub use openfmb::*;
+pub use openfmb_profile_type::*;

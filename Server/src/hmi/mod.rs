@@ -3,14 +3,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 pub mod hmi;
-pub mod processor;
-pub mod hmi_subscriber;
 pub mod hmi_publisher;
+pub mod hmi_subscriber;
+pub mod monitor;
+pub mod processor;
 pub mod profile_subscriber;
 pub mod pubsub;
-pub mod monitor;
 pub mod utils;
 
-pub use utils::*;
 pub use pubsub::*;
- 
+pub use utils::*;
