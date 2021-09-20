@@ -85,6 +85,8 @@
               ]
             },
             "dev": {
+              "buildOptimizer": true,
+              "aot": true,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
