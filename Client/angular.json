@@ -16,23 +16,13 @@
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
-          "allowedCommonJsDependencies": [
-            "rxjs/internal/operators",
-            "rxjs/BehaviorSubject",
-            "highlight.js",
-            "hammerjs",
-            "json2yaml",
-            "ts-mxgraph",
-            "xml-js",
-            "debug"
-          ],
           "options": {
             "outputPath": "dist/openfmb-hmi",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
-            "aot": false,
+            "aot": true,
             "assets": ["src/favicon.ico", "src/assets"],
             "styles": [
               "node_modules/mxgraph/javascript/src/css/common.css", 
@@ -65,7 +55,6 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
@@ -128,29 +117,6 @@
             "assets": ["src/favicon.ico", "src/assets"],
             "styles": ["src/styles.scss"],
             "scripts": []
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "tsconfig.app.json",
-              "tsconfig.spec.json",
-              "e2e/tsconfig.json"
-            ],
-            "exclude": ["**/node_modules/**"]
-          }
-        },
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "openfmb-hmi:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "openfmb-hmi:serve:production"
-            }
           }
         }
       }

@@ -1,3 +1,5 @@
+@use 'sass:math';
+
 // General
 $transitionDuration: 300ms !default;
 $gutter: 1rem !default;
@@ -25,7 +27,7 @@ $font-size-h4: 15px !default;
 $font-size-h5: 13px !default;
 $font-size-h6: 12px !default;
 
-$headings-margin-bottom: (1rem / 2) !default;
+$headings-margin-bottom: math.div(1rem, 2) !default;
 $headings-font-family:   inherit !default;
 $headings-font-weight:   400 !default;
 $headings-line-height:   1.1 !default;
