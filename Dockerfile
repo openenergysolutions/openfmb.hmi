@@ -9,7 +9,7 @@ WORKDIR /openfmb.hmi
 
 RUN cargo build --release
 
-FROM node:15.14.0 AS build2
+FROM node:14.17.6 AS build2
 
 COPY Client ./Client
 
@@ -25,6 +25,6 @@ COPY --from=build /openfmb.hmi/target/release/hmi_server /usr/local/bin/
 
 WORKDIR /hmi_server
 
-EXPOSE 80 8080 443 32771 42771
+EXPOSE 80 8080 443 32000 32771 42771
 
 ENTRYPOINT ["hmi_server"]
