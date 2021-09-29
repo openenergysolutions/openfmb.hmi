@@ -69,6 +69,9 @@ export class SwitchgearDialogComponent implements OnInit {
     if (this.diagramData.controlData && this.diagramData.controlData.length > 0) {      
       var controlData = this.diagramData.controlData[0];
       if (controlData) {
+        if (("" + controlData.path) == "PccControl") {
+          return close ? CommandAction.CLOSE : CommandAction.OPEN;
+        }
         if (("" + controlData.path).indexOf(".Pos.phs3.ctlVal") > 0) {
           return close ? CommandAction.CLOSE : CommandAction.OPEN;
         }
@@ -81,6 +84,7 @@ export class SwitchgearDialogComponent implements OnInit {
         if (("" + controlData.path).indexOf(".Pos.phsC.ctlVal") > 0) {
           return close ? CommandAction.CLOSE_PHSC : CommandAction.OPEN_PHSC;
         }
+        
       }
     }
     this.hasDataMapped = false;
@@ -100,7 +104,7 @@ export class SwitchgearDialogComponent implements OnInit {
   }
 
   onMessageInspector(): void {
-    window.open('/inspector?mrid=' + this.mRID, '_blank', 'toolbar=0,width=850,height=700', true);
+    window.open('/inspector?mrid=' + this.mRID, '_blank', 'toolbar=0,width=850,height=700');
     this.dialogRef.close({
       proceed: false      
     });
