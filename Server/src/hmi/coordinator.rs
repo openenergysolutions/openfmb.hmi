@@ -10,9 +10,16 @@ use std::convert::TryFrom;
 use std::fmt;
 use std::str::FromStr;
 use std::sync::RwLock;
+use nats::Connection;
 
 lazy_static! {
     static ref SETTINGS: RwLock<Config> = RwLock::new(riker::load_config());
+}
+
+#[derive(Clone, Debug)]
+pub struct StartProcessingMessages {
+    pub pubsub_options: CoordinatorOptions,
+    pub nats_client: Option<Connection>,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -133,15 +140,16 @@ impl fmt::Display for Security {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct PubSubStatus {
+pub struct CoordinatorStatus {
     pub env: Environment,
     pub connected: bool,
+    pub coordinator_active: bool,
     pub server_id: String,
     pub send_status_update: bool,
 }
 
 #[derive(Clone, Debug)]
-pub struct PubSubOptions {
+pub struct CoordinatorOptions {
     pub connection_url: String,
     pub authentication_type: Authentication,
     pub env: Environment,
@@ -155,8 +163,8 @@ pub struct PubSubOptions {
     pub client_key: Option<String>,
 }
 
-impl PubSubOptions {
-    pub fn new() -> PubSubOptions {
+impl CoordinatorOptions {
+    pub fn new() -> CoordinatorOptions {
         let env = Environment::from_str(
             SETTINGS
                 .read()
@@ -171,10 +179,10 @@ impl PubSubOptions {
             .unwrap()
             .set_default("openfmb_nats_subscriber.connected", true);
 
-        PubSubOptions::get_options(env)
+        CoordinatorOptions::get_options(env)
     }
 
-    pub fn get_options(env: Environment) -> PubSubOptions {
+    pub fn get_options(env: Environment) -> CoordinatorOptions {
         let nats_server_uri = match env {
             Environment::Prod => {
                 let _ = SETTINGS
@@ -228,7 +236,7 @@ impl PubSubOptions {
             }
         }
 
-        let mut options = PubSubOptions {
+        let mut options = CoordinatorOptions {
             connection_url: nats_server_uri,
             authentication_type: authentication_type.clone(),
             env: env,
@@ -309,7 +317,7 @@ impl PubSubOptions {
         return options;
     }
 
-    pub fn toggle_environment() -> PubSubOptions {
+    pub fn toggle_environment() -> CoordinatorOptions {
         let mut env = Environment::from_str(
             SETTINGS
                 .read()
@@ -325,7 +333,7 @@ impl PubSubOptions {
             env = Environment::Prod;
         }
 
-        PubSubOptions::get_options(env)
+        CoordinatorOptions::get_options(env)
     }
 
     pub fn connect(&self) -> std::io::Result<nats::Connection> {
@@ -356,8 +364,8 @@ impl PubSubOptions {
         match self.security_type {
             Security::TlsServer => options
                 .add_root_certificate(self.root_cert.as_ref().unwrap())
-                .disconnect_callback(|| PubSubOptions::on_disconnect())
-                .reconnect_callback(|| PubSubOptions::on_reconnect())
+                .disconnect_callback(|| CoordinatorOptions::on_disconnect())
+                .reconnect_callback(|| CoordinatorOptions::on_reconnect())
                 .connect(&self.connection_url),
             Security::TlsMutual => options
                 .add_root_certificate(self.root_cert.as_ref().unwrap())
@@ -365,17 +373,17 @@ impl PubSubOptions {
                     self.client_cert.as_ref().unwrap(),
                     self.client_key.as_ref().unwrap(),
                 )
-                .disconnect_callback(|| PubSubOptions::on_disconnect())
-                .reconnect_callback(|| PubSubOptions::on_reconnect())
+                .disconnect_callback(|| CoordinatorOptions::on_disconnect())
+                .reconnect_callback(|| CoordinatorOptions::on_reconnect())
                 .connect(&self.connection_url),
             Security::None => options
-                .disconnect_callback(|| PubSubOptions::on_disconnect())
-                .reconnect_callback(|| PubSubOptions::on_reconnect())
+                .disconnect_callback(|| CoordinatorOptions::on_disconnect())
+                .reconnect_callback(|| CoordinatorOptions::on_reconnect())
                 .connect(&self.connection_url),
         }
     }
 
-    pub fn current_status() -> PubSubStatus {
+    pub fn current_status() -> CoordinatorStatus {
         let mut send_update_status = match SETTINGS
             .read()
             .unwrap()
@@ -400,7 +408,7 @@ impl PubSubOptions {
             }
         };
 
-        PubSubStatus {
+        CoordinatorStatus {
             env: Environment::from_str(
                 SETTINGS
                     .read()
@@ -417,6 +425,33 @@ impl PubSubOptions {
                 .unwrap(),
             send_status_update: send_update_status,
             server_id: server_id,
+            coordinator_active: SETTINGS
+                .read()
+                .unwrap()
+                .get_bool("coordinator.active")
+                .unwrap_or(false)
+        }
+    }
+
+    pub fn update_coordinator_active(is_active: bool) {
+        match SETTINGS.write().unwrap().set("coordinator.active", is_active)
+        {
+            Ok(_) => {},
+            Err(e) => {
+                log::error!("Unable to write to configuration: {:?}", e);
+            }
+        }
+    }
+
+    pub fn server_id() -> Option<String> {
+
+        match SETTINGS
+            .read()
+            .unwrap()
+            .get_str("openfmb_nats_subscriber.server_id")
+        {
+            Ok(b) => Some(b),
+            _ => None            
         }
     }
 

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-use crate::messages::StartProcessingMessages;
+use crate::coordinator::StartProcessingMessages;
 
 use super::hmi_publisher::HmiPublisherMsg;
 use super::hmi_subscriber::HmiSubscriberMsg;

@@ -221,3 +221,8 @@ export const Helpers = {
         return '#a6a6af';
     }
 }
+
+export const InternalTopic = {
+    isCoordinatorActive: 'hmi.coordinator.active'
+    
+}

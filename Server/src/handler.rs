@@ -4,11 +4,11 @@
 
 use super::hmi;
 use crate::error::Error;
-use crate::messages::StartProcessingMessages;
+use crate::coordinator::StartProcessingMessages;
 use futures::{FutureExt, StreamExt};
 use hmi::hmi::HmiMsg;
 use hmi::processor::ProcessorMsg;
-use hmi::pubsub::{PubSubOptions, PubSubStatus};
+use hmi::coordinator::{CoordinatorOptions, CoordinatorStatus};
 use log::{error, info};
 use riker::actors::*;
 use serde::{Deserialize, Serialize};
@@ -57,7 +57,7 @@ pub enum DataValue {
     String(String),
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Topic {
     pub name: String,
     pub mrid: String,
@@ -159,7 +159,7 @@ pub async fn data_handler(
     if update.topic.name == "ToggleEnvironment" {
         hmi.tell(
             StartProcessingMessages {
-                pubsub_options: PubSubOptions::toggle_environment(),
+                pubsub_options: CoordinatorOptions::toggle_environment(),
                 nats_client: None,
             },
             None,
@@ -249,14 +249,18 @@ pub async fn send_updates(updates: UpdateMessages, clients: Clients) -> Result<i
     Ok(StatusCode::OK)
 }
 
-pub async fn send_status(status: PubSubStatus, clients: Clients) -> Result<impl Reply> {
+pub async fn send_status(status: CoordinatorStatus, clients: Clients) -> Result<impl Reply> {
+    let hmi_pubsub_status_connected = "hmi.pubsub.status.connected".to_string();
+    let hmi_pubsub_status_environment = "hmi.pubsub.status.environment".to_string();
+    let hmi_coordinator_active = "hmi.coordinator.active".to_string();
+
     let updates = UpdateMessages {
         updates: vec![
             UpdateMessage {
                 profile: None,
                 session_id: None,
                 topic: Topic {
-                    name: "hmi.pubsub.status.connected".to_string(),
+                    name: hmi_pubsub_status_connected,
                     mrid: status.server_id.clone(),
                     value: Some(DataValue::Bool(status.connected)),
                     action: None,
@@ -267,9 +271,20 @@ pub async fn send_status(status: PubSubStatus, clients: Clients) -> Result<impl 
                 profile: None,
                 session_id: None,
                 topic: Topic {
-                    name: "hmi.pubsub.status.environment".to_string(),
+                    name: hmi_pubsub_status_environment,
                     mrid: status.server_id.clone(),
                     value: Some(DataValue::Double((status.env as u8) as f64)),
+                    action: None,
+                    args: None,
+                },
+            },
+            UpdateMessage {
+                profile: None,
+                session_id: None,
+                topic: Topic {
+                    name: hmi_coordinator_active,
+                    mrid: status.server_id.clone(),
+                    value: Some(DataValue::Bool(status.coordinator_active)),
                     action: None,
                     args: None,
                 },

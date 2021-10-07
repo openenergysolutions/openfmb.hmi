@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+use crate::coordinator::*;
 use crate::messages::*;
 
 use openfmb_messages::commonmodule::ScheduleParameterKind;

@@ -2,47 +2,42 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-use crate::messages::StartProcessingMessages;
+use crate::coordinator::{StartProcessingMessages};
 
 use super::processor::ProcessorMsg;
-use super::pubsub::*;
+use super::coordinator::*;
 
 use riker::actors::*;
-use std::{thread, time};
+use timer::Timer;
 
 #[actor(StartProcessingMessages)]
-#[derive(Clone, Debug)]
 pub struct Monitor {
     processor: ActorRef<ProcessorMsg>,
-}
-
-impl Monitor {
-    fn start(&self) {
-        let rt = tokio::runtime::Runtime::new().unwrap();
-
-        let processor = self.processor.clone();
-        let _background = rt.spawn(async move {
-            let interval = time::Duration::from_millis(1000);
-            loop {
-                thread::sleep(interval);
-                let status = PubSubOptions::current_status();
-                processor.tell(status, None);
-            }
-        });
-    }
+    timer: Timer,
 }
 
 impl ActorFactoryArgs<ActorRef<ProcessorMsg>> for Monitor {
     fn create_args(args: ActorRef<ProcessorMsg>) -> Self {
-        Monitor { processor: args }
+        Monitor { 
+            processor: args,
+            timer: Timer::new(),
+        }
     }
 }
 
 impl Actor for Monitor {
     type Msg = MonitorMsg;
 
-    fn pre_start(&mut self, _ctx: &Context<Self::Msg>) {
-        self.start();
+    fn post_start(&mut self, _ctx: &Context<Self::Msg>) {                
+        let processor = self.processor.clone();
+        let guard = {
+            self.timer
+                .schedule_repeating(chrono::Duration::milliseconds(1000), move || {
+                    let status = CoordinatorOptions::current_status();
+                    processor.tell(status, None);                   
+                })
+        };
+        guard.ignore();        
     }
 
     fn recv(&mut self, _ctx: &Context<Self::Msg>, _msg: Self::Msg, _sender: Option<BasicActorRef>) {

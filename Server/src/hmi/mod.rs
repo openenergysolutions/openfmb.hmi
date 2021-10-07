@@ -8,8 +8,8 @@ pub mod hmi_subscriber;
 pub mod monitor;
 pub mod processor;
 pub mod profile_subscriber;
-pub mod pubsub;
+pub mod coordinator;
 pub mod utils;
 
-pub use pubsub::*;
+pub use coordinator::*;
 pub use utils::*;

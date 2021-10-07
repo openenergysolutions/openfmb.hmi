@@ -4,6 +4,7 @@
 
 use super::processor::ProcessorMsg;
 use crate::messages::*;
+use crate::coordinator::*;
 
 use log::{debug, error, info};
 

@@ -4,7 +4,7 @@
 
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { CommandAction, PosString } from '../../../shared/hmi.constants'
+import { CommandAction, PosString, InternalTopic } from '../../../shared/hmi.constants'
 import { DiagramData } from '../../../shared/models/userobject.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -24,7 +24,8 @@ export class SwitchgearDialogComponent implements OnInit {
   diagramData: DiagramData;  
   hasDataMapped: boolean = false;
   lastUpdate: string;
-  hasLastUpdate: boolean = false;    
+  hasLastUpdate: boolean = false; 
+  isCoordinatorActive: boolean = false;   
 
   constructor(
     public dialogRef: MatDialogRef<SwitchgearDialogComponent>,
@@ -39,6 +40,7 @@ export class SwitchgearDialogComponent implements OnInit {
     this.mRID = this.diagramData.mRID;
     this.status = this.diagramData.tag;
     this.lastUpdate = this.diagramData.lastUpdate;
+    this.isCoordinatorActive = this.data.isCoordinatorActive;
     if (this.lastUpdate) {
       this.hasLastUpdate = true;
     }
@@ -68,7 +70,15 @@ export class SwitchgearDialogComponent implements OnInit {
   getActionType(close: boolean) : string {
     if (this.diagramData.controlData && this.diagramData.controlData.length > 0) {      
       var controlData = this.diagramData.controlData[0];
+      console.log(controlData);
       if (controlData) {
+        if (controlData.measurement == InternalTopic.isCoordinatorActive) {
+          if (this.isCoordinatorActive == true) {
+            this.snack.open('Coordination service is on Auto mode.  Please switch to Manual mode before any operation', 'OK', { duration: 15000 });
+            return "";
+          }
+        }
+
         if (("" + controlData.path) == "PccControl") {
           return close ? CommandAction.CLOSE : CommandAction.OPEN;
         }
@@ -86,9 +96,10 @@ export class SwitchgearDialogComponent implements OnInit {
         }
         
       }
+    } else {
+      this.hasDataMapped = false;
+      this.snack.open('Invalid data mapping.  Mapping to DbPosKind is required.', 'OK', { duration: 4000 });
     }
-    this.hasDataMapped = false;
-    this.snack.open('Invalid data mapping.  Mapping to DbPosKind is required.', 'OK', { duration: 4000 });
     return "";
   }
   

@@ -882,6 +882,7 @@ dependencies = [
  "snafu-derive",
  "static_dir",
  "thiserror",
+ "timer",
  "tokio 1.10.1",
  "tokio-stream",
  "uuid",
@@ -2408,6 +2409,15 @@ checksum = "ca8a50ef2360fbd1eeb0ecd46795a87a19024eb4b53c5dc916ca1fd95fe62438"
 dependencies = [
  "libc",
  "winapi 0.3.9",
+]
+
+[[package]]
+name = "timer"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "31d42176308937165701f50638db1c31586f183f1aab416268216577aec7306b"
+dependencies = [
+ "chrono",
 ]
 
 [[package]]

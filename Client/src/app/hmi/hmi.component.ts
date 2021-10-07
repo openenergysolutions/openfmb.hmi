@@ -87,7 +87,8 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
   };
   diagramId: string = null;
   currentDiagram: Diagram;
-  showingLostConnection: boolean = false;  
+  showingLostConnection: boolean = false;
+  isCoordinatorActive: boolean = false;  
 
   private destroy$ = new Subject();
 
@@ -751,7 +752,8 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
       top: y,
       left: x,
       diagramId: this.diagramId,
-      diagramData: currentCellData
+      diagramData: currentCellData,
+      isCoordinatorActive: this.isCoordinatorActive
     };
     const dialogRef = this.dialog.open(SwitchgearDialogComponent, {
       width: '355px',
@@ -880,7 +882,12 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     const ts = Helpers.currentTimestamp();
 
     if (domElement.length > 0) {
-      for(let update of message.updates) {            
+      for(let update of message.updates) {  
+        // special coordinator flag
+        if (update.topic?.name === "hmi.coordinator.active") {          
+          this.isCoordinatorActive = update.topic.value?.Bool;
+          console.log("******************** " + this.isCoordinatorActive);
+        }
         for(let i = 0; i < domElement.length; ++i) { 
           const svgId = domElement[i].getAttribute('svg-id');
           const objType = domElement[i].getAttribute('obj-type');                             

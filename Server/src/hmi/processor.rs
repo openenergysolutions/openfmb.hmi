@@ -6,7 +6,7 @@ use crate::handler::*;
 use crate::messages::*;
 
 use super::hmi_publisher::HmiPublisherMsg;
-use super::pubsub::PubSubStatus;
+use super::coordinator::{CoordinatorOptions, CoordinatorStatus};
 
 use riker::actors::*;
 use serde_json::Value;
@@ -97,7 +97,7 @@ impl Node {
     MicrogridControl,
     DeviceControl,
     GenericControl,
-    PubSubStatus
+    CoordinatorStatus
 )]
 #[derive(Clone, Debug)]
 pub struct Processor {
@@ -168,11 +168,11 @@ impl Receive<DeviceControl> for Processor {
     }
 }
 
-impl Receive<PubSubStatus> for Processor {
+impl Receive<CoordinatorStatus> for Processor {
     type Msg = ProcessorMsg;
 
-    fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: PubSubStatus, _sender: Sender) {
-        //debug!("Received pub/sub status {:?}", msg);
+    fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: CoordinatorStatus, _sender: Sender) {
+        log::trace!("Received coordinator status {:?}", msg);
         let rt = tokio::runtime::Runtime::new().unwrap();
         let clients = self.clients.clone();
         rt.spawn(async {
@@ -226,6 +226,44 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
 
     let mut data_maps: BTreeMap<String, BTreeMap<String, DataValue>> = BTreeMap::new();
     let dummy: BTreeMap<String, DataValue> = BTreeMap::new();
+
+    // ResourceStatusProfile updated
+    if let Some(server_id) = CoordinatorOptions::server_id() {
+        
+        let data: &BTreeMap<String, DataValue> = match &msg {
+            OpenFMBMessage::ResourceStatus(message) => {                
+                let topic = crate::handler::Topic {
+                    name: "".to_string(),
+                    mrid: server_id.clone(),
+                    value: None,
+                    args: None,
+                    action: None,
+                };
+
+                extract!(
+                    data_maps,
+                    message,
+                    format!("{}Profile", msg.message_type()),
+                    topic
+                )
+            }
+            _ => {
+                &dummy
+            }
+        };
+
+        if server_id.to_lowercase() == device_mrid.to_lowercase() {
+            if let Some(v) = data.get("ResourceStatusProfile.mapping.resourceStatus.booleanEventAndStatusGGIO[5].Ind.stVal".to_lowercase().as_str()) {                
+                match v {
+                    DataValue::Bool(val) => CoordinatorOptions::update_coordinator_active(*val),
+                    _ => {
+                        CoordinatorOptions::update_coordinator_active(false);
+                    }
+                }                
+            }
+        }
+    }
+
 
     clients.read().await.iter().for_each(|(_, client)| {
         for topic in &client.topics {
@@ -538,7 +576,8 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                             .push(update_msg);
                     }
                     _ => {
-                        // Ignore
+                        // ignore  
+                        log::trace!("Ignore message for topic {:?} and message {:?}", topic, &msg);
                     }
                 }
             }

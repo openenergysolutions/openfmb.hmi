@@ -14,10 +14,10 @@ use tokio::sync::RwLock;
 use warp::Filter;
 
 use hmi_server::logs::{setup_logger, SystemEventLog};
-use hmi_server::messages::StartProcessingMessages;
+use hmi_server::coordinator::StartProcessingMessages;
 
 use hmi_server::hmi::{
-    hmi::*, hmi_publisher::*, hmi_subscriber::*, monitor::*, processor::*, pubsub::*,
+    hmi::*, hmi_publisher::*, hmi_subscriber::*, monitor::*, processor::*, coordinator::*,
 };
 use hmi_server::{auth::*, handler::*};
 
@@ -96,7 +96,7 @@ async fn server_setup() {
     log::info!("Connected to NATS server");
 
     let run_mode = StartProcessingMessages {
-        pubsub_options: PubSubOptions::new(),
+        pubsub_options: CoordinatorOptions::new(),
         nats_client: Some(nats_client),
     };
 
