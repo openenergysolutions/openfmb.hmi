@@ -11,7 +11,7 @@ use riker::actors::*;
 use std::fmt::Debug;
 
 #[allow(unused_imports)]
-use openfmb_messages::{
+use openfmb::messages::{
     breakermodule::{
         Breaker, BreakerDiscreteControl, BreakerDiscreteControlProfile, BreakerDiscreteControlXcbr,
         BreakerStatusProfile,

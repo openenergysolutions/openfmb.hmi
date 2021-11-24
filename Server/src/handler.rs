@@ -182,7 +182,7 @@ pub async fn data_handler(
     {
         processor.tell(
             DeviceControl {
-                text: update.topic.name.clone(),
+                text: update.topic.mrid.clone(),
                 message: device_control,
             },
             None,

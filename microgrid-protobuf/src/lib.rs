@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2021 Open Energy Solutions Inc
+//
+// SPDX-License-Identifier: Apache-2.0
+
 include!(concat!(env!("OUT_DIR"), "/openfmb.microgrid.rs"));
 
 use std::str::FromStr;
@@ -148,6 +152,10 @@ impl FromStr for generic_control::ControlType {
             "SetStateKindOff" => Ok(generic_control::ControlType::SetStateKindOff),
             "SetStateKindOn" => Ok(generic_control::ControlType::SetStateKindOn),
             "SetStateKindStandBy" => Ok(generic_control::ControlType::SetStateKindStandBy),
+            "ResetBreaker" => Ok(generic_control::ControlType::ResetBreaker),
+            "ResetEss" => Ok(generic_control::ControlType::ResetEss),
+            "ResetLoad" => Ok(generic_control::ControlType::ResetLoad),
+            "ResetSolar" => Ok(generic_control::ControlType::ResetSolar),
             _ => {
                 println!("Unsupport Generic control {}", input);
                 Err(())

@@ -886,7 +886,6 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
         // special coordinator flag
         if (update.topic?.name === "hmi.coordinator.active") {          
           this.isCoordinatorActive = update.topic.value?.Bool;
-          console.log("******************** " + this.isCoordinatorActive);
         }
         for(let i = 0; i < domElement.length; ++i) { 
           const svgId = domElement[i].getAttribute('svg-id');
@@ -1116,9 +1115,9 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     const divs = document.querySelectorAll('[visibility]');
     // this is for visibility
     if (divs.length > 0) {      
-      for(let update of message.updates) {
+      for(let update of message.updates) {        
         for(let i = 0; i < divs.length; ++i) {                    
-          if (update.topic?.name === divs[i].getAttribute('visibility')) {             
+          if (update.topic?.name === divs[i].getAttribute('visibility')) {         
             var styles = divs[i].getAttribute('default-style');
             if (!styles) {
               styles = '';

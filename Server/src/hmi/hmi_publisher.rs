@@ -4,34 +4,35 @@
 
 use crate::coordinator::*;
 use crate::messages::*;
+use crate::messages::common::*;
 
-use openfmb_messages::commonmodule::ScheduleParameterKind;
+use openfmb::messages::commonmodule::ScheduleParameterKind;
 
-use openfmb_messages::breakermodule::BreakerDiscreteControlProfile;
+use openfmb::messages::breakermodule::BreakerDiscreteControlProfile;
 use openfmb_messages_ext::breaker::BreakerControlExt;
 
-use openfmb_messages::reclosermodule::RecloserDiscreteControlProfile;
+use openfmb::messages::reclosermodule::RecloserDiscreteControlProfile;
 use openfmb_messages_ext::recloser::RecloserControlExt;
 
-use openfmb_messages::switchmodule::SwitchDiscreteControlProfile;
+use openfmb::messages::switchmodule::SwitchDiscreteControlProfile;
 use openfmb_messages_ext::switch::SwitchControlExt;
 
-use openfmb_messages::essmodule::EssControlProfile;
+use openfmb::messages::essmodule::EssControlProfile;
 use openfmb_messages_ext::ess::EssControlExt;
 
-use openfmb_messages::loadmodule::LoadControlProfile;
+use openfmb::messages::loadmodule::LoadControlProfile;
 use openfmb_messages_ext::load::LoadControlExt;
 
-use openfmb_messages::generationmodule::GenerationControlProfile;
+use openfmb::messages::generationmodule::GenerationControlProfile;
 use openfmb_messages_ext::generation::GenerationControlExt;
 
-use openfmb_messages::solarmodule::SolarControlProfile;
+use openfmb::messages::solarmodule::SolarControlProfile;
 use openfmb_messages_ext::solar::SolarControlExt;
 
-use openfmb_messages::resourcemodule::ResourceDiscreteControlProfile;
+use openfmb::messages::resourcemodule::ResourceDiscreteControlProfile;
 use openfmb_messages_ext::resource::ResourceControlExt;
 
-use openfmb_messages::regulatormodule::RegulatorDiscreteControlProfile;
+use openfmb::messages::regulatormodule::RegulatorDiscreteControlProfile;
 use openfmb_messages_ext::regulator::RegulatorDiscreteControlExt;
 
 use prost::Message;
@@ -197,7 +198,7 @@ impl Receive<DeviceControl> for HmiPublisher {
         info!("Sending {:?} to NATS topic {}", msg, subject);
         let mut buffer = Vec::<u8>::new();
         let device_control_msg = microgrid_protobuf::DeviceControl {
-            mrid: "".to_string(),
+            mrid: msg.text,
             msg: msg.message.into(),
         };
         device_control_msg.encode(&mut buffer).unwrap();
@@ -235,6 +236,12 @@ impl Receive<GenericControl> for HmiPublisher {
                     }
                     microgrid::generic_control::ControlType::Close => {
                         let profile = BreakerDiscreteControlProfile::breaker_close_msg(&msg.mrid);
+                        let mut buffer = Vec::<u8>::new();
+                        profile.encode(&mut buffer).unwrap();
+                        self.publish(&subject, &mut buffer);
+                    }
+                    microgrid::generic_control::ControlType::ResetBreaker => {
+                        let profile = BreakerDiscreteControlProfile::breaker_reset_msg(&msg.mrid);
                         let mut buffer = Vec::<u8>::new();
                         profile.encode(&mut buffer).unwrap();
                         self.publish(&subject, &mut buffer);
@@ -327,7 +334,7 @@ impl Receive<GenericControl> for HmiPublisher {
                         self.publish(&subject, &mut buffer);
                     }
                     microgrid::generic_control::ControlType::SetWNetMag => {
-                        let profile = schedule_ess_control(
+                        let profile = EssControlProfile::schedule_ess_control(
                             &msg.mrid,
                             ScheduleParameterKind::WNetMag,
                             msg.args.unwrap(),
@@ -338,12 +345,18 @@ impl Receive<GenericControl> for HmiPublisher {
                         self.publish(&subject, &mut buffer);
                     }
                     microgrid::generic_control::ControlType::SetVarNetMag => {
-                        let profile = schedule_ess_control(
+                        let profile = EssControlProfile::schedule_ess_control(
                             &msg.mrid,
                             ScheduleParameterKind::VArNetMag,
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
+                        let mut buffer = Vec::<u8>::new();
+                        profile.encode(&mut buffer).unwrap();
+                        self.publish(&subject, &mut buffer);
+                    }
+                    microgrid::generic_control::ControlType::ResetEss => {
+                        let profile = EssControlProfile::ess_reset_msg(&msg.mrid);
                         let mut buffer = Vec::<u8>::new();
                         profile.encode(&mut buffer).unwrap();
                         self.publish(&subject, &mut buffer);
@@ -375,6 +388,12 @@ impl Receive<GenericControl> for HmiPublisher {
                         profile.encode(&mut buffer).unwrap();
                         self.publish(&subject, &mut buffer);
                     }
+                    microgrid::generic_control::ControlType::ResetSolar => {
+                        let profile = SolarControlProfile::solar_reset_msg(&msg.mrid);
+                        let mut buffer = Vec::<u8>::new();
+                        profile.encode(&mut buffer).unwrap();
+                        self.publish(&subject, &mut buffer);
+                    }
                     _ => {
                         warn!("Unsupport control type: {:?}", msg.message)
                     }
@@ -399,6 +418,12 @@ impl Receive<GenericControl> for HmiPublisher {
                     | microgrid::generic_control::ControlType::SetValue => {
                         let profile =
                             LoadControlProfile::loadbank_on_msg(&msg.mrid, msg.args.unwrap().abs());
+                        let mut buffer = Vec::<u8>::new();
+                        profile.encode(&mut buffer).unwrap();
+                        self.publish(&subject, &mut buffer);
+                    }
+                    microgrid::generic_control::ControlType::ResetLoad => {
+                        let profile = LoadControlProfile::load_reset_msg(&msg.mrid);
                         let mut buffer = Vec::<u8>::new();
                         profile.encode(&mut buffer).unwrap();
                         self.publish(&subject, &mut buffer);

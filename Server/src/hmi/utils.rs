@@ -4,8 +4,8 @@
 
 use std::time::SystemTime;
 
-use openfmb_messages::commonmodule::*;
-use openfmb_messages::essmodule::*;
+use openfmb::messages::commonmodule::*;
+use openfmb::messages::essmodule::*;
 use openfmb_messages_ext::ControlProfileExt;
 
 use microgrid_protobuf::generic_control::ControlType;

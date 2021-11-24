@@ -135,6 +135,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e91831deabf0d6d7ec49552e489aed63b7456a7a3c46cff62adad428110b0af0"
 
 [[package]]
+name = "async-trait"
+version = "0.1.51"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "44318e776df68115a881de9a8fd1b9e53368d7a4a5ce4cc48517da3393233a5e"
+dependencies = [
+ "proc-macro2 1.0.28",
+ "quote 1.0.9",
+ "syn 1.0.75",
+]
+
+[[package]]
 name = "atomic-waker"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -870,7 +881,7 @@ dependencies = [
  "log",
  "microgrid-protobuf",
  "nats",
- "openfmb-messages",
+ "openfmb",
  "openfmb-messages-ext",
  "pretty_env_logger",
  "prost",
@@ -1482,9 +1493,27 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
 
 [[package]]
+name = "openfmb"
+version = "0.1.0"
+source = "git+https://github.com/openenergysolutions/openfmb-rs#ffe79b2bc68afb9b59abfce74265ec1a4e6b8087"
+dependencies = [
+ "async-trait",
+ "bytes 1.1.0",
+ "chrono",
+ "futures",
+ "lazy_static",
+ "log",
+ "nats",
+ "openfmb-messages",
+ "openfmb-messages-ext",
+ "prost",
+ "uuid",
+]
+
+[[package]]
 name = "openfmb-codegen"
 version = "0.6.1"
-source = "git+https://github.com/openenergysolutions/openfmb-rs#c10bf227c69f9169e1f7e5f451ddee600414fa28"
+source = "git+https://github.com/openenergysolutions/openfmb-rs#ffe79b2bc68afb9b59abfce74265ec1a4e6b8087"
 dependencies = [
  "bytes 0.5.6",
  "heck",
@@ -1502,7 +1531,7 @@ dependencies = [
 [[package]]
 name = "openfmb-descriptors"
 version = "0.1.0"
-source = "git+https://github.com/openenergysolutions/openfmb-rs#c10bf227c69f9169e1f7e5f451ddee600414fa28"
+source = "git+https://github.com/openenergysolutions/openfmb-rs#ffe79b2bc68afb9b59abfce74265ec1a4e6b8087"
 dependencies = [
  "lazy_static",
  "prost",
@@ -1513,7 +1542,7 @@ dependencies = [
 [[package]]
 name = "openfmb-messages"
 version = "0.1.0"
-source = "git+https://github.com/openenergysolutions/openfmb-rs#c10bf227c69f9169e1f7e5f451ddee600414fa28"
+source = "git+https://github.com/openenergysolutions/openfmb-rs#ffe79b2bc68afb9b59abfce74265ec1a4e6b8087"
 dependencies = [
  "bytes 0.5.6",
  "env_logger 0.8.4",
@@ -1528,7 +1557,7 @@ dependencies = [
 [[package]]
 name = "openfmb-messages-ext"
 version = "0.0.1"
-source = "git+https://github.com/openenergysolutions/openfmb-rs#c10bf227c69f9169e1f7e5f451ddee600414fa28"
+source = "git+https://github.com/openenergysolutions/openfmb-rs#ffe79b2bc68afb9b59abfce74265ec1a4e6b8087"
 dependencies = [
  "chrono",
  "log",
@@ -1747,7 +1776,7 @@ dependencies = [
 [[package]]
 name = "proto-types"
 version = "0.7.0"
-source = "git+https://github.com/openenergysolutions/openfmb-rs#c10bf227c69f9169e1f7e5f451ddee600414fa28"
+source = "git+https://github.com/openenergysolutions/openfmb-rs#ffe79b2bc68afb9b59abfce74265ec1a4e6b8087"
 dependencies = [
  "bytes 1.1.0",
  "prost",

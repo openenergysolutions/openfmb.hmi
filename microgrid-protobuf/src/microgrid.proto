@@ -135,6 +135,10 @@ message GenericControl
         ClosePhsA = 36;
         ClosePhsB = 37;
         ClosePhsC = 38;
+        ResetBreaker = 39;
+        ResetEss = 40;
+        ResetLoad = 41;
+        ResetSolar = 42;
     }
 }
 

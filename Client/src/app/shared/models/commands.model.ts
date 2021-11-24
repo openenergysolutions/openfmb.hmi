@@ -371,6 +371,17 @@ export const COMMANDS = {
 			"name": "Object",           
             "attributes": {
                 "label": "",
+                "name": "ResetBreaker",
+                "path": "ResetBreaker",
+                "type": "command",
+				"measurement": ""               
+            }
+        },
+        { 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
                 "name": "ResetEss",
                 "path": "ResetEss",
                 "type": "command",
@@ -395,6 +406,17 @@ export const COMMANDS = {
                 "label": "",
                 "name": "ResetLoadbank",
                 "path": "ResetLoadbank",
+                "type": "command",
+				"measurement": ""               
+            }
+        },
+        { 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
+                "name": "ResetLoad",
+                "path": "ResetLoad",
                 "type": "command",
 				"measurement": ""               
             }

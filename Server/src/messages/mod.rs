@@ -4,10 +4,10 @@
 
 mod actor_ref;
 mod config;
-mod openfmb;
+pub mod common;
 mod openfmb_profile_type;
 
 pub use self::config::*;
 pub use actor_ref::*;
-pub use openfmb::*;
+pub use common::*;
 pub use openfmb_profile_type::*;

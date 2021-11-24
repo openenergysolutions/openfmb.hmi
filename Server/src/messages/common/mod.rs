@@ -12,7 +12,7 @@ use snafu::{ResultExt, Snafu};
 use std::convert::TryFrom;
 use uuid::Uuid;
 
-use openfmb_messages::{
+use openfmb::messages::{
     breakermodule::*, capbankmodule::*, commonmodule::*, coordinationservicemodule::*,
     essmodule::*, generationmodule::*, loadmodule::*, metermodule::*, reclosermodule::*,
     regulatormodule::*, resourcemodule::*, solarmodule::*, switchmodule::*,
@@ -485,7 +485,7 @@ pub enum DecodeError {
     },
 }
 
-use openfmb_messages::commonmodule;
+use openfmb::messages::commonmodule;
 
 pub fn get_current_timestamp() -> Timestamp {
     timestamp_from_datetime(Utc::now())
