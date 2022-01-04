@@ -4,7 +4,7 @@
 
 use crate::coordinator::*;
 use crate::messages::*;
-use crate::messages::common::*;
+use openfmb_messages_ext::OpenFMBMessage;
 
 use openfmb::messages::commonmodule::ScheduleParameterKind;
 

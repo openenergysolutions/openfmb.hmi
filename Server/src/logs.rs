@@ -4,7 +4,6 @@
 
 use log::{error, info, warn};
 use riker::actors::*;
-use snafu::Snafu;
 use std::str::FromStr;
 
 use config::Config;
@@ -94,16 +93,4 @@ pub fn setup_logger(config: &Config) -> Result<(), fern::InitError> {
     dispatch.apply()?;
 
     Ok(())
-}
-
-#[derive(Debug, Snafu)]
-pub enum Error {
-    #[snafu(display("Actor System Error"))]
-    ActorSystemError { source: riker::system::SystemError },
-    #[snafu(display("IO Error"))]
-    IOError { source: std::io::Error },
-    #[snafu(display("Actor Creation Error"))]
-    ActorCreateError { source: riker::actor::CreateError },
-    #[snafu(display("Actor Configuration Error"))]
-    ActorConfigError { source: config::ConfigError },
 }

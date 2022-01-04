@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use super::processor::ProcessorMsg;
-use crate::messages::*;
-use crate::messages::common::*;
 use crate::coordinator::*;
+
+use openfmb_messages_ext::{OpenFMBMessage, OpenFMBProfileType};
 
 use log::{debug, error, info};
 
@@ -14,7 +14,6 @@ use std::fmt::Debug;
 
 use super::profile_subscriber::{ProfileSubscriber, ProfileSubscriberMsg};
 
-use snafu::Snafu;
 use std::{collections::HashMap, sync::Arc};
 
 use std::convert::TryInto;
@@ -118,14 +117,14 @@ impl HmiSubscriber {
             CapBankEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::CapBank),
             CapBankReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::CapBank),
             CapBankStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::CapBank),
-            CoordinationControl(_msg) => {
-                self.ensure_actor_type(ctx, OpenFMBProfileType::CoordinationService)
+            CircuitSegmentControl(_msg) => {
+                self.ensure_actor_type(ctx, OpenFMBProfileType::CircuitSegmentService)
             }
-            CoordinationEvent(_msg) => {
-                self.ensure_actor_type(ctx, OpenFMBProfileType::CoordinationService)
+            CircuitSegmentEvent(_msg) => {
+                self.ensure_actor_type(ctx, OpenFMBProfileType::CircuitSegmentService)
             }
-            CoordinationStatus(_msg) => {
-                self.ensure_actor_type(ctx, OpenFMBProfileType::CoordinationService)
+            CircuitSegmentStatus(_msg) => {
+                self.ensure_actor_type(ctx, OpenFMBProfileType::CircuitSegmentService)
             }
             ESSEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::ESS),
             ESSReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::ESS),
@@ -237,14 +236,6 @@ impl Receive<OpenFMBMessage> for HmiSubscriber {
         let actor = self.ensure_actor(ctx, &msg);
         actor.send_msg(msg.clone().into(), ctx.myself.clone());
     }
-}
-
-#[derive(Debug, Snafu)]
-pub enum Error {
-    #[snafu(display("Actor System Error"))]
-    IOError { source: std::io::Error },
-    #[snafu(display("Unsupported OpenFMB type"))]
-    UnsupportedOpenFMBTypeError { fmb_type: String },
 }
 
 impl Receive<NatsMessage> for HmiSubscriber {

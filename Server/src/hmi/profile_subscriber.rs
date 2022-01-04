@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use super::processor::ProcessorMsg;
-use crate::messages::OpenFMBMessage;
+use openfmb_messages_ext::OpenFMBMessage;
 use riker::actors::*;
 
 #[actor(OpenFMBMessage)]
