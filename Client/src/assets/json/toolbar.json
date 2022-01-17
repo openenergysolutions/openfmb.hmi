@@ -38,7 +38,8 @@
     "height": 40,
     "title": "Transformer horizontal",
     "left": 0,
-    "top": 0
+    "top": 0,
+    "type": "tranformer"
   },
   {
     "shape": "image",
@@ -51,7 +52,8 @@
     "height": 40,
     "title": "Transformer vertical",
     "left": 0,
-    "top": 0
+    "top": 0,
+    "type": "tranformer"
   },
   {
     "shape": "image",
@@ -94,7 +96,8 @@
     "height": 40,
     "title": "Solar PV horizontal",
     "left": 0,
-    "top": 0
+    "top": 0,
+    "type": "solar"
   },
   {
     "shape": "image",
@@ -109,7 +112,8 @@
     "height": 40,
     "title": "Solar PV horizontal",
     "left": 0,
-    "top": 0
+    "top": 0,
+    "type": "solar"
   },
   {
     "shape": "image",
@@ -124,7 +128,8 @@
     "height": 40,
     "title": "Solar PV vertical",
     "left": 0,
-    "top": 0
+    "top": 0,
+    "type": "solar"
   },
   {
     "shape": "image",
@@ -139,7 +144,8 @@
     "height": 40,
     "title": "Solar PV vertical",
     "left": 0,
-    "top": 0
+    "top": 0,
+    "type": "solar"
   },
   {
     "shape": "image",
@@ -151,7 +157,8 @@
     "height": 40,
     "title": "Battery Energy Storage System (ESS) horizontal",
     "left": 0,
-    "top": 0
+    "top": 0,
+    "type": "ess"
   },
   {
     "shape": "image",
@@ -163,7 +170,8 @@
     "height": 40,
     "title": "Battery Energy Storage System (ESS) horizontal",
     "left": 0,
-    "top": 0
+    "top": 0,
+    "type": "ess"
   },
   {
     "shape": "image",
@@ -175,7 +183,8 @@
     "height": 40,
     "title": "Battery Energy Storage System (ESS) vertical",
     "left": 0,
-    "top": 0
+    "top": 0,
+    "type": "ess"
   },
   {
     "shape": "image",
@@ -187,7 +196,8 @@
     "height": 40,
     "title": "Battery Energy Storage System (ESS) vertical",
     "left": 0,
-    "top": 0
+    "top": 0,
+    "type": "ess"
   },
   {
     "shape": "image",
@@ -199,7 +209,8 @@
     "height": 40,
     "title": "Ground",
     "left": 0,
-    "top": 0
+    "top": 0,
+    "type": "ground"
   },
   {
     "shape": "image",
@@ -214,7 +225,8 @@
     "height": 40,
     "title": "Generator",
     "left": 0,
-    "top": 0
+    "top": 0,
+    "type": "generator"
   },
   {
     "shape": "image",
@@ -229,7 +241,8 @@
     "height": 40,
     "title": "Motor",
     "left": 0,
-    "top": 0
+    "top": 0,
+    "type": "motor"
   },
   {
     "shape": "image",
@@ -244,7 +257,8 @@
     "height": 40,
     "title": "Uncontrolled Load",
     "left": 0,
-    "top": 0
+    "top": 0,
+    "type": "load"
   },
   {
     "shape": "image",
@@ -259,7 +273,8 @@
     "height": 40,
     "title": "Controllable Load",
     "left": 0,
-    "top": 0
+    "top": 0,
+    "type": "controllable-load"
   },
   {
     "shape": "image",
@@ -272,7 +287,8 @@
     "height": 40,
     "title": "Circuit Breaker horizontal",
     "left": 0,
-    "top": 0
+    "top": 0,
+    "type": "breaker"
   },
   {
     "shape": "image",
@@ -285,7 +301,8 @@
     "height": 40,
     "title": "Circuit Breaker vertical",
     "left": 0,
-    "top": 0
+    "top": 0,
+    "type": "breaker"
   },
   {
     "shape": "image",
@@ -298,7 +315,8 @@
     "height": 40,
     "title": "Recloser horizontal",
     "left": 0,
-    "top": 0
+    "top": 0,
+    "type": "recloser"
   },
   {
     "shape": "image",
@@ -311,7 +329,8 @@
     "height": 40,
     "title": "Recloser vertical",
     "left": 0,
-    "top": 0
+    "top": 0,
+    "type": "recloser"
   },
   {
     "shape": "image",
@@ -324,7 +343,8 @@
     "height": 40,
     "title": "Capacitor Bank horizontal",
     "left": 0,
-    "top": 0
+    "top": 0,
+    "type": "capbank"
   },
   {
     "shape": "image",
@@ -337,7 +357,8 @@
     "height": 40,
     "title": "Capacitor Bank vertical",
     "left": 0,
-    "top": 0
+    "top": 0,
+    "type": "capbank"
   },
   {
     "shape": "image",
@@ -350,7 +371,8 @@
     "height": 40,
     "title": "Connection Line Horizontal",
     "left": 0,
-    "top": 0    
+    "top": 0,
+    "type": "line"
   },
   {
     "shape": "image",
@@ -363,7 +385,8 @@
     "height": 40,
     "title": "Connection Line Vertical",
     "left": 0,
-    "top": 0
+    "top": 0,
+    "type": "line"
   },
   {
     "shape": "image",
@@ -380,7 +403,8 @@
     "height": 5,
     "label": false,
     "left": -2,
-    "top": -2.4
+    "top": -2.4,
+    "type": "connector-point"
   },
   {
     "shape": "image",
@@ -406,7 +430,8 @@
     "height": 40,
     "title": "Feeder",
     "left": 0,
-    "top": 0
+    "top": 0,
+    "type": "source"
   },
   {
     "shape": "image",
@@ -501,7 +526,8 @@
     "height": 40,
     "title": "Solar Farm",
     "left": 0,
-    "top": 0    
+    "top": 0,
+    "type": "solar"    
   },
   {
     "shape": "text",
@@ -894,7 +920,8 @@
     "height": 80,
     "title": "Gas Generator",
     "left": 0,
-    "top": 0    
+    "top": 0,
+    "type": "generator"    
   },  
   {
     "shape": "image",
@@ -924,7 +951,8 @@
     "height": 80,
     "title": "Solar Panel",
     "left": 0,
-    "top": 0    
+    "top": 0,
+    "type": "solar"    
   },
   {
     "shape": "image",
@@ -939,7 +967,8 @@
     "height": 80,
     "title": "Power Plant",
     "left": 0,
-    "top": 0    
+    "top": 0,
+    "type": "source"    
   },    
   {
     "shape": "image",
@@ -954,7 +983,8 @@
     "height": 80,
     "title": "Wind Farm",
     "left": 0,
-    "top": 0    
+    "top": 0,
+    "type": "wind"    
   },
   {
     "shape": "image",
@@ -969,7 +999,8 @@
     "height": 80,
     "title": "Energy Storage",
     "left": 0,
-    "top": 0    
+    "top": 0,
+    "type": "ess"    
   },
   {
     "shape": "image",
@@ -1078,7 +1109,8 @@
     "height": 240,
     "title": "Solar",
     "left": 0,
-    "top": 0    
+    "top": 0,
+    "type": "solar"    
   },
   {
     "shape": "image",
@@ -1093,7 +1125,8 @@
     "height": 240,
     "title": "Generator",
     "left": 0,
-    "top": 0    
+    "top": 0,
+    "type": "generator"    
   },  
   {
     "shape": "image",
@@ -1108,7 +1141,8 @@
     "height": 240,
     "title": "Battery",
     "left": 0,
-    "top": 0    
+    "top": 0,
+    "type": "ess"    
   },
   {
     "shape": "image",
@@ -1168,7 +1202,8 @@
     "height": 240,
     "title": "Controllable Load",
     "left": 0,
-    "top": 0    
+    "top": 0,
+    "type": "controllable-load"    
   },
   {
     "shape": "image",
@@ -1215,7 +1250,8 @@
     "height": 240,
     "title": "Pad-mounted Transformer",
     "left": 0,
-    "top": 0        
+    "top": 0,
+    "type": "transformer"        
   },  
   {
     "shape": "image",
@@ -1230,6 +1266,7 @@
     "height": 240,
     "title": "EV",
     "left": 0,
-    "top": 0    
+    "top": 0,
+    "type": "ev"
   }
 ]
