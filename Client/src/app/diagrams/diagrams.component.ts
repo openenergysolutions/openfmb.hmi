@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Renderer2 } from '@angular/core';
 import { DiagramsService } from '../shared/services/diagrams.service';
 import { Router } from '@angular/router';
 
@@ -29,6 +29,7 @@ export class DiagramsComponent implements OnInit, OnDestroy {
   public getItemSub: Subscription;
 
   constructor(
+    private renderer: Renderer2,
     private service: DiagramsService, 
     private router: Router,
     private dialog: MatDialog,
@@ -89,7 +90,27 @@ export class DiagramsComponent implements OnInit, OnDestroy {
   }
 
   export(id: string) {
-    console.log("export diagram: " + id);
+    this.service.get(id).subscribe(
+      data => {               
+        try {
+          const blob = new Blob([JSON.stringify(data)], { type: 'text/json;charset=utf-8' });
+          const url = window.URL;
+          const link = url.createObjectURL(blob);
+          const downloadLink = this.renderer.createElement('a');
+          this.renderer.setStyle(downloadLink, 'display', 'none');
+          this.renderer.setAttribute(downloadLink, 'download', data.diagramId + '.json');
+          this.renderer.setAttribute(downloadLink, 'href', link);
+          downloadLink.click();
+        }
+        catch (e) {
+          console.error(e);
+        }
+      },
+      error => {
+        console.error(error);
+        this.snack.open(error, 'OK', { duration: 4000 });
+      }
+    ); 
   }
 
   delete(row: any) {

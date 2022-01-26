@@ -50,9 +50,13 @@
             (click)="connect(row.diagramId)" *ngIf="canEditDiagram">
             <mat-icon>settings_remote</mat-icon>
           </button>          
-          <button mat-icon-button mat-sm-button color="primary" aria-label="Run" matTooltip="Run" class="mr-1"
+          <button mat-icon-button mat-sm-button color="primary" aria-label="Run" matTooltip="Run"
             (click)="run(row.diagramId)">
             <mat-icon>flash_on</mat-icon>
+          </button>
+          <button mat-icon-button mat-sm-button color="primary" aria-label="Download" matTooltip="Download"
+            (click)="export(row.diagramId)">
+            <mat-icon>download</mat-icon>
           </button>
           <button mat-icon-button mat-sm-button color="primary" aria-label="Edit" matTooltip="Edit"
             (click)="addOrEdit(row)" *ngIf="canEditDiagram">
