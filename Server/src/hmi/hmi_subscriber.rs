@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use super::processor::ProcessorMsg;
-use crate::messages::*;
-use crate::messages::common::*;
 use crate::coordinator::*;
+use crate::messages::common::*;
+use crate::messages::*;
 
 use log::{debug, error, info};
 

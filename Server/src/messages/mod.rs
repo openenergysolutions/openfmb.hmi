@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 mod actor_ref;
-mod config;
 pub mod common;
+mod config;
 mod openfmb_profile_type;
 
 pub use self::config::*;

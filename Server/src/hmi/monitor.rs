@@ -2,10 +2,10 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-use crate::coordinator::{StartProcessingMessages};
+use crate::coordinator::StartProcessingMessages;
 
-use super::processor::ProcessorMsg;
 use super::coordinator::*;
+use super::processor::ProcessorMsg;
 
 use riker::actors::*;
 use timer::Timer;
@@ -18,7 +18,7 @@ pub struct Monitor {
 
 impl ActorFactoryArgs<ActorRef<ProcessorMsg>> for Monitor {
     fn create_args(args: ActorRef<ProcessorMsg>) -> Self {
-        Monitor { 
+        Monitor {
             processor: args,
             timer: Timer::new(),
         }
@@ -28,16 +28,16 @@ impl ActorFactoryArgs<ActorRef<ProcessorMsg>> for Monitor {
 impl Actor for Monitor {
     type Msg = MonitorMsg;
 
-    fn post_start(&mut self, _ctx: &Context<Self::Msg>) {                
+    fn post_start(&mut self, _ctx: &Context<Self::Msg>) {
         let processor = self.processor.clone();
         let guard = {
             self.timer
                 .schedule_repeating(chrono::Duration::milliseconds(1000), move || {
                     let status = CoordinatorOptions::current_status();
-                    processor.tell(status, None);                   
+                    processor.tell(status, None);
                 })
         };
-        guard.ignore();        
+        guard.ignore();
     }
 
     fn recv(&mut self, _ctx: &Context<Self::Msg>, _msg: Self::Msg, _sender: Option<BasicActorRef>) {

@@ -5,12 +5,12 @@
 use config::Config;
 use lazy_static::lazy_static;
 use log::info;
+use nats::Connection;
 use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
 use std::fmt;
 use std::str::FromStr;
 use std::sync::RwLock;
-use nats::Connection;
 
 lazy_static! {
     static ref SETTINGS: RwLock<Config> = RwLock::new(riker::load_config());
@@ -429,14 +429,17 @@ impl CoordinatorOptions {
                 .read()
                 .unwrap()
                 .get_bool("coordinator.active")
-                .unwrap_or(false)
+                .unwrap_or(false),
         }
     }
 
     pub fn update_coordinator_active(is_active: bool) {
-        match SETTINGS.write().unwrap().set("coordinator.active", is_active)
+        match SETTINGS
+            .write()
+            .unwrap()
+            .set("coordinator.active", is_active)
         {
-            Ok(_) => {},
+            Ok(_) => {}
             Err(e) => {
                 log::error!("Unable to write to configuration: {:?}", e);
             }
@@ -444,14 +447,13 @@ impl CoordinatorOptions {
     }
 
     pub fn server_id() -> Option<String> {
-
         match SETTINGS
             .read()
             .unwrap()
             .get_str("openfmb_nats_subscriber.server_id")
         {
             Ok(b) => Some(b),
-            _ => None            
+            _ => None,
         }
     }
 

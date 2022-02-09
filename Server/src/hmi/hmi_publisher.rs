@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use crate::coordinator::*;
-use crate::messages::*;
 use crate::messages::common::*;
+use crate::messages::*;
 
 use openfmb::messages::commonmodule::ScheduleParameterKind;
 
@@ -384,6 +384,28 @@ impl Receive<GenericControl> for HmiPublisher {
                     }
                     microgrid::generic_control::ControlType::SetModBlkOff => {
                         let profile = SolarControlProfile::solar_modblk_msg(&msg.mrid, false);
+                        let mut buffer = Vec::<u8>::new();
+                        profile.encode(&mut buffer).unwrap();
+                        self.publish(&subject, &mut buffer);
+                    }
+                    microgrid::generic_control::ControlType::SetWNetMag => {
+                        let profile = SolarControlProfile::schedule_solar_control(
+                            &msg.mrid,
+                            ScheduleParameterKind::WNetMag,
+                            msg.args.unwrap(),
+                            SystemTime::now(),
+                        );
+                        let mut buffer = Vec::<u8>::new();
+                        profile.encode(&mut buffer).unwrap();
+                        self.publish(&subject, &mut buffer);
+                    }
+                    microgrid::generic_control::ControlType::SetVarNetMag => {
+                        let profile = SolarControlProfile::schedule_solar_control(
+                            &msg.mrid,
+                            ScheduleParameterKind::VArNetMag,
+                            msg.args.unwrap(),
+                            SystemTime::now(),
+                        );
                         let mut buffer = Vec::<u8>::new();
                         profile.encode(&mut buffer).unwrap();
                         self.publish(&subject, &mut buffer);

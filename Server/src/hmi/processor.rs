@@ -5,8 +5,8 @@
 use crate::handler::*;
 use crate::messages::*;
 
-use super::hmi_publisher::HmiPublisherMsg;
 use super::coordinator::{CoordinatorOptions, CoordinatorStatus};
+use super::hmi_publisher::HmiPublisherMsg;
 
 use riker::actors::*;
 use serde_json::Value;
@@ -229,9 +229,8 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
 
     // ResourceStatusProfile updated
     if let Some(server_id) = CoordinatorOptions::server_id() {
-        
         let data: &BTreeMap<String, DataValue> = match &msg {
-            OpenFMBMessage::ResourceStatus(message) => {                
+            OpenFMBMessage::ResourceStatus(message) => {
                 let topic = crate::handler::Topic {
                     name: "".to_string(),
                     mrid: server_id.clone(),
@@ -247,9 +246,7 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                     topic
                 )
             }
-            _ => {
-                &dummy
-            }
+            _ => &dummy,
         };
 
         if server_id.to_lowercase() == device_mrid.to_lowercase() {
@@ -259,11 +256,10 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                     _ => {
                         CoordinatorOptions::update_coordinator_active(false);
                     }
-                }                
+                }
             }
         }
     }
-
 
     clients.read().await.iter().for_each(|(_, client)| {
         for topic in &client.topics {
@@ -576,8 +572,12 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                             .push(update_msg);
                     }
                     _ => {
-                        // ignore  
-                        log::trace!("Ignore message for topic {:?} and message {:?}", topic, &msg);
+                        // ignore
+                        log::trace!(
+                            "Ignore message for topic {:?} and message {:?}",
+                            topic,
+                            &msg
+                        );
                     }
                 }
             }

@@ -3,12 +3,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use super::hmi;
-use crate::error::Error;
 use crate::coordinator::StartProcessingMessages;
+use crate::error::Error;
 use futures::{FutureExt, StreamExt};
+use hmi::coordinator::{CoordinatorOptions, CoordinatorStatus};
 use hmi::hmi::HmiMsg;
 use hmi::processor::ProcessorMsg;
-use hmi::coordinator::{CoordinatorOptions, CoordinatorStatus};
 use log::{error, info};
 use riker::actors::*;
 use serde::{Deserialize, Serialize};

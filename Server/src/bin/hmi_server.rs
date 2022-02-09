@@ -13,11 +13,11 @@ use tokio::sync::RwLock;
 
 use warp::Filter;
 
-use hmi_server::logs::{setup_logger, SystemEventLog};
 use hmi_server::coordinator::StartProcessingMessages;
+use hmi_server::logs::{setup_logger, SystemEventLog};
 
 use hmi_server::hmi::{
-    hmi::*, hmi_publisher::*, hmi_subscriber::*, monitor::*, processor::*, coordinator::*,
+    coordinator::*, hmi::*, hmi_publisher::*, hmi_subscriber::*, monitor::*, processor::*,
 };
 use hmi_server::{auth::*, handler::*};
 
