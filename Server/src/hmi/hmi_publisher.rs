@@ -416,9 +416,16 @@ impl Receive<GenericControl> for HmiPublisher {
                         profile.encode(&mut buffer).unwrap();
                         self.publish(&subject, &mut buffer);
                     }
-                    _ => {
-                        warn!("Unsupport control type: {:?}", msg.message)
-                    }
+                    _ => match set_solar_csg(&msg.mrid, msg.message, SystemTime::now()) {
+                        Some(profile) => {
+                            let mut buffer = Vec::<u8>::new();
+                            profile.encode(&mut buffer).unwrap();
+                            self.publish(&subject, &mut buffer);
+                        }
+                        None => {
+                            warn!("Unsupport control type: {:?}", msg.message)
+                        }
+                    },
                 }
             }
             "LoadControlProfile" => {
@@ -562,8 +569,7 @@ impl Receive<GenericControl> for HmiPublisher {
                     &msg.mrid
                 );
                 match msg.message {
-                    microgrid::generic_control::ControlType::SetWNetMag
-                    | microgrid::generic_control::ControlType::SetValue => {
+                    microgrid::generic_control::ControlType::SetValue => {
                         let profile = GenerationControlProfile::generator_on_msg(
                             &msg.mrid,
                             msg.args.unwrap().abs(),
@@ -572,9 +578,44 @@ impl Receive<GenericControl> for HmiPublisher {
                         profile.encode(&mut buffer).unwrap();
                         self.publish(&subject, &mut buffer);
                     }
-                    _ => {
-                        warn!("Unsupport control type: {:?}", msg.message)
+                    microgrid::generic_control::ControlType::SetWNetMag => {
+                        let profile = GenerationControlProfile::schedule_generation_control(
+                            &msg.mrid,
+                            ScheduleParameterKind::WNetMag,
+                            msg.args.unwrap(),
+                            SystemTime::now(),
+                        );
+                        let mut buffer = Vec::<u8>::new();
+                        profile.encode(&mut buffer).unwrap();
+                        self.publish(&subject, &mut buffer);
                     }
+                    microgrid::generic_control::ControlType::SetVarNetMag => {
+                        let profile = GenerationControlProfile::schedule_generation_control(
+                            &msg.mrid,
+                            ScheduleParameterKind::VArNetMag,
+                            msg.args.unwrap(),
+                            SystemTime::now(),
+                        );
+                        let mut buffer = Vec::<u8>::new();
+                        profile.encode(&mut buffer).unwrap();
+                        self.publish(&subject, &mut buffer);
+                    }
+                    microgrid::generic_control::ControlType::ResetSolar => {
+                        let profile = GenerationControlProfile::generation_reset_msg(&msg.mrid);
+                        let mut buffer = Vec::<u8>::new();
+                        profile.encode(&mut buffer).unwrap();
+                        self.publish(&subject, &mut buffer);
+                    }
+                    _ => match set_generation_csg(&msg.mrid, msg.message, SystemTime::now()) {
+                        Some(profile) => {
+                            let mut buffer = Vec::<u8>::new();
+                            profile.encode(&mut buffer).unwrap();
+                            self.publish(&subject, &mut buffer);
+                        }
+                        None => {
+                            warn!("Unsupport control type: {:?}", msg.message)
+                        }
+                    },
                 }
             }
             _ => {

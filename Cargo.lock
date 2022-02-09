@@ -1178,9 +1178,9 @@ dependencies = [
 
 [[package]]
 name = "libc"
-version = "0.2.101"
+version = "0.2.117"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3cb00336871be5ed2c8ed44b60ae9959dc5b9f08539422ed43f09e34ecaeba21"
+checksum = "e74d72e0f9b65b5b4ca49a346af3976df0f9c61d550727f349ecd559f251a26c"
 
 [[package]]
 name = "linked-hash-map"
@@ -1495,6 +1495,7 @@ checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
 [[package]]
 name = "openfmb"
 version = "0.1.0"
+source = "git+https://github.com/openenergysolutions/openfmb-rs#d3e5abb2e818bdfddfb161e7516f7ff003d5c4eb"
 dependencies = [
  "async-trait",
  "bytes 1.1.0",
@@ -1512,6 +1513,7 @@ dependencies = [
 [[package]]
 name = "openfmb-codegen"
 version = "0.6.1"
+source = "git+https://github.com/openenergysolutions/openfmb-rs#d3e5abb2e818bdfddfb161e7516f7ff003d5c4eb"
 dependencies = [
  "bytes 0.5.6",
  "heck",
@@ -1529,6 +1531,7 @@ dependencies = [
 [[package]]
 name = "openfmb-descriptors"
 version = "0.1.0"
+source = "git+https://github.com/openenergysolutions/openfmb-rs#d3e5abb2e818bdfddfb161e7516f7ff003d5c4eb"
 dependencies = [
  "lazy_static",
  "prost",
@@ -1539,6 +1542,7 @@ dependencies = [
 [[package]]
 name = "openfmb-messages"
 version = "0.1.0"
+source = "git+https://github.com/openenergysolutions/openfmb-rs#d3e5abb2e818bdfddfb161e7516f7ff003d5c4eb"
 dependencies = [
  "bytes 0.5.6",
  "env_logger 0.8.4",
@@ -1553,6 +1557,7 @@ dependencies = [
 [[package]]
 name = "openfmb-messages-ext"
 version = "0.0.1"
+source = "git+https://github.com/openenergysolutions/openfmb-rs#d3e5abb2e818bdfddfb161e7516f7ff003d5c4eb"
 dependencies = [
  "chrono",
  "log",
@@ -1771,6 +1776,7 @@ dependencies = [
 [[package]]
 name = "proto-types"
 version = "0.7.0"
+source = "git+https://github.com/openenergysolutions/openfmb-rs#d3e5abb2e818bdfddfb161e7516f7ff003d5c4eb"
 dependencies = [
  "bytes 1.1.0",
  "prost",
