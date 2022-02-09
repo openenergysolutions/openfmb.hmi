@@ -102,6 +102,28 @@ export const COMMANDS = {
 				"measurement": ""               
             }
         },
+        {   
+            "type": "element",
+			"name": "Object",         
+            "attributes": {
+                "label": "",
+                "name": "SolarOn",
+                "path": "SolarOn",
+                "type": "command",
+				"measurement": ""               
+            }
+        },
+        {   
+            "type": "element",
+			"name": "Object",         
+            "attributes": {
+                "label": "",
+                "name": "SolarOff",
+                "path": "SolarOff",
+                "type": "command",
+				"measurement": ""               
+            }
+        },
         {    
             "type": "element",
 			"name": "Object",        

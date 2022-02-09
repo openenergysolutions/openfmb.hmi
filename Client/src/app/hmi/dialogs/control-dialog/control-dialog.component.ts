@@ -97,7 +97,7 @@ export class ControlDialogComponent implements OnInit {
           this.isControllable = false;
         }
       }
-      else if (dataType === 'analog') {
+      else if (dataType === 'analog' || dataType === 'FLOAT64' || dataType === 'FLOAT32') {
         this.isSetPoint = true;
         this.setpointValue = this.diagramData.controlData[0].measurement;
       }          
