@@ -136,9 +136,9 @@ checksum = "e91831deabf0d6d7ec49552e489aed63b7456a7a3c46cff62adad428110b0af0"
 
 [[package]]
 name = "async-trait"
-version = "0.1.51"
+version = "0.1.52"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "44318e776df68115a881de9a8fd1b9e53368d7a4a5ce4cc48517da3393233a5e"
+checksum = "061a7acccaa286c011ddc30970520b98fa40e00c9d644633fb26b5fc63a265e3"
 dependencies = [
  "proc-macro2 1.0.28",
  "quote 1.0.9",
@@ -1495,7 +1495,7 @@ checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
 [[package]]
 name = "openfmb"
 version = "0.1.0"
-source = "git+https://github.com/openenergysolutions/openfmb-rs#d3e5abb2e818bdfddfb161e7516f7ff003d5c4eb"
+source = "git+https://github.com/openenergysolutions/openfmb-rs#45ef9cca38066da532d5722fef02acfcf65c4ffc"
 dependencies = [
  "async-trait",
  "bytes 1.1.0",
@@ -1513,7 +1513,7 @@ dependencies = [
 [[package]]
 name = "openfmb-codegen"
 version = "0.6.1"
-source = "git+https://github.com/openenergysolutions/openfmb-rs#d3e5abb2e818bdfddfb161e7516f7ff003d5c4eb"
+source = "git+https://github.com/openenergysolutions/openfmb-rs#45ef9cca38066da532d5722fef02acfcf65c4ffc"
 dependencies = [
  "bytes 0.5.6",
  "heck",
@@ -1531,7 +1531,7 @@ dependencies = [
 [[package]]
 name = "openfmb-descriptors"
 version = "0.1.0"
-source = "git+https://github.com/openenergysolutions/openfmb-rs#d3e5abb2e818bdfddfb161e7516f7ff003d5c4eb"
+source = "git+https://github.com/openenergysolutions/openfmb-rs#45ef9cca38066da532d5722fef02acfcf65c4ffc"
 dependencies = [
  "lazy_static",
  "prost",
@@ -1542,7 +1542,7 @@ dependencies = [
 [[package]]
 name = "openfmb-messages"
 version = "0.1.0"
-source = "git+https://github.com/openenergysolutions/openfmb-rs#d3e5abb2e818bdfddfb161e7516f7ff003d5c4eb"
+source = "git+https://github.com/openenergysolutions/openfmb-rs#45ef9cca38066da532d5722fef02acfcf65c4ffc"
 dependencies = [
  "bytes 0.5.6",
  "env_logger 0.8.4",
@@ -1557,7 +1557,7 @@ dependencies = [
 [[package]]
 name = "openfmb-messages-ext"
 version = "0.0.1"
-source = "git+https://github.com/openenergysolutions/openfmb-rs#d3e5abb2e818bdfddfb161e7516f7ff003d5c4eb"
+source = "git+https://github.com/openenergysolutions/openfmb-rs#45ef9cca38066da532d5722fef02acfcf65c4ffc"
 dependencies = [
  "chrono",
  "log",
@@ -1776,7 +1776,7 @@ dependencies = [
 [[package]]
 name = "proto-types"
 version = "0.7.0"
-source = "git+https://github.com/openenergysolutions/openfmb-rs#d3e5abb2e818bdfddfb161e7516f7ff003d5c4eb"
+source = "git+https://github.com/openenergysolutions/openfmb-rs#45ef9cca38066da532d5722fef02acfcf65c4ffc"
 dependencies = [
  "bytes 1.1.0",
  "prost",

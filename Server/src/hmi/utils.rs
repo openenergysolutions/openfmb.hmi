@@ -7,60 +7,11 @@ use std::time::SystemTime;
 use openfmb::messages::commonmodule::*;
 use openfmb::messages::essmodule::*;
 use openfmb::messages::generationmodule::*;
+use openfmb::messages::regulatormodule::*;
 use openfmb::messages::solarmodule::*;
 use openfmb_messages_ext::ControlProfileExt;
 
 use microgrid_protobuf::generic_control::ControlType;
-
-// TODO:: move to openfmb-rs library
-pub fn schedule_ess_control(
-    m_rid: &str,
-    schedule_parameter_type: ScheduleParameterKind,
-    value: f64,
-    schedule_time: SystemTime,
-) -> EssControlProfile {
-    let msg_info: ControlMessageInfo = EssControlProfile::build_control_message_info();
-    EssControlProfile {
-        control_message_info: Some(msg_info),
-        ess: Some(Ess {
-            conducting_equipment: Some(ConductingEquipment {
-                m_rid: m_rid.to_string(),
-                named_object: None,
-            }),
-        }),
-        ess_control: Some(EssControl {
-            check: None,
-            control_value: None,
-            ess_control_fscc: Some(EssControlFscc {
-                ess_control_schedule_fsch: None,
-                control_fscc: Some(ControlFscc {
-                    logical_node_for_control: None,
-                    island_control_schedule_fsch: None,
-                    control_schedule_fsch: Some(ControlScheduleFsch {
-                        val_acsg: Some(ScheduleCsg {
-                            sch_pts: vec![SchedulePoint {
-                                schedule_parameter: vec![EngScheduleParameter {
-                                    schedule_parameter_type: schedule_parameter_type as i32,
-                                    value: value,
-                                }],
-                                start_time: Some(ControlTimestamp {
-                                    nanoseconds: schedule_time
-                                        .duration_since(SystemTime::UNIX_EPOCH)
-                                        .unwrap()
-                                        .subsec_nanos(),
-                                    seconds: schedule_time
-                                        .duration_since(SystemTime::UNIX_EPOCH)
-                                        .unwrap()
-                                        .as_secs(),
-                                }),
-                            }],
-                        }),
-                    }),
-                }),
-            }),
-        }),
-    }
-}
 
 // ESS
 
@@ -474,6 +425,73 @@ fn generation_point(
                 generic_control
             );
         }
+    }
+    None
+}
+
+// Regulator
+
+pub fn set_regulator_csg(
+    m_rid: &str,
+    generic_control: ControlType,
+    schedule_time: SystemTime,
+) -> Option<RegulatorControlProfile> {
+    match regulator_point(generic_control, schedule_time) {
+        Some(point) => {
+            let msg_info: ControlMessageInfo =
+                RegulatorControlProfile::build_control_message_info();
+
+            Some(RegulatorControlProfile {
+                control_message_info: Some(msg_info),
+                regulator_system: Some(RegulatorSystem {
+                    conducting_equipment: Some(ConductingEquipment {
+                        m_rid: m_rid.to_string(),
+                        named_object: None,
+                    }),
+                }),
+                regulator_control: Some(RegulatorControl {
+                    check: None,
+                    control_value: None,
+                    regulator_control_fscc: Some(RegulatorControlFscc {
+                        control_fscc: None,
+                        regulator_control_schedule_fsch: Some(RegulatorControlScheduleFsch {
+                            val_dcsg: Some(RegulatorCsg {
+                                crv_pts: vec![point],
+                            }),
+                        }),
+                    }),
+                }),
+            })
+        }
+        None => None,
+    }
+}
+
+fn create_regulator_point(schedule_time: SystemTime) -> RegulatorPoint {
+    let mut pt = RegulatorPoint::default();
+    pt.start_time = Some(Timestamp {
+        nanoseconds: schedule_time
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .unwrap()
+            .subsec_nanos(),
+        seconds: schedule_time
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .unwrap()
+            .as_secs(),
+        tq: None,
+    });
+    pt.control = Some(RegulatorControlAtcc::default());
+    pt
+}
+
+fn regulator_point(
+    generic_control: ControlType,
+    schedule_time: SystemTime,
+) -> Option<RegulatorPoint> {
+    let _pt = create_regulator_point(schedule_time);
+    // TODO
+    match generic_control {
+        _ => {}
     }
     None
 }
