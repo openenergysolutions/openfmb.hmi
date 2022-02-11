@@ -673,7 +673,469 @@ export const COMMANDS = {
                 "type": "command",
 				"measurement": ""               
             }
-        }
+        },
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "ANetMag",
+				"path": "ANetMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "ANeutMag",
+				"path": "ANeutMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "APhsAMag",
+				"path": "APhsAMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "APhsBMag",
+				"path": "APhsBMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "APhsCMag",
+				"path": "APhsCMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "HzMag",
+				"path": "HzMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "PfNetMag",
+				"path": "PfNetMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "PfNeutMag",
+				"path": "PfNeutMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "PfPhsAMag",
+				"path": "PfPhsAMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "PfPhsBMag",
+				"path": "PfPhsBMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "PfPhsCMag",
+				"path": "PfPhsCMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "PhVNetAng",
+				"path": "PhVNetAng",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "PhVNetMag",
+				"path": "PhVNetMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "PhVNeutAng",
+				"path": "PhVNeutAng",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "PhVNeutMag",
+				"path": "PhVNeutMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "PhVPhsAAng",
+				"path": "PhVPhsAAng",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "PhVPhsAMag",
+				"path": "PhVPhsAMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "PhVPhsBAng",
+				"path": "PhVPhsBAng",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "PhVPhsBMag",
+				"path": "PhVPhsBMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "PhVPhsCAng",
+				"path": "PhVPhsCAng",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "PhVPhsCMag",
+				"path": "PhVPhsCMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "PpvPhsAbAng",
+				"path": "PpvPhsAbAng",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "PpvPhsAbMag",
+				"path": "PpvPhsAbMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "PpvPhsBcAng",
+				"path": "PpvPhsBcAng",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "PpvPhsBcMag",
+				"path": "PpvPhsBcMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "PpvPhsCaAng",
+				"path": "PpvPhsCaAng",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "PpvPhsCaMag",
+				"path": "PpvPhsCaMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "VaNetMag",
+				"path": "VaNetMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "VaNeutMag",
+				"path": "VaNeutMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "VaPhsAMag",
+				"path": "VaPhsAMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "VaPhsBMag",
+				"path": "VaPhsBMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "VaPhsCMag",
+				"path": "VaPhsCMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "VArNetMag",
+				"path": "VArNetMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "VArNeutMag",
+				"path": "VArNeutMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "VArPhsAMag",
+				"path": "VArPhsAMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "VArPhsBMag",
+				"path": "VArPhsBMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "VArPhsCMag",
+				"path": "VArPhsCMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "WNetMag",
+				"path": "WNetMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "WNeutMag",
+				"path": "WNeutMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "WPhsAMag",
+				"path": "WPhsAMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "WPhsBMag",
+				"path": "WPhsBMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "WPhsCMag",
+				"path": "WPhsCMag",
+				"type": "set-point",
+				"measurement": ""
+			}
+		}
     ],
     "HmiControl": [
         {   
