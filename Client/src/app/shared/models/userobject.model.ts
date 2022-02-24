@@ -5,6 +5,7 @@
 export interface DiagramData {
     diagramId?: string,
     label?: string,
+    description?: string,
     name?: string,
     mRID?: string,
     deviceTypeMapping?: string, // used anywhere?

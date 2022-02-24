@@ -160,8 +160,7 @@ pub async fn data_handler(
     if update.topic.name == "ToggleEnvironment" {
         hmi.tell(
             StartProcessingMessages {
-                pubsub_options: CoordinatorOptions::toggle_environment(),
-                nats_client: None,
+                pubsub_options: CoordinatorOptions::toggle_environment(),                
             },
             None,
         );
@@ -254,6 +253,7 @@ pub async fn send_status(status: CoordinatorStatus, clients: Clients) -> Result<
     let hmi_pubsub_status_connected = "hmi.pubsub.status.connected".to_string();
     let hmi_pubsub_status_environment = "hmi.pubsub.status.environment".to_string();
     let hmi_coordinator_active = "hmi.coordinator.active".to_string();
+    let hmi_coordinator_comm_ok = "hmi.coordinator.comm_ok".to_string();
 
     let updates = UpdateMessages {
         updates: vec![
@@ -286,6 +286,17 @@ pub async fn send_status(status: CoordinatorStatus, clients: Clients) -> Result<
                     name: hmi_coordinator_active,
                     mrid: status.server_id.clone(),
                     value: Some(DataValue::Bool(status.coordinator_active)),
+                    action: None,
+                    args: None,
+                },
+            },
+            UpdateMessage {
+                profile: None,
+                session_id: None,
+                topic: Topic {
+                    name: hmi_coordinator_comm_ok,
+                    mrid: status.server_id.clone(),
+                    value: Some(DataValue::Bool(status.comm_ok)),
                     action: None,
                     args: None,
                 },

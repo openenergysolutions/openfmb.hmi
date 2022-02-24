@@ -21,7 +21,9 @@ export class ControlDialogComponent implements OnInit {
   isFixedCommand: boolean;
   name: string;  
   diagramId: string;
-  mRID: string; 
+  mRID: string;
+  description: string;
+  showDescription: boolean = false; 
   type: string;  
   diagramData: DiagramData;
   isControllable: boolean = true;
@@ -53,6 +55,8 @@ export class ControlDialogComponent implements OnInit {
     this.setpointValue = this.diagramData.tag;
     this.name = this.diagramData.name,
     this.mRID = this.diagramData.mRID; 
+    this.description = this.diagramData.description;
+    this.showDescription = this.description && this.description !== "";
     this.lastUpdate = this.diagramData.lastUpdate;
     if (this.lastUpdate) {
       this.hasLastUpdate = true;

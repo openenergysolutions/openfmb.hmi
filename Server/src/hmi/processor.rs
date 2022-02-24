@@ -13,7 +13,11 @@ use riker::actors::*;
 use serde_json::Value;
 use std::collections::btree_map::BTreeMap;
 
-use log::debug;
+use log::{debug, error};
+
+// Special resource names from coordination services
+const ALGORITHM_ENABLED: &str = "algorithm-enabled";
+const COMM_OK: &str = "communications-ok";
 
 pub struct Node {
     name: String,
@@ -147,6 +151,7 @@ impl Receive<OpenFMBMessage> for Processor {
 
     fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: OpenFMBMessage, _sender: Sender) {
         let rt = tokio::runtime::Runtime::new().unwrap();
+        log::trace!("Receive OpenFMB message");
         rt.block_on(handle_openfmb_message(&self.clients, msg));
     }
 }
@@ -173,7 +178,7 @@ impl Receive<CoordinatorStatus> for Processor {
     type Msg = ProcessorMsg;
 
     fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: CoordinatorStatus, _sender: Sender) {
-        log::trace!("Received coordinator status {:?}", msg);
+        //log::trace!("Received coordinator status {:?}", msg);
         let rt = tokio::runtime::Runtime::new().unwrap();
         let clients = self.clients.clone();
         rt.spawn(async {
@@ -220,6 +225,7 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
         Err(_) => "".to_string(),
     };
     if device_mrid.len() == 0 {
+        error!("Missing device MRID in OpenFMB message.");
         return;
     }
 
@@ -228,36 +234,35 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
     let mut data_maps: BTreeMap<String, BTreeMap<String, DataValue>> = BTreeMap::new();
     let dummy: BTreeMap<String, DataValue> = BTreeMap::new();
 
-    // ResourceStatusProfile updated
+    //ResourceStatusProfile updated
     if let Some(server_id) = CoordinatorOptions::server_id() {
-        let data: &BTreeMap<String, DataValue> = match &msg {
-            OpenFMBMessage::ResourceStatus(message) => {
-                let topic = crate::handler::Topic {
-                    name: "".to_string(),
-                    mrid: server_id.clone(),
-                    value: None,
-                    args: None,
-                    action: None,
-                };
-
-                extract!(
-                    data_maps,
-                    message,
-                    format!("{}Profile", msg.message_type()),
-                    topic
-                )
-            }
-            _ => &dummy,
-        };
-
         if server_id.to_lowercase() == device_mrid.to_lowercase() {
-            if let Some(v) = data.get("ResourceStatusProfile.mapping.resourceStatus.booleanEventAndStatusGGIO[5].Ind.stVal".to_lowercase().as_str()) {                
-                match v {
-                    DataValue::Bool(val) => CoordinatorOptions::update_coordinator_active(*val),
-                    _ => {
-                        CoordinatorOptions::update_coordinator_active(false);
+            match &msg {
+                OpenFMBMessage::ResourceStatus(message) => {
+                    let mut coord_active = false;
+                    let mut overall_comm = false;
+                    if let Some(resource_status) = &message.resource_status {
+                        for item in &resource_status.boolean_event_and_status_ggio {
+                            if let Some(logical_node) = &item.logical_node {
+                                if let Some(identified_object) = &logical_node.identified_object {
+                                    if let Some(name) = &identified_object.name {
+                                        if name.as_str() == ALGORITHM_ENABLED {
+                                            if let Some(ind) = &item.ind {
+                                                coord_active = ind.st_val;
+                                            }
+                                        } else if name.as_str() == COMM_OK {
+                                            if let Some(ind) = &item.ind {
+                                                overall_comm = ind.st_val;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
+                    CoordinatorOptions::update_coordinator_status(coord_active, overall_comm);
                 }
+                _ => {}
             }
         }
     }

@@ -13,6 +13,12 @@
           <input matInput [(ngModel)]="mRID" placeholder="Not set" [disabled]="true" name="symbol-mrid"/> 
         </mat-form-field>  
       </div>
+      <div mat-dialog-content class="dialog-input-container pt-1" *ngIf="showDescription">
+        <strong>Description</strong><br />
+        <mat-form-field class="designer-form-field" floatLabel='never'>
+          <input matInput [(ngModel)]="description" placeholder="" [disabled]="true" name="symbol-desc" />
+        </mat-form-field>
+      </div>
       <div mat-dialog-content class="dialog-input-container pt-1" *ngIf="isSetPoint && isControllable">
         <strong>Set Point</strong><br/>
         <mat-form-field class="designer-form-field" floatLabel='never'>          

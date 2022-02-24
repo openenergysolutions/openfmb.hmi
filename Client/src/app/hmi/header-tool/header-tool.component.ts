@@ -10,6 +10,7 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import * as fromRoot from '../../store/reducers/index';
 import * as designerActions from '../../store/actions/designer.actions';
+import { CommunicationStatus } from '../../store/reducers/hmi.reducer';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { JwtAuthService } from "../../shared/services/auth/jwt-auth.service";
 
@@ -28,6 +29,7 @@ export class HeaderToolComponent implements OnInit {
   @Output() runGraph = new EventEmitter();
   readonly DesignerConstant = DesignerConstant;
   selectedMode$: Observable<number>;
+  commStatus$: Observable<number>;
   selectedConnectColor$: Observable<string>;
   isMoveSelected = false;
   autoTicks = false;
@@ -41,6 +43,7 @@ export class HeaderToolComponent implements OnInit {
   value: number = 1;
   vertical = false;
   tickInterval = 1;
+  commLost: boolean = false;
 
   constructor(
     private iconRegistry: MatIconRegistry,
@@ -68,6 +71,15 @@ export class HeaderToolComponent implements OnInit {
       () => console.log('Observer got a complete notification')
     );
     this.selectedConnectColor$ = this.store.select(state => state.designer.connectColor);
+
+    this.commStatus$ = this.store.select(state => state.hmi.status);
+    this.commStatus$.subscribe(
+      x => {
+        this.commLost = x === CommunicationStatus.NOT_OK;
+      },
+      err => console.error('Observer got an error: ' + err),
+      () => console.log('Observer got a complete notification')
+    );
   }
 
   onModeSelect() { 

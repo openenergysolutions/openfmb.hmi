@@ -5,12 +5,12 @@
 use config::Config;
 use lazy_static::lazy_static;
 use log::info;
-use nats::Connection;
 use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
 use std::fmt;
 use std::str::FromStr;
 use std::sync::RwLock;
+use std::time::Duration;
 
 lazy_static! {
     static ref SETTINGS: RwLock<Config> = RwLock::new(riker::load_config());
@@ -19,7 +19,6 @@ lazy_static! {
 #[derive(Clone, Debug)]
 pub struct StartProcessingMessages {
     pub pubsub_options: CoordinatorOptions,
-    pub nats_client: Option<Connection>,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -144,6 +143,7 @@ pub struct CoordinatorStatus {
     pub env: Environment,
     pub connected: bool,
     pub coordinator_active: bool,
+    pub comm_ok: bool,
     pub server_id: String,
     pub send_status_update: bool,
 }
@@ -182,7 +182,7 @@ impl CoordinatorOptions {
         CoordinatorOptions::get_options(env)
     }
 
-    pub fn get_options(env: Environment) -> CoordinatorOptions {
+    fn get_options(env: Environment) -> CoordinatorOptions {
         let nats_server_uri = match env {
             Environment::Prod => {
                 let _ = SETTINGS
@@ -336,50 +336,43 @@ impl CoordinatorOptions {
         CoordinatorOptions::get_options(env)
     }
 
-    pub fn connect(&self) -> std::io::Result<nats::Connection> {
-        let options: nats::Options;
-
-        match self.authentication_type {
+    pub fn options(&self) -> std::io::Result<nats::Options> {        
+        let options = match self.authentication_type {
             Authentication::UserPwd => {
                 info!("NATS with default username/pwd");
-                options = nats::Options::with_user_pass(
+                nats::Options::with_user_pass(
                     self.username.as_ref().unwrap(),
                     self.password.as_ref().unwrap(),
-                );
+                )
             }
             Authentication::Token => {
                 info!("NATS options with token: {:?}", self.token);
-                options = nats::Options::with_token(self.token.as_ref().unwrap());
+                nats::Options::with_token(self.token.as_ref().unwrap())
             }
             Authentication::Creds => {
                 info!("NATS options with credential file: {:?}", self.creds_file);
-                options = nats::Options::with_credentials(self.creds_file.as_ref().unwrap());
+                nats::Options::with_credentials(self.creds_file.as_ref().unwrap())
             }
             Authentication::None => {
                 info!("NATS with default option");
-                options = nats::Options::new();
+                nats::Options::new()
             }
-        }
+        };       
 
         match self.security_type {
-            Security::TlsServer => options
-                .add_root_certificate(self.root_cert.as_ref().unwrap())
-                .disconnect_callback(|| CoordinatorOptions::on_disconnect())
-                .reconnect_callback(|| CoordinatorOptions::on_reconnect())
-                .connect(&self.connection_url),
-            Security::TlsMutual => options
+            Security::TlsServer => {
+                Ok(options                
+                .add_root_certificate(self.root_cert.as_ref().unwrap()))
+            }                              
+            Security::TlsMutual => {
+                Ok(options                
                 .add_root_certificate(self.root_cert.as_ref().unwrap())
                 .client_cert(
                     self.client_cert.as_ref().unwrap(),
                     self.client_key.as_ref().unwrap(),
-                )
-                .disconnect_callback(|| CoordinatorOptions::on_disconnect())
-                .reconnect_callback(|| CoordinatorOptions::on_reconnect())
-                .connect(&self.connection_url),
-            Security::None => options
-                .disconnect_callback(|| CoordinatorOptions::on_disconnect())
-                .reconnect_callback(|| CoordinatorOptions::on_reconnect())
-                .connect(&self.connection_url),
+                )) 
+            }                    
+            Security::None => Ok(options)      
         }
     }
 
@@ -430,14 +423,30 @@ impl CoordinatorOptions {
                 .unwrap()
                 .get_bool("coordinator.active")
                 .unwrap_or(false),
+            comm_ok: SETTINGS
+                .read()
+                .unwrap()
+                .get_bool("coordinator.comm_ok")
+                .unwrap_or(false),
         }
     }
 
-    pub fn update_coordinator_active(is_active: bool) {
+    pub fn update_coordinator_status(is_active: bool, overall_comm: bool) {
         match SETTINGS
             .write()
             .unwrap()
             .set("coordinator.active", is_active)
+        {
+            Ok(_) => {}
+            Err(e) => {
+                log::error!("Unable to write to configuration: {:?}", e);
+            }
+        }
+
+        match SETTINGS
+            .write()
+            .unwrap()
+            .set("coordinator.comm_ok", overall_comm)
         {
             Ok(_) => {}
             Err(e) => {
@@ -457,19 +466,31 @@ impl CoordinatorOptions {
         }
     }
 
-    fn on_disconnect() {
-        log::debug!("Connection to pub/sub broker has lost!");
+    pub fn on_disconnect() {
+        log::error!("Connection to pub/sub broker has lost!");
         let _ = SETTINGS
             .write()
             .unwrap()
             .set("openfmb_nats_subscriber.connected", false);
     }
 
-    fn on_reconnect() {
-        log::debug!("Reconnected to pub/sub broker.");
+    pub fn on_reconnect() {
+        log::info!("Reconnected to pub/sub broker.");
         let _ = SETTINGS
             .write()
             .unwrap()
             .set("openfmb_nats_subscriber.connected", true);
+    }
+
+    pub fn on_delay_reconnect(c: usize) -> Duration {
+        Duration::from_millis(std::cmp::min((c * 100) as u64, 10000))
+    }
+
+    pub fn on_error(_err: std::io::Error) {
+        log::error!("Connection to pub/sub broker throws error");
+    }
+
+    pub fn on_closed() {
+        log::info!("Connection to pub/sub broker has been closed!");
     }
 }

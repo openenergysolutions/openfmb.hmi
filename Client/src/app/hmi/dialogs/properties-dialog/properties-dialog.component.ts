@@ -14,6 +14,8 @@ import { DiagramData } from '../../../shared/models/userobject.model'
 export class PropertiesDialogComponent implements OnInit {  
   label: string;
   name: string;
+  description: string;
+  showDescription: boolean = false;
   diagramId: string;
   mRID: string; 
   lastUpdate: string;
@@ -27,6 +29,8 @@ export class PropertiesDialogComponent implements OnInit {
   ngOnInit() {        
     this.label = this.data.label;
     this.name = this.data.name,
+    this.description = this.data.description;
+    this.showDescription = this.description && this.description !== "";
     this.mRID = this.data.mRID;    
     this.diagramId = this.data.diagramId; 
     this.lastUpdate = this.data.lastUpdate;

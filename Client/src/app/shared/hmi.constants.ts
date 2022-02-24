@@ -223,6 +223,6 @@ export const Helpers = {
 }
 
 export const InternalTopic = {
-    isCoordinatorActive: 'hmi.coordinator.active'
-    
+    isCoordinatorActive: 'hmi.coordinator.active',
+    isCoordinatorCommOk: 'hmi.coordinator.comm_ok'
 }

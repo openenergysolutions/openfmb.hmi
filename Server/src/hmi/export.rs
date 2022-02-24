@@ -303,9 +303,8 @@ pub fn export() {
                                                 .children()
                                                 .find(|n| n.has_tag_name("Object"))
                                             {
-                                               
                                                 Some(obj) => {
-                                                     // Get type
+                                                    // Get type
                                                     match obj.attribute("type") {
                                                         Some(atype) => {
                                                             asset_type = atype;
@@ -332,13 +331,16 @@ pub fn export() {
                                                             log::error!("Unable to get label");
                                                         }
                                                     }
-                                                },
+                                                }
                                                 None => log::error!("Missing Object tag"),
                                             },
                                             None => log::error!("Missing Object tag"),
                                         }
 
-                                        println!("Type = {} [{}, {}]", asset_type, coords.0, coords.1);
+                                        println!(
+                                            "Type = {} [{}, {}]",
+                                            asset_type, coords.0, coords.1
+                                        );
 
                                         match asset_type {
                                             "breaker" => {
@@ -348,9 +350,9 @@ pub fn export() {
                                                     coordinate: Coordinate {
                                                         x: coords.0,
                                                         y: coords.1,
-                                                    },                                                    
+                                                    },
                                                 });
-                                            },
+                                            }
                                             "switch" | "switch-horizontal" | "switch-vertical" => {
                                                 mav.devices.switches.push(Switch {
                                                     name: label.to_string(),
@@ -358,9 +360,9 @@ pub fn export() {
                                                     coordinate: Coordinate {
                                                         x: coords.0,
                                                         y: coords.1,
-                                                    },                                                    
+                                                    },
                                                 });
-                                            },
+                                            }
                                             "recloser" => {
                                                 mav.devices.reclosers.push(Recloser {
                                                     name: label.to_string(),
@@ -368,9 +370,9 @@ pub fn export() {
                                                     coordinate: Coordinate {
                                                         x: coords.0,
                                                         y: coords.1,
-                                                    },                                                    
+                                                    },
                                                 });
-                                            },
+                                            }
                                             "regulator" => {
                                                 mav.devices.regulators.push(Regulator {
                                                     name: label.to_string(),
@@ -379,11 +381,14 @@ pub fn export() {
                                                         x: coords.0,
                                                         y: coords.1,
                                                     },
-                                                    ..Default::default()                                                   
+                                                    ..Default::default()
                                                 });
                                             }
                                             _ => {
-                                                log::error!("Can't handle asset type: {}", asset_type)
+                                                log::error!(
+                                                    "Can't handle asset type: {}",
+                                                    asset_type
+                                                )
                                             }
                                         }
                                     }

@@ -74,30 +74,10 @@ async fn server_setup() {
             "HMI",
             (publisher.clone(), subscriber.clone()),
         )
-        .unwrap();
-
-    let nats_server_uri = match config.get_str("coordinator.environment").unwrap().as_str() {
-        "prod" => config.get_str("openfmb_nats_subscriber.prod_uri").unwrap(),
-        "dev" => config.get_str("openfmb_nats_subscriber.dev_uri").unwrap(),
-        err => panic!("unsupported environment name: {}", err),
-    };
-
-    let creds = config
-        .get_str("openfmb_nats_subscriber.creds")
-        .unwrap_or("".to_string());
-
-    let nats_client = match creds.len() > 0 {
-        true => nats::Options::with_credentials(creds)
-            .connect(&nats_server_uri)
-            .unwrap(),
-        false => nats::connect(&nats_server_uri).unwrap(),
-    };
-
-    log::info!("Connected to NATS server");
+        .unwrap();       
 
     let run_mode = StartProcessingMessages {
         pubsub_options: CoordinatorOptions::new(),
-        nats_client: Some(nats_client),
     };
 
     let start_processing_msg: HmiMsg = run_mode.into();

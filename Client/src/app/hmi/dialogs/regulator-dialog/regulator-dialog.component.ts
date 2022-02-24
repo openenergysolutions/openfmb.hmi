@@ -17,6 +17,8 @@ export class RegulatorDialogComponent implements OnInit {
   name: string;    
   diagramId: string;
   mRID: string;
+  description: string;
+  showDescription: boolean = false;
   diagramData: DiagramData;  
   hasDataMapped: boolean = false;
   has3PhaseLowerMapped: boolean = false;
@@ -50,6 +52,8 @@ export class RegulatorDialogComponent implements OnInit {
     this.diagramData = this.data.diagramData;
     this.name = this.diagramData.name,
     this.mRID = this.diagramData.mRID;
+    this.description = this.diagramData.description;
+    this.showDescription = this.description && this.description !== "";
     this.status = this.diagramData.tag;
     this.lastUpdate = this.diagramData.lastUpdate;
     if (this.lastUpdate) {

@@ -893,7 +893,8 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
         const currentValue = this.graph.model.getValue(cell);
         const userObject = {
           ...currentValue.userObject,
-          label: result.label, 
+          label: result.label,
+          description: result.description, 
           name: result.name,   
           statusDefinition: result.statusDefinition,
           weatherDefinition: result.weatherDefinition, 

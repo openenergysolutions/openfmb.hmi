@@ -127,9 +127,9 @@ dependencies = [
 
 [[package]]
 name = "blocking"
-version = "1.0.2"
+version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c5e170dbede1f740736619b776d7251cb1b9095c435c34d8ca9f57fcd2f335e9"
+checksum = "046e47d4b2d391b1f6f8b407b1deb8dee56c1852ccd868becf2710f601b5f427"
 dependencies = [
  "async-channel",
  "async-task",
@@ -218,7 +218,7 @@ dependencies = [
  "num-integer",
  "num-traits 0.2.14",
  "serde 1.0.129",
- "time",
+ "time 0.1.43",
  "winapi",
 ]
 
@@ -675,7 +675,7 @@ dependencies = [
  "http",
  "mime",
  "sha-1",
- "time",
+ "time 0.1.43",
 ]
 
 [[package]]
@@ -729,7 +729,7 @@ dependencies = [
  "lazy_static",
  "log",
  "microgrid-protobuf",
- "nats",
+ "nats 0.18.1",
  "openfmb",
  "openfmb-messages-ext",
  "pretty_env_logger",
@@ -756,7 +756,7 @@ checksum = "527e8c9ac747e28542699a951517aa9a6945af506cd1f2e1b53a576c17b6cc11"
 dependencies = [
  "bytes 1.1.0",
  "fnv",
- "itoa",
+ "itoa 0.4.8",
 ]
 
 [[package]]
@@ -812,7 +812,7 @@ dependencies = [
  "http-body",
  "httparse",
  "httpdate",
- "itoa",
+ "itoa 0.4.8",
  "pin-project-lite",
  "socket2",
  "tokio",
@@ -906,6 +906,12 @@ name = "itoa"
 version = "0.4.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b71991ff56294aa922b450139ee08b3bfc70982c6b2c7562771375cf73542dd4"
+
+[[package]]
+name = "itoa"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1aab8fc367588b89dcee83ab0fd66b72b50b72fa1904d7095045ace2b0c81c35"
 
 [[package]]
 name = "js-sys"
@@ -1021,6 +1027,7 @@ checksum = "308cc39be01b73d0d18f82a0e7b2a3df85245f84af96fdddc5d202d27e47b86a"
 [[package]]
 name = "microgrid-protobuf"
 version = "0.1.0"
+source = "git+https://github.com/openenergysolutions/openfmb-rs?branch=feature/v2.1-testing#3af66026e1de52134b0f7fa8080bc338996c1cb8"
 dependencies = [
  "prost",
  "prost-build",
@@ -1100,7 +1107,7 @@ dependencies = [
  "chrono",
  "crossbeam-channel",
  "fastrand",
- "itoa",
+ "itoa 0.4.8",
  "json",
  "libc",
  "log",
@@ -1114,6 +1121,41 @@ dependencies = [
  "rustls-native-certs",
  "serde 1.0.129",
  "serde_json",
+ "url",
+ "webpki",
+ "winapi",
+]
+
+[[package]]
+name = "nats"
+version = "0.18.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "603b57313fd7ff9ddf81b833923ee872264bec6426bff89b3c8c90c0de2267cb"
+dependencies = [
+ "base64 0.13.0",
+ "base64-url",
+ "blocking",
+ "crossbeam-channel",
+ "fastrand",
+ "itoa 0.4.8",
+ "json",
+ "lazy_static",
+ "libc",
+ "log",
+ "memchr",
+ "nkeys",
+ "nuid",
+ "once_cell",
+ "parking_lot",
+ "regex",
+ "rustls",
+ "rustls-native-certs",
+ "rustls-pemfile",
+ "serde 1.0.129",
+ "serde_json",
+ "serde_nanos",
+ "serde_repr",
+ "time 0.3.7",
  "url",
  "webpki",
  "winapi",
@@ -1213,6 +1255,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "num_threads"
+version = "0.1.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "97ba99ba6393e2c3734791401b66902d981cb03bf190af674ca69949b6d5fb15"
+dependencies = [
+ "libc",
+]
+
+[[package]]
 name = "once_cell"
 version = "1.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1227,6 +1278,7 @@ checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
 [[package]]
 name = "openfmb"
 version = "0.1.0"
+source = "git+https://github.com/openenergysolutions/openfmb-rs?branch=feature/v2.1-testing#3af66026e1de52134b0f7fa8080bc338996c1cb8"
 dependencies = [
  "async-trait",
  "bytes 1.1.0",
@@ -1235,7 +1287,7 @@ dependencies = [
  "lazy_static",
  "log",
  "microgrid-protobuf",
- "nats",
+ "nats 0.16.0",
  "openfmb-messages",
  "openfmb-messages-ext",
  "prost",
@@ -1245,6 +1297,7 @@ dependencies = [
 [[package]]
 name = "openfmb-codegen"
 version = "0.6.1"
+source = "git+https://github.com/openenergysolutions/openfmb-rs?branch=feature/v2.1-testing#3af66026e1de52134b0f7fa8080bc338996c1cb8"
 dependencies = [
  "bytes 0.5.6",
  "heck",
@@ -1262,6 +1315,7 @@ dependencies = [
 [[package]]
 name = "openfmb-descriptors"
 version = "0.1.0"
+source = "git+https://github.com/openenergysolutions/openfmb-rs?branch=feature/v2.1-testing#3af66026e1de52134b0f7fa8080bc338996c1cb8"
 dependencies = [
  "lazy_static",
  "prost",
@@ -1272,6 +1326,7 @@ dependencies = [
 [[package]]
 name = "openfmb-messages"
 version = "0.1.0"
+source = "git+https://github.com/openenergysolutions/openfmb-rs?branch=feature/v2.1-testing#3af66026e1de52134b0f7fa8080bc338996c1cb8"
 dependencies = [
  "bytes 1.1.0",
  "env_logger 0.9.0",
@@ -1285,10 +1340,11 @@ dependencies = [
 [[package]]
 name = "openfmb-messages-ext"
 version = "0.0.1"
+source = "git+https://github.com/openenergysolutions/openfmb-rs?branch=feature/v2.1-testing#3af66026e1de52134b0f7fa8080bc338996c1cb8"
 dependencies = [
  "chrono",
  "log",
- "nats",
+ "nats 0.18.1",
  "openfmb-messages",
  "prost",
  "serde 1.0.129",
@@ -1493,6 +1549,7 @@ dependencies = [
 [[package]]
 name = "proto-types"
 version = "0.7.0"
+source = "git+https://github.com/openenergysolutions/openfmb-rs?branch=feature/v2.1-testing#3af66026e1de52134b0f7fa8080bc338996c1cb8"
 dependencies = [
  "bytes 1.1.0",
  "prost",
@@ -1741,6 +1798,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "rustls-pemfile"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5eebeaeb360c87bfb72e84abdb3447159c0eaececf1bef2aecd65a8be949d1c9"
+dependencies = [
+ "base64 0.13.0",
+]
+
+[[package]]
 name = "ryu"
 version = "1.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1852,9 +1918,29 @@ version = "1.0.66"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "336b10da19a12ad094b59d870ebde26a45402e5b470add4b5fd03c5048a32127"
 dependencies = [
- "itoa",
+ "itoa 0.4.8",
  "ryu",
  "serde 1.0.129",
+]
+
+[[package]]
+name = "serde_nanos"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e44969a61f5d316be20a42ff97816efb3b407a924d06824c3d8a49fa8450de0e"
+dependencies = [
+ "serde 1.0.129",
+]
+
+[[package]]
+name = "serde_repr"
+version = "0.1.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "98d0516900518c29efa217c298fa1f4e6c6ffc85ae29fd7f4ee48f176e1a9ed5"
+dependencies = [
+ "proc-macro2 1.0.28",
+ "quote 1.0.9",
+ "syn 1.0.75",
 ]
 
 [[package]]
@@ -1873,7 +1959,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "edfa57a7f8d9c1d260a549e7224100f6c43d43f9103e06dd8b4095a9b2b43ce9"
 dependencies = [
  "form_urlencoded",
- "itoa",
+ "itoa 0.4.8",
  "ryu",
  "serde 1.0.129",
 ]
@@ -2133,6 +2219,18 @@ checksum = "ca8a50ef2360fbd1eeb0ecd46795a87a19024eb4b53c5dc916ca1fd95fe62438"
 dependencies = [
  "libc",
  "winapi",
+]
+
+[[package]]
+name = "time"
+version = "0.3.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "004cbc98f30fa233c61a38bc77e96a9106e65c88f2d3bef182ae952027e5753d"
+dependencies = [
+ "itoa 1.0.1",
+ "libc",
+ "num_threads",
+ "serde 1.0.129",
 ]
 
 [[package]]

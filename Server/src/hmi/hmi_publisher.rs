@@ -77,27 +77,47 @@ impl ActorFactoryArgs<Config> for HmiPublisher {
 impl HmiPublisher {
     fn connect_to_nats_broker(
         &mut self,
-        _ctx: &Context<<HmiPublisher as Actor>::Msg>,
+        ctx: &Context<<HmiPublisher as Actor>::Msg>,
         msg: &StartProcessingMessages,
     ) {
-        if let Some(c) = &msg.nats_client {
-            self.nats_client = Some(c.clone());
-        } else {
-            info!(
-                "HmiPublisher connects to NATS with options: {:?}",
-                msg.pubsub_options
-            );
-            match msg.pubsub_options.connect() {
-                Ok(connection) => {
-                    info!("****** HmiPublisher successfully connected");
+        self.nats_client = None;
+        
+        info!(
+            "HmiPublisher connects to NATS with options: {:?}",
+            msg.pubsub_options
+        );
 
-                    self.nats_client = Some(connection);
-                }
-                Err(e) => {
-                    error!("Unable to connect to nats.  {:?}", e);
-                }
+        let options = msg.pubsub_options.options().unwrap();
+        let connection_url = msg.pubsub_options.connection_url.clone();
+
+        let myself = ctx.myself.clone();
+
+        match options
+            .disconnect_callback(|| CoordinatorOptions::on_disconnect())
+            .reconnect_callback(|| CoordinatorOptions::on_reconnect())
+            .reconnect_delay_callback(|c| CoordinatorOptions::on_delay_reconnect(c))
+            .error_callback(|err| CoordinatorOptions::on_error(err))
+            .close_callback(move || HmiPublisher::on_closed(&myself))
+            .retry_on_failed_connect()
+            .connect(connection_url) {
+
+            Ok(connection) => {
+                info!("****** HmiPublisher successfully connected");
+
+                self.nats_client = Some(connection);
+            }
+            Err(e) => {
+                error!("Unable to connect to nats.  {:?}", e);
             }
         }
+    }
+
+    fn on_closed(hmi: &ActorRef<HmiPublisherMsg>) {
+        info!("Connection to pub/sub broker has been closed!");
+
+        hmi.tell(StartProcessingMessages {
+            pubsub_options: CoordinatorOptions::new(),
+        }, None);
     }
 
     fn get_device_type_by_mrid(&self, mrid: String) -> Option<String> {

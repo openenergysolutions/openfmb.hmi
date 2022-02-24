@@ -16,6 +16,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class SwitchgearDialogComponent implements OnInit {  
   status: string;
   name: string;
+  description: string;
+  showDescription: boolean = false;
   actionColor: string;
   actionText: string;
   actionEnabled: boolean = true;
@@ -33,11 +35,13 @@ export class SwitchgearDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any
   ) { }
 
-  ngOnInit() {                    
+  ngOnInit() {                       
     this.diagramId = this.data.diagramId;   
     this.diagramData = this.data.diagramData;
     this.name = this.diagramData.name,
     this.mRID = this.diagramData.mRID;
+    this.description = this.diagramData.description;
+    this.showDescription = this.description && this.description !== "";
     this.status = this.diagramData.tag;
     this.lastUpdate = this.diagramData.lastUpdate;
     this.isCoordinatorActive = this.data.isCoordinatorActive;

@@ -20,6 +20,7 @@ import { getCommands, getCommandsByType } from '../../../shared/models/commands.
 })
 export class PropertiesDialogComponent implements OnInit {  
   label: string;
+  description: string;
   name: string;
   displayDataLabel = "Reading/Status";
   controlDataLabel = "Control";
@@ -94,7 +95,8 @@ export class PropertiesDialogComponent implements OnInit {
   }
 
   ngOnInit() {            
-    this.label = this.data.label;    
+    this.label = this.data.label; 
+    this.description = this.data.description;   
     this.name = this.data.name,    
     this.fontSize = this.data.fontSize;
     this.containerWidth = this.data.containerWidth;  
@@ -281,6 +283,7 @@ export class PropertiesDialogComponent implements OnInit {
 
     this.dialogRef.close({
       label: this.label,
+      description: this.description,
       name: this.selectedEquipment?.name || this.name,
       displayData: this.displayData,
       controlData: this.controlData,

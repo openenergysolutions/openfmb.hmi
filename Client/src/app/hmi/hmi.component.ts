@@ -40,6 +40,9 @@ import { Topic, UpdateData } from '../shared/models/topic.model'
 import { Command } from '../shared/models/command.model';
 import { JwtAuthService } from '../shared/services/auth/jwt-auth.service';
 import { ValueConverter } from '@angular/compiler/src/render3/view/template';
+import { InternalTopic } from '../shared/hmi.constants';
+import * as hmiActions from '../store/actions/hmi.actions';
+import { CommunicationStatus } from '../store/reducers/hmi.reducer';
 
 const {
   mxGraph,
@@ -88,7 +91,10 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
   diagramId: string = null;
   currentDiagram: Diagram;
   showingLostConnection: boolean = false;
-  isCoordinatorActive: boolean = false;  
+  isCoordinatorActive: boolean = false;
+  isCoordinatorCommOk: boolean = false;
+  
+  dialogWidth: '400px';
 
   private destroy$ = new Subject();
 
@@ -716,6 +722,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
       left: x,
       diagramId: this.diagramId,
       label: currentCellData.label,
+      description: currentCellData.description,
       name: currentCellData.name,
       displayData: currentCellData.displayData,
       controlData: currentCellData.controlData,
@@ -730,7 +737,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
       lastUpdate: currentCellData.lastUpdate
     };
     const dialogRef = this.dialog.open(PropertiesDialogComponent, {
-      width: '355px',
+      width: this.dialogWidth,
       data: filterData,
       hasBackdrop: false,
       panelClass: 'filter-popup',
@@ -756,7 +763,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
       isCoordinatorActive: this.isCoordinatorActive
     };
     const dialogRef = this.dialog.open(SwitchgearDialogComponent, {
-      width: '355px',
+      width: this.dialogWidth,
       data: filterData,
       hasBackdrop: false,
       panelClass: 'filter-popup',
@@ -781,7 +788,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
       diagramData: currentCellData
     };
     const dialogRef = this.dialog.open(RegulatorDialogComponent, {
-      width: '355px',
+      width: this.dialogWidth,
       data: filterData,
       hasBackdrop: false,
       panelClass: 'filter-popup',
@@ -806,7 +813,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
       diagramData: currentCellData
     };
     const dialogRef = this.dialog.open(ControlDialogComponent, {
-      width: '355px',
+      width: this.dialogWidth,
       data: filterData,
       hasBackdrop: false,
       panelClass: 'filter-popup',
@@ -829,7 +836,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     };
     this.showingLostConnection = true;
     const dialogRef = this.dialog.open(GenericDialogComponent, {
-      width: '355px',
+      width: this.dialogWidth,
       data: filterData,
       hasBackdrop: false,
       panelClass: 'filter-popup',
@@ -884,8 +891,12 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     if (domElement.length > 0) {
       for(let update of message.updates) {  
         // special coordinator flag
-        if (update.topic?.name === "hmi.coordinator.active") {          
-          this.isCoordinatorActive = update.topic.value?.Bool;
+        if (update.topic?.name === InternalTopic.isCoordinatorActive) {          
+          this.isCoordinatorActive = update.topic.value?.Bool;          
+        }
+        if (update.topic?.name === InternalTopic.isCoordinatorCommOk) {          
+          this.isCoordinatorCommOk = update.topic.value?.Bool;
+          this.store.dispatch(hmiActions.commStatus({ status: !this.isCoordinatorCommOk ? CommunicationStatus.NOT_OK : CommunicationStatus.OK }));       
         }
         for(let i = 0; i < domElement.length; ++i) { 
           const svgId = domElement[i].getAttribute('svg-id');
@@ -1127,7 +1138,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         }
       }      
-    }
+    }     
   } 
   
   getVisibility(update: any, element: Element) {
