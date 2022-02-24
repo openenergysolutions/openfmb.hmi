@@ -1,6 +1,5 @@
-FROM rust:1.52 AS build
+FROM rust:latest AS build
 
-COPY microgrid-protobuf /openfmb.hmi/microgrid-protobuf
 COPY Server /openfmb.hmi/Server
 COPY Cargo.toml /openfmb.hmi/Cargo.toml
 COPY Cargo.lock /openfmb.hmi/Cargo.lock
