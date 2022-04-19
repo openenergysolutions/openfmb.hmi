@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+#![recursion_limit = "256"]
 use std::collections::HashMap;
 use std::convert::Infallible;
 use std::fs;
