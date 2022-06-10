@@ -37,9 +37,7 @@ import { DiagramData } from '../shared/models/userobject.model'
 import { ButtonFunction, CommandAction, Helpers } from '../shared/hmi.constants'
 import { Hmi, Symbol } from '../shared/hmi.constants'
 import { Topic, UpdateData } from '../shared/models/topic.model'
-import { Command } from '../shared/models/command.model';
 import { JwtAuthService } from '../shared/services/auth/jwt-auth.service';
-import { ValueConverter } from '@angular/compiler/src/render3/view/template';
 import { InternalTopic } from '../shared/hmi.constants';
 import * as hmiActions from '../store/actions/hmi.actions';
 import { CommunicationStatus } from '../store/reducers/hmi.reducer';
