@@ -15,27 +15,24 @@ import { SharedMaterialModule } from '../shared/shared-material.module';
 import { NgxMatColorPickerModule, MAT_COLOR_FORMATS, NGX_MAT_COLOR_FORMATS } from '@angular-material-components/color-picker'
 
 @NgModule({
-  declarations: [
-    DesignerComponent,
-    HeaderToolComponent,
-    DocumentToolbarComponent,
-    PropertiesDialogComponent    
-  ],
-  imports: [
-    CommonModule,
-    DesignerRoutingModule,
-    SharedModule,
-    SharedMaterialModule,
-    NgxMatColorPickerModule
-  ],
-  providers: [
-    { 
-      provide: MAT_COLOR_FORMATS, 
-      useValue: NGX_MAT_COLOR_FORMATS 
-    }
-  ],
-  entryComponents: [
-    PropertiesDialogComponent
-  ]
+    declarations: [
+        DesignerComponent,
+        HeaderToolComponent,
+        DocumentToolbarComponent,
+        PropertiesDialogComponent
+    ],
+    imports: [
+        CommonModule,
+        DesignerRoutingModule,
+        SharedModule,
+        SharedMaterialModule,
+        NgxMatColorPickerModule
+    ],
+    providers: [
+        {
+            provide: MAT_COLOR_FORMATS,
+            useValue: NGX_MAT_COLOR_FORMATS
+        }
+    ]
 })
 export class DesignerModule { }
