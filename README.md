@@ -36,9 +36,9 @@ From the project directory:
 
 ```bash
 > cd Client
-> npm install
+> yarn install
 ...
-> npm run build
+> yarn run build
 ...
 > cd ..
 ```
