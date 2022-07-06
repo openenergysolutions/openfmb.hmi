@@ -9,26 +9,30 @@ import {
   RouterStateSnapshot,
   Router,
 } from "@angular/router";
-import { JwtAuthService } from "../services/auth/jwt-auth.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { AuthService } from "@auth0/auth0-angular";
+import { AuthConstant } from "../../core/constants/auth-constant";
 
 @Injectable()
 export class UserRoleGuard implements CanActivate {
-  constructor(private router: Router, private jwtAuth: JwtAuthService, private snack: MatSnackBar) {}
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    var user = this.jwtAuth.getUser();
+  constructor(private router: Router, private auth: AuthService, private snack: MatSnackBar) { }
 
-    if (
-      user &&
-      route.data &&
-      route.data.roles &&
-      route.data.roles.includes(user.role)
-    ) {
-      return true;
-    } else {
-      this.snack.open('You do not have access to this page!', 'OK', { duration: 5000 });
-      return false;
-    }
+  async canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+
+    return this.auth.getUser().toPromise().then(user => {
+      const thisUser = user || { [AuthConstant.ROLES]: ['Viewer'] }; // Default role required due to Auth0 delay
+      console.log('UserRoleGuard: thisUser:', thisUser);
+      if (route?.data?.roles.some((role: string) => thisUser[AuthConstant.ROLES]?.includes(role))) {
+        return true;
+      } else {
+        console.log('Failed to find required role');
+        this.snack.open('You are not authorized to access this page', 'OK', { duration: 5000 });
+        //TODO: Fix race condition!
+        // this.router.navigate([this.router.url]);
+        setTimeout(this.router.navigate.bind(null, [this.router.url]), 250);
+        return false;
+      }
+    });
   }
 }

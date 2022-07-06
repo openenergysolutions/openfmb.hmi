@@ -5,7 +5,7 @@
 import { Routes } from '@angular/router';
 import { MainLayoutComponent } from './shared/components/layouts/main-layout/main-layout.component';
 import { AuthLayoutComponent } from './shared/components/layouts/auth-layout/auth-layout.component';
-import { AuthGuard } from './shared/guards/auth.guard';
+import { AuthGuard } from '@auth0/auth0-angular';
 import { UserRoleGuard } from './shared/guards/user-role.guard'
 
 export const rootRouterConfig: Routes = [

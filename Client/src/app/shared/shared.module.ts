@@ -9,7 +9,6 @@ import { CommonModule } from '@angular/common';
 import { ThemeService } from './services/theme.service';
 import { NavigationService } from "./services/navigation.service";
 import { RoutePartsService } from './services/route-parts.service';
-import { AuthGuard } from './guards/auth.guard';
 import { UserRoleGuard } from './guards/user-role.guard';
 import { AppConfirmService } from './services/app-confirm/app-confirm.service';
 import { AppLoaderService } from './services/app-loader/app-loader.service';
@@ -27,7 +26,7 @@ import { PropertiesSelectSectionComponent } from './properties-select-section/pr
   declarations: [PropertiesSelectSectionComponent],
   imports: [
     CommonModule,
-    SharedComponentsModule,    
+    SharedComponentsModule,
     SharedDirectivesModule,
     ReactiveFormsModule,
     FormsModule,
@@ -39,19 +38,18 @@ import { PropertiesSelectSectionComponent } from './properties-select-section/pr
     ThemeService,
     NavigationService,
     RoutePartsService,
-    AuthGuard,
     UserRoleGuard,
     AppConfirmService,
     AppLoaderService
   ],
   exports: [
-    SharedComponentsModule,    
+    SharedComponentsModule,
     SharedDirectivesModule,
     ReactiveFormsModule,
     FormsModule,
     FlexLayoutModule,
     MatCardModule,
-    MatFormFieldModule,    
+    MatFormFieldModule,
     PropertiesSelectSectionComponent
   ]
 })
