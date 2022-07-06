@@ -6,7 +6,6 @@ import { Component, OnInit, AfterViewInit, Renderer2 } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Router, NavigationEnd, ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import * as fromRoot from './store/reducers/index';
-import * as authActions from './store/actions/auth.actions';
 import { Store } from '@ngrx/store';
 
 import { RoutePartsService } from "./shared/services/route-parts.service";

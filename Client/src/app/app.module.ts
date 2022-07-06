@@ -30,8 +30,7 @@ import { StoreRouterConnectingModule } from '@ngrx/router-store';
 import { EntityDataModule } from '@ngrx/data';
 import { entityConfig } from './entity-metadata';
 import { NgxSpinnerModule } from 'ngx-spinner';
-import { AuthEffects } from './store/effects/auth.effects';
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from '@auth0/auth0-angular';
 import { ErrorInterceptor } from './core/helpers/error-interceptor';
 import { LoadingInterceptor } from './core/helpers/loading-interceptor';
 import { DesignerEffects } from './store/effects/designer.effects';
@@ -74,7 +73,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     EffectsModule.forRoot([AppEffects]),
     StoreRouterConnectingModule.forRoot(),
     EntityDataModule.forRoot(entityConfig),
-    EffectsModule.forFeature([AuthEffects, DesignerEffects]),
+    EffectsModule.forFeature([DesignerEffects]),
     NgxSpinnerModule,
     NgxDatatableModule,
     HttpClientModule,
