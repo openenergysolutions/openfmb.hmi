@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, OnInit, AfterViewInit, ViewChild, HostListener, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import { 
+import { Component, OnInit, AfterViewInit, HostListener, ChangeDetectorRef } from '@angular/core';
+import {
   Router,
   NavigationEnd,
   RouteConfigLoadStart,

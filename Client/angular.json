@@ -40,8 +40,7 @@
               "src/styles.scss"
             ],
             "scripts": [
-              "node_modules/jquery/dist/jquery.js",              
-              "src/assets/js/openfmb.hmi.js"              
+              "src/assets/js/openfmb.hmi.js"
             ],
             "allowedCommonJsDependencies": [
               "rxjs/internal/operators",
