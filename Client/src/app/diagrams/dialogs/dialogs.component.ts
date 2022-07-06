@@ -4,7 +4,7 @@
 
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { FormBuilder, Validators, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, Validators, UntypedFormGroup } from '@angular/forms';
 
 
 @Component({
@@ -13,13 +13,13 @@ import { FormBuilder, Validators, FormGroup } from '@angular/forms';
   styleUrls: ['./dialogs.component.scss']
 })
 export class DialogsComponent implements OnInit {  
-  public itemForm: FormGroup;  
+  public itemForm: UntypedFormGroup;  
   backgroundColor: any;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     public dialogRef: MatDialogRef<DialogsComponent>,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
   ) {}
 
   ngOnInit() {

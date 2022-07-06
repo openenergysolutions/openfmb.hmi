@@ -207,7 +207,7 @@ export class RegulatorDialogComponent implements OnInit {
   }
 
   onMessageInspector(): void {
-    window.open('/inspector?mrid=' + this.mRID, '_blank', 'toolbar=0,width=850,height=700', true);
+    window.open('/inspector?mrid=' + this.mRID, '_blank', 'toolbar=0,width=850,height=700');
     this.dialogRef.close({
       proceed: false      
     });

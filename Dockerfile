@@ -1,4 +1,10 @@
-FROM rust:latest AS build
+FROM rust:alpine3.16 as build
+
+RUN apk update && apk add --no-cache \ 
+    build-base \
+    linux-headers \
+    libressl-dev \
+    protobuf-dev
 
 COPY Server /openfmb.hmi/Server
 COPY Cargo.toml /openfmb.hmi/Cargo.toml
@@ -8,15 +14,17 @@ WORKDIR /openfmb.hmi
 
 RUN cargo build --release
 
-FROM node:14.17.6 AS build2
+FROM node:alpine3.16 AS build2
 
 COPY Client ./Client
 
 WORKDIR /Client
+RUN yarn --version
+RUN npx browserslist --update-db
 RUN yarn install
 RUN yarn run build
 
-FROM debian:buster-slim
+FROM alpine:3.16
 
 COPY --from=build2 /Client/dist/openfmb-hmi /hmi_server/Client/dist/openfmb-hmi
 

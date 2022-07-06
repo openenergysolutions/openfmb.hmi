@@ -17,27 +17,20 @@ import { ControlDialogComponent } from './dialogs/control-dialog/control-dialog.
 import { SharedMaterialModule } from '../shared/shared-material.module';
 
 @NgModule({
-  declarations: [
-    HmiComponent,
-    HeaderToolComponent,
-    PropertiesDialogComponent,
-    SwitchgearDialogComponent, 
-    RegulatorDialogComponent,   
-    ControlDialogComponent,
-    GenericDialogComponent    
-  ],
-  imports: [
-    CommonModule,
-    DesignerRoutingModule,
-    SharedModule,
-    SharedMaterialModule
-  ],
-  entryComponents: [
-    PropertiesDialogComponent,
-    SwitchgearDialogComponent, 
-    RegulatorDialogComponent,   
-    ControlDialogComponent,
-    GenericDialogComponent
-  ]
+    declarations: [
+        HmiComponent,
+        HeaderToolComponent,
+        PropertiesDialogComponent,
+        SwitchgearDialogComponent,
+        RegulatorDialogComponent,
+        ControlDialogComponent,
+        GenericDialogComponent
+    ],
+    imports: [
+        CommonModule,
+        DesignerRoutingModule,
+        SharedModule,
+        SharedMaterialModule
+    ]
 })
 export class HmiModule { }

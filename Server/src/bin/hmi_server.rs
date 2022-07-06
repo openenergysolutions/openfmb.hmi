@@ -366,7 +366,7 @@ fn write_hmi_env(hmi_local_ip: &str, http_scheme: &str, ws_scheme: &str) -> std:
         let entry = entry?;
         if let Some(file_name) = entry.path().as_path().file_name() {
             if let Some(file_name) = file_name.to_str() {
-                if file_name.starts_with("main-") && !file_name.ends_with("-backup") {
+                if (file_name.starts_with("main-") || file_name.starts_with("main.")) && !file_name.ends_with("-backup") {
                     // check if backup exists
                     let backup_file_name = format!("Client/dist/openfmb-hmi/{}-backup", file_name);
                     let backup = Path::new(&backup_file_name);
