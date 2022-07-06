@@ -30,6 +30,27 @@ Make sure you have installed `node` and `npm` on your computer
 > curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
+### Install [build toolchain](https://github.com/protocolbuffers/protobuf/blob/main/src/README.md)
+
+[prost](https://github.com/tokio-rs/prost) now recommends `prost-build`  
+[prost-build](https://github.com/tokio-rs/prost/tree/master/prost-build) needs `protoc` or a C++ toolchain.
+
+For the C++ toolchain, the following tools are needed:
+
+* autoconf
+* automake
+* libtool
+* make
+* g++
+* unzip
+* cmake (not mentioned on the above pages, but still required)
+
+On Ubuntu/Debian, you can install them with:
+
+```bash
+> sudo apt-get install autoconf automake libtool curl make g++ unzip cmake
+```
+
 ## Build Client
 
 From the project directory:
