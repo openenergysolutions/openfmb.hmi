@@ -4,8 +4,9 @@
 
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { JwtAuthService } from "../../../app/shared/services/auth/jwt-auth.service";
 import { Authorization } from '../../shared/models/user.model';
+import { AuthService } from '@auth0/auth0-angular';
+import { AuthConstant } from '../../core/constants/auth-constant';
 
 interface IMenuItem {
   type: string; // Possible values: link/dropDown/icon/separator/extLink
@@ -33,7 +34,6 @@ interface IBadge {
 
 @Injectable()
 export class NavigationService {
-  userRole: string = this.jwtService.getUserRole();
 
   iconMenu: IMenuItem[] = [
     {
@@ -50,7 +50,7 @@ export class NavigationService {
       tooltip: 'Data connection',
       icon: 'settings_remote',
       state: 'data-connect',
-      visible: Authorization.canEditDiagram(this.userRole)
+      visible: false, //Default off until authorization updates
     },
     {
       name: "SETTINGS",
@@ -58,10 +58,11 @@ export class NavigationService {
       tooltip: "Settings",
       icon: "settings",
       state: "settings",
-      visible: Authorization.canUpdateSettings(this.userRole),
-      sub: [        
-        { name: "Users", state: "users" },
-        { name: "Devices", state: "devices" }              
+      visible: false, //Default off until authorization updates
+      sub: [
+        // TODO: Cleanup comments and console.logs
+        // { name: "Users", state: "users" }, // Not used in OAuth
+        { name: "Devices", state: "devices" }
       ]
     }
   ]
@@ -73,7 +74,17 @@ export class NavigationService {
   // navigation component has subscribed to this Observable
   menuItems$ = this.menuItems.asObservable();
 
-  constructor(private jwtService : JwtAuthService) {}  
+  constructor(public auth: AuthService) {
+    this.auth.user$.subscribe(user => {
+      console.log('navigation service user: ', user);
+      if (user) {
+        this.iconMenu.filter(item => item.name === 'DATA CONNECTION')[0].visible = Authorization.canEditDiagram(user[AuthConstant.ROLES]);
+        console.log('navigation service user, canEditDiagram: ', this.iconMenu[1].visible);
+        this.iconMenu.filter(item => item.name === 'SETTINGS')[0].visible = Authorization.canUpdateSettings(user[AuthConstant.ROLES]);
+        console.log('navigation service user, canUpdateSettings: ', this.iconMenu[2].visible);
+      }
+    });
+  }
 
   // Customizer component uses this method to change menu.
   // You can remove this method and customizer component.

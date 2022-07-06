@@ -37,9 +37,9 @@ import { DiagramData } from '../shared/models/userobject.model'
 import { ButtonFunction, CommandAction, Helpers } from '../shared/hmi.constants'
 import { Hmi, Symbol } from '../shared/hmi.constants'
 import { Topic, UpdateData } from '../shared/models/topic.model'
-import { Command } from '../shared/models/command.model';
-import { JwtAuthService } from '../shared/services/auth/jwt-auth.service';
-import { ValueConverter } from '@angular/compiler/src/render3/view/template';
+// TODO: Cleanup comments
+// import { Command } from '../shared/models/command.model';
+// import { ValueConverter } from '@angular/compiler/src/render3/view/template';
 import { InternalTopic } from '../shared/hmi.constants';
 import * as hmiActions from '../store/actions/hmi.actions';
 import { CommunicationStatus } from '../store/reducers/hmi.reducer';
@@ -93,7 +93,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
   showingLostConnection: boolean = false;
   isCoordinatorActive: boolean = false;
   isCoordinatorCommOk: boolean = false;
-  
+
   dialogWidth: '400px';
 
   private destroy$ = new Subject();
@@ -105,13 +105,9 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     private spinner: NgxSpinnerService,
     private wsService: WebSocketService,
     private snack: MatSnackBar,
-    private router : ActivatedRoute,
+    private router: ActivatedRoute,
     private diagramService: DiagramsService,
-    private jwtAuth: JwtAuthService
   ) {
-    // Check Auth Token is valid
-    this.jwtAuth.checkTokenIsValid().subscribe();
-    
     this.router.queryParams.subscribe(params => {
       this.diagramId = params['id'];      
     });

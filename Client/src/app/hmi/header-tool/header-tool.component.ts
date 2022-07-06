@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, OnInit, EventEmitter, Output, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, ElementRef, ViewChild, Inject } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { DesignerConstant } from './../../core/constants/designer-constant';
@@ -12,7 +12,8 @@ import * as fromRoot from '../../store/reducers/index';
 import * as designerActions from '../../store/actions/designer.actions';
 import { CommunicationStatus } from '../../store/reducers/hmi.reducer';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { JwtAuthService } from "../../shared/services/auth/jwt-auth.service";
+import { AuthService } from '@auth0/auth0-angular';
+import { DOCUMENT } from "@angular/common";
 
 @Component({
   selector: 'app-header-tool',
@@ -50,7 +51,8 @@ export class HeaderToolComponent implements OnInit {
     private sanitizer: DomSanitizer,
     private store: Store<fromRoot.State>,
     private spinner: NgxSpinnerService,
-    public jwtAuth: JwtAuthService
+    public auth: AuthService,
+    @Inject(DOCUMENT) private doc: Document
   ) {
     this.iconRegistry.addSvgIcon(
       'select-icon',
@@ -82,13 +84,13 @@ export class HeaderToolComponent implements OnInit {
     );
   }
 
-  onModeSelect() { 
-    if (this.isMoveSelected) {    
-      this.store.dispatch(designerActions.selectMode({ mode: DesignerConstant.SELECT_MODE }));  
+  onModeSelect() {
+    if (this.isMoveSelected) {
+      this.store.dispatch(designerActions.selectMode({ mode: DesignerConstant.SELECT_MODE }));
     }
     else {
-      this.store.dispatch(designerActions.selectMode({ mode: DesignerConstant.MOVE_MODE })); 
-    }  
+      this.store.dispatch(designerActions.selectMode({ mode: DesignerConstant.MOVE_MODE }));
+    }
   }
 
   onColorSelect(connectColor: string) {
@@ -131,4 +133,7 @@ export class HeaderToolComponent implements OnInit {
     this.runGraph.emit();
   }
 
+  logout() {
+    this.auth.logout({ returnTo: this.doc.location.origin });
+  }
 }

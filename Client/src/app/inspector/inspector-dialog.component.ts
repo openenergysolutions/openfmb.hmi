@@ -6,7 +6,6 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router'
 import { v4 as uuidv4 } from 'uuid';
 import { WebSocketService } from '../core/services/web-socket.service';
-import { JwtAuthService } from '../shared/services/auth/jwt-auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 
@@ -25,13 +24,9 @@ export class InspectorDialogComponent implements OnInit {
 
   constructor(
     private wsService: WebSocketService,
-    private jwtAuth: JwtAuthService,
-    private router : ActivatedRoute,
+    private router: ActivatedRoute,
     private snack: MatSnackBar,
-  ) { 
-    // Check Auth Token is valid
-    this.jwtAuth.checkTokenIsValid().subscribe();
-    
+  ) {
     this.router.queryParams.subscribe(params => {
       this.mrid = params['mrid'];      
     });

@@ -12,9 +12,10 @@ import { DialogsComponent } from './dialogs/dialogs.component';
 import { Subscription } from 'rxjs';
 import { AppLoaderService } from '../shared/services/app-loader/app-loader.service';
 import { Diagram } from '../shared/models/diagram.model';
-import { JwtAuthService } from "../shared/services/auth/jwt-auth.service";
+import { AuthService } from "@auth0/auth0-angular";
 import { v4 as uuidv4 } from 'uuid';
 import { Authorization } from '../shared/models/user.model';
+import { AuthConstant } from '../core/constants/auth-constant';
 
 
 @Component({
@@ -27,18 +28,23 @@ export class DiagramsComponent implements OnInit, OnDestroy {
   temp = [];
   canEditDiagram: boolean = false;
   public getItemSub: Subscription;
+  userSub: Subscription;
 
   constructor(
     private renderer: Renderer2,
-    private service: DiagramsService, 
+    private service: DiagramsService,
     private router: Router,
     private dialog: MatDialog,
     private snack: MatSnackBar,
-    private jwtAuth: JwtAuthService,
+    private auth: AuthService,
     private loader: AppLoaderService) { }
 
-  ngOnInit() {   
-    this.canEditDiagram = Authorization.canEditDiagram( this.jwtAuth.getUserRole());
+  ngOnInit() {
+    this.userSub = this.auth.user$.subscribe(user => {
+      if (user) {
+        this.canEditDiagram = Authorization.canEditDiagram(user[AuthConstant.ROLES]);
+      }
+    })
     this.getData();
   }
 
@@ -46,17 +52,21 @@ export class DiagramsComponent implements OnInit, OnDestroy {
     if (this.getItemSub) {
       this.getItemSub.unsubscribe()
     }
+    if (this.userSub) {
+      this.userSub.unsubscribe()
+    }
   }
+
   getData() {
     this.getItemSub = this.service.getAll()
       .subscribe(data => {
         this.rows = this.temp = data;
       },
-      error => {
-        console.error(error);
-        this.rows = this.temp = [];
-        this.snack.open(error, 'OK', { duration: 4000 });
-      });
+        error => {
+          console.error(error);
+          this.rows = this.temp = [];
+          this.snack.open(error, 'OK', { duration: 4000 });
+        });
   }
 
   updateFilter(event) {

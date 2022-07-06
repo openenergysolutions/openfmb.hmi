@@ -16,7 +16,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../../services/theme.service';
 import { LayoutService } from '../../../services/layout.service';
 import { filter } from 'rxjs/operators';
-import { JwtAuthService } from '../../../services/auth/jwt-auth.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -28,21 +27,17 @@ export class MainLayoutComponent implements OnInit, AfterViewInit {
   private layoutConfSub: Subscription;
   private routerEventSub: Subscription;
 
-  public  scrollConfig = {}
+  public scrollConfig = {}
   public layoutConf: any = {};
   public adminContainerClasses: any = {};
-  
+
   constructor(
     private router: Router,
     public translate: TranslateService,
     public themeService: ThemeService,
     private layout: LayoutService,
     private cdr: ChangeDetectorRef,
-    private jwtAuth: JwtAuthService
   ) {
-    // Check Auth Token is valid
-    this.jwtAuth.checkTokenIsValid().subscribe();
-
     // Close sidenav after route change in mobile
     this.routerEventSub = router.events.pipe(filter(event => event instanceof NavigationEnd))
     .subscribe((routeChange: NavigationEnd) => {
