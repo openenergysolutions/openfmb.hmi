@@ -77,7 +77,26 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     NgxSpinnerModule,
     NgxDatatableModule,
     HttpClientModule,
-    AuthModule,        
+    AuthModule.forRoot({
+      // Should these be in the environment?
+      domain: 'oes-dev.us.auth0.com',
+      clientId: 'Aex63pqZXhdvOuHbS1x3nwHk1TKc7i3L',
+      // Request this audience at user authentication time
+      audience: 'openfmb-hmi',
+      redirectUri: window.location.origin,
+      httpInterceptor: {
+        allowedList: [
+          {
+            uri: environment.apiUrl + '*',
+            tokenOptions: {
+              // detailedResponse: true,
+              audience: 'openfmb-hmi',
+              scope: 'openid profile email offline_access',
+            }
+          }
+        ]
+      }
+    }),
     WebSocketModule.config({
       url: environment.ws
     })
