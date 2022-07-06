@@ -2,24 +2,26 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-export const Authorization = {
-  authRoles: {    
-    admin: 'Admin',
-    engineer: 'Engineer',
-    viewer: 'viewer'
-  },
-  canEditDiagram: (role: string) => {
-    return role === Authorization.authRoles.admin || role === Authorization.authRoles.engineer;
-  },  
-  canUpdateSettings: (role: string) => {
-    return role === Authorization.authRoles.admin;
-  }
-}
+type authRole = 'SuperUser' | 'Engineer' | 'Viewer';
 
-export interface User {
-  id?: string;
-  displayname?: string;  
-  role?: string;
-  username?: string;
-  pwd?: string;
+const canX = (roles: Array<string>, authorizedRoles: Array<authRole>) => {
+  if (roles) {
+    return authorizedRoles.some(role => roles.includes(role));
+  } else {
+    return false;
+  }
+};
+
+export const Authorization = {
+  authRoles: {
+    admin: 'SuperUser' as authRole,
+    engineer: 'Engineer' as authRole,
+    viewer: 'Viewer' as authRole,
+  },
+  canEditDiagram: (roles: string[]) => {
+    return canX(roles, [Authorization.authRoles.admin, Authorization.authRoles.engineer]);
+  },
+  canUpdateSettings: (roles: Array<string>) => {
+    return canX(roles, [Authorization.authRoles.admin]);
+  }
 }
