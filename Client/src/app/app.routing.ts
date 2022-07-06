@@ -29,9 +29,9 @@ export const rootRouterConfig: Routes = [
     path: '',
     component: MainLayoutComponent,
     canActivate: [AuthGuard, UserRoleGuard],
-    data: 
-    { 
-      roles: ['Viewer', 'Engineer', 'Admin' ]
+    data:
+    {
+      roles: ['Viewer', 'Engineer', 'SuperUser']
     },
     children: [
       {
@@ -43,9 +43,9 @@ export const rootRouterConfig: Routes = [
   {
     path: '',
     canActivate: [AuthGuard, UserRoleGuard],
-    data: 
-    { 
-      roles: ['Viewer', 'Engineer', 'Admin' ]
+    data:
+    {
+      roles: ['Viewer', 'Engineer', 'SuperUser']
     },
     children: [
       {
@@ -57,9 +57,9 @@ export const rootRouterConfig: Routes = [
   {
     path: '',
     canActivate: [AuthGuard, UserRoleGuard],
-    data: 
-    { 
-      roles: ['Viewer', 'Engineer', 'Admin' ]
+    data:
+    {
+      roles: ['Viewer', 'Engineer', 'SuperUser']
     },
     children: [
       {
@@ -72,9 +72,9 @@ export const rootRouterConfig: Routes = [
     path: '',
     component: MainLayoutComponent,
     canActivate: [AuthGuard, UserRoleGuard],
-    data: 
-    { 
-      roles: ['Viewer', 'Engineer', 'Admin' ]
+    data:
+    {
+      roles: ['Viewer', 'Engineer', 'SuperUser']
     },
     children: [
       {
@@ -87,10 +87,10 @@ export const rootRouterConfig: Routes = [
     path: '',
     component: MainLayoutComponent,
     canActivate: [AuthGuard, UserRoleGuard],
-    data: 
-    { 
-      roles: ['Engineer', 'Admin' ]
-    },    
+    data:
+    {
+      roles: ['Engineer', 'SuperUser']
+    },
     children: [
       {
         path: '',
@@ -102,10 +102,10 @@ export const rootRouterConfig: Routes = [
     path: '',
     canActivate: [AuthGuard, UserRoleGuard],
     component: MainLayoutComponent,
-    data: 
-    { 
-      roles: [ 'Admin' ]
-    }, 
+    data:
+    {
+      roles: ['SuperUser']
+    },
     children: [
       {
         path: 'settings',
@@ -116,10 +116,10 @@ export const rootRouterConfig: Routes = [
   {
     path: '',
     canActivate: [AuthGuard, UserRoleGuard],
-    data: 
-    { 
-      roles: ['Engineer', 'Admin' ]
-    },       
+    data:
+    {
+      roles: ['Engineer', 'SuperUser']
+    },
     children: [
       {
         path: '',
