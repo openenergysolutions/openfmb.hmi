@@ -18,7 +18,6 @@ import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { ErrorHandlerService } from './shared/services/error-handler.service';
-import { TokenInterceptor } from './shared/interceptors/token.interceptor';
 
 import { StoreModule } from '@ngrx/store';
 import { reducers, metaReducers } from './store/reducers';
@@ -33,6 +32,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { AuthModule } from '@auth0/auth0-angular';
 import { ErrorInterceptor } from './core/helpers/error-interceptor';
 import { LoadingInterceptor } from './core/helpers/loading-interceptor';
+import { AuthHttpInterceptor } from '@auth0/auth0-angular';
 import { DesignerEffects } from './store/effects/designer.effects';
 import { WebSocketModule } from './web-socket/web-socket.module';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
@@ -60,7 +60,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         useFactory: HttpLoaderFactory,
         deps: [HttpClient]
       }
-    }),    
+    }),
     RouterModule.forRoot(rootRouterConfig, { useHash: false, relativeLinkResolution: 'legacy' }),
     StoreModule.forRoot(reducers, {
       metaReducers,
@@ -103,15 +103,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   ],
   declarations: [AppComponent],
   providers: [
-    { provide: ErrorHandler, useClass: ErrorHandlerService },    
+    { provide: ErrorHandler, useClass: ErrorHandlerService },
     { provide: PERFECT_SCROLLBAR_CONFIG, useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG },
-    
-    // REQUIRED IF YOU USE JWT AUTHENTICATION
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: TokenInterceptor,
-      multi: true,
-    },    
     {
       provide: HTTP_INTERCEPTORS,
       useClass: ErrorInterceptor,
@@ -122,10 +115,15 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
       useClass: LoadingInterceptor,
       multi: true
     },
-    { 
-      provide: Window, 
-      useValue: window 
-    }    
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthHttpInterceptor,
+      multi: true
+    },
+    {
+      provide: Window,
+      useValue: window
+    }
   ],
   bootstrap: [AppComponent]
 })
