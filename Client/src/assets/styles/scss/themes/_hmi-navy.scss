@@ -41,9 +41,9 @@ $primary-dark: darken(map-get($mat-primary, 500), 8%);
   .list-item-active {
     border-color: map-get($mat-primary, 500) !important;
   }
-  .sidebar-panel {
+  // .sidebar-panel {
     
-  }
+  // }
   .sidebar-compact ul.submenu,
   .default-bg {
     background: #ffffff !important;

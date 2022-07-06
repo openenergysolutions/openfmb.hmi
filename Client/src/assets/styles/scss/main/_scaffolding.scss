@@ -13,6 +13,7 @@ body {
   // min-height: 100%;
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
   text-size-adjust: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -534,10 +535,14 @@ body .mat-select-trigger {
     top: 0;
     left: 0;
     -webkit-animation: sk-bounce 2.0s infinite ease-in-out;
+    -moz-animation: sk-bounce 2.0s infinite ease-in-out;
+    -o-animation: sk-bounce 2.0s infinite ease-in-out;
     animation: sk-bounce 2.0s infinite ease-in-out;
 }
 .double-bounce2 {
     -webkit-animation-delay: -1.0s;
+    -moz-animation-delay: -1.0s;
+    -o-animation-delay: -1.0s;
     animation-delay: -1.0s;
 }
 .view-loader {
@@ -552,6 +557,14 @@ body .mat-select-trigger {
 @-webkit-keyframes sk-bounce {
     0%, 100% { -webkit-transform: scale(0.0) }
     50% { -webkit-transform: scale(1.0) }
+}
+@-moz-keyframes sk-bounce {
+    0%, 100% { -moz-transform: scale(0.0) }
+    50% { -moz-transform: scale(1.0) }
+}
+@-o-keyframes sk-bounce {
+    0%, 100% { -o-transform: scale(0.0) }
+    50% { -o-transform: scale(1.0) }
 }
 @keyframes sk-bounce {
     0%, 100% { 

@@ -14,6 +14,9 @@ hmi-sidebar {
   float: left;
   left: 0;
   -webkit-transform: translateX(-100%);
+  -ms-transform: translateX(-100%);
+  -moz-transform: translateX(-100%);
+  -o-transform: translateX(-100%);
   transform: translateX(-100%);
 
   transition-property: transform, width, min-width, max-width, -webkit-transform;
@@ -23,10 +26,16 @@ hmi-sidebar {
   &.sidebar-locked-open {
     position: relative !important;
     -webkit-transform: translateX(0) !important;
+    -ms-transform: translateX(0) !important;
+    -moz-transform: translateX(0) !important;
+    -o-transform: translateX(0) !important;
     transform: translateX(0) !important;
   }
   &.open {
     -webkit-transform: translateX(0) !important;
+    -ms-transform: translateX(0) !important;
+    -moz-transform: translateX(0) !important;
+    -o-transform: translateX(0) !important;
     transform: translateX(0) !important;
   }
   &.position-right {
@@ -34,6 +43,9 @@ hmi-sidebar {
     right: 0 !important;
     float: right;
     -webkit-transform: translateX(100%);
+    -ms-transform: translateX(100%);
+    -moz-transform: translateX(100%);
+    -o-transform: translateX(100%);
     transform: translateX(100%);
   }
 }

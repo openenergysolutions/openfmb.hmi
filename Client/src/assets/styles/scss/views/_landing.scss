@@ -65,6 +65,14 @@
   0% { top: -60px }
   100% { top: 0px }
 }
+@-moz-keyframes slideDown {
+  0% { top: -60px }
+  100% { top: 0px }
+}
+@-o-keyframes slideDown {
+  0% { top: -60px }
+  100% { top: 0px }
+}
 @keyframes slideDown {
   0% { top: -60px }
   100% { top: 0px }
@@ -174,7 +182,9 @@
   li.active {
     box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
     -webkit-transform: scale(1.7);
+    -ms-transform: scale(1.7);
+    -moz-transform: scale(1.7);
+    -o-transform: scale(1.7);
     transform: scale(1.7);
   }
 } 
-
