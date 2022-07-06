@@ -1,39 +1,47 @@
 <div class="sidebar-panel">
-    <div id="scroll-area" [perfectScrollbar] class="navigation-hold" fxLayout="column">
-        <div class="sidebar-hold">
+  <div id="scroll-area" [perfectScrollbar] class="navigation-hold" fxLayout="column">
+    <div class="sidebar-hold">
 
-            <!-- App Logo -->
-            <div class="branding">
-                <img src="assets/images/logo.png" alt="" class="app-logo">
-                <span class="app-logo-text"><a [routerLink]="['/']">HMI</a></span>
+      <!-- App Logo -->
+      <div class="branding">
+        <a [routerLink]="['/']">
+          <img src="assets/images/logo.png" alt="" class="app-logo">
+        </a>
+        <a [routerLink]="['/']">
+          <span class="app-logo-text">
+            HMI
+          </span>
+        </a>
 
-                <span style="margin: auto" *ngIf="layoutConf.sidebarStyle !== 'compact'"></span>
-                <div class="sidebar-compact-switch" [ngClass]="{active: layoutConf.sidebarCompactToggle}"
-                    (click)="toggleCollapse()" *ngIf="layoutConf.sidebarStyle !== 'compact'"><span></span></div>
-            </div>
+        <span style="margin: auto" *ngIf="layoutConf.sidebarStyle !== 'compact'"></span>
+        <div class="sidebar-compact-switch" [ngClass]="{active: layoutConf.sidebarCompactToggle}"
+          (click)="toggleCollapse()" *ngIf="layoutConf.sidebarStyle !== 'compact'"><span></span></div>
+      </div>
 
-            <!-- Navigation -->
-            <app-sidenav [items]="menuItems" [hasIconMenu]="hasIconTypeMenuItem" [iconMenuTitle]="iconTypeMenuTitle">
-            </app-sidenav>
+      <!-- Navigation -->
+      <app-sidenav [items]="menuItems" [hasIconMenu]="hasIconTypeMenuItem" [iconMenuTitle]="iconTypeMenuTitle">
+      </app-sidenav>
 
-            <!-- Sidebar user -->
-            <div class="app-user">
-                <span class="app-user-name mb-05">
-                    <button class="text-muted" mat-icon-button mat-xs-button [matMenuTriggerFor]="appUserMenu">
-                        <mat-icon>lock</mat-icon>
-                    </button>                    
-                    {{userDisplayName}}
-                </span>
-                <!-- Small buttons -->
-                <div class="app-user-controls">                    
-                    <mat-menu #appUserMenu="matMenu">                        
-                        <button mat-menu-item (click)="jwtAuth.signout()">
-                            <mat-icon>exit_to_app</mat-icon>
-                            <span>Sign out</span>
-                        </button>
-                    </mat-menu>
-                </div>
-            </div>
+      <!-- Sidebar user -->
+      <div class="app-user">
+        <span class="app-user-name mb-05">
+          <button class="text-muted" mat-icon-button mat-xs-button [matMenuTriggerFor]="appUserMenu">
+            <mat-icon>lock</mat-icon>
+            <span *ngIf="auth.user$ | async as user">
+              {{ user.nickname }}
+            </span>
+          </button>
+        </span>
+        <!-- Small buttons -->
+        <div class="app-user-controls">
+          <mat-menu #appUserMenu="matMenu">
+            <button mat-menu-item (click)="logout()">
+              <mat-icon>exit_to_app</mat-icon>
+              <span>Sign out</span>
+            </button>
+          </mat-menu>
         </div>
+      </div>
     </div>
+  </div>
 </div>

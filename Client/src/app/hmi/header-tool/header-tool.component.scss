@@ -6,19 +6,28 @@
     text-decoration: none;
     font-size: 12px;
   }
-  .logo {    
-    min-width: 36px;
-    width: 36px;
-    height: 36px;    
-    overflow: hidden;    
-    white-space: pre-wrap;    
-  }
-  .logo-branding {  
-    padding-left: 8px;     
+  .header-branding {
+    display: flex;
+    align-items: center;
+    position: fixed;
+    padding: 0 16px;
+    height: 64px;
+    line-height: 64px;
+    top: 0;
+    left: 0;
+    z-index: 999;
     overflow: hidden;
-    white-space: pre-wrap; 
-    width: auto;    
-    line-height: 64px;     
+    .logo {
+      width: auto;
+      height: 36px;
+      margin-right: 8px;
+      padding-top: 19px;
+    }
+    .logo-text {
+      width: auto;
+      font-size: 20px;
+      font-weight: 400;
+    }
   }
   .mode-button {
     margin-left: 10px;
