@@ -74,13 +74,13 @@ export class DiagramsComponent implements OnInit, OnDestroy {
     var columns = Object.keys(this.temp[0]);
     // Removes last "$$index" from "column"
     columns.splice(columns.length - 1);
-    
+
     if (!columns.length)
       return;
 
-    const rows = this.temp.filter(function(d) {
+    const rows = this.temp.filter(function (d) {
       for (let i = 0; i <= columns.length; i++) {
-        let column = columns[i];       
+        let column = columns[i];
         if (d[column] && d[column].toString().toLowerCase().indexOf(val) > -1) {
           return true;
         }
@@ -90,18 +90,18 @@ export class DiagramsComponent implements OnInit, OnDestroy {
     this.rows = rows;
   }
 
-  open(id: string) {         
+  open(id: string) {
     this.router.navigateByUrl('/designer?id=' + id);
   }
 
   run(id: string) {
-    console.log("run diagram: " + id); 
+    console.log("run diagram: " + id);
     this.router.navigateByUrl('/hmi?id=' + id);
   }
 
   export(id: string) {
     this.service.get(id).subscribe(
-      data => {               
+      data => {
         try {
           const blob = new Blob([JSON.stringify(data)], { type: 'text/json;charset=utf-8' });
           const url = window.URL;
@@ -120,20 +120,20 @@ export class DiagramsComponent implements OnInit, OnDestroy {
         console.error(error);
         this.snack.open(error, 'OK', { duration: 4000 });
       }
-    ); 
+    );
   }
 
   delete(row: any) {
     console.log("delete diagram: " + row.diagramId);
 
-    if(confirm("Are you sure to delete diagram name "+row.name)) {           
+    if (confirm("Are you sure to delete diagram name " + row.name)) {
       this.service.delete(row.diagramId)
-          .subscribe(data => {                              
-            this.snack.open('Diagram deleted!', 'OK', { duration: 4000 })
-          }, error => {
-            console.error(error);
-            this.snack.open(error, 'OK', { duration: 4000 });
-          });
+        .subscribe(data => {
+          this.snack.open('Diagram deleted!', 'OK', { duration: 4000 })
+        }, error => {
+          console.error(error);
+          this.snack.open(error, 'OK', { duration: 4000 });
+        });
 
       this.getData();
     }
@@ -153,10 +153,10 @@ export class DiagramsComponent implements OnInit, OnDestroy {
     })
     dialogRef.afterClosed()
       .subscribe(res => {
-        if(!res) {
+        if (!res) {
           // If user press cancel
           return;
-        }        
+        }
 
         const diagram: Diagram = {
           diagramId: res.diagramId ? res.diagramId : uuidv4(),
@@ -166,15 +166,15 @@ export class DiagramsComponent implements OnInit, OnDestroy {
           backgroundColor: res.backgroundColor && res.backgroundColor.hex ? '#' + res.backgroundColor.hex : '',
           data: data.data || '', // graph data
           createdBy: res.createdBy || '',
-          createdDate: res.createdDate? res.createdDate : new Date().toLocaleDateString()
+          createdDate: res.createdDate ? res.createdDate : new Date().toLocaleDateString()
         }
         console.log(diagram);
         this.loader.open();
         try {
           if (isNew) {
             this.service.create(diagram)
-              .subscribe(data => {                              
-                this.snack.open('Diagram Added!', 'OK', { duration: 4000 });                
+              .subscribe(data => {
+                this.snack.open('Diagram Added!', 'OK', { duration: 4000 });
                 this.getData();
               }, error => {
                 console.error(error);
@@ -182,7 +182,7 @@ export class DiagramsComponent implements OnInit, OnDestroy {
               });
           } else {
             this.service.update(diagram)
-              .subscribe(data => {                              
+              .subscribe(data => {
                 this.snack.open('Diagram Updated!', 'OK', { duration: 4000 })
                 this.getData();
               }, error => {

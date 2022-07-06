@@ -24,8 +24,8 @@ export class AppComponent implements OnInit, AfterViewInit {
   pageTitle = '';
 
   constructor(
-    public title: Title, 
-    private router: Router, 
+    public title: Title,
+    private router: Router,
     private activeRoute: ActivatedRoute,
     private routePartsService: RoutePartsService,
     private store: Store<fromRoot.State>
@@ -46,12 +46,11 @@ export class AppComponent implements OnInit, AfterViewInit {
         return this.title.setTitle(this.appTitle);
       // Extract title from parts;
       this.pageTitle = routeParts
-                      .reverse()
-                      .map((part) => part.title )
-                      .reduce((partA, partI) => {return `${partA} > ${partI}`});
+        .reverse()
+        .map((part) => part.title)
+        .reduce((partA, partI) => { return `${partA} > ${partI}` });
       this.pageTitle += ` | ${this.appTitle}`;
       this.title.setTitle(this.pageTitle);
     });
   }
-  
 }

@@ -14,10 +14,10 @@ import { MatTableDataSource } from '@angular/material/table';
   templateUrl: './inspector-dialog.component.html',
   styleUrls: ['./inspector-dialog.component.scss']
 })
-export class InspectorDialogComponent implements OnInit {       
+export class InspectorDialogComponent implements OnInit {
   mrid: string;
   sessionId: string;
-  
+
   displayedColumns: string[] = [];
   dataSource: any;
   dataSources: Map<string, any> = new Map<string, any>();
@@ -28,20 +28,20 @@ export class InspectorDialogComponent implements OnInit {
     private snack: MatSnackBar,
   ) {
     this.router.queryParams.subscribe(params => {
-      this.mrid = params['mrid'];      
+      this.mrid = params['mrid'];
     });
-  }  
+  }
 
-  ngOnInit() {  
+  ngOnInit() {
     this.displayedColumns = ['path', 'value'];
-    this.dataSource = new MatTableDataSource([]);               
-  }  
+    this.dataSource = new MatTableDataSource([]);
+  }
 
-  ngAfterViewInit() {       
-    if (this.mrid) {  
-      this.sessionId = uuidv4();    
-      this.connect(this.sessionId);          
-    }      
+  ngAfterViewInit() {
+    if (this.mrid) {
+      this.sessionId = uuidv4();
+      this.connect(this.sessionId);
+    }
   }
 
   connect(sessionId: string) {
@@ -49,18 +49,18 @@ export class InspectorDialogComponent implements OnInit {
     this.wsService.wsConnection$
       .subscribe(
         (msg) => {
-          if (msg) {            
+          if (msg) {
             this.register();
           }
           else {
-            this.snack.open('Connection to server has lost.', 'OK', { duration: 4000 });                                   
+            this.snack.open('Connection to server has lost.', 'OK', { duration: 4000 });
           }
         },
         (error) => {
           console.log(error);
         }
       );
-    this.wsService.wsMessages$ 
+    this.wsService.wsMessages$
       .subscribe(
         (message) => {
           this.onReceivedMessage(message);
@@ -71,7 +71,7 @@ export class InspectorDialogComponent implements OnInit {
       );
   }
 
-  register() {            
+  register() {
     var request = {
       session_id: this.sessionId,
       topics: [
@@ -80,12 +80,11 @@ export class InspectorDialogComponent implements OnInit {
           mrid: this.mrid,
         }
       ]
-    };    
+    };
     this.wsService.sendWsData(request);
   }
 
-  onReceivedMessage(message: any)
-  {    
+  onReceivedMessage(message: any) {
     if (message.updates.length > 0) {
       let profile = message.updates[0].profile;
       let ds = this.dataSources.get(profile);

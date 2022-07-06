@@ -109,7 +109,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     private diagramService: DiagramsService,
   ) {
     this.router.queryParams.subscribe(params => {
-      this.diagramId = params['id'];      
+      this.diagramId = params['id'];
     });
   }
 
@@ -117,7 +117,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    
+
     // initialize graph.
     this.graphInit();
 
@@ -132,18 +132,18 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // load graph
     if (this.diagramId) {
-      this.loadGraphFromServer(this.diagramId); 
+      this.loadGraphFromServer(this.diagramId);
     }
 
-    this.sessionId = uuidv4();    
+    this.sessionId = uuidv4();
 
     this.connect(this.sessionId);
   }
 
   // init graph.
-  private graphInit() {    
+  private graphInit() {
     mxEvent.disableContextMenu(this.graphContainer.nativeElement);
-    mxConstraintHandler.prototype.pointImage = new mxImage('../../assets/images/dot.gif', 10, 10);        
+    mxConstraintHandler.prototype.pointImage = new mxImage('../../assets/images/dot.gif', 10, 10);
     this.graph = new mxGraph(this.graphContainer.nativeElement);
     this.graph.setPortsEnabled(false);
     this.graph.graphHandler.scaleGrid = true;
@@ -152,8 +152,8 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     this.graph.setAllowDanglingEdges(false);
     this.graph.isHtmlLabel = (cell) => {
       return !this.graph.isSwimlane(cell);
-    }; 
-    
+    };
+
     this.dialog.closeAll();
     this.graph.setPanning(false);
     this.graph.setConnectable(false);
@@ -169,29 +169,29 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
         return;
       }
 
-      const currentCellData = this.graph.model.getValue(cell).userObject;    
+      const currentCellData = this.graph.model.getValue(cell).userObject;
       if (
         this.graph.isEnabled() &&
         !mxEvent.isConsumed(evt) &&
         cell != null &&
         this.graph.isCellEditable(cell)
-      ) { 
-        
-        const centerX = window.innerWidth / 2; 
-        const centerY = window.innerHeight / 2;          
+      ) {
+
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
         const x = evt.offsetX;
         const y = evt.offsetY;
-        
-        if (Hmi.isSwitchgear(currentCellData.type)) {                             
+
+        if (Hmi.isSwitchgear(currentCellData.type)) {
           this.openSwitchgearDialog(x < centerX ? x + cell.getGeometry().width + 250 : x, y - 100 > centerY ? centerY : y, cell);
         }
         else if (Hmi.isVoltageRegulator(currentCellData.type)) {
           this.openVoltageRegulatorDialog(x < centerX ? x + cell.getGeometry().width + 250 : x, y - 100 > centerY ? centerY : y, cell);
         }
-        else if (currentCellData.type === Symbol.measureBox || (evt.target as HTMLElement).tagName === 'image' || (evt.target as HTMLElement).tagName === 'path') {                   
-          this.openDialog(x < centerX ? x + cell.getGeometry().width + 250 : x, y - 100 > centerY ? centerY : y, cell);                    
-        }        
-        else if (currentCellData.type === Symbol.setPointButton) {          
+        else if (currentCellData.type === Symbol.measureBox || (evt.target as HTMLElement).tagName === 'image' || (evt.target as HTMLElement).tagName === 'path') {
+          this.openDialog(x < centerX ? x + cell.getGeometry().width + 250 : x, y - 100 > centerY ? centerY : y, cell);
+        }
+        else if (currentCellData.type === Symbol.setPointButton) {
           this.openControlDialog(x < centerX ? x + cell.getGeometry().width + 250 : x, y - 100 > centerY ? centerY : y, cell);
         }
         else if (currentCellData.type === Symbol.statusIndicator) {
@@ -204,8 +204,8 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
           else {
             this.openControlDialog(x < centerX ? x + cell.getGeometry().width + 250 : x, y - 100 > centerY ? centerY : y, cell);
           }
-        }        
-      } 
+        }
+      }
       else {
         this.graph.view.setTranslate(0, 0);
       }
@@ -220,9 +220,9 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
       mxEvent.consume(evt);
     });
 
-    this.graph.getModel().addListener(mxEvent.CHANGE, (evt: Event) => {     
+    this.graph.getModel().addListener(mxEvent.CHANGE, (evt: Event) => {
       // register with backend
-      this.register();          
+      this.register();
     });
 
     const rubberband = new mxRubberband(this.graph);
@@ -252,11 +252,11 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
 
       cellsMoved.apply(this.graph, [cells, dx, dy, isconnect, constrain, extend]);
     };
-   
+
     // sets label and data fields to grid item
-    this.graph.convertValueToString = (cell) => {      
+    this.graph.convertValueToString = (cell) => {
       const cellValue = this.graph.model.getValue(cell);
-      
+
       if (cellValue && cellValue.userObject) {
         const userObject = cellValue.userObject;
         const displayData = cellValue.userObject.displayData;
@@ -264,12 +264,12 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
         const visibilityData = cellValue.userObject.visibilityData;
         var visibilityMapping = null;
         if (visibilityData && Array.isArray(visibilityData) && visibilityData.length > 0) {
-          visibilityMapping = visibilityData[0];          
+          visibilityMapping = visibilityData[0];
         }
-        
+
         // Returns a DOM for the label
         const wrapper = this.renderer.createElement('div');
-        this.renderer.addClass(wrapper, 'component-label');        
+        this.renderer.addClass(wrapper, 'component-label');
         this.renderer.setAttribute(wrapper, 'cell-id', cell.id);
         this.renderer.setAttribute(wrapper, 'mrid', userObject.mRID);
 
@@ -289,31 +289,31 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         if (userObject.containerHeight) {
           style += 'height: ' + userObject.containerHeight + 'px;';
-        }        
-        
-        if (userObject.type === Symbol.measureBox) {          
+        }
+
+        if (userObject.type === Symbol.measureBox) {
           if (displayData) {
             const data = this.renderer.createElement('div');
-            this.renderer.addClass(data, 'display-data-container');            
+            this.renderer.addClass(data, 'display-data-container');
 
             if (style != '') {
               this.renderer.setAttribute(data, "style", style);
             }
-            
+
             const titleContainer = this.renderer.createElement('div');
             const titleText = this.renderer.createText(userObject.label ? userObject.label : userObject.deviceTypeMapping ? userObject.deviceTypeMapping : "");
             this.renderer.addClass(titleContainer, 'data-title');
             this.renderer.appendChild(titleContainer, titleText);
             this.renderer.appendChild(data, titleContainer);
-            
+
             displayData.forEach(elem => {
               const fieldItem = this.renderer.createElement('div');
               const fieldItemLabel = this.renderer.createElement('span');
               const fieldItemText = this.renderer.createElement('span');
               const fieldItemValue = this.renderer.createElement('span');
-              this.renderer.addClass(fieldItemValue, elem.value); 
+              this.renderer.addClass(fieldItemValue, elem.value);
               this.renderer.setAttribute(fieldItemValue, 'mrid', userObject.mRID);
-              this.renderer.setAttribute(fieldItemValue, 'path', elem.path);          
+              this.renderer.setAttribute(fieldItemValue, 'path', elem.path);
               const label = this.renderer.createText(elem.label);
               let text = '00';
               if (elem.label === 'State') {
@@ -334,7 +334,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
               this.renderer.appendChild(fieldItemValue, value);
               this.renderer.appendChild(fieldItemText, fieldItemValue);
               this.renderer.setAttribute(fieldItemValue, 'cell-id', cell.id);
-              if(elem.measurement) {
+              if (elem.measurement) {
                 const fieldItemMeasurement = this.renderer.createElement('span');
                 const measurementText = this.renderer.createText(' ' + elem.measurement);
                 this.renderer.appendChild(fieldItemMeasurement, measurementText);
@@ -347,25 +347,25 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
             this.renderer.appendChild(wrapper, data);
           }
           if (visibilityMapping) {
-            this.renderer.setAttribute(wrapper, 'visibility', visibilityMapping.path); 
-            this.renderer.setAttribute(wrapper, 'visibility-comparison', visibilityMapping.label); 
+            this.renderer.setAttribute(wrapper, 'visibility', visibilityMapping.path);
+            this.renderer.setAttribute(wrapper, 'visibility-comparison', visibilityMapping.label);
             this.renderer.setAttribute(wrapper, 'visibility-comparison-value', visibilityMapping.measurement);
-          }          
+          }
         }
-        else if (userObject.type === Symbol.label) {                  
+        else if (userObject.type === Symbol.label) {
           var style = '';
           if (userObject.fontSize) {
             style += 'font-size:' + userObject.fontSize + 'px;';
           }
           if (userObject.foreColor) {
             style += 'color: ' + userObject.foreColor + ';';
-          }          
+          }
 
           const span = this.renderer.createElement('span');
           this.renderer.setAttribute(span, 'mrid', userObject.mRID);
           if (visibilityMapping) {
-            this.renderer.setAttribute(span, 'visibility', visibilityMapping.path); 
-            this.renderer.setAttribute(span, 'visibility-comparison', visibilityMapping.label); 
+            this.renderer.setAttribute(span, 'visibility', visibilityMapping.path);
+            this.renderer.setAttribute(span, 'visibility-comparison', visibilityMapping.label);
             this.renderer.setAttribute(span, 'visibility-comparison-value', visibilityMapping.measurement);
           }
           this.renderer.addClass(span, 'label-text');
@@ -375,23 +375,23 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
             this.renderer.setAttribute(span, "default-style", style);
           }
           const labelText = this.renderer.createText(userObject.label);
-          this.renderer.appendChild(span, labelText);          
+          this.renderer.appendChild(span, labelText);
 
-          return span;       
+          return span;
         }
-        else if (userObject.type === Symbol.button || userObject.type === Symbol.setPointButton) {     
+        else if (userObject.type === Symbol.button || userObject.type === Symbol.setPointButton) {
           var style = '';
           if (userObject.fontSize) {
             style += 'font-size:' + userObject.fontSize + 'px;';
           }
           if (userObject.foreColor) {
             style += 'color: ' + userObject.foreColor + ';';
-          } 
-          
+          }
+
           style += ";vertical-align:top !important;";
 
           const span = this.renderer.createElement('span');
-          this.renderer.addClass(span, 'button-text');          
+          this.renderer.addClass(span, 'button-text');
           this.renderer.setAttribute(span, 'mrid', userObject.mRID);
           this.renderer.setAttribute(span, 'cell-id', cell.id);
 
@@ -408,38 +408,38 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
             }
             const labelText = this.renderer.createText(userObject.label);
             this.renderer.appendChild(span, labelText);
-  
+
             return span;
           }
           else {
-            if (displayData && displayData.length > 0) {              
+            if (displayData && displayData.length > 0) {
               // write mrid to the wraper            
               this.renderer.setAttribute(wrapper, 'svg-id', cell.id);
-              this.renderer.setAttribute(wrapper, 'mrid', userObject.mRID);                           
+              this.renderer.setAttribute(wrapper, 'mrid', userObject.mRID);
 
               displayData.forEach(elem => {
                 this.renderer.setAttribute(span, 'svg-id', cell.id);
                 this.renderer.setAttribute(span, 'mrid', userObject.mRID);
-                this.renderer.setAttribute(span, 'path', elem.path);                
+                this.renderer.setAttribute(span, 'path', elem.path);
                 this.renderer.setAttribute(span, 'obj-type', userObject.type);
-              });  
-              
+              });
+
               var state = this.graph.view.getState(cell, false);
               if (state) {
                 var node = state.shape.node;
                 var rect = node.getElementsByTagName("rect")[0];
-                rect.setAttribute('fill', '#e9e9e9');               
+                rect.setAttribute('fill', '#e9e9e9');
               }
-            } 
-            
+            }
+
             if (style != '') {
               this.renderer.setAttribute(span, "style", style);
             }
             const labelText = this.renderer.createText(userObject.label);
             this.renderer.appendChild(span, labelText);
-            
+
             return span;
-          }                    
+          }
         }
         else if (userObject.type === Symbol.statusIndicator) {
           var style = '';
@@ -448,24 +448,24 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
           }
           if (userObject.foreColor) {
             style += 'color: ' + userObject.foreColor + ';';
-          }                           
+          }
 
           const span = this.renderer.createElement('span');
           this.renderer.addClass(span, 'button-text');
           this.renderer.setAttribute(span, 'mrid', userObject.mRID);
           this.renderer.setAttribute(span, 'cell-id', cell.id);
-          
+
           if (displayData) {
             displayData.forEach(elem => {
               this.renderer.setAttribute(span, 'path', elem.path);
-              this.renderer.setAttribute(span, 'obj-type', userObject.type);              
+              this.renderer.setAttribute(span, 'obj-type', userObject.type);
             });
           }
-          
+
           if (style != '') {
             this.renderer.setAttribute(span, "style", style);
-          }     
-          
+          }
+
           // status 
           const img = this.renderer.createElement('img');
           this.renderer.setAttribute(img, 'src', 'assets/images/gray.svg');
@@ -481,13 +481,13 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
           this.renderer.appendChild(span, textSpan);
 
           if (visibilityMapping) {
-            this.renderer.setAttribute(span, 'visibility', visibilityMapping.path); 
-            this.renderer.setAttribute(span, 'visibility-comparison', visibilityMapping.label); 
+            this.renderer.setAttribute(span, 'visibility', visibilityMapping.path);
+            this.renderer.setAttribute(span, 'visibility-comparison', visibilityMapping.label);
             this.renderer.setAttribute(span, 'visibility-comparison-value', visibilityMapping.measurement);
           }
-          
+
           return span;
-        }        
+        }
         else {
           if (userObject.label) {
             const label = this.renderer.createElement('div');
@@ -502,8 +502,8 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
           if (displayData && displayData.length > 0) {
             // write mrid to the wraper            
             this.renderer.setAttribute(wrapper, 'svg-id', cell.id);
-            this.renderer.setAttribute(wrapper, 'mrid', userObject.mRID);            
-            
+            this.renderer.setAttribute(wrapper, 'mrid', userObject.mRID);
+
             displayData.forEach(elem => {
               const field = this.renderer.createElement('span');
               if (!firstSpan) {
@@ -511,12 +511,12 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
               }
               this.renderer.setAttribute(field, 'svg-id', cell.id);
               this.renderer.setAttribute(field, 'mrid', userObject.mRID);
-              this.renderer.setAttribute(field, 'path', elem.path); 
+              this.renderer.setAttribute(field, 'path', elem.path);
               this.renderer.setAttribute(field, 'obj-type', userObject.type);
               this.renderer.appendChild(wrapper, field);
-            });                        
-          } 
-          
+            });
+          }
+
           if (Hmi.isSwitchgear(userObject.type)) {
             var state = this.graph.view.getState(cell, false);
             if (state) {
@@ -527,7 +527,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
                 ref = image.getAttribute('xlink:href');
                 image.removeAttribute('xlink:href');
               }
-              const baseToolbarImagePath = '../../assets/images/toolbar/'; 
+              const baseToolbarImagePath = '../../assets/images/toolbar/';
               image.setAttribute("href", baseToolbarImagePath + userObject.type + '-invalid.svg');
             }
           }
@@ -541,16 +541,16 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
                 ref = image.getAttribute('xlink:href');
                 image.removeAttribute('xlink:href');
               }
-              const baseToolbarImagePath = '../../assets/images/toolbar/'; 
+              const baseToolbarImagePath = '../../assets/images/toolbar/';
               var val = userObject.arrowDirection.positive ? userObject.arrowDirection.positive : userObject.arrowDirection.negative;
               image.setAttribute("href", baseToolbarImagePath + userObject.type + '-' + val + '-grayed.svg');
 
               if (firstSpan && visibilityMapping) {
-                this.renderer.setAttribute(firstSpan, 'visibility', visibilityMapping.path); 
-                this.renderer.setAttribute(firstSpan, 'visibility-comparison', visibilityMapping.label); 
+                this.renderer.setAttribute(firstSpan, 'visibility', visibilityMapping.path);
+                this.renderer.setAttribute(firstSpan, 'visibility-comparison', visibilityMapping.label);
                 this.renderer.setAttribute(firstSpan, 'visibility-comparison-value', visibilityMapping.measurement);
               }
-            }            
+            }
           }
           else if (Hmi.isBattery(userObject.type)) {
             var state = this.graph.view.getState(cell, false);
@@ -562,7 +562,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
                 ref = image.getAttribute('xlink:href');
                 image.removeAttribute('xlink:href');
               }
-              const baseToolbarImagePath = '../../assets/images/toolbar/'; 
+              const baseToolbarImagePath = '../../assets/images/toolbar/';
               image.setAttribute("href", baseToolbarImagePath + userObject.type + '-0.svg');
             }
           }
@@ -576,16 +576,16 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
                 ref = image.getAttribute('xlink:href');
                 image.removeAttribute('xlink:href');
               }
-              const baseToolbarImagePath = '../../assets/images/toolbar/'; 
+              const baseToolbarImagePath = '../../assets/images/toolbar/';
               image.setAttribute("href", baseToolbarImagePath + userObject.type + '.svg');
             }
           }
-        }        
+        }
 
         return wrapper;
-      }      
+      }
       return '';
-    };    
+    };
 
     // This function trigger when cell label is changed.
     const cellLabelChanged = this.graph.cellLabelChanged;
@@ -657,11 +657,11 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     try {
       this.graph.getModel().beginUpdate();
       this.graph.getStylesheet().getDefaultEdgeStyle().edgeStyle = 'orthogonalEdgeStyle';
-      this.graph.getStylesheet().getDefaultEdgeStyle().endArrow = 'none';      
+      this.graph.getStylesheet().getDefaultEdgeStyle().endArrow = 'none';
     } finally {
       this.graph.getModel().endUpdate();
     }
-  }  
+  }
 
   private isMeasureBox(cell: mxgraph.mxCell) {
     if (cell.value != null && cell.value.userObject != null) {
@@ -669,8 +669,8 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
         return true;
       }
     }
-    return false; 
-  }  
+    return false;
+  }
 
   // change selection mode.
   private changeMode(mode: number) {
@@ -713,7 +713,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
   openDialog(x: number, y: number, cell: mxgraph.mxCell): void {
     const currentCellData = this.graph.model.getValue(cell).userObject;
     this.dialog.closeAll();
-    const filterData : DiagramData = {
+    const filterData: DiagramData = {
       top: y,
       left: x,
       diagramId: this.diagramId,
@@ -728,7 +728,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
       containerWidth: currentCellData.containerWidth,
       containerHeight: currentCellData.containerHeight,
       foreColor: currentCellData.foreColor,
-      backgroundColor: currentCellData.backgroundColor,      
+      backgroundColor: currentCellData.backgroundColor,
       deviceTypeMapping: currentCellData.deviceTypeMapping,
       lastUpdate: currentCellData.lastUpdate
     };
@@ -742,13 +742,13 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
-      if (result) {        
+      if (result) {
         // do nothing
       }
     });
-  }    
+  }
 
-  openSwitchgearDialog(x: number, y: number, cell: mxgraph.mxCell) : void {
+  openSwitchgearDialog(x: number, y: number, cell: mxgraph.mxCell): void {
     const currentCellData = this.graph.model.getValue(cell).userObject;
     this.dialog.closeAll();
     const filterData = {
@@ -768,13 +768,13 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
-      if (result && result.proceed) {                
+      if (result && result.proceed) {
         this.sendCommand(currentCellData, result.action);
       }
     });
-  } 
-  
-  openVoltageRegulatorDialog(x: number, y: number, cell: mxgraph.mxCell) : void {
+  }
+
+  openVoltageRegulatorDialog(x: number, y: number, cell: mxgraph.mxCell): void {
     const currentCellData = this.graph.model.getValue(cell).userObject;
     this.dialog.closeAll();
     const filterData = {
@@ -793,7 +793,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
-      if (result && result.proceed) {                
+      if (result && result.proceed) {
         this.sendTapChangerCommand(currentCellData, result.action, result.path);
       }
     });
@@ -805,7 +805,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     const filterData = {
       top: y,
       left: x,
-      diagramId: this.diagramId,      
+      diagramId: this.diagramId,
       diagramData: currentCellData
     };
     const dialogRef = this.dialog.open(ControlDialogComponent, {
@@ -818,13 +818,13 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
-      if (result && result.proceed) {                
+      if (result && result.proceed) {
         this.sendCommand(currentCellData, result.action, result.value);
       }
     });
   }
 
-  showLostConnection(): void {    
+  showLostConnection(): void {
     this.dialog.closeAll();
     const filterData = {
       title: "OpenFMB HMI",
@@ -866,7 +866,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
           console.log(error);
         }
       );
-    this.wsService.wsMessages$ 
+    this.wsService.wsMessages$
       .subscribe(
         (message) => {
           this.onReceivedMessage(message);
@@ -877,62 +877,61 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
       );
   }
 
-  onReceivedMessage(message: any)
-  {
+  onReceivedMessage(message: any) {
     const baseToolbarImagePath = '../../assets/images/toolbar/';
     const baseImagePath = '../../assets/images/';
-    const domElement = document.querySelectorAll('span[mrid]');    
+    const domElement = document.querySelectorAll('span[mrid]');
     const ts = Helpers.currentTimestamp();
 
     if (domElement.length > 0) {
-      for(let update of message.updates) {  
+      for (let update of message.updates) {
         // special coordinator flag
-        if (update.topic?.name === InternalTopic.isCoordinatorActive) {          
-          this.isCoordinatorActive = update.topic.value?.Bool;          
+        if (update.topic?.name === InternalTopic.isCoordinatorActive) {
+          this.isCoordinatorActive = update.topic.value?.Bool;
         }
-        if (update.topic?.name === InternalTopic.isCoordinatorCommOk) {          
+        if (update.topic?.name === InternalTopic.isCoordinatorCommOk) {
           this.isCoordinatorCommOk = update.topic.value?.Bool;
-          this.store.dispatch(hmiActions.commStatus({ status: !this.isCoordinatorCommOk ? CommunicationStatus.NOT_OK : CommunicationStatus.OK }));       
+          this.store.dispatch(hmiActions.commStatus({ status: !this.isCoordinatorCommOk ? CommunicationStatus.NOT_OK : CommunicationStatus.OK }));
         }
-        for(let i = 0; i < domElement.length; ++i) { 
+        for (let i = 0; i < domElement.length; ++i) {
           const svgId = domElement[i].getAttribute('svg-id');
-          const objType = domElement[i].getAttribute('obj-type');                             
-          if (update.topic?.mrid === domElement[i].getAttribute('mrid') && update.topic?.name === domElement[i].getAttribute('path')) {                                                        
+          const objType = domElement[i].getAttribute('obj-type');
+          if (update.topic?.mrid === domElement[i].getAttribute('mrid') && update.topic?.name === domElement[i].getAttribute('path')) {
             // check if there is 'svg-id' reference
             if (svgId) {  // actual symbol              
               try {
-                if (Hmi.isSwitchgear(objType)) {                  
+                if (Hmi.isSwitchgear(objType)) {
                   var cell = this.graph.getModel().getCell(svgId);
-                  if (cell) {                    
+                  if (cell) {
                     var diagramData = cell.value.userObject;
                     if (Hmi.isControllable(diagramData.type)) {
                       var state = this.graph.view.getState(cell, false);
-                      if (state) {                        
-                        var node = state.shape.node;                                            
-                        var image = node.getElementsByTagName("image")[0];                        
+                      if (state) {
+                        var node = state.shape.node;
+                        var image = node.getElementsByTagName("image")[0];
                         var ref = image.getAttribute('href');
                         if (!ref) {
                           ref = image.getAttribute('xlink:href');
                           image.removeAttribute('xlink:href');
                         }
 
-                        const val = Helpers.convertPos(update.topic.value?.Double);                        
+                        const val = Helpers.convertPos(update.topic.value?.Double);
                         cell.value.userObject.tag = val;
                         cell.value.userObject.lastUpdate = ts;
 
-                        image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '.svg');                                      
+                        image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '.svg');
                       }
                     }
                   }
-                }                
+                }
                 else if (Hmi.isBattery(objType)) {
                   var cell = this.graph.getModel().getCell(svgId);
                   if (cell) {
-                    var diagramData = cell.value.userObject;                    
+                    var diagramData = cell.value.userObject;
                     var state = this.graph.view.getState(cell, false);
                     if (state) {
-                      var node = state.shape.node;                                            
-                      var image = node.getElementsByTagName("image")[0];                        
+                      var node = state.shape.node;
+                      var image = node.getElementsByTagName("image")[0];
                       var ref = image.getAttribute('href');
                       if (!ref) {
                         ref = image.getAttribute('xlink:href');
@@ -942,35 +941,34 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
                       cell.value.userObject.tag = val;
                       cell.value.userObject.lastUpdate = ts;
 
-                      image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '.svg');                                      
-                    }                    
+                      image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '.svg');
+                    }
                   }
                 }
                 else if (Hmi.isPowerFlow(objType)) {
                   var cell = this.graph.getModel().getCell(svgId);
                   if (cell) {
-                    var diagramData = cell.value.userObject;                    
+                    var diagramData = cell.value.userObject;
                     var state = this.graph.view.getState(cell, false);
                     if (state) {
-                      var node = state.shape.node;                                            
-                      var image = node.getElementsByTagName("image")[0];                        
+                      var node = state.shape.node;
+                      var image = node.getElementsByTagName("image")[0];
                       var ref = image.getAttribute('href');
                       if (!ref) {
                         ref = image.getAttribute('xlink:href');
                         image.removeAttribute('xlink:href');
                       }
-                      
-                      var val = ''; 
-                      var scaledValue = this.scaleValue(diagramData.displayData, update.topic.name, parseFloat(update.topic.value?.Double));                     
+
+                      var val = '';
+                      var scaledValue = this.scaleValue(diagramData.displayData, update.topic.name, parseFloat(update.topic.value?.Double));
                       if (cell.value.userObject.arrowDirection) {
-                        if (scaledValue[0] > 0.0)
-                        {
+                        if (scaledValue[0] > 0.0) {
                           val = cell.value.userObject.arrowDirection.positive;
                           var c = cell.value.userObject.arrowDirection.positiveColor;
                           if (!c) {
                             c = 'red';
                           }
-                          image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '-' + c + '.svg'); 
+                          image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '-' + c + '.svg');
                         }
                         else if (scaledValue[0] < 0.0) {
                           val = cell.value.userObject.arrowDirection.negative;
@@ -978,15 +976,15 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
                           if (!c) {
                             c = 'red';
                           }
-                          image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '-' + c + '.svg'); 
-                        }                                                
+                          image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '-' + c + '.svg');
+                        }
                         else {
                           val = cell.value.userObject.arrowDirection.neutral;
                           if (val && val != '') {
-                            image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '-grayed.svg'); 
+                            image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '-grayed.svg');
                           }
                           else {
-                            image.setAttribute("href", baseToolbarImagePath + 'flow-empty.svg'); 
+                            image.setAttribute("href", baseToolbarImagePath + 'flow-empty.svg');
                           }
                         }
                       }
@@ -997,19 +995,19 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
                           image.setAttribute("href", baseToolbarImagePath + 'flow-empty.svg');
                         }
                       }
-                      
-                      cell.value.userObject.lastUpdate = ts;                                                                                
-                    }                    
+
+                      cell.value.userObject.lastUpdate = ts;
+                    }
                   }
-                } 
+                }
                 else if (Hmi.isWeather(objType)) {
                   var cell = this.graph.getModel().getCell(svgId);
                   if (cell) {
-                    var diagramData = cell.value.userObject;                    
+                    var diagramData = cell.value.userObject;
                     var state = this.graph.view.getState(cell, false);
                     if (state) {
-                      var node = state.shape.node;                                            
-                      var image = node.getElementsByTagName("image")[0];                        
+                      var node = state.shape.node;
+                      var image = node.getElementsByTagName("image")[0];
                       var ref = image.getAttribute('href');
                       if (!ref) {
                         ref = image.getAttribute('xlink:href');
@@ -1019,14 +1017,14 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
                       cell.value.userObject.tag = val;
                       cell.value.userObject.lastUpdate = ts;
 
-                      image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '.svg');                                      
-                    }                    
+                      image.setAttribute("href", baseToolbarImagePath + objType + '-' + val + '.svg');
+                    }
                   }
                 }
                 else if (Symbol.button === objType) {
                   var cell = this.graph.getModel().getCell(svgId);
-                  if (cell) {                    
-                    var diagramData = cell.value.userObject;                    
+                  if (cell) {
+                    var diagramData = cell.value.userObject;
                     var state = this.graph.view.getState(cell, false);
                     if (state) {
                       const val = Helpers.convertPos(update.topic.value?.Double);
@@ -1042,10 +1040,10 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
                         color = '#045426';
                         domElement[i].innerHTML = "Islanded";
                       }
-                      rect.setAttribute('fill', color);                        
-                    }                                          
+                      rect.setAttribute('fill', color);
+                    }
                   }
-                }               
+                }
               }
               catch (e) {
                 console.error(e);
@@ -1062,7 +1060,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
                   var text = null;
                   if (diagramData && diagramData.statusDefinition) {
                     cell.value.userObject.tag = update.topic.value.Double;
-                    for(var j = 0; j < diagramData.statusDefinition.length; ++j) {                       
+                    for (var j = 0; j < diagramData.statusDefinition.length; ++j) {
                       if (diagramData.statusDefinition[j].value == update.topic.value.Double) {
                         color = diagramData.statusDefinition[j].color;
                         text = diagramData.statusDefinition[j].text;
@@ -1087,7 +1085,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
                     span.innerHTML = span.getAttribute('default-text');
                   }
                 }
-              }              
+              }
               else {
                 // This is measurement box
                 const cellId = domElement[i].getAttribute('cell-id');
@@ -1096,21 +1094,21 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
                   cell.value.userObject.lastUpdate = ts;
 
                   // This is measurement box
-                  domElement[i].textContent = this.setDataFieldValue(domElement[i], cell.value.userObject, update.topic);                  
+                  domElement[i].textContent = this.setDataFieldValue(domElement[i], cell.value.userObject, update.topic);
                 }
               }
             }
           }
-          else if (update.topic?.mrid === domElement[i].getAttribute('mrid') && update.topic?.name === domElement[i].getAttribute('visibility')) {  
+          else if (update.topic?.mrid === domElement[i].getAttribute('mrid') && update.topic?.name === domElement[i].getAttribute('visibility')) {
             try {
               if (svgId) {
                 if (Hmi.isPowerFlow(objType)) {
                   var cell = this.graph.getModel().getCell(svgId);
-                  if (cell) {   
-                    cell.value.userObject.visible = this.getVisibility(update, domElement[i]);                      
+                  if (cell) {
+                    cell.value.userObject.visible = this.getVisibility(update, domElement[i]);
                   }
-                }                              
-              }                            
+                }
+              }
             }
             catch (e) {
               console.error(e);
@@ -1121,36 +1119,36 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     const divs = document.querySelectorAll('[visibility]');
     // this is for visibility
-    if (divs.length > 0) {      
-      for(let update of message.updates) {        
-        for(let i = 0; i < divs.length; ++i) {                    
-          if (update.topic?.name === divs[i].getAttribute('visibility')) {         
+    if (divs.length > 0) {
+      for (let update of message.updates) {
+        for (let i = 0; i < divs.length; ++i) {
+          if (update.topic?.name === divs[i].getAttribute('visibility')) {
             var styles = divs[i].getAttribute('default-style');
             if (!styles) {
               styles = '';
             }
-            var visible: boolean = this.getVisibility(update, divs[i]);            
+            var visible: boolean = this.getVisibility(update, divs[i]);
             divs[i].setAttribute("style", visible ? "display:block;" + styles : "display:none;" + styles);
           }
         }
-      }      
-    }     
-  } 
-  
+      }
+    }
+  }
+
   getVisibility(update: any, element: Element) {
     var visible: boolean = true;
     const comparison = element.getAttribute('visibility-comparison');
 
-    if (comparison == "equals") {             
-      visible = parseFloat(update.topic.value?.Double.toString()) == parseFloat(element.getAttribute('visibility-comparison-value')); 
-    } 
-    else if (comparison == "not-equals") {      
-      visible = parseFloat(update.topic.value?.Double.toString()) != parseFloat(element.getAttribute('visibility-comparison-value'));                    
-    }     
+    if (comparison == "equals") {
+      visible = parseFloat(update.topic.value?.Double.toString()) == parseFloat(element.getAttribute('visibility-comparison-value'));
+    }
+    else if (comparison == "not-equals") {
+      visible = parseFloat(update.topic.value?.Double.toString()) != parseFloat(element.getAttribute('visibility-comparison-value'));
+    }
     return visible;
   }
 
-  sendWsData(data: any) {    
+  sendWsData(data: any) {
     this.wsService.sendWsData(data);
   }
 
@@ -1159,35 +1157,11 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
       this.snack.open('Unable to send command.  No data is mapped for this control.', 'OK', { duration: 2000 });
     }
     else {
-      const t : Topic = {
+      const t: Topic = {
         name: path,
         mrid: userObject.mRID,
-        action: action,   
-        args: value,     
-      };
-
-      const data: UpdateData = {
-        topic: t
-      };
-
-      this.diagramService.updateData( data)
-        .subscribe(data => {                              
-          // success
-        }, error => {
-          console.error(error);
-          this.snack.open(error, 'OK', { duration: 4000 });
-      });
-    }
-  }
-
-  sendCommand(userObject: DiagramData, action: string, value?: any) {
-    console.log("Sending command with action " + action + " with value: " + value);         
-    
-    if (action == CommandAction.VERB)
-    {      
-      const t : Topic = {
-        name: value,
-        mrid: userObject.mRID,                    
+        action: action,
+        args: value,
       };
 
       const data: UpdateData = {
@@ -1195,12 +1169,35 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
       };
 
       this.diagramService.updateData(data)
-        .subscribe(_data => {                              
+        .subscribe(data => {
+          // success
+        }, error => {
+          console.error(error);
+          this.snack.open(error, 'OK', { duration: 4000 });
+        });
+    }
+  }
+
+  sendCommand(userObject: DiagramData, action: string, value?: any) {
+    console.log("Sending command with action " + action + " with value: " + value);
+
+    if (action == CommandAction.VERB) {
+      const t: Topic = {
+        name: value,
+        mrid: userObject.mRID,
+      };
+
+      const data: UpdateData = {
+        topic: t
+      };
+
+      this.diagramService.updateData(data)
+        .subscribe(_data => {
           this.snack.open("Command executed successfully.", 'OK', { duration: 4000 });
         }, error => {
           console.error(error);
           this.snack.open(error, 'OK', { duration: 4000 });
-      });
+        });
     }
     else if (userObject?.controlData?.length > 0) {
       const control = userObject?.controlData[0];
@@ -1212,19 +1209,19 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
         this.snack.open('Unable to send command.  No sepcified mRID.', 'OK', { duration: 2000 });
       }
 
-      const t : Topic = {
+      const t: Topic = {
         name: control?.path,
         mrid: userObject.mRID,
-        action: action,   
-        args: value,     
+        action: action,
+        args: value,
       };
 
       const data: UpdateData = {
         topic: t
       };
 
-      this.diagramService.updateData( data)
-        .subscribe(_data => {                              
+      this.diagramService.updateData(data)
+        .subscribe(_data => {
           this.snack.open("Command executed successfully.", 'OK', { duration: 4000 });
         }, error => {
           console.error(error);
@@ -1244,12 +1241,12 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
   loadGraphFromServer(id: string) {
     this.diagramService.get(id).subscribe(
       data => {
-        this.currentDiagram = data;        
+        this.currentDiagram = data;
         try {
           if (this.currentDiagram.data && this.currentDiagram.data != "") {
             var xml = mxUtils.parseXml(this.currentDiagram.data);
             var dec = new mxCodec(xml);
-            dec.decode(xml.documentElement, this.graph.getModel());            
+            dec.decode(xml.documentElement, this.graph.getModel());
           }
         }
         catch (e) {
@@ -1268,10 +1265,10 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
         console.error(error);
         this.snack.open(error, 'OK', { duration: 4000 });
       }
-    ); 
+    );
   }
 
-  register() {            
+  register() {
     var request = {
       session_id: this.sessionId,
       topics: []
@@ -1285,70 +1282,68 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
       if (cellValue && cellValue.userObject) {
 
         // display data
-        if (cellValue.userObject.displayData) {                  
+        if (cellValue.userObject.displayData) {
           for (let displayData of cellValue.userObject.displayData) {
-            if (displayData.path && displayData.path !== "" && cellValue.userObject.mRID && cellValue.userObject.mRID !== "")
-            {              
+            if (displayData.path && displayData.path !== "" && cellValue.userObject.mRID && cellValue.userObject.mRID !== "") {
               var topic = {
                 name: displayData.path,
-                mrid: cellValue.userObject.mRID                
+                mrid: cellValue.userObject.mRID
               };
               request.topics.push(topic);
             }
-          } 
-        } 
-        
+          }
+        }
+
         // visiblity
-        if (cellValue.userObject.visibilityData) {                  
+        if (cellValue.userObject.visibilityData) {
           for (let displayData of cellValue.userObject.visibilityData) {
-            if (displayData.path && displayData.path !== "" && cellValue.userObject.mRID && cellValue.userObject.mRID !== "")
-            {
+            if (displayData.path && displayData.path !== "" && cellValue.userObject.mRID && cellValue.userObject.mRID !== "") {
               var topic = {
                 name: displayData.path,
-                mrid: cellValue.userObject.mRID                
+                mrid: cellValue.userObject.mRID
               };
               request.topics.push(topic);
             }
-          } 
+          }
         }
       }
-    }    
+    }
     this.sendWsData(request);
   }
 
-  scaleValue(displayData: any, topic: string, value: number): [number, number] {  
+  scaleValue(displayData: any, topic: string, value: number): [number, number] {
     var scaled = value;
     var decimals = 2; // default at 2 decimal places 
     var deadband = 0.0; // default deadband is 0
 
-    if (displayData)  {
-      for(var i = 0; i < displayData.length; ++i) { 
-        var elem = displayData[i];        
+    if (displayData) {
+      for (var i = 0; i < displayData.length; ++i) {
+        var elem = displayData[i];
         if (elem.path === topic) {
           // get number of decimal places, if any
-          if (typeof(elem.decimals) != "undefined") {
+          if (typeof (elem.decimals) != "undefined") {
             var temp = parseInt(elem.decimals);
             if (!isNaN(temp)) {
               decimals = temp;
             }
           }
-          if (typeof(elem.deadband) != "undefined") {
+          if (typeof (elem.deadband) != "undefined") {
             var temp = parseFloat(elem.deadband);
             if (!isNaN(temp)) {
               deadband = temp;
             }
           }
-          if (typeof(elem.scale) != "undefined") {
+          if (typeof (elem.scale) != "undefined") {
             var temp = parseFloat(elem.scale);
             if (!isNaN(temp)) {
-              scaled = value * temp;                          
+              scaled = value * temp;
             }
             else if (elem.scale === "toFahrenheit") {
-              scaled = (value * 9/5) + 32.0;              
+              scaled = (value * 9 / 5) + 32.0;
             }
             else if (elem.scale === "toCelsius") {
-              scaled = (value - 32.0) * 5/9;                           
-            }            
+              scaled = (value - 32.0) * 5 / 9;
+            }
           }
           break;
         }
@@ -1362,12 +1357,12 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     return [scaled, decimals];
   }
 
-  setDataFieldValue(element: Element, userObject: any, topic: any): string {     
-    var value = topic?.value;    
-    
+  setDataFieldValue(element: Element, userObject: any, topic: any): string {
+    var value = topic?.value;
+
     if (typeof value.Double !== 'undefined') {
       if (element.className.match(/\bfield-item-value-state\b/)) {
-        if (value.Double === 0.0 ) {
+        if (value.Double === 0.0) {
           element.classList.add('red-color-value');
           element.classList.remove('green-color-value');
           return 'off';
@@ -1387,14 +1382,14 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
           return 'open';
         }
       } else if (element.className.match(/\bfield-item-value-mode\b/)) {
-        if (value.Double === 2000.0) {        
+        if (value.Double === 2000.0) {
           return 'VSI_PQ';
-        } else if (value.Double === 2001.0) {        
+        } else if (value.Double === 2001.0) {
           return 'VSI_VF';
-        } else if (value.Double === 2002.0) {        
+        } else if (value.Double === 2002.0) {
           return 'VSI_ISO';
         }
-      }  
+      }
 
       var scaledValue = this.scaleValue(userObject.displayData, topic.name, parseFloat(topic.value.Double));
       return scaledValue[0].toFixed(scaledValue[1]).toString();

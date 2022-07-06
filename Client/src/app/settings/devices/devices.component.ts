@@ -29,7 +29,7 @@ export class DevicesComponent implements OnInit, OnDestroy {
     private loader: AppLoaderService
   ) { }
 
-  ngOnInit(): void {    
+  ngOnInit(): void {
     this.getData();
   }
 
@@ -42,7 +42,7 @@ export class DevicesComponent implements OnInit, OnDestroy {
   getData() {
     this.getItemSub = this.service.getEquipmentList()
       .subscribe(data => {
-        this.rows = this.temp = data;        
+        this.rows = this.temp = data;
       })
   }
 
@@ -56,7 +56,7 @@ export class DevicesComponent implements OnInit, OnDestroy {
     if (!columns.length)
       return;
 
-    const rows = this.temp.filter(function(d) {
+    const rows = this.temp.filter(function (d) {
       for (let i = 0; i <= columns.length; i++) {
         let column = columns[i];
         // console.log(d[column]);
@@ -68,11 +68,11 @@ export class DevicesComponent implements OnInit, OnDestroy {
 
     this.rows = rows;
   }
-  
+
   delete(id: string) {
     console.log("delete device: " + id);
 
-    if(confirm("Are you sure to delete device with MRID="+id)) {
+    if (confirm("Are you sure to delete device with MRID=" + id)) {
       this.service.deleteEquipment(id).subscribe(
         data => {
           this.rows = data;
@@ -81,7 +81,7 @@ export class DevicesComponent implements OnInit, OnDestroy {
         },
         error => {
           this.loader.close();
-          this.snack.open('Unable to delete device!', 'OK', { duration: 4000 });                
+          this.snack.open('Unable to delete device!', 'OK', { duration: 4000 });
         }
       );
     }
@@ -96,25 +96,25 @@ export class DevicesComponent implements OnInit, OnDestroy {
     })
     dialogRef.afterClosed()
       .subscribe(res => {
-        if(!res) {
+        if (!res) {
           // If user press cancel
           return;
         }
         this.loader.open();
-        if (isNew) {          
+        if (isNew) {
           this.service.createEquipment(res)
             .subscribe(
               data => {
                 this.rows = data;
                 this.loader.close();
-                this.snack.open('Device Added!', 'OK', { duration: 4000 });              
+                this.snack.open('Device Added!', 'OK', { duration: 4000 });
               },
               error => {
                 this.loader.close();
-                this.snack.open('Unable to add device!', 'OK', { duration: 4000 });                
+                this.snack.open('Unable to add device!', 'OK', { duration: 4000 });
               }
             )
-        } else {           
+        } else {
           this.service.updateEquipment(res)
             .subscribe(
               data => {
@@ -124,7 +124,7 @@ export class DevicesComponent implements OnInit, OnDestroy {
               },
               error => {
                 this.loader.close();
-                this.snack.open('Unable to update device!', 'OK', { duration: 4000 });                
+                this.snack.open('Unable to update device!', 'OK', { duration: 4000 });
               }
             )
         }

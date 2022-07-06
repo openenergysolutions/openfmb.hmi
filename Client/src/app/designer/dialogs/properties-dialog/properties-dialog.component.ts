@@ -18,7 +18,7 @@ import { getCommands, getCommandsByType } from '../../../shared/models/commands.
   templateUrl: './properties-dialog.component.html',
   styleUrls: ['./properties-dialog.component.scss']
 })
-export class PropertiesDialogComponent implements OnInit {  
+export class PropertiesDialogComponent implements OnInit {
   label: string;
   description: string;
   name: string;
@@ -45,21 +45,21 @@ export class PropertiesDialogComponent implements OnInit {
   navigateToDataConnection: boolean = false;
   dataConnectAllowed: boolean;
   statusDefinitionAllowed: boolean = false;
-  flowDefinitionAllowed: boolean = false; 
-  weatherDefinitionAllowed: boolean = false; 
-  equipmentList: any[];  
+  flowDefinitionAllowed: boolean = false;
+  weatherDefinitionAllowed: boolean = false;
+  equipmentList: any[];
   selectedEquipment: any;
   textAlign: string;
   fontStyle: string;
   fontStyles: string[] = ['Normal', 'Bold', 'Italic', 'Bold+Italic'];
-  textAlignAllowed: boolean = false; 
-  fontSizeAllowed: boolean = true; 
+  textAlignAllowed: boolean = false;
+  fontSizeAllowed: boolean = true;
   buttonFunction: string;
   buttonFunctionOptions: string[] = [ButtonFunction.link, ButtonFunction.command, ButtonFunction.setPoint];
   showLink: boolean = true;
-  selectedCommand: string;  
+  selectedCommand: string;
   commandList: any[] = [];
-  
+
   // For link
   selectedDiagramId: string;
   selectedLinkTarget: string;
@@ -88,37 +88,37 @@ export class PropertiesDialogComponent implements OnInit {
     private router: Router,
     private service: DiagramsService,
     @Inject(MAT_DIALOG_DATA) public data: DiagramData
-  ) { 
-    this.selectedEquipment = { name: '', mrid: ''};
-    this.mRID = this.selectedEquipment.mrid = this.data.mRID; 
-    this.getEquipmentList();               
+  ) {
+    this.selectedEquipment = { name: '', mrid: '' };
+    this.mRID = this.selectedEquipment.mrid = this.data.mRID;
+    this.getEquipmentList();
   }
 
-  ngOnInit() {            
-    this.label = this.data.label; 
-    this.description = this.data.description;   
-    this.name = this.data.name,    
-    this.fontSize = this.data.fontSize;
-    this.containerWidth = this.data.containerWidth;  
-    this.containerHeight = this.data.containerHeight;  
+  ngOnInit() {
+    this.label = this.data.label;
+    this.description = this.data.description;
+    this.name = this.data.name,
+      this.fontSize = this.data.fontSize;
+    this.containerWidth = this.data.containerWidth;
+    this.containerHeight = this.data.containerHeight;
 
-    this.changeStyleAllowed = this.data.type === Symbol.measureBox 
-      || this.data.type === Symbol.label 
-      || this.data.type === Symbol.button 
+    this.changeStyleAllowed = this.data.type === Symbol.measureBox
+      || this.data.type === Symbol.label
+      || this.data.type === Symbol.button
       || this.data.type === Symbol.setPointButton
-      || this.data.type === Symbol.statusIndicator 
+      || this.data.type === Symbol.statusIndicator
       || this.data.type === Symbol.line
       || this.data.type === Symbol.curve;
 
     this.fontSizeAllowed = this.data.type !== Symbol.line && this.data.type !== Symbol.curve;
-    
-    this.deviceTypeMapping = this.data.deviceTypeMapping; 
-    this.changeWidthAllowed = this.data.type === Symbol.measureBox;
-    this.foreColor = this.data.foreColor;  
-    this.backgroundColor = this.data.backgroundColor;      
-    this.changeBackgroundAllowed = this.data.type === Symbol.measureBox || this.data.type === Symbol.button;    
 
-    this.linkAllowed = this.data.type === Symbol.button;    
+    this.deviceTypeMapping = this.data.deviceTypeMapping;
+    this.changeWidthAllowed = this.data.type === Symbol.measureBox;
+    this.foreColor = this.data.foreColor;
+    this.backgroundColor = this.data.backgroundColor;
+    this.changeBackgroundAllowed = this.data.type === Symbol.measureBox || this.data.type === Symbol.button;
+
+    this.linkAllowed = this.data.type === Symbol.button;
     this.dataConnectAllowed = Hmi.isDataConnectable(this.data.type);
     this.statusDefinitionAllowed = this.data.type === Symbol.statusIndicator;
     this.flowDefinitionAllowed = Hmi.isPowerFlow(this.data.type);
@@ -127,7 +127,7 @@ export class PropertiesDialogComponent implements OnInit {
       this.textAlignAllowed = true;
       this.textAlign = this.data.textAlign || 'left';
       this.fontStyle = this.data.fontStyle || '0';
-    }    
+    }
 
     // Button: link, command, set-point
     if (this.data.type == Symbol.button) {
@@ -144,9 +144,9 @@ export class PropertiesDialogComponent implements OnInit {
     }
     else {
       this.showLink = false;
-    }            
+    }
 
-    if (this.linkAllowed) {      
+    if (this.linkAllowed) {
       this.linkTargetOptions = ['_blank', '_top',];
 
       if (this.data.linkData) {
@@ -154,7 +154,7 @@ export class PropertiesDialogComponent implements OnInit {
         this.selectedLinkTarget = this.data.linkData.target;
       }
 
-      this.getDiagrams();      
+      this.getDiagrams();
     }
 
     if (this.statusDefinitionAllowed) {
@@ -174,16 +174,16 @@ export class PropertiesDialogComponent implements OnInit {
         this.weatherDefinitions = [];
       }
     }
-  
+
     if (this.data.displayData) {
       this.displayData = [...this.data.displayData];
       if (this.displayData.length > 0) {
-        this.isStatusDefinitionNumericDataType = this.displayData[0].type === "analog";        
+        this.isStatusDefinitionNumericDataType = this.displayData[0].type === "analog";
       }
-    } 
+    }
     if (this.data.controlData) {
       this.controlData = [...this.data.controlData];
-    } 
+    }
 
     if (this.data.visibilityData) {
       this.visibilityData = [...this.data.visibilityData];
@@ -194,7 +194,7 @@ export class PropertiesDialogComponent implements OnInit {
         this.arrowDirection = this.data.arrowDirection;
       }
       else {
-        this.arrowDirection= {
+        this.arrowDirection = {
           positive: '',
           negative: '',
           neutral: ''
@@ -206,19 +206,17 @@ export class PropertiesDialogComponent implements OnInit {
   getDiagrams() {
     this.getItemSub = this.service.getAll()
       .subscribe(data => {
-        this.diagrams = data;        
+        this.diagrams = data;
       });
   }
 
   getEquipmentList() {
     this.getEquipmentSub = this.service.getEquipmentList()
       .subscribe(data => {
-        this.equipmentList = data; 
-        this.equipmentList.unshift({name: '', mrid: ''});       
-        if (this.equipmentList)
-        {
-          for(var i = 0; i < this.equipmentList.length; ++i)
-          {            
+        this.equipmentList = data;
+        this.equipmentList.unshift({ name: '', mrid: '' });
+        if (this.equipmentList) {
+          for (var i = 0; i < this.equipmentList.length; ++i) {
             if (this.equipmentList[i].mrid === this.mRID) {
               this.selectedEquipment = this.equipmentList[i];
               break;
@@ -228,18 +226,18 @@ export class PropertiesDialogComponent implements OnInit {
       });
   }
 
-  getCommandList(type: String) {    
-    this.commandList = [];      
+  getCommandList(type: String) {
+    this.commandList = [];
     let commandTypes = getCommands();
     for (let entry of commandTypes) {
       let a = getCommandsByType(entry);
 
-      for (let cmd of a) {        
-        if (cmd.attributes.type === type) {          
+      for (let cmd of a) {
+        if (cmd.attributes.type === type) {
           this.commandList.push(cmd);
         }
-      }      
-    }    
+      }
+    }
   }
 
   // save all grid item data
@@ -270,10 +268,10 @@ export class PropertiesDialogComponent implements OnInit {
           backgroundC = temp;
         }
       }
-    } 
+    }
 
     var linkData: LinkData = null;
-    
+
     if (this.linkAllowed) {
       linkData = {
         diagramId: this.selectedDiagramId,
@@ -310,31 +308,31 @@ export class PropertiesDialogComponent implements OnInit {
   // close modal window
   onNoClick(): void {
     this.dialogRef.close();
-  }  
+  }
 
   setSelectedFields(allFields: any[], selectedFields: any[]): any[] {
     if (selectedFields.length) {
-     return allFields.map( elem => {
-       selectedFields.forEach(selectElem => {
-         if (selectElem.value === elem.value) {
-           elem.selected = true;
-         }
-       });
+      return allFields.map(elem => {
+        selectedFields.forEach(selectElem => {
+          if (selectElem.value === elem.value) {
+            elem.selected = true;
+          }
+        });
         return elem;
       });
     }
     return allFields;
-  }    
-  
+  }
+
   // navigate to data connect screen
-  dataConnect() { 
-    this.navigateToDataConnection = true;   
-    this.onSave();    
+  dataConnect() {
+    this.navigateToDataConnection = true;
+    this.onSave();
   }
 
   addStatusDefinition() {
     const def: StatusDefinition = {
-      value: 0,      
+      value: 0,
       color: "gray"
     };
     this.statusDefinitions.push(def);
@@ -342,9 +340,9 @@ export class PropertiesDialogComponent implements OnInit {
 
   removeStatusDefinition(item: StatusDefinition) {
     if (item) {
-      for(let index = this.statusDefinitions.length - 1; index >=0; --index) {
+      for (let index = this.statusDefinitions.length - 1; index >= 0; --index) {
         var obj = this.statusDefinitions[index];
-        if (obj === item) {        
+        if (obj === item) {
           this.statusDefinitions.splice(index, 1);
         }
       }
@@ -365,9 +363,9 @@ export class PropertiesDialogComponent implements OnInit {
 
   removeWeatherDefinition(item: WeatherStatusDefinition) {
     if (item) {
-      for(let index = this.weatherDefinitions.length - 1; index >=0; --index) {
+      for (let index = this.weatherDefinitions.length - 1; index >= 0; --index) {
         var obj = this.weatherDefinitions[index];
-        if (obj === item) {        
+        if (obj === item) {
           this.weatherDefinitions.splice(index, 1);
         }
       }

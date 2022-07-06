@@ -29,7 +29,7 @@ import { ButtonLoadingComponent } from './button-loading/button-loading.componen
 import { SidebarComponent, SidebarTogglerDirective } from './sidebar/sidebar.component';
 
 
-const components = [  
+const components = [
   SidenavComponent,
   NotificationsComponent,
   SidebarSideComponent,
@@ -42,22 +42,22 @@ const components = [
   ButtonLoadingComponent,
   SidebarComponent,
   FooterComponent,
-  SidebarTogglerDirective  
+  SidebarTogglerDirective
 ]
 
 @NgModule({
   imports: [
-  CommonModule,
+    CommonModule,
     FormsModule,
     RouterModule,
     TranslateModule,
     FlexLayoutModule,
     PerfectScrollbarModule,
-    SearchModule,    
+    SearchModule,
     SharedDirectivesModule,
     SharedMaterialModule
   ],
-  declarations: components,  
+  declarations: components,
   exports: components
 })
-export class SharedComponentsModule {}
+export class SharedComponentsModule { }

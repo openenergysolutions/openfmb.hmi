@@ -73,7 +73,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
   mode = this.DESIGNER_CONST.SELECT_MODE;
   canvas: any;
   toolbarItems = toolbarItemsData;
-  sessionId = '';  
+  sessionId = '';
   defaultLabelStyle = 'text;html=1;strokeColor=none;fontColor=#000000;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=none;';
   defaultButtonStyle = 'html=1;strokeColor=none;verticalAlign=middle;whiteSpace=wrap;rounded=1;';
   defaultSetpointButtonStyle = 'html=1;strokeColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fillColor=#a6a6af;fontColor=#0e0e0f;';
@@ -86,7 +86,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
     width: 0,
     height: 0
   };
-  diagramId: string = null;  
+  diagramId: string = null;
   currentDiagram: Diagram;
   undoManager: mxgraph.mxUndoManager;
 
@@ -113,7 +113,6 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    
     // initialize graph.
     this.graphInit();
 
@@ -135,13 +134,13 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
         const edgeStyle = this.graph.getStylesheet().getDefaultEdgeStyle();
         edgeStyle[mxConstants.STYLE_STROKECOLOR] = data;
       }
-    });    
+    });
 
     this.sessionId = uuidv4();
 
     // load graph
-    if (this.diagramId) { 
-      this.loadGraphFromServer(this.diagramId);       
+    if (this.diagramId) {
+      this.loadGraphFromServer(this.diagramId);
     }
     else {
       this.naviator.navigateByUrl("**");
@@ -151,7 +150,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
   // init graph.
   private graphInit() {
     mxEvent.disableContextMenu(this.graphContainer.nativeElement);
-    mxConstraintHandler.prototype.pointImage = new mxImage('../../assets/images/dot.gif', 10, 10);        
+    mxConstraintHandler.prototype.pointImage = new mxImage('../../assets/images/dot.gif', 10, 10);
     this.graph = new mxGraph(this.graphContainer.nativeElement);
     this.graph.setPortsEnabled(false);
     this.graph.graphHandler.scaleGrid = true;
@@ -160,11 +159,11 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.graph.setAllowDanglingEdges(true);
     this.graph.isHtmlLabel = (cell) => {
       return !this.graph.isSwimlane(cell);
-    };    
-     
+    };
+
     // undo manager
     this.undoManager = new mxUndoManager(20);
-    
+
     this.graph.getModel().addListener(mxEvent.UNDO, (sender, evt) => {
       this.undoManager?.undoableEditHappened(evt.getProperty('edit'));
     });
@@ -180,17 +179,17 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
         cell != null &&
         this.graph.isCellEditable(cell)
       ) {
-        
-        const isMeasureBox = this.isMeasureBox(cell);        
-        
+
+        const isMeasureBox = this.isMeasureBox(cell);
+
         if (isMeasureBox || this.graph.isHtmlLabel(cell) || (evt.target as HTMLElement).tagName === 'image' || (evt.target as HTMLElement).tagName === 'path') {
           // Assign MRID, label
-          const centerX = window.innerWidth / 2; 
-          const centerY = window.innerHeight / 2;          
+          const centerX = window.innerWidth / 2;
+          const centerY = window.innerHeight / 2;
           const x = evt.offsetX;
           const y = evt.offsetY;
 
-          this.openDialog(x < centerX ? x + cell.getGeometry().width + 250 : x, y - 100 > centerY ? centerY : y, cell);                   
+          this.openDialog(x < centerX ? x + cell.getGeometry().width + 250 : x, y - 100 > centerY ? centerY : y, cell);
         }
       } else {
         this.graph.view.setTranslate(0, 0);
@@ -238,42 +237,42 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const insertEdge = this.graph.insertEdge;
     this.graph.insertEdge = (...params) => {
-      const color = this.graph.getStylesheet().getDefaultEdgeStyle().strokeColor;      
-      const userObject : DiagramData = {
-        label: '',       
+      const color = this.graph.getStylesheet().getDefaultEdgeStyle().strokeColor;
+      const userObject: DiagramData = {
+        label: '',
         mRID: '',
-        deviceTypeMapping: '',        
-        type: Symbol.line,                           
+        deviceTypeMapping: '',
+        type: Symbol.line,
         backgroundColor: '',
         displayData: [],
         controlData: [],
         visibilityData: []
       };
-      params[1] = this.idGenerator();      
+      params[1] = this.idGenerator();
       params[5] = `strokeColor=${color};`;
       let cell = insertEdge.apply(this.graph, params);
       let model = this.graph.getModel();
       let currentValue = model.getValue(cell);
-      model.setValue(cell, { ...currentValue, userObject }); 
+      model.setValue(cell, { ...currentValue, userObject });
       return cell;
     };
 
     // sets label and data fields to grid item
-    this.graph.convertValueToString = (cell) => {            
+    this.graph.convertValueToString = (cell) => {
       const cellValue = this.graph.model.getValue(cell);
       if (cellValue && cellValue.userObject) {
         const userObject = cellValue.userObject;
         const displayData = cellValue.userObject.displayData;
-        
+
         // Returns a DOM for the label
         const wrapper = this.renderer.createElement('div');
-        this.renderer.addClass(wrapper, 'component-label');        
+        this.renderer.addClass(wrapper, 'component-label');
 
-        if (userObject.type === Symbol.measureBox) {          
+        if (userObject.type === Symbol.measureBox) {
           if (displayData) {
             const data = this.renderer.createElement('div');
-            this.renderer.addClass(data, 'display-data-container');   
-            
+            this.renderer.addClass(data, 'display-data-container');
+
             // override 'display-data-container' class
             var style = '';
             if (userObject.fontSize) {
@@ -295,21 +294,21 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
             if (style != '') {
               this.renderer.setAttribute(data, "style", style);
             }
-            
+
             const titleContainer = this.renderer.createElement('div');
             const titleText = this.renderer.createText(userObject.label ? userObject.label : userObject.deviceTypeMapping ? userObject.deviceTypeMapping : "");
             this.renderer.addClass(titleContainer, 'data-title');
             this.renderer.appendChild(titleContainer, titleText);
             this.renderer.appendChild(data, titleContainer);
-            
+
             displayData.forEach(elem => {
               const fieldItem = this.renderer.createElement('div');
               const fieldItemLabel = this.renderer.createElement('span');
               const fieldItemText = this.renderer.createElement('span');
               const fieldItemValue = this.renderer.createElement('span');
-              this.renderer.addClass(fieldItemValue, elem.value); 
+              this.renderer.addClass(fieldItemValue, elem.value);
               this.renderer.setAttribute(fieldItemValue, 'mrid', userObject.mRID);
-              this.renderer.setAttribute(fieldItemValue, 'path', elem.path);          
+              this.renderer.setAttribute(fieldItemValue, 'path', elem.path);
               const label = this.renderer.createText(elem.label);
               let text = '00';
               if (elem.label === 'State') {
@@ -326,7 +325,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
               this.renderer.appendChild(fieldItemLabel, label);
               this.renderer.appendChild(fieldItemValue, value);
               this.renderer.appendChild(fieldItemText, fieldItemValue);
-              if(elem.measurement) {
+              if (elem.measurement) {
                 const fieldItemMeasurement = this.renderer.createElement('span');
                 const measurementText = this.renderer.createText(' ' + elem.measurement);
                 this.renderer.appendChild(fieldItemMeasurement, measurementText);
@@ -339,14 +338,14 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
             this.renderer.appendChild(wrapper, data);
           }
         }
-        else if (userObject.type === Symbol.label) {                  
+        else if (userObject.type === Symbol.label) {
           var style = '';
           if (userObject.fontSize) {
             style += 'font-size:' + userObject.fontSize + 'px;';
           }
           if (userObject.foreColor) {
             style += 'color: ' + userObject.foreColor + ';';
-          }          
+          }
 
           const span = this.renderer.createElement('span');
           this.renderer.addClass(span, 'label-text');
@@ -356,35 +355,35 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
           }
 
           const labelText = this.renderer.createText(userObject.label);
-          this.renderer.appendChild(span, labelText);          
+          this.renderer.appendChild(span, labelText);
 
-          return span;                
+          return span;
         }
-        else if (userObject.type === Symbol.button || userObject.type === Symbol.setPointButton) {     
+        else if (userObject.type === Symbol.button || userObject.type === Symbol.setPointButton) {
           var style = '';
           if (userObject.fontSize) {
             style += 'font-size:' + userObject.fontSize + 'px;';
           }
           if (userObject.foreColor) {
             style += 'color: ' + userObject.foreColor + ';';
-          } 
-          
+          }
+
           style += ";vertical-align:top !important;";
 
           const div = this.renderer.createElement('div');
 
           const span = this.renderer.createElement('span');
-          this.renderer.addClass(span, 'button-text');          
-          
+          this.renderer.addClass(span, 'button-text');
+
           if (style != '') {
             this.renderer.setAttribute(span, "style", style);
-          }                      
+          }
 
           const labelText = this.renderer.createText(userObject.label);
           this.renderer.appendChild(span, labelText);
-          
+
           this.renderer.appendChild(div, span);
-          
+
           return div;
         }
         else if (userObject.type === Symbol.statusIndicator) {
@@ -394,15 +393,15 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
           }
           if (userObject.foreColor) {
             style += 'color: ' + userObject.foreColor + ';';
-          }                           
+          }
 
           const span = this.renderer.createElement('span');
           this.renderer.addClass(span, 'button-text');
-          
+
           if (style != '') {
             this.renderer.setAttribute(span, "style", style);
-          }     
-          
+          }
+
           // status 
           const img = this.renderer.createElement('img');
           this.renderer.setAttribute(img, 'src', 'assets/images/gray.svg');
@@ -415,9 +414,9 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
           this.renderer.setStyle(textSpan, 'vertical-align', 'middle');
           this.renderer.appendChild(textSpan, labelText);
           this.renderer.appendChild(span, textSpan);
-          
+
           return span;
-        }        
+        }
         else {
           if (userObject.label) {
             const label = this.renderer.createElement('div');
@@ -425,11 +424,11 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
             this.renderer.addClass(label, 'label');
             this.renderer.appendChild(label, labelText);
             this.renderer.appendChild(wrapper, label);
-          }                    
-        }        
+          }
+        }
 
         return wrapper;
-      }      
+      }
       return '';
     };
 
@@ -447,7 +446,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
       cellLabelChanged.apply(this, [cell, newValue, autoSize]);
     };
 
-    
+
 
     // get all available connection ports
     this.graph.getAllConnectionConstraints = (terminal, source) => {
@@ -487,13 +486,13 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.graph.popupMenuHandler.factoryMethod = (menu: mxgraph.mxPopupMenu, cell: mxgraph.mxCell, evt: Event) => {
       if (this.mode === this.DESIGNER_CONST.SELECT_MODE) {
         if (cell && (cell.vertex || cell.edge)) {
-          menu.addItem('Remove', null, () => {                        
+          menu.addItem('Remove', null, () => {
             this.graph.removeCells();
           });
-          menu.addItem('Send to Front', null, () => {                        
+          menu.addItem('Send to Front', null, () => {
             this.graph.orderCells(false, [cell]);
           });
-          menu.addItem('Send to Back', null, () => {                        
+          menu.addItem('Send to Back', null, () => {
             this.graph.orderCells(true, [cell]);
           });
         }
@@ -502,18 +501,16 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const keyHandler = new mxKeyHandler(this.graph);
 
-    keyHandler.getFunction = function(evt)
-    {
-      if (evt != null)
-      {
+    keyHandler.getFunction = function (evt) {
+      if (evt != null) {
         return (mxEvent.isControlDown(evt) || (mxClient.IS_MAC && evt.metaKey)) ? this.controlKeys[evt.keyCode] : this.normalKeys[evt.keyCode];
       }
       return null;
     };
 
     // Handle delete key
-    keyHandler.bindKey(46, (evt: Event) => {      
-      if (this.graph.isEnabled()) {                
+    keyHandler.bindKey(46, (evt: Event) => {
+      if (this.graph.isEnabled()) {
         this.graph.removeCells();
       }
       else {
@@ -522,17 +519,17 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     // Handle undo (ctrl-z)
-    keyHandler.bindControlKey(90, (evt: Event) => {            
+    keyHandler.bindControlKey(90, (evt: Event) => {
       if (this.graph.isEnabled()) {
         this.undoManager.undo();
-      }      
+      }
     });
 
     // Handle redo (ctrl-y)
-    keyHandler.bindControlKey(89, (evt: Event) => {           
+    keyHandler.bindControlKey(89, (evt: Event) => {
       if (this.graph.isEnabled()) {
         this.undoManager.redo();
-      }      
+      }
     });
 
     try {
@@ -541,12 +538,12 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
       this.graph.getStylesheet().getDefaultEdgeStyle().endArrow = 'none';
     } finally {
       this.graph.getModel().endUpdate();
-    }    
+    }
   }
 
   private openMeasureBoxDialog(cell: mxgraph.mxCell, x: number, y: number) {
     // Assign measurement box
-    const centerX = window.innerWidth / 2;    
+    const centerX = window.innerWidth / 2;
     this.openDialog(x < centerX ? x + cell.getGeometry().width + 250 : x, y, cell);
   }
 
@@ -556,7 +553,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
         return true;
       }
     }
-    return false; 
+    return false;
   }
 
   // init toolbar.
@@ -568,21 +565,21 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // add toolbar icons.
-  private addSidebarIcon(graphItem: mxgraph.mxGraph, sidebar: ElementRef, data: any) {    
-    const imgDropFunction = (graph: mxgraph.mxGraph, evt: Event, cell: mxgraph.mxCell, x: number, y: number) => {      
-      if (this.mode === this.DESIGNER_CONST.SELECT_MODE) {        
+  private addSidebarIcon(graphItem: mxgraph.mxGraph, sidebar: ElementRef, data: any) {
+    const imgDropFunction = (graph: mxgraph.mxGraph, evt: Event, cell: mxgraph.mxCell, x: number, y: number) => {
+      if (this.mode === this.DESIGNER_CONST.SELECT_MODE) {
         const parent = graph.getDefaultParent();
         const model = graph.getModel();
         const currentValue = model.getValue(cell);
         let v1: mxgraph.mxCell;
-        const userObject : DiagramData = {
+        const userObject: DiagramData = {
           label: '',
           name: data.title,
           mRID: '',
           deviceTypeMapping: '',
           left: data.left,
           top: data.top,
-          type: data.type,                    
+          type: data.type,
           foreColor: '',
           backgroundColor: '',
           displayData: [],
@@ -596,10 +593,10 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
             const ports = [];
             const pointX = (data.left && Math.round(x) === x) ? x + data.left : x;
             const pointY = (data.top && Math.round(y) === y) ? y + data.top : y;
-            
+
             v1 = graph.insertVertex(parent, this.idGenerator(), data.label === false ? null : userObject, pointX, pointY,
-              data.width ? data.width : 40, data.height ? data.height : 40, `shape=${data.shape};${data.image ? 
-              'image=' + data.image + ';' : ''}${data.rotation ? 'rotation='+ data.rotation +';' : ''}`);              
+              data.width ? data.width : 40, data.height ? data.height : 40, `shape=${data.shape};${data.image ?
+                'image=' + data.image + ';' : ''}${data.rotation ? 'rotation=' + data.rotation + ';' : ''}`);
             data.points.forEach(point => {
               ports.push({ x: point[0], y: point[1], perimeter: data.pointPerimeter === false ? data.pointPerimeter : true });
             });
@@ -610,25 +607,25 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
               }
             });
 
-            if (this.isMeasureBox(v1)) {            
+            if (this.isMeasureBox(v1)) {
               this.openMeasureBoxDialog(v1, x, y);
             }
           }
           else if (data.shape == Symbol.text) {
             v1 = graph.insertVertex(parent, this.idGenerator(), 'Label', x, y, 80, 40, this.defaultLabelStyle);
             userObject.label = 'Text';
-            model.setValue(v1, { ...currentValue, userObject });            
+            model.setValue(v1, { ...currentValue, userObject });
           }
           else if (data.shape == Symbol.button) {
             v1 = graph.insertVertex(parent, this.idGenerator(), 'Button', x, y, 80, 40, this.defaultButtonStyle + 'align=center;' + 'fillColor=' + Helpers.buttonBackColor() + ';fontColor=' + Helpers.buttonForeColor() + ';');
             userObject.label = 'Button';
-            model.setValue(v1, { ...currentValue, userObject });            
-          } 
+            model.setValue(v1, { ...currentValue, userObject });
+          }
           else if (data.shape == Symbol.setPointButton) {
             v1 = graph.insertVertex(parent, this.idGenerator(), 'Button', x, y, 80, 40, this.defaultSetpointButtonStyle);
             userObject.label = 'Set Point';
-            model.setValue(v1, { ...currentValue, userObject });            
-          } 
+            model.setValue(v1, { ...currentValue, userObject });
+          }
           else if (data.shape == Symbol.statusIndicator) {
             v1 = graph.insertVertex(parent, this.idGenerator(), 'Button', x, y, 80, 40, this.defaultStatusIndicatorStyle);
             userObject.label = 'Status';
@@ -643,23 +640,23 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
 
             var cell = new mxCell('', new mxGeometry(0, 0, 80, 80), "endArrow=none;html=1;edgeStyle=isometricEdgeStyle;strokeColor=#000000;");
             cell.id = this.idGenerator();
-	          cell.geometry.setTerminalPoint(new mxPoint(x, y), true);
-            cell.geometry.setTerminalPoint(new mxPoint(x + 80, y), false);            
-	          cell.geometry.relative = true;
-            cell.edge = true;            
-            
+            cell.geometry.setTerminalPoint(new mxPoint(x, y), true);
+            cell.geometry.setTerminalPoint(new mxPoint(x + 80, y), false);
+            cell.geometry.relative = true;
+            cell.edge = true;
+
             v1 = graph.addCell(cell);
             model.setValue(v1, { ...currentValue, userObject });
           }
-          else if (data.shape == Symbol.curve) {            
+          else if (data.shape == Symbol.curve) {
             var cell = new mxCell('', new mxGeometry(0, 0, 120, 120), "endArrow=none;html=1;curved=1;strokeColor=#000000;");
             cell.id = this.idGenerator();
-	          cell.geometry.setTerminalPoint(new mxPoint(x, y + 120), true);
+            cell.geometry.setTerminalPoint(new mxPoint(x, y + 120), true);
             cell.geometry.setTerminalPoint(new mxPoint(x + 120, y), false);
-            
-	          cell.geometry.relative = true;
-            cell.edge = true;            
-            
+
+            cell.geometry.relative = true;
+            cell.edge = true;
+
             v1 = graph.addCell(cell);
             model.setValue(v1, { ...currentValue, userObject });
           }
@@ -675,7 +672,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
     const img = this.renderer.createElement('img');
     const title = this.renderer.createElement('div');
     const titleText = this.renderer.createText(data.title);
-    this.renderer.setAttribute(img, 'src', data.image.split('.svg')[0] + '-copy.svg');    
+    this.renderer.setAttribute(img, 'src', data.image.split('.svg')[0] + '-copy.svg');
     this.renderer.addClass(wrapper, 'toolbar-wrapper');
     this.renderer.addClass(img, 'toolbar-image');
     this.renderer.addClass(title, 'toolbar-title');
@@ -691,7 +688,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.renderer.setStyle(dragSource, 'border-style', 'dashed');
     this.renderer.setStyle(dragSource, 'margin-left', (data.left ? data.left : 0) + 'px');
     this.renderer.setStyle(dragSource, 'margin-top', (data.top ? data.top : 0) + 'px');
-    if(data.rotation) {
+    if (data.rotation) {
       this.renderer.setStyle(dragSource, 'transform', `rotate(${data.rotation}deg)`);
     }
 
@@ -751,23 +748,23 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
 
         // Draws the actual grid        
         ctx.strokeStyle = '#d1d1d1';
-        ctx.beginPath();        
+        ctx.beginPath();
 
-        for (let x = xs; x <= xe; x += stepping) {          
+        for (let x = xs; x <= xe; x += stepping) {
           x = Math.round((x - tx) / stepping) * stepping + tx;
           const ix = Math.round(x);
 
           ctx.moveTo(ix + 1, iys + 1);
-          ctx.lineTo(ix + 1, iye + 1);           
+          ctx.lineTo(ix + 1, iye + 1);
         }
 
-        for (let y = ys; y <= ye; y += stepping) {          
+        for (let y = ys; y <= ye; y += stepping) {
           y = Math.round((y - ty) / stepping) * stepping + ty;
           const iy = Math.round(y);
           ctx.moveTo(ixs + 0.5, iy + 0.5);
-          ctx.lineTo(ixe + 0.5, iy + 0.5);          
+          ctx.lineTo(ixe + 0.5, iy + 0.5);
         }
-        
+
         ctx.closePath();
         ctx.stroke();
       }
@@ -850,7 +847,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // open property popup
   openDialog(x: number, y: number, cell: mxgraph.mxCell): void {
-    const currentCellData = this.graph.model.getValue(cell)?.userObject;  
+    const currentCellData = this.graph.model.getValue(cell)?.userObject;
     if (!currentCellData) {
       return;
     }
@@ -865,7 +862,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
           let substr = cell.style.substring(index);
           index = substr.indexOf(';');
           substr = substr.substring(0, index);
-          substr = substr.replace(';', '').replace(';', '');                 
+          substr = substr.replace(';', '').replace(';', '');
           let tokens = substr.split("=");
           if (tokens.length > 1) {
             currentCellData.backgroundColor = tokens[1].trim();
@@ -873,12 +870,12 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
     }
-    
+
     const dialogRef = this.dialog.open(PropertiesDialogComponent, {
-      width: '375px',      
+      width: '375px',
       data: currentCellData,
       hasBackdrop: false,
-      panelClass: 'filter-popup',      
+      panelClass: 'filter-popup',
       autoFocus: true,
       closeOnNavigation: true
     });
@@ -890,11 +887,11 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
         const userObject = {
           ...currentValue.userObject,
           label: result.label,
-          description: result.description, 
-          name: result.name,   
+          description: result.description,
+          name: result.name,
           statusDefinition: result.statusDefinition,
-          weatherDefinition: result.weatherDefinition, 
-          arrowDirection: result.arrowDirection,     
+          weatherDefinition: result.weatherDefinition,
+          arrowDirection: result.arrowDirection,
           displayData: result.displayData,
           controlData: result.controlData,
           visibilityData: result.visibilityData,
@@ -911,12 +908,12 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
           func: result.func,
           verb: result.selectedCommand
         };
-        
+
         this.graph.model.setValue(cell, { ...currentValue, userObject });
         if (currentCellData.type === Symbol.label || currentCellData.type === Symbol.statusIndicator) {
           let style = this.defaultLabelStyle;
           if (userObject.textAlign) {
-            style = style + 'align=' + userObject.textAlign + ';'            
+            style = style + 'align=' + userObject.textAlign + ';'
           }
           if (userObject.fontStyle) {
             style = style + 'fontStyle=' + userObject.fontStyle + ';';
@@ -926,7 +923,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
         else if (currentCellData.type === Symbol.button) {
           let style = this.defaultButtonStyle;
           if (userObject.textAlign) {
-            style = style + 'align=' + userObject.textAlign + ';'            
+            style = style + 'align=' + userObject.textAlign + ';'
           }
           if (userObject.fontStyle) {
             style = style + 'fontStyle=' + userObject.fontStyle + ';';
@@ -973,10 +970,10 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
     });
-  }  
+  }
 
   // save graph to json file and download.
-  saveGraph() {    
+  saveGraph() {
     var encoder = new mxCodec();
     var node = encoder.encode(this.graph.getModel());
     var xml = mxUtils.getXml(node);
@@ -993,23 +990,23 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
   saveGraphToServer() {
     var encoder = new mxCodec();
     var node = encoder.encode(this.graph.getModel());
-    var xml = mxUtils.getXml(node);   
+    var xml = mxUtils.getXml(node);
 
     this.currentDiagram.data = xml;
 
     this.diagramService.update(this.currentDiagram).subscribe(
       response => {
         //console.log("Updated diagram:: " + response),
-        this.snack.open('Diagram is updated.', 'OK', { duration: 2000 });        
+        this.snack.open('Diagram is updated.', 'OK', { duration: 2000 });
       },
       error => {
         console.error(error);
         this.snack.open(error, 'OK', { duration: 4000 });
       }
-    );    
+    );
   }
-  
-  sendWsData(data: any) {    
+
+  sendWsData(data: any) {
     this.wsService.sendWsData(data);
   }
 
@@ -1036,7 +1033,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
         console.log(error);
       };
     }
-    this.spinner.hide();    
+    this.spinner.hide();
   }
 
   loadGraphFromServer(id: string) {
@@ -1051,10 +1048,10 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
             var dec = new mxCodec(xml);
             try {
               this.graph.getModel().beginUpdate();
-              dec.decode(xml.documentElement, this.graph.getModel());                            
+              dec.decode(xml.documentElement, this.graph.getModel());
             }
             finally {
-              this.graph.getModel().endUpdate();              
+              this.graph.getModel().endUpdate();
             }
           }
         }
@@ -1066,7 +1063,7 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
         console.error(error);
         this.snack.open(error, 'OK', { duration: 4000 });
       }
-    );    
+    );
   }
 
   runGraph() {
@@ -1077,22 +1074,22 @@ export class DesignerComponent implements OnInit, AfterViewInit, OnDestroy {
   // adds default graph wrapper
   private addGraphContainer(content: any) {
     return {
-      elements:[{
+      elements: [{
+        type: 'element',
+        name: 'mxGraphModel',
+        elements: [{
           type: 'element',
-          name:'mxGraphModel',
-          elements:[{
-            type:'element',
-            name:'root',
-            elements: content ? [...content] : []
-          }]
+          name: 'root',
+          elements: content ? [...content] : []
+        }]
       }]
     };
   }
 
   // generate id for grid item
-  idGenerator(): string {    
+  idGenerator(): string {
     return uuidv4();
-  };    
+  };
 
   @HostListener('window:resize')
   onResize() {

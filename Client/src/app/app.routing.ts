@@ -9,22 +9,22 @@ import { AuthGuard } from '@auth0/auth0-angular';
 import { UserRoleGuard } from './shared/guards/user-role.guard'
 
 export const rootRouterConfig: Routes = [
-  { 
-    path: '', 
-    redirectTo: 'home', 
-    pathMatch: 'full' 
+  {
+    path: '',
+    redirectTo: 'home',
+    pathMatch: 'full'
   },
   {
-    path: '', 
+    path: '',
     component: AuthLayoutComponent,
     children: [
-      { 
-        path: 'sessions', 
+      {
+        path: 'sessions',
         loadChildren: () => import('./views/sessions/sessions.module').then(m => m.SessionsModule),
-        data: { title: 'Session'} 
+        data: { title: 'Session' }
       }
     ]
-  },  
+  },
   {
     path: '',
     component: MainLayoutComponent,
@@ -36,7 +36,7 @@ export const rootRouterConfig: Routes = [
     children: [
       {
         path: '',
-        loadChildren: () => import('./home/home.module').then(m => m.HomeModule)       
+        loadChildren: () => import('./home/home.module').then(m => m.HomeModule)
       }
     ]
   },
@@ -50,7 +50,7 @@ export const rootRouterConfig: Routes = [
     children: [
       {
         path: '',
-        loadChildren: () => import('./hmi/hmi.module').then(m => m.HmiModule)       
+        loadChildren: () => import('./hmi/hmi.module').then(m => m.HmiModule)
       }
     ]
   },
@@ -64,10 +64,10 @@ export const rootRouterConfig: Routes = [
     children: [
       {
         path: '',
-        loadChildren: () => import('./inspector/inspector-dialog.module').then(m => m.InspectorDialogModule)       
+        loadChildren: () => import('./inspector/inspector-dialog.module').then(m => m.InspectorDialogModule)
       }
     ]
-  },    
+  },
   {
     path: '',
     component: MainLayoutComponent,
@@ -79,13 +79,13 @@ export const rootRouterConfig: Routes = [
     children: [
       {
         path: '',
-        loadChildren: () => import('./diagrams/diagrams.module').then(m => m.DiagramsModule)        
+        loadChildren: () => import('./diagrams/diagrams.module').then(m => m.DiagramsModule)
       }
     ]
-  },  
+  },
   {
-    path: '', 
-    component: MainLayoutComponent,   
+    path: '',
+    component: MainLayoutComponent,
     canActivate: [AuthGuard, UserRoleGuard],
     data: 
     { 
@@ -94,12 +94,12 @@ export const rootRouterConfig: Routes = [
     children: [
       {
         path: '',
-        loadChildren: () => import('./data-connect/data-connect.module').then(m => m.DataConnectModule)        
+        loadChildren: () => import('./data-connect/data-connect.module').then(m => m.DataConnectModule)
       }
     ]
   },
   {
-    path: '',    
+    path: '',
     canActivate: [AuthGuard, UserRoleGuard],
     component: MainLayoutComponent,
     data: 
@@ -109,12 +109,12 @@ export const rootRouterConfig: Routes = [
     children: [
       {
         path: 'settings',
-        loadChildren: () => import('./settings/settings.module').then(m => m.SettingsModule)        
+        loadChildren: () => import('./settings/settings.module').then(m => m.SettingsModule)
       }
     ]
   },
   {
-    path: '',    
+    path: '',
     canActivate: [AuthGuard, UserRoleGuard],
     data: 
     { 
@@ -123,12 +123,12 @@ export const rootRouterConfig: Routes = [
     children: [
       {
         path: '',
-        loadChildren: () => import('./designer/designer.module').then(m => m.DesignerModule)        
+        loadChildren: () => import('./designer/designer.module').then(m => m.DesignerModule)
       }
     ]
   },
-  { 
-    path: '**', 
+  {
+    path: '**',
     redirectTo: 'sessions/404'
   }
 ];

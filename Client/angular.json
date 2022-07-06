@@ -23,18 +23,21 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "aot": true,
-            "assets": ["src/favicon.ico",
+            "assets": [
+              "src/favicon.ico",
               {
                 "glob": "**/*",
                 "input": "src/assets/",
-                "ignore": ["**/*.scss"],
+                "ignore": [
+                  "**/*.scss"
+                ],
                 "output": "/assets/"
               }
             ],
             "styles": [
-              "node_modules/mxgraph/javascript/src/css/common.css", 
+              "node_modules/mxgraph/javascript/src/css/common.css",
               "src/assets/styles/app.scss",
-              "src/styles.scss"                          
+              "src/styles.scss"
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.js",              
@@ -97,14 +100,14 @@
           "options": {
             "browserTarget": "openfmb-hmi:build",
             "host": "127.0.0.1",
-            "port": 4200                      
+            "port": 4200
           },
           "configurations": {
             "production": {
-              "browserTarget": "openfmb-hmi:build:production"              
+              "browserTarget": "openfmb-hmi:build:production"
             },
             "dev": {
-              "browserTarget": "openfmb-hmi:build:dev"              
+              "browserTarget": "openfmb-hmi:build:dev"
             }
           }
         },
@@ -121,15 +124,20 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
-            "assets": ["src/favicon.ico",
+            "assets": [
+              "src/favicon.ico",
               {
                 "glob": "**/*",
                 "input": "src/assets/",
-                "ignore": ["**/*.scss"],
+                "ignore": [
+                  "**/*.scss"
+                ],
                 "output": "/assets/"
               }
             ],
-            "styles": ["src/styles.scss"],
+            "styles": [
+              "src/styles.scss"
+            ],
             "scripts": []
           }
         }
