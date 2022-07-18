@@ -75,7 +75,7 @@ async fn server_setup() {
             "HMI",
             (publisher.clone(), subscriber.clone()),
         )
-        .unwrap();       
+        .unwrap();
 
     let run_mode = StartProcessingMessages {
         pubsub_options: CoordinatorOptions::new(),
@@ -96,24 +96,24 @@ async fn server_setup() {
 
     let get_users = warp::path("get-users")
         .and(warp::get())
-        .and(with_auth(Role::Admin))
+        .and(with_auth(Role::SuperUser))
         .and_then(get_users_handler);
 
     let delete_user = warp::path("delete-user")
         .and(warp::post())
-        .and(with_auth(Role::Admin))
+        .and(with_auth(Role::SuperUser))
         .and(warp::body::json())
         .and_then(delete_user_handler);
 
     let update_user = warp::path("update-user")
         .and(warp::post())
-        .and(with_auth(Role::Admin))
+        .and(with_auth(Role::SuperUser))
         .and(warp::body::json())
         .and_then(update_user_handler);
 
     let create_user = warp::path("create-user")
         .and(warp::post())
-        .and(with_auth(Role::Admin))
+        .and(with_auth(Role::SuperUser))
         .and(warp::body::json())
         .and_then(create_user_handler);
 
@@ -153,24 +153,24 @@ async fn server_setup() {
 
     let equipment_routes = warp::path("equipment-list")
         .and(warp::get())
-        .and(with_auth(Role::Admin))
+        .and(with_auth(Role::SuperUser))
         .and_then(equipment_handler);
 
     let delete_equipment = warp::path("delete-equipment")
         .and(warp::post())
-        .and(with_auth(Role::Admin))
+        .and(with_auth(Role::SuperUser))
         .and(warp::body::json())
         .and_then(delete_equipment_handler);
 
     let update_equipment = warp::path("update-equipment")
         .and(warp::post())
-        .and(with_auth(Role::Admin))
+        .and(with_auth(Role::SuperUser))
         .and(warp::body::json())
         .and_then(update_equipment_handler);
 
     let create_equipment = warp::path("create-equipment")
         .and(warp::post())
-        .and(with_auth(Role::Admin))
+        .and(with_auth(Role::SuperUser))
         .and(warp::body::json())
         .and_then(create_equipment_handler);
 
@@ -366,7 +366,9 @@ fn write_hmi_env(hmi_local_ip: &str, http_scheme: &str, ws_scheme: &str) -> std:
         let entry = entry?;
         if let Some(file_name) = entry.path().as_path().file_name() {
             if let Some(file_name) = file_name.to_str() {
-                if (file_name.starts_with("main-") || file_name.starts_with("main.")) && !file_name.ends_with("-backup") {
+                if (file_name.starts_with("main-") || file_name.starts_with("main."))
+                    && !file_name.ends_with("-backup")
+                {
                     // check if backup exists
                     let backup_file_name = format!("Client/dist/openfmb-hmi/{}-backup", file_name);
                     let backup = Path::new(&backup_file_name);

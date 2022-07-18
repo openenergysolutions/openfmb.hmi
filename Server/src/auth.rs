@@ -1,14 +1,16 @@
 // SPDX-FileCopyrightText: 2021 Open Energy Solutions Inc
 //
 // SPDX-License-Identifier: Apache-2.0
-
+extern crate alcoholic_jwt;
 use crate::error::Error;
+use alcoholic_jwt::{token_kid, validate, JWKS};
 use chrono::prelude::*;
 use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
 use log::error;
 use pwhash::bcrypt;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::env;
 use std::fmt;
 use std::fs;
 use std::fs::File;
@@ -67,7 +69,7 @@ pub struct LoginResponse {
 
 #[derive(Clone, PartialEq)]
 pub enum Role {
-    Admin,
+    SuperUser,
     Engineer,
     Viewer,
 }
@@ -75,7 +77,7 @@ pub enum Role {
 impl Role {
     pub fn from_str(role: &str) -> Role {
         match role {
-            "Admin" => Role::Admin,
+            "SuperUser" => Role::SuperUser,
             "Engineer" => Role::Engineer,
             _ => Role::Viewer,
         }
@@ -85,7 +87,7 @@ impl Role {
 impl fmt::Display for Role {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Role::Admin => write!(f, "Admin"),
+            Role::SuperUser => write!(f, "SuperUser"),
             Role::Engineer => write!(f, "Engineer"),
             Role::Viewer => write!(f, "Viewer"),
         }
@@ -128,18 +130,8 @@ async fn authorize(
 ) -> std::result::Result<String, Rejection> {
     match jwt_from_header(&headers) {
         Ok(jwt) => {
-            let decoded = decode::<Claims>(
-                &jwt,
-                &DecodingKey::from_secret(JWT_SECRET),
-                &Validation::new(Algorithm::HS512),
-            )
-            .map_err(|_| reject::custom(Error::JWTTokenError))?;
-
-            if role == Role::Admin && Role::from_str(&decoded.claims.role) != Role::Admin {
-                return Err(reject::custom(Error::NoPermissionError));
-            }
-
-            Ok(decoded.claims.sub)
+            valid_iss(&jwt)?;
+            valid_role(&jwt, role)
         }
         Err(e) => return Err(reject::custom(e)),
     }
@@ -171,6 +163,87 @@ fn hash_password(password: &str) -> String {
 
 fn verify_password(password: &str, hash: &str) -> bool {
     bcrypt::verify(password, hash)
+}
+
+fn get_jwks(uri: &str) -> Result<JWKS> {
+    match reqwest::get(uri) {
+        Ok(mut res) => {
+            let v = res.json::<JWKS>();
+
+            if let Err(_) = v {
+                return Err(reject::custom(Error::ParseJWKError));
+            }
+
+            Ok(v.unwrap())
+        }
+        Err(_) => Err(reject::custom(Error::GetJWKError)),
+    }
+}
+
+fn extract_kid(jwt: &str) -> Result<String> {
+    match token_kid(&jwt) {
+        Ok(kid) if kid.is_some() => Ok(kid.unwrap()),
+        _ => Err(reject::custom(Error::ExtractJWKKidError)),
+    }
+}
+
+fn valid_role(jwt: &str, role: Role) -> Result<String> {
+    let mut decoded = decode::<serde_json::Value>(
+        &jwt,
+        &DecodingKey::from_secret(JWT_SECRET),
+        &Validation::new(Algorithm::RS256),
+    )
+    .map_err(|_| reject::custom(Error::JWTTokenError))?;
+
+    match decoded.claims["http://oes.com//roles"].as_array_mut() {
+        Some(v) => {
+            let roles: Vec<Role> = v
+                .iter()
+                .map(|v| Role::from_str(v.as_str().unwrap()))
+                .collect();
+
+            if role == Role::SuperUser && !roles.contains(&Role::SuperUser) {
+                return Err(reject::custom(Error::NoPermissionError));
+            }
+
+            if let Some(sub) = decoded.claims["sub"].as_str() {
+                Ok(String::from(sub))
+            } else {
+                Err(reject::custom(Error::JWTTokenError))
+            }
+        }
+        None => {
+            return Err(reject::custom(Error::JWTTokenError));
+        }
+    }
+}
+
+fn valid_iss(jwt: &str) -> Result<()> {
+    let auth = env::var("AUTHORITY").expect("AUTHORITY must be set!");
+    let aud = env::var("AUDIENCE").expect("AUDIENCE must be set!");
+
+    let jwks = get_jwks(&format!("{}{}", auth.as_str(), ".well-known/jwks.json"))?;
+
+    let validations = vec![
+        alcoholic_jwt::Validation::Issuer(auth),
+        alcoholic_jwt::Validation::Audience(aud),
+        alcoholic_jwt::Validation::SubjectPresent,
+    ];
+
+    let kid = extract_kid(&jwt)?;
+    let jwk = jwks.find(&kid);
+
+    if let None = jwk {
+        return Err(reject::custom(Error::WrongCredentialsError));
+    }
+
+    let jwk = jwk.unwrap();
+
+    if validate(&jwt, jwk, validations).is_ok() {
+        Ok(())
+    } else {
+        Err(reject::custom(Error::JWTTokenError))
+    }
 }
 
 pub async fn login_handler(body: LoginRequest) -> Result<impl Reply> {

@@ -8,6 +8,12 @@ use thiserror::Error;
 pub enum Error {
     #[error("wrong credentials")]
     WrongCredentialsError,
+    #[error("failed to get jwks")]
+    GetJWKError,
+    #[error("jwk parse error")]
+    ParseJWKError,
+    #[error("could not extract kid from jwk")]
+    ExtractJWKKidError,
     #[error("jwt token not valid")]
     JWTTokenError,
     #[error("jwt token creation error")]

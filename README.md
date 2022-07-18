@@ -51,6 +51,20 @@ On Ubuntu/Debian, you can install them with:
 > sudo apt-get install autoconf automake libtool curl make g++ unzip cmake
 ```
 
+### Install [OpenSSL](https://www.openssl.org/)
+
+On Ubuntu:
+
+```bash
+> apt-get install libssl-dev
+```
+
+On Fedora:
+
+```bash
+> apt-get install openssl-devel
+```
+
 ## Build Client
 
 From the project directory:
