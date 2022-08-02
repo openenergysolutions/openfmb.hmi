@@ -5,7 +5,7 @@ extern crate alcoholic_jwt;
 use crate::error::Error;
 use alcoholic_jwt::{token_kid, validate, JWKS};
 use chrono::prelude::*;
-use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
+use jsonwebtoken::{encode, Algorithm, EncodingKey, Header};
 use log::error;
 use pwhash::bcrypt;
 use serde::{Deserialize, Serialize};
@@ -26,6 +26,8 @@ use warp::{
     reply::json,
     Filter, Rejection, Reply,
 };
+
+pub type JsonValue = serde_json::Value;
 
 pub type Result<T> = std::result::Result<T, Rejection>;
 
@@ -129,10 +131,7 @@ async fn authorize(
     (role, headers): (Role, HeaderMap<HeaderValue>),
 ) -> std::result::Result<String, Rejection> {
     match jwt_from_header(&headers) {
-        Ok(jwt) => {
-            valid_iss(&jwt)?;
-            valid_role(&jwt, role)
-        }
+        Ok(jwt) => valid_jwt(&jwt, role),
         Err(e) => return Err(reject::custom(e)),
     }
 }
@@ -187,15 +186,8 @@ fn extract_kid(jwt: &str) -> Result<String> {
     }
 }
 
-fn valid_role(jwt: &str, role: Role) -> Result<String> {
-    let mut decoded = decode::<serde_json::Value>(
-        &jwt,
-        &DecodingKey::from_secret(JWT_SECRET),
-        &Validation::new(Algorithm::RS256),
-    )
-    .map_err(|_| reject::custom(Error::JWTTokenError))?;
-
-    match decoded.claims["http://oes.com//roles"].as_array_mut() {
+fn check_role(mut claims: JsonValue, role: Role) -> Result<String> {
+    match claims["http://oes.com//roles"].as_array_mut() {
         Some(v) => {
             let roles: Vec<Role> = v
                 .iter()
@@ -206,7 +198,7 @@ fn valid_role(jwt: &str, role: Role) -> Result<String> {
                 return Err(reject::custom(Error::NoPermissionError));
             }
 
-            if let Some(sub) = decoded.claims["sub"].as_str() {
+            if let Some(sub) = claims["sub"].as_str() {
                 Ok(String::from(sub))
             } else {
                 Err(reject::custom(Error::JWTTokenError))
@@ -218,7 +210,7 @@ fn valid_role(jwt: &str, role: Role) -> Result<String> {
     }
 }
 
-fn valid_iss(jwt: &str) -> Result<()> {
+fn valid_jwt(jwt: &str, role: Role) -> Result<String> {
     let auth = env::var("AUTHORITY").expect("AUTHORITY must be set!");
     let aud = env::var("AUDIENCE").expect("AUDIENCE must be set!");
 
@@ -231,18 +223,13 @@ fn valid_iss(jwt: &str) -> Result<()> {
     ];
 
     let kid = extract_kid(&jwt)?;
-    let jwk = jwks.find(&kid);
+    let jwk = jwks
+        .find(&kid)
+        .ok_or(reject::custom(Error::WrongCredentialsError))?;
 
-    if let None = jwk {
-        return Err(reject::custom(Error::WrongCredentialsError));
-    }
-
-    let jwk = jwk.unwrap();
-
-    if validate(&jwt, jwk, validations).is_ok() {
-        Ok(())
-    } else {
-        Err(reject::custom(Error::JWTTokenError))
+    match validate(&jwt, jwk, validations) {
+        Ok(jwt) => check_role(jwt.claims, role),
+        _ => Err(reject::custom(Error::JWTTokenError)),
     }
 }
 
