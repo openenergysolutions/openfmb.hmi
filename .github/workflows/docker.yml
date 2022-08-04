@@ -7,7 +7,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      GIT_TAGS: oesinc/openfmb.hmi:latest,oesinc/openfmb.hmi:${{ github.sha }}
       DOCKER_REPO: "oesinc/openfmb.hmi"
     steps:
       - name: Generate Docker Tags
