@@ -81,6 +81,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
       // Should these be in the environment?
       domain: 'oes-dev.us.auth0.com',
       clientId: 'Aex63pqZXhdvOuHbS1x3nwHk1TKc7i3L',
+      // To let us refresh a page, cache in local storage
+      cacheLocation: 'localstorage',
       // Request this audience at user authentication time
       audience: 'openfmb-hmi',
       redirectUri: window.location.origin,
