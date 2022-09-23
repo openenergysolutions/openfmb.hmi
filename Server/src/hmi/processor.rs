@@ -221,7 +221,7 @@ macro_rules! extract {
 
 async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
     let device_mrid = match msg.device_mrid() {
-        Ok(mrid) => mrid.to_hyphenated().to_string(),
+        Ok(mrid) => mrid.as_hyphenated().to_string(),
         Err(_) => "".to_string(),
     };
     if device_mrid.len() == 0 {

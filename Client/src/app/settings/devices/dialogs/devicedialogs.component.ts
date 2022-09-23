@@ -4,7 +4,7 @@
 
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { FormBuilder, Validators, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, Validators, UntypedFormGroup } from '@angular/forms';
 import { getEquipmentTypeList } from '../../../shared/models/equipment.model';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -14,13 +14,13 @@ import { v4 as uuidv4 } from 'uuid';
   styleUrls: ['./devicedialogs.component.scss']
 })
 export class DeviceDialogsComponent implements OnInit {  
-  public itemForm: FormGroup; 
+  public itemForm: UntypedFormGroup; 
   deviceTypes: any[];   
   canEditMrid: boolean = false;
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     public dialogRef: MatDialogRef<DeviceDialogsComponent>,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
   ) {}
 
   ngOnInit() { 

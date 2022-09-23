@@ -1,12 +1,14 @@
-.git*
+**.git*
 .cache
 .vscode
 
-LICENSE
+**LICENSE
+**README*
 Dockerfile*
-.dockerignore
 **/*.md
 **/*.log
 
+**/.angular
 **/dist
 **/node_modules
+**/target

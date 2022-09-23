@@ -4,7 +4,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
-import {FormControl} from '@angular/forms';
+import {UntypedFormControl} from '@angular/forms';
 import { DiagramsService } from '../shared/services/diagrams.service';
 import { Diagram } from '../shared/models/diagram.model';
 import { Subscription } from 'rxjs';
@@ -21,7 +21,7 @@ import { Hmi } from '../shared/hmi.constants'
   styleUrls: ['./data-connect.component.scss']
 })
 export class DataConnectComponent implements OnInit {
-  selectDiagramControl = new FormControl();
+  selectDiagramControl = new UntypedFormControl();
   diagrams: Diagram[] = [];
   graphItems: any[] = [];
   modules: any[] = [];

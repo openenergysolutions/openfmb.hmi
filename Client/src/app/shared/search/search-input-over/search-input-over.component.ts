@@ -10,7 +10,7 @@ import {
   OnDestroy,
   Input
 } from "@angular/core";
-import { FormControl } from "@angular/forms";
+import { UntypedFormControl } from "@angular/forms";
 import { Subscription } from "rxjs";
 import { debounceTime } from "rxjs/operators";
 import { SearchService } from "../search.service";
@@ -26,7 +26,7 @@ export class SearchInputOverComponent implements OnInit, OnDestroy {
   @Input('resultPage') resultPage: string;
   @Input('placeholder') placeholder: string = "Search here";
   @Output("search") search = new EventEmitter();
-  searchCtrl = new FormControl();
+  searchCtrl = new UntypedFormControl();
   searchCtrlSub: Subscription;
   constructor(
       private searchService: SearchService,
