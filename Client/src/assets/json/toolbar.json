@@ -1268,5 +1268,34 @@
     "left": 0,
     "top": 0,
     "type": "ev"
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/OES-full.svg",
+    "points": [
+      [0, 0.5]
+    ],
+    "width": 80,
+    "height": 40,
+    "title": "OES Logo 1",
+    "left": 0,
+    "top": 0,
+    "type": ""
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/OES-stamp.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 40,
+    "height": 40,
+    "title": "OES Logo 2",
+    "left": 0,
+    "top": 0,
+    "type": ""
   }
 ]
