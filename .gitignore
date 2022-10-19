@@ -35,6 +35,7 @@ equipment*.json
 *.creds
 *.tar.gz
 **.log
+certs/
 
 # cache
 **/.angular/cache

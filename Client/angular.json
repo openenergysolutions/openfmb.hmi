@@ -83,7 +83,12 @@
               ]
             },
             "dev": {
-              "buildOptimizer": true,
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true,
               "aot": true,
               "fileReplacements": [
                 {

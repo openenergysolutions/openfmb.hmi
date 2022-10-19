@@ -2,6 +2,12 @@
 
 Single line diagram and HMI for OpenFMB
 
+## Other Development Setup
+
+This project has a Devcontainer setup and VSCode launch configurations that will help you get going faster. It's recommended you try VSCode as your default IDE, it will save you serveral hours of setting up a debugger and host system setup.
+
+The steps below are somewhat deprecated for this branch, as the need for SSL/HTTPS in our OAuth flow requires cert files. If you follow the below steps, please note the .devcontainer/post-create-setup.sh script. It will have steps in their (like cert creation) you will want to execute. 
+
 ## Project Setup
 
 Make sure you have installed `node` and `npm` on your computer
@@ -12,11 +18,12 @@ Make sure you have installed `node` and `npm` on your computer
 > node --version
 ```
 
-## Check [npm](https://www.npmjs.com/) version:
+## [deprecated: use yarn instead for npm related steps] Check [npm](https://www.npmjs.com/) version:
 
 ```bash
 > npm --version
 ```
+_Note: Yarn is recommended over npm_
 
 ## Install angular [cli tool](https://angular.io/cli):
 
@@ -97,3 +104,4 @@ From the project directory:
 ```bash
 > cargo run
 ```
+
