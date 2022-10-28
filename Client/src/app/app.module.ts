@@ -79,12 +79,12 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     HttpClientModule,
     AuthModule.forRoot({
       // Should these be in the environment?
-      domain: 'oes-dev.us.auth0.com',
-      clientId: 'Aex63pqZXhdvOuHbS1x3nwHk1TKc7i3L',
+      domain: environment.auth.domain,
+      clientId: environment.auth.client_id,
       // To let us refresh a page, cache in local storage
       cacheLocation: 'localstorage',
       // Request this audience at user authentication time
-      audience: 'openfmb-hmi',
+      audience: environment.auth.audience,
       redirectUri: window.location.origin,
       httpInterceptor: {
         allowedList: [
@@ -92,8 +92,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
             uri: environment.apiUrl + '*',
             tokenOptions: {
               // detailedResponse: true,
-              audience: 'openfmb-hmi',
-              scope: 'openid profile email offline_access',
+              audience: environment.auth.audience,
+              scope: environment.auth.scope,
             }
           }
         ]

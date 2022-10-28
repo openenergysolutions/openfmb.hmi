@@ -19,3 +19,9 @@ ssl_cert = "certs/server/server-cert.pem"
 ssl_key = "certs/server/server-key.pem"
 http_scheme = "https"
 ws_scheme = "ws"
+
+[auth]
+audience = "openfmb-hmi"
+client_id = "Aex63pqZXhdvOuHbS1x3nwHk1TKc7i3L"
+domain = "oes-dev.us.auth0.com"
+scope = "openid profile email offline_access"
