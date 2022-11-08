@@ -11,7 +11,13 @@ import envSettings from '../assets/env.json';
 export const environment = {
   production: false,
   apiUrl: envSettings.apiUrl,
-  ws: envSettings.ws
+  ws: envSettings.ws,
+  auth: {
+    audience: envSettings.auth_audience,
+    client_id: envSettings.auth_client_id,
+    domain: envSettings.auth_domain,
+    scope: envSettings.auth_scope,
+  }
 };
 
 /*
