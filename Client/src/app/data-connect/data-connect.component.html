@@ -242,7 +242,7 @@
                                                 <div class="pb-1">
                                                     <mat-form-field class="margin-333" style="width: 95%">
                                                         <input matInput placeholder="Type to filter" [(ngModel)]='filter'
-                                                            (keyup)='updateFilter($event)' name="filter">
+                                                            (keyup)='updatePredefinedCommandFilter($event)' name="filter">
                                                     </mat-form-field>
                                                 </div>
                                                 <div cdkDropList #availableCommandList="cdkDropList"

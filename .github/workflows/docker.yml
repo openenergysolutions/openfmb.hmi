@@ -1,9 +1,9 @@
 name: CI to Docker Hub
 on:
   push:
-    branches: [develop]
+    branches: [feature/v2.1-testing]
 env:
-  GIT_TAGS: oesinc/openfmb.hmi:latest,oesinc/openfmb.hmi:${{ github.sha }}
+  GIT_TAGS: oesinc/openfmb.hmi:v2.1-testing,oesinc/openfmb.hmi:${{ github.sha }}
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -12,13 +12,6 @@ jobs:
       - name: Check Out Repo
         uses: actions/checkout@v2
 
-      - name: Clone submodule
-        uses: actions/checkout@v2
-        with:
-          repository: openenergysolutions/openfmb-rs
-          path: deps/openfmb-rs
-          ssh-key: ${{ secrets.GH_OPENFMB_RS_KEY }}
-          persist-credentials: true
       - name: Checkout submodule
         run: |
           git submodule init
