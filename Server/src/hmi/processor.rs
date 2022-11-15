@@ -288,6 +288,7 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                                     value: Some(value.clone()),
                                     action: None,
                                     args: None,
+                                    args2: None,
                                 },
                             };
 

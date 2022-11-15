@@ -20,13 +20,23 @@
         </mat-form-field>
       </div>
       <div mat-dialog-content class="dialog-input-container pt-1" *ngIf="isSetPoint && isControllable">
-        <strong>Set Point</strong><br/>
+        <strong>Set Analog</strong><br/>
         <mat-form-field class="designer-form-field" floatLabel='never'>          
-          <input type="number" [(ngModel)]="setpointValue" min="0" max="65535" matInput name="set-point-vallue"
+          <input type="number" [(ngModel)]="setpointValue" min="-2147483648" max="2147483647" matInput name="set-point-vallue"
                   placeholder="Value" />
         </mat-form-field>
       </div>
-      <div mat-dialog-content class="dialog-input-container pt-1" *ngIf="!isSetPoint && isControllable">
+      <div mat-dialog-content class="dialog-input-container pt-1" *ngIf="isSetBoolean && isControllable">
+        <strong>Set Boolean</strong><br/>
+        <mat-form-field class="designer-form-field" floatLabel='never'>          
+          <mat-select [(value)]="onOffCommand" name="select-on-off">
+            <mat-option *ngFor="let option of onOffs" [value]="option">
+              {{option}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>      
+      <div mat-dialog-content class="dialog-input-container pt-1" *ngIf="!isSetPoint && !isSetBoolean && isControllable">
         <strong>Control Value</strong><br/>
         <mat-form-field class="designer-form-field" floatLabel='never'>
           <input matInput [(ngModel)]="controlValue" [disabled]="isControllable" name="control-value"/> 

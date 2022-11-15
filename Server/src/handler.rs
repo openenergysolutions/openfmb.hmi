@@ -48,6 +48,7 @@ pub struct GenericControl {
     pub mrid: String,
     pub profile_name: Option<String>,
     pub args: Option<f64>,
+    pub args2: Option<f64>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -64,6 +65,7 @@ pub struct Topic {
     pub value: Option<DataValue>,
     pub action: Option<String>,
     pub args: Option<f64>,
+    pub args2: Option<f64>,
 }
 
 #[derive(Debug, Clone)]
@@ -197,6 +199,7 @@ pub async fn data_handler(
                 mrid: update.topic.mrid.clone(),
                 profile_name: None,
                 args: update.topic.args.clone(),
+                args2: update.topic.args2.clone(),
             },
             None,
         );
@@ -209,6 +212,7 @@ pub async fn data_handler(
                     mrid: update.topic.mrid.clone(),
                     profile_name: None,
                     args: update.topic.args.clone(),
+                    args2: update.topic.args2.clone(),
                 },
                 None,
             );
@@ -266,6 +270,7 @@ pub async fn send_status(status: CoordinatorStatus, clients: Clients) -> Result<
                     value: Some(DataValue::Bool(status.connected)),
                     action: None,
                     args: None,
+                    args2: None,
                 },
             },
             UpdateMessage {
@@ -277,6 +282,7 @@ pub async fn send_status(status: CoordinatorStatus, clients: Clients) -> Result<
                     value: Some(DataValue::Double((status.env as u8) as f64)),
                     action: None,
                     args: None,
+                    args2: None,
                 },
             },
             UpdateMessage {
@@ -288,6 +294,7 @@ pub async fn send_status(status: CoordinatorStatus, clients: Clients) -> Result<
                     value: Some(DataValue::Bool(status.coordinator_active)),
                     action: None,
                     args: None,
+                    args2: None,
                 },
             },
             UpdateMessage {
@@ -299,6 +306,7 @@ pub async fn send_status(status: CoordinatorStatus, clients: Clients) -> Result<
                     value: Some(DataValue::Bool(status.comm_ok)),
                     action: None,
                     args: None,
+                    args2: None,
                 },
             },
         ],

@@ -497,7 +497,40 @@ export const COMMANDS = {
                 "type": "set-point",
 				"measurement": ""               
             }
-        },            
+        }, 
+		{ 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
+                "name": "SetGgioValueAnalog",
+                "path": "SetGgioValueAnalog",
+                "type": "set-point",
+				"measurement": ""               
+            }
+        }, 
+		{ 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
+                "name": "SetGgioValueInteger",
+                "path": "SetGgioValueInteger",
+                "type": "set-point",
+				"measurement": ""               
+            }
+        },
+		{ 
+            "type": "element",
+			"name": "Object",           
+            "attributes": {
+                "label": "",
+                "name": "SetGgioValueBool",
+                "path": "SetGgioValueBool",
+                "type": "set-boolean",
+				"measurement": ""               
+            }
+        },         
         { 
             "type": "element",
 			"name": "Object",           

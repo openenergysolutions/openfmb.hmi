@@ -770,7 +770,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
-      if (result && result.proceed) {                
+      if (result && result.proceed) {                      
         this.sendCommand(currentCellData, result.action);
       }
     });
@@ -821,7 +821,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
 
     dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
       if (result && result.proceed) {                
-        this.sendCommand(currentCellData, result.action, result.value);
+        this.sendCommand(currentCellData, result.action, result.value, result.index);
       }
     });
   }
@@ -1182,13 +1182,13 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  sendCommand(userObject: DiagramData, action: string, value?: any) {
-    console.log("Sending command with action " + action + " with value: " + value);         
+  sendCommand(userObject: DiagramData, action: string, args?: any, args2?: any) {
+    console.log("Sending command with action " + action + " with args = " + args + " and args2 = " + args2);         
     
     if (action == CommandAction.VERB)
     {      
       const t : Topic = {
-        name: value,
+        name: args,
         mrid: userObject.mRID,                    
       };
 
@@ -1218,7 +1218,8 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
         name: control?.path,
         mrid: userObject.mRID,
         action: action,   
-        args: value,     
+        args: args,
+        args2: args2,     
       };
 
       const data: UpdateData = {

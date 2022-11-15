@@ -17,7 +17,11 @@ import { getCommands, getCommandsByType } from '../../../shared/models/commands.
 export class ControlDialogComponent implements OnInit {  
   setpointValue: number;
   controlValue: any;
+  ggioIndex: any; // used for resource ggio
   isSetPoint: boolean = false;
+  isSetBoolean: boolean = false;
+  onOffs: boolean[] = [false, true];
+  onOffCommand: boolean = false;
   isFixedCommand: boolean;
   name: string;  
   diagramId: string;
@@ -64,7 +68,7 @@ export class ControlDialogComponent implements OnInit {
     
     this.type = this.diagramData.type;        
     //this.isSetPoint = this.type === Symbol.setPointButton;
-    
+    console.log(JSON.stringify(this.diagramData));
     if (this.type == Symbol.button) {
       if (this.diagramData.func === ButtonFunction.command)
       {
@@ -97,7 +101,7 @@ export class ControlDialogComponent implements OnInit {
       
       if (dataType === 'binary') {
         this.controlValue = this.diagramData.controlData[0].measurement;
-        if (!this.controlValue || this.controlValue === '') {
+        if (this.controlValue === undefined || this.controlValue === '') {
           this.isControllable = false;
         }
       }
@@ -111,7 +115,13 @@ export class ControlDialogComponent implements OnInit {
         if (cmd != null) {
           this.isControllable = true;
           this.hasDataMapped = true; 
-          this.isSetPoint = cmd.attributes.type == "set-point";
+          this.isSetPoint = cmd.attributes.type == "set-point";  
+          this.isSetBoolean = cmd.attributes.type == "set-boolean";          
+          let index = parseInt( this.diagramData.controlData[0].measurement);       
+          if (isNaN(index)) {
+            index = 0;
+          }
+          this.ggioIndex = index;
         }
         else {
           console.error('Data type for control point is not supported: ' + dataType);
@@ -151,7 +161,16 @@ export class ControlDialogComponent implements OnInit {
         proceed: true,
         //action: CommandAction.SETVALUE,
         action: this.diagramData.verb ? this.diagramData.verb : CommandAction.SETVALUE,
-        value: this.setpointValue  
+        value: this.setpointValue,
+        index: this.ggioIndex,  
+      });
+    }    
+    else if (this.isSetBoolean) {        
+      this.dialogRef.close({
+        proceed: true,        
+        action: this.diagramData.verb ? this.diagramData.verb : CommandAction.SETVALUE,
+        value: this.onOffCommand ? 1.0 : 0.0,
+        index: this.ggioIndex,  
       });
     }
     else if (this.type == Symbol.button)

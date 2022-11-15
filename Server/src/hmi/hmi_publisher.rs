@@ -140,6 +140,7 @@ impl HmiPublisher {
                 "generator" => Some("GenerationDiscreteControlProfile".to_string()),
                 "regulator" => Some("RegulatorDiscreteControlProfile".to_string()),
                 "load" => Some("LoadControlProfile".to_string()),
+                "resource" => Some("ResourceDiscreteControlProfile".to_string()),
                 _ => {
                     info!(
                         "Unable to get common control profile for device type: {}",
@@ -1842,15 +1843,36 @@ impl Receive<GenericControl> for HmiPublisher {
                     &msg.mrid
                 );
                 match msg.message {
-                    microgrid::generic_control::ControlType::SetValue => {
-                        let profile = ResourceDiscreteControlProfile::set_analog_msg(
+                    microgrid::generic_control::ControlType::SetValue | microgrid::generic_control::ControlType::SetGgioValueAnalog => {
+                        let profile = ResourceDiscreteControlProfile::set_double_msg(
                             &msg.mrid,
                             msg.args.unwrap(),
+                            msg.args2.unwrap_or_default() as usize,
                         );
                         let mut buffer = Vec::<u8>::new();
                         profile.encode(&mut buffer).unwrap();
                         self.publish(&subject, &mut buffer);
                     }
+                    microgrid::generic_control::ControlType::SetGgioValueInteger => {
+                        let profile = ResourceDiscreteControlProfile::set_int_msg(
+                            &msg.mrid,
+                            msg.args.unwrap() as i32,
+                            msg.args2.unwrap_or_default() as usize,
+                        );
+                        let mut buffer = Vec::<u8>::new();
+                        profile.encode(&mut buffer).unwrap();
+                        self.publish(&subject, &mut buffer);
+                    }
+                    microgrid::generic_control::ControlType::SetGgioValueBool => {
+                        let profile = ResourceDiscreteControlProfile::set_bool_msg(
+                            &msg.mrid,
+                            msg.args.unwrap_or_default() > 0.0,
+                            msg.args2.unwrap_or_default() as usize,
+                        );
+                        let mut buffer = Vec::<u8>::new();
+                        profile.encode(&mut buffer).unwrap();
+                        self.publish(&subject, &mut buffer);
+                    }                    
                     _ => {
                         warn!("Unsupport control type: {:?}", msg.message)
                     }
