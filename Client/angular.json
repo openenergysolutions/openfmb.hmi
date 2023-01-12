@@ -26,6 +26,9 @@
             "assets": ["src/favicon.ico", "src/assets"],
             "styles": [
               "node_modules/mxgraph/javascript/src/css/common.css", 
+              "node_modules/@swimlane/ngx-datatable/index.css",
+              "node_modules/@swimlane/ngx-datatable/themes/material.css",
+              "node_modules/@swimlane/ngx-datatable/assets/icons.css",
               "src/assets/styles/app.scss",
               "src/styles.scss"                          
             ],
