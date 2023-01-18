@@ -29,10 +29,9 @@ import { StoreRouterConnectingModule } from '@ngrx/router-store';
 import { EntityDataModule } from '@ngrx/data';
 import { entityConfig } from './entity-metadata';
 import { NgxSpinnerModule } from 'ngx-spinner';
-import { AuthModule } from '@auth0/auth0-angular';
+import { AuthHttpInterceptor, AuthModule } from '@auth0/auth0-angular';
 import { ErrorInterceptor } from './core/helpers/error-interceptor';
 import { LoadingInterceptor } from './core/helpers/loading-interceptor';
-import { AuthHttpInterceptor } from '@auth0/auth0-angular';
 import { DesignerEffects } from './store/effects/designer.effects';
 import { WebSocketModule } from './web-socket/web-socket.module';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
@@ -81,6 +80,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
       // Should these be in the environment?
       domain: environment.auth.domain,
       clientId: environment.auth.client_id,
+      // New authorizePath option
+      authorizePath: 'authorize',
       // To let us refresh a page, cache in local storage
       cacheLocation: 'localstorage',
       // Request this audience at user authentication time
