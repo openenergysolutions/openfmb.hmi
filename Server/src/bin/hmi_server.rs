@@ -388,6 +388,7 @@ fn write_hmi_env(hmi_local_ip: &str, http_scheme: &str, ws_scheme: &str, auth_au
                     let auth_client_id_search = "AUTH_CLIENT_ID";
                     let auth_domain_search = "AUTH_DOMAIN";
                     let auth_scope_search = "AUTH_SCOPE";
+                    let auth_authorize_path_search = "AUTH_AUTHORIZE_PATH";
                     
                     let http_uri = format!("{}://{}/", http_scheme, hmi_local_ip);
                     let ws_uri = format!("{}://{}/", ws_scheme, hmi_local_ip);
@@ -398,7 +399,8 @@ fn write_hmi_env(hmi_local_ip: &str, http_scheme: &str, ws_scheme: &str, auth_au
                         .replace(auth_audience_search, &auth_audience)
                         .replace(auth_client_id_search, &auth_client_id)
                         .replace(auth_domain_search, &auth_domain)
-                        .replace(auth_scope_search, &auth_scope);
+                        .replace(auth_scope_search, &auth_scope)
+                        .repalce(auth_authorize_path_search, &auth_authorize_path);
                     fs::write(entry.path().as_path(), contents)?;
                 }
             }
