@@ -81,7 +81,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
       domain: environment.auth.domain,
       clientId: environment.auth.client_id,
       // New authorizePath option
-      authorizePath: 'authorize',
+      authorizePath: environment.auth.authorizePath,
       // To let us refresh a page, cache in local storage
       cacheLocation: 'localstorage',
       // Request this audience at user authentication time
