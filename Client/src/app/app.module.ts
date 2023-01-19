@@ -80,12 +80,12 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
       // Should these be in the environment?
       domain: environment.auth.domain,
       clientId: environment.auth.client_id,
-      // New authorizePath option
-      authorizePath: environment.auth.authorizePath,
       // To let us refresh a page, cache in local storage
       cacheLocation: 'localstorage',
       // Request this audience at user authentication time
       audience: environment.auth.audience,
+      // New authorizePath option
+      authorizePath: environment.auth.authorizePath,
       redirectUri: window.location.origin,
       httpInterceptor: {
         allowedList: [
