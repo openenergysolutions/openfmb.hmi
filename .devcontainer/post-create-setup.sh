@@ -24,17 +24,13 @@ cd ..
 
 # Apt Packages
 # sudo apt-get install autoconf automake libtool curl make g++ unzip cmake
-# sudo apt update
-# sudo apt install npm
 
 # Project Yarn Dependencies
 npm install -g @angular/cli
-npm install --prod=false
+# npm install --prod=false
 cd Client
 yarn install
 yarn run build
 cd ..
-
-# curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 echo "post-create-setup.sh done!"
