@@ -333,8 +333,8 @@
     tslib "^2.0.0"
 
 "@auth0/auth0-spa-js@github:phoenix-oes/auth0-spa-js-dist":
-  version "1.23.2"
-  resolved "https://codeload.github.com/phoenix-oes/auth0-spa-js-dist/tar.gz/38af042dd97e73ea80ac261a662c2096942e9daa"
+  version "1.23.3"
+  resolved "https://codeload.github.com/phoenix-oes/auth0-spa-js-dist/tar.gz/5a733225090fdf94f5965e82f5a503e52adc1904"
   dependencies:
     abortcontroller-polyfill "^1.7.3"
     browser-tabs-lock "^1.2.15"
@@ -7518,9 +7518,9 @@ promise-inflight@^1.0.1, promise-inflight@~1.0.1:
   integrity sha512-6zWPyEOFaQBJYcGMHBKTKJ3u6TBsnMFOIZSa6ce1e/ZrrsOlnHRHbabMjLiBYKp+n44X9eUI6VUPaukCXHuG4g==
 
 promise-polyfill@^8.2.3:
-  version "8.2.3"
-  resolved "https://registry.yarnpkg.com/promise-polyfill/-/promise-polyfill-8.2.3.tgz#2edc7e4b81aff781c88a0d577e5fe9da822107c6"
-  integrity sha512-Og0+jCRQetV84U8wVjMNccfGCnMQ9mGs9Hv78QFe+pSDD3gWTpz0y+1QCuxy5d/vBFuZ3iwP2eycAkvqIMPmWg==
+  version "8.3.0"
+  resolved "https://registry.yarnpkg.com/promise-polyfill/-/promise-polyfill-8.3.0.tgz#9284810268138d103807b11f4e23d5e945a4db63"
+  integrity sha512-H5oELycFml5yto/atYqmjyigJoAo3+OXwolYiH7OfQuYlAqhxNvTfiNMbV9hsC6Yp83yE5r2KTVmtrG6R9i6Pg==
 
 promise-retry@^1.1.1:
   version "1.1.1"
