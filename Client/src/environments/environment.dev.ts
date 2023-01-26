@@ -13,7 +13,7 @@ export const environment = {
   apiUrl: envSettings.apiUrl,
   ws: envSettings.ws,
   auth: {
-    authorizePath: envSettings.auth_authorize_path,
+    authorize_path: envSettings.auth_authorize_path,
     audience: envSettings.auth_audience,
     client_id: envSettings.auth_client_id,
     domain: envSettings.auth_domain,

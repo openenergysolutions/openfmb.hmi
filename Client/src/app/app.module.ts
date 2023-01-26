@@ -85,7 +85,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
       // Request this audience at user authentication time
       audience: environment.auth.audience,
       // New authorizePath option
-      authorizePath: environment.auth.authorizePath,
+      authorizePath: environment.auth.authorize_path,
       redirectUri: window.location.origin,
       httpInterceptor: {
         allowedList: [
