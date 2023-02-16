@@ -86,6 +86,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
       audience: environment.auth.audience,
       // New authorizePath option
       authorizePath: environment.auth.authorize_path,
+      tokenPath: environment.auth.token_path,
       redirectUri: window.location.origin,
       httpInterceptor: {
         allowedList: [
@@ -98,7 +99,9 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
             }
           }
         ]
-      }
+      },
+      useFormData: true,
+      disableAuth0Client: true,
     }),
     WebSocketModule.config({
       url: environment.ws

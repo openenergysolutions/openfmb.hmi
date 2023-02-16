@@ -5,5 +5,6 @@
     "auth_client_id": "AUTH_CLIENT_ID",
     "auth_domain": "AUTH_DOMAIN",
     "auth_scope": "AUTH_SCOPE",
-    "auth_authorize_path": "AUTH_AUTHORIZE_PATH"
+    "auth_authorize_path": "AUTH_AUTHORIZE_PATH",
+    "auth_token_path": "AUTH_TOKEN_PATH"
 }

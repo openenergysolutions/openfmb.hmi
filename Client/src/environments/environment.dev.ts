@@ -14,6 +14,7 @@ export const environment = {
   ws: envSettings.ws,
   auth: {
     authorize_path: envSettings.auth_authorize_path,
+    token_path: envSettings.auth_token_path,
     audience: envSettings.auth_audience,
     client_id: envSettings.auth_client_id,
     domain: envSettings.auth_domain,

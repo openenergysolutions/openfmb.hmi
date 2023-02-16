@@ -22,7 +22,8 @@ ws_scheme = "ws"
 
 [auth]
 audience = "openfmb-hmi"
-authorize_path = "auth"
+authorize_path = "protocol/openid-connect/auth"
+token_path = "protocol/openid-connect/token"
 client_id = "gms"
-domain = "https://localhost:8443/realms/oes/protocol/openid-connect"
+domain = "https://localhost:8443/realms/oes"
 scope = "openid profile email offline_access"
