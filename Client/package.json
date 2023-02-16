@@ -24,7 +24,7 @@
     "@angular/platform-browser": "^14.0.1",
     "@angular/platform-browser-dynamic": "^14.0.1",
     "@angular/router": "^14.0.1",
-    "@auth0/auth0-angular": "https://github.com/phoenix-oes/auth0-angular-dist.git",
+    "@auth0/auth0-angular": "https://github.com/openenergysolutions/auth0-angular-dist.git#dev",
     "@ngrx/data": "^12.4.0",
     "@ngrx/effects": "^12.4.0",
     "@ngrx/entity": "^12.4.0",
