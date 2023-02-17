@@ -9,7 +9,7 @@ export class CustomAuthInterceptor implements HttpInterceptor {
   constructor(private auth: AuthService) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler) {
-    return this.auth.getAccessTokenSilentlyDecoded({audience: "openfmb-hmi"}).pipe(
+    return this.auth.getAccessTokenSilently({audience: "openfmb-hmi"}).pipe(
       switchMap(access_token=>{
         const authReq = req.clone({
           headers: req.headers.set('Authorization', `Bearer ${access_token}`),

@@ -24,7 +24,6 @@ export class AuthenticationService {
   constructor(private auth: AuthService) {
     this.currentUser$ = this.auth.user$;
     this.currentUser$.subscribe(user => {
-      console.log('authentication service user: ', user);
       this.currentUser = user;
     });
     // this.currentUserSubject = new BehaviorSubject<Auth>(JSON.parse(localStorage.getItem('currentUser')));
