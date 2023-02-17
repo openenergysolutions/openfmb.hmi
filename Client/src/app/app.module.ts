@@ -29,12 +29,13 @@ import { StoreRouterConnectingModule } from '@ngrx/router-store';
 import { EntityDataModule } from '@ngrx/data';
 import { entityConfig } from './entity-metadata';
 import { NgxSpinnerModule } from 'ngx-spinner';
-import { AuthHttpInterceptor, AuthModule } from '@auth0/auth0-angular';
+import { AuthModule } from '@auth0/auth0-angular';
 import { ErrorInterceptor } from './core/helpers/error-interceptor';
 import { LoadingInterceptor } from './core/helpers/loading-interceptor';
 import { DesignerEffects } from './store/effects/designer.effects';
 import { WebSocketModule } from './web-socket/web-socket.module';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
+import { CustomAuthInterceptor } from './shared/httpinterceptors/custom-auth-interceptor';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(httpClient: HttpClient) {
@@ -123,7 +124,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     },
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: AuthHttpInterceptor,
+      useClass: CustomAuthInterceptor,
       multi: true
     },
     {

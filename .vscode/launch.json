@@ -20,7 +20,7 @@
             "args": [],
             "cwd": "${workspaceFolder}",
             "env": {
-                "AUTHORITY": "https://localhost:8443/realms/oes/",
+                "AUTHORITY": "https://localhost:8443/realms/oes",
                 "AUDIENCE": "openfmb-hmi"
             },
             "preLaunchTask": "rust: cargo build"
