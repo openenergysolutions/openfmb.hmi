@@ -164,9 +164,41 @@ fn verify_password(password: &str, hash: &str) -> bool {
     bcrypt::verify(password, hash)
 }
 
+#[allow(dead_code)] // kty & alg only constrain deserialisation, but aren't used
+#[derive(Clone, Debug, Deserialize)]
+pub struct JWK_KC {
+    kty: String,
+    alg: String,
+    kid: String,
+
+    n: String,
+    e: String,
+
+    r#use: String,
+    x5c: Vec<String>,
+    x5t: String,
+}
+#[allow(dead_code)] // kty & alg only constrain deserialisation, but aren't used
+#[derive(Clone, Debug, Deserialize)]
+pub struct JWKS_KC {
+    keys: Vec<JWK_KC>,
+}
 fn get_jwks(uri: &str) -> Result<JWKS> {
-    match reqwest::get(uri) {
+
+    let getJWK = reqwest::Client::builder()
+        .danger_accept_invalid_certs(true)
+        .build()
+        .unwrap()
+        .get(uri);
+
+    match getJWK.send() {
         Ok(mut res) => {
+            // let test = res.text().unwrap();
+            // let test2 = serde_json::from_str::<JWKS_KC>(test.as_str());
+            // let vrr = res.json::<JWKS_KC>();
+            // let r2 = vrr.unwrap();
+            // let r = test2.unwrap();
+
             let v = res.json::<JWKS>();
 
             if let Err(_) = v {
@@ -175,7 +207,7 @@ fn get_jwks(uri: &str) -> Result<JWKS> {
 
             Ok(v.unwrap())
         }
-        Err(_) => Err(reject::custom(Error::GetJWKError)),
+        Err(test) => Err(reject::custom(Error::GetJWKError)),
     }
 }
 
@@ -187,7 +219,9 @@ fn extract_kid(jwt: &str) -> Result<String> {
 }
 
 fn check_role(mut claims: JsonValue, role: Role) -> Result<String> {
-    match claims["http://oes.com//roles"].as_array_mut() {
+    print!("here!");
+    let roles = &claims["resource_access"]["gms"]["roles"];
+    match claims["resource_access"]["gms"]["roles"].as_array_mut() {
         Some(v) => {
             let roles: Vec<Role> = v
                 .iter()
@@ -214,11 +248,11 @@ fn valid_jwt(jwt: &str, role: Role) -> Result<String> {
     let auth = env::var("AUTHORITY").expect("AUTHORITY must be set!");
     let aud = env::var("AUDIENCE").expect("AUDIENCE must be set!");
 
-    let jwks = get_jwks(&format!("{}{}", auth.as_str(), ".well-known/jwks.json"))?;
+    let jwks = get_jwks(&format!("{}{}", auth.as_str(), "/protocol/openid-connect/certs"))?;
 
     let validations = vec![
         alcoholic_jwt::Validation::Issuer(auth),
-        alcoholic_jwt::Validation::Audience(aud),
+        // alcoholic_jwt::Validation::Audience(aud),
         alcoholic_jwt::Validation::SubjectPresent,
     ];
 
@@ -226,7 +260,7 @@ fn valid_jwt(jwt: &str, role: Role) -> Result<String> {
     let jwk = jwks
         .find(&kid)
         .ok_or(reject::custom(Error::WrongCredentialsError))?;
-
+    print!("{}", jwt);
     match validate(&jwt, jwk, validations) {
         Ok(jwt) => check_role(jwt.claims, role),
         _ => Err(reject::custom(Error::JWTTokenError)),
