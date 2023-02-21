@@ -2,7 +2,7 @@ Notes:
 # High Priority
 - [done] The JWK struct in Autholic was failing deserialization, by making all its field strings (vs enums as it was), it worked.
 - [done] Me: Gotta delete/remove the auth0-angular/spa-js referenes in the repo.
-- - Beause I used the getAccessTokenSilently function in the auth0 client, we shouldnt need any of the role mapping changes Phoenix made (just all the the URL, paths, etc fixes he made).
+- [done][using the github dist version without it] Beause I used the getAccessTokenSilently function in the auth0 client, we shouldnt need any of the role mapping changes Phoenix made (just all the the URL, paths, etc fixes he made).
 
 
 # Medium 

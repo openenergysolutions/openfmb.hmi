@@ -26,6 +26,7 @@ use warp::{
     reply::json,
     Filter, Rejection, Reply,
 };
+use riker;
 
 pub type JsonValue = serde_json::Value;
 
@@ -215,14 +216,15 @@ fn check_role(mut claims: JsonValue, role: Role) -> Result<String> {
 }
 
 fn valid_jwt(jwt: &str, role: Role) -> Result<String> {
-    let auth = env::var("AUTHORITY").expect("AUTHORITY must be set!");
-    let aud = env::var("AUDIENCE").expect("AUDIENCE must be set!");
-
-    let jwks = get_jwks(&format!("{}{}", auth.as_str(), "/protocol/openid-connect/certs"))?;
+    let config = riker::load_config();
+    let auth = config.get_str("auth.authority").expect("config auth.authority must be set!");
+    let aud = config.get_str("auth.audience").expect("config auth.audience must be set!");
+    let jwk_url = config.get_str("auth.authorization_jwks_uri").expect("config auth.authorization_jwks_uri must be set!");
+    let jwks = get_jwks( jwk_url.as_str())?;
 
     let validations = vec![
         alcoholic_jwt::Validation::Issuer(auth),
-        // alcoholic_jwt::Validation::Audience(aud),
+        alcoholic_jwt::Validation::Audience(aud),
         alcoholic_jwt::Validation::SubjectPresent,
     ];
 
