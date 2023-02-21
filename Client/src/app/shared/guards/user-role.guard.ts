@@ -20,7 +20,7 @@ export class UserRoleGuard implements CanActivate {
 
   async canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
 
-    return this.auth.getAccessTokenSilently({audience: "openfmb-hmi"}).toPromise().then(access_token => {
+    return this.auth.getAccessTokenSilently().toPromise().then(access_token => {
       const access_token_d = parseJwt(access_token);
       const roles = access_token_d.resource_access.gms.roles;
       if (route?.data?.roles.some((role: string) => roles.includes(role))) {

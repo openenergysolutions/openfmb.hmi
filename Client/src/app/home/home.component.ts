@@ -22,7 +22,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.userSub = this.auth.user$.subscribe(user => {
       if (user) {
-        this.auth.getAccessTokenSilently({audience: "openfmb-hmi"}).toPromise().then(access_token => {
+        this.auth.getAccessTokenSilently().toPromise().then(access_token => {
           const access_token_d = parseJwt(access_token);
           const roles = access_token_d.resource_access.gms.roles;
           this.canEditDiagram = Authorization.canEditDiagram(roles);

@@ -78,7 +78,7 @@ export class NavigationService {
   constructor(public auth: AuthService) {
     this.auth.user$.subscribe(user => {
       if (user) {
-        this.auth.getAccessTokenSilently({audience: "openfmb-hmi"}).toPromise().then(access_token => {
+        this.auth.getAccessTokenSilently().toPromise().then(access_token => {
           const access_token_d = parseJwt(access_token);
           const roles = access_token_d.resource_access.gms.roles;
           this.iconMenu.filter(item => item.name === 'DATA CONNECTION')[0].visible = Authorization.canEditDiagram(roles);
