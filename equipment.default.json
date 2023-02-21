@@ -1,0 +1,37 @@
+[
+    {
+        "mrid": "e6768784-48ad-40e9-af2a-9676413d4d6a",
+        "name": "PCC@",
+        "deviceType": "switch"
+    },
+    {
+        "mrid": "836a8638-b448-4961-8258-47aa18e05f65",
+        "name": "Battery Inverter",
+        "deviceType": "ess"
+    },
+    {
+        "mrid": "4cadfaed-4176-453d-9625-e9ae8ad70529",
+        "name": "Load Bank",
+        "deviceType": "load"
+    },
+    {
+        "mrid": "0648ef71-cb63-4347-921a-9dbf178da687",
+        "name": "Building Load",
+        "deviceType": "meter"
+    },
+    {
+        "mrid": "540b292a-e600-4ae4-b077-40b892ae6970",
+        "name": "Solar Inverter",
+        "deviceType": "solar"
+    },
+    {
+        "mrid": "a23948b4-d001-4467-bbdd-a51faf49b571",
+        "name": "ESS Control",
+        "deviceType": "ess"
+    },
+    {
+        "mrid": "741df6b5-5bdd-4ea6-a6aa-541fba744721",
+        "name": "HMI_Server",
+        "deviceType": "generic"
+    }
+]
