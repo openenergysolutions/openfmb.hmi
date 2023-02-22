@@ -7,6 +7,7 @@
     "start": "node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng serve -o",
     "serveDev": "ng serve --configuration=dev",
     "serveDevSSL": "yarn serveDev --ssl",
+    "buildDev": "ng build --configuration=dev",
     "build": "ng build --configuration=production --aot=true --optimization=true"
   },
   "private": true,
