@@ -12,6 +12,7 @@ RUN RUSTFLAGS=-Ctarget-feature=-crt-static cargo build --release
 FROM node:alpine3.16 AS frontend-build
 WORKDIR /Client
 COPY Client .
+RUN apk --no-cache add git
 RUN npx browserslist --update-db
 RUN yarn --version
 RUN yarn install
