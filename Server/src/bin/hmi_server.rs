@@ -328,10 +328,12 @@ async fn server_setup() {
     let auth_client_id = config.get_str("auth.client_id").unwrap_or("".to_string());
     let auth_domain = config.get_str("auth.domain").unwrap_or("".to_string());
     let auth_scope = config.get_str("auth.scope").unwrap_or("".to_string());
+    let auth_authorize_path = config.get_str("auth.authorize_path").unwrap_or("".to_string());
+    let auth_token_path = config.get_str("auth.token_path").unwrap_or("".to_string());
 
     let hmi_local_ip = format!("{}:{}", host, port);
 
-    let _ = write_hmi_env(&hmi_local_ip, &http_scheme, &ws_scheme, &auth_audience, &auth_client_id, &auth_domain, &auth_scope);
+    let _ = write_hmi_env(&hmi_local_ip, &http_scheme, &ws_scheme, &auth_audience, &auth_client_id, &auth_domain, &auth_scope, &auth_authorize_path, &auth_token_path);
 
     let server_uri = format!("0.0.0.0:{}", port);
 
@@ -365,7 +367,7 @@ fn with_hmi(
     warp::any().map(move || hmi.clone())
 }
 
-fn write_hmi_env(hmi_local_ip: &str, http_scheme: &str, ws_scheme: &str, auth_audience: &str, auth_client_id: &str, auth_domain: &str, auth_scope: &str) -> std::io::Result<()> {
+fn write_hmi_env(hmi_local_ip: &str, http_scheme: &str, ws_scheme: &str, auth_audience: &str, auth_client_id: &str, auth_domain: &str, auth_scope: &str, auth_authorize_path: &str, auth_token_path: &str) -> std::io::Result<()> {
     for entry in fs::read_dir("Client/dist/openfmb-hmi")? {
         let entry = entry?;
         if let Some(file_name) = entry.path().as_path().file_name() {
@@ -388,6 +390,8 @@ fn write_hmi_env(hmi_local_ip: &str, http_scheme: &str, ws_scheme: &str, auth_au
                     let auth_client_id_search = "AUTH_CLIENT_ID";
                     let auth_domain_search = "AUTH_DOMAIN";
                     let auth_scope_search = "AUTH_SCOPE";
+                    let auth_authorize_path_search = "AUTH_AUTHORIZE_PATH";
+                    let auth_token_path_search = "AUTH_TOKEN_PATH";
                     
                     let http_uri = format!("{}://{}/", http_scheme, hmi_local_ip);
                     let ws_uri = format!("{}://{}/", ws_scheme, hmi_local_ip);
@@ -398,7 +402,9 @@ fn write_hmi_env(hmi_local_ip: &str, http_scheme: &str, ws_scheme: &str, auth_au
                         .replace(auth_audience_search, &auth_audience)
                         .replace(auth_client_id_search, &auth_client_id)
                         .replace(auth_domain_search, &auth_domain)
-                        .replace(auth_scope_search, &auth_scope);
+                        .replace(auth_scope_search, &auth_scope)
+                        .replace(auth_authorize_path_search, &auth_authorize_path)
+                        .replace(auth_token_path_search, &auth_token_path);
                     fs::write(entry.path().as_path(), contents)?;
                 }
             }

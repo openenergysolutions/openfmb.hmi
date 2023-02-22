@@ -26,6 +26,7 @@ use warp::{
     reply::json,
     Filter, Rejection, Reply,
 };
+use riker;
 
 pub type JsonValue = serde_json::Value;
 
@@ -165,14 +166,18 @@ fn verify_password(password: &str, hash: &str) -> bool {
 }
 
 fn get_jwks(uri: &str) -> Result<JWKS> {
-    match reqwest::get(uri) {
+    let get_jwk = reqwest::Client::builder()
+        .danger_accept_invalid_certs(true)
+        .build()
+        .unwrap()
+        .get(uri);
+
+    match get_jwk.send() {
         Ok(mut res) => {
             let v = res.json::<JWKS>();
-
             if let Err(_) = v {
                 return Err(reject::custom(Error::ParseJWKError));
             }
-
             Ok(v.unwrap())
         }
         Err(_) => Err(reject::custom(Error::GetJWKError)),
@@ -187,7 +192,7 @@ fn extract_kid(jwt: &str) -> Result<String> {
 }
 
 fn check_role(mut claims: JsonValue, role: Role) -> Result<String> {
-    match claims["http://oes.com//roles"].as_array_mut() {
+    match claims["resource_access"]["gms"]["roles"].as_array_mut() {
         Some(v) => {
             let roles: Vec<Role> = v
                 .iter()
@@ -211,10 +216,11 @@ fn check_role(mut claims: JsonValue, role: Role) -> Result<String> {
 }
 
 fn valid_jwt(jwt: &str, role: Role) -> Result<String> {
-    let auth = env::var("AUTHORITY").expect("AUTHORITY must be set!");
-    let aud = env::var("AUDIENCE").expect("AUDIENCE must be set!");
-
-    let jwks = get_jwks(&format!("{}{}", auth.as_str(), ".well-known/jwks.json"))?;
+    let config = riker::load_config();
+    let auth = config.get_str("auth.authority").expect("config auth.authority must be set!");
+    let aud = config.get_str("auth.audience").expect("config auth.audience must be set!");
+    let jwk_url = config.get_str("auth.authorization_jwks_uri").expect("config auth.authorization_jwks_uri must be set!");
+    let jwks = get_jwks( jwk_url.as_str())?;
 
     let validations = vec![
         alcoholic_jwt::Validation::Issuer(auth),
@@ -226,7 +232,7 @@ fn valid_jwt(jwt: &str, role: Role) -> Result<String> {
     let jwk = jwks
         .find(&kid)
         .ok_or(reject::custom(Error::WrongCredentialsError))?;
-
+    print!("{}", jwt);
     match validate(&jwt, jwk, validations) {
         Ok(jwt) => check_role(jwt.claims, role),
         _ => Err(reject::custom(Error::JWTTokenError)),

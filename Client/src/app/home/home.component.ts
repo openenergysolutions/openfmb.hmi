@@ -7,6 +7,7 @@ import { Authorization } from '../shared/models/user.model';
 import { AuthService } from "@auth0/auth0-angular";
 import { AuthConstant } from '../core/constants/auth-constant';
 import { Subscription } from 'rxjs';
+import { parseJwt } from '../shared/helpers/utils';
 
 @Component({
   selector: 'app-home',
@@ -17,11 +18,15 @@ export class HomeComponent implements OnInit, OnDestroy {
   canEditDiagram: boolean = false;
   userSub: Subscription;
   constructor(private auth: AuthService) { }
-
+  
   ngOnInit(): void {
     this.userSub = this.auth.user$.subscribe(user => {
       if (user) {
-        this.canEditDiagram = Authorization.canEditDiagram(user[AuthConstant.ROLES]);
+        this.auth.getAccessTokenSilently().toPromise().then(access_token => {
+          const access_token_d = parseJwt(access_token);
+          const roles = access_token_d.resource_access.gms.roles;
+          this.canEditDiagram = Authorization.canEditDiagram(roles);
+        });
       }
     })
   }

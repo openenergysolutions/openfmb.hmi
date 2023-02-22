@@ -19,10 +19,6 @@
             "program": "${workspaceFolder}/target/debug/hmi_server",
             "args": [],
             "cwd": "${workspaceFolder}",
-            "env": {
-                "AUTHORITY": "https://oes-dev.us.auth0.com/",
-                "AUDIENCE": "openfmb-hmi"
-            },
             "preLaunchTask": "rust: cargo build"
         }
     ]

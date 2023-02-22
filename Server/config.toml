@@ -1,3 +1,0 @@
-[env]
-AUTHORITY = "https://oes-dev.us.auth0.com/" 
-AUDIENCE = "openfmb-hmi"

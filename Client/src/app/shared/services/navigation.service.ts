@@ -7,6 +7,7 @@ import { BehaviorSubject } from 'rxjs';
 import { Authorization } from '../../shared/models/user.model';
 import { AuthService } from '@auth0/auth0-angular';
 import { AuthConstant } from '../../core/constants/auth-constant';
+import { parseJwt } from '../helpers/utils';
 
 interface IMenuItem {
   type: string; // Possible values: link/dropDown/icon/separator/extLink
@@ -76,12 +77,13 @@ export class NavigationService {
 
   constructor(public auth: AuthService) {
     this.auth.user$.subscribe(user => {
-      console.log('navigation service user: ', user);
       if (user) {
-        this.iconMenu.filter(item => item.name === 'DATA CONNECTION')[0].visible = Authorization.canEditDiagram(user[AuthConstant.ROLES]);
-        console.log('navigation service user, canEditDiagram: ', this.iconMenu[1].visible);
-        this.iconMenu.filter(item => item.name === 'SETTINGS')[0].visible = Authorization.canUpdateSettings(user[AuthConstant.ROLES]);
-        console.log('navigation service user, canUpdateSettings: ', this.iconMenu[2].visible);
+        this.auth.getAccessTokenSilently().toPromise().then(access_token => {
+          const access_token_d = parseJwt(access_token);
+          const roles = access_token_d.resource_access.gms.roles;
+          this.iconMenu.filter(item => item.name === 'DATA CONNECTION')[0].visible = Authorization.canEditDiagram(roles);
+          this.iconMenu.filter(item => item.name === 'SETTINGS')[0].visible = Authorization.canUpdateSettings(roles);
+        })
       }
     });
   }

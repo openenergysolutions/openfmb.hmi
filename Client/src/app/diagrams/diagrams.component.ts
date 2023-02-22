@@ -16,6 +16,7 @@ import { AuthService } from "@auth0/auth0-angular";
 import { v4 as uuidv4 } from 'uuid';
 import { Authorization } from '../shared/models/user.model';
 import { AuthConstant } from '../core/constants/auth-constant';
+import { parseJwt } from '../shared/helpers/utils';
 
 
 @Component({
@@ -42,7 +43,11 @@ export class DiagramsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.userSub = this.auth.user$.subscribe(user => {
       if (user) {
-        this.canEditDiagram = Authorization.canEditDiagram(user[AuthConstant.ROLES]);
+        this.auth.getAccessTokenSilently().toPromise().then(access_token => {
+          const access_token_d = parseJwt(access_token);
+          const roles = access_token_d.resource_access.gms.roles;
+          this.canEditDiagram = Authorization.canEditDiagram(roles);
+        });
       }
     })
     this.getData();
