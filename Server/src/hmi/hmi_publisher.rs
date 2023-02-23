@@ -81,7 +81,7 @@ impl HmiPublisher {
         msg: &StartProcessingMessages,
     ) {
         self.nats_client = None;
-        
+
         info!(
             "HmiPublisher connects to NATS with options: {:?}",
             msg.pubsub_options
@@ -99,8 +99,8 @@ impl HmiPublisher {
             .error_callback(|err| CoordinatorOptions::on_error(err))
             .close_callback(move || HmiPublisher::on_closed(&myself))
             .retry_on_failed_connect()
-            .connect(connection_url) {
-
+            .connect(connection_url)
+        {
             Ok(connection) => {
                 info!("****** HmiPublisher successfully connected");
 
@@ -115,9 +115,12 @@ impl HmiPublisher {
     fn on_closed(hmi: &ActorRef<HmiPublisherMsg>) {
         info!("Connection to pub/sub broker has been closed!");
 
-        hmi.tell(StartProcessingMessages {
-            pubsub_options: CoordinatorOptions::new(),
-        }, None);
+        hmi.tell(
+            StartProcessingMessages {
+                pubsub_options: CoordinatorOptions::new(),
+            },
+            None,
+        );
     }
 
     fn get_device_type_by_mrid(&self, mrid: String) -> Option<String> {

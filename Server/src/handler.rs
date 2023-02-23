@@ -160,7 +160,7 @@ pub async fn data_handler(
     if update.topic.name == "ToggleEnvironment" {
         hmi.tell(
             StartProcessingMessages {
-                pubsub_options: CoordinatorOptions::toggle_environment(),                
+                pubsub_options: CoordinatorOptions::toggle_environment(),
             },
             None,
         );
