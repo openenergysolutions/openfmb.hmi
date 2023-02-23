@@ -6,6 +6,7 @@
 use std::collections::HashMap;
 use std::convert::Infallible;
 use std::fs;
+use std::io::Read;
 use std::net::ToSocketAddrs;
 use std::path::Path;
 use std::sync::Arc;
@@ -33,12 +34,49 @@ async fn main() {
     server_setup().await;
 }
 
-async fn server_setup() {
-    let clients: Clients = Arc::new(RwLock::new(HashMap::new()));
+macro_rules! leaked {
+    ($val:expr) => {
+        Box::leak(Box::new($val))
+    };
+}
 
+async fn server_setup() {
     let config = riker::load_config();
 
-    setup_logger(&config).unwrap();
+    let _ = setup_logger(&config);
+
+    let auth = config.get_str("auth.authority").ok();
+    let aud = config.get_str("auth.audience").ok();
+    let jwk_url = config.get_str("auth.authorization_jwks_uri").ok();
+
+
+    // Self-signed CA for token-verification client to trust.
+    let auth_client = match config.get_str("auth.cert_path") {
+        Ok(cert_path) => {
+            let mut buf = Vec::new();
+            let _ = fs::File::open(&cert_path)
+                .expect("No root certificate provided")
+                .read_to_end(&mut buf)
+                .expect("Unable to read root certificate");
+    
+            let cert =
+                reqwest::Certificate::from_pem(&buf).expect("Unable to parse certificate from buffer");
+        
+            leaked!(reqwest::Client::builder()
+                .add_root_certificate(cert)
+                .build()
+                .expect("Failed to build http client for validating access tokens"))
+        },
+        _ => leaked!(reqwest::Client::builder()
+                .build()
+                .expect("Failed to build http client for validating access tokens"))
+    };
+
+    // Create client for token-verification against 3rd party service.
+    let roauth: &'static RoleAuthorizer =
+        leaked!(RoleAuthorizer::new(auth_client, auth, aud, jwk_url));
+
+    let clients: Clients = Arc::new(RwLock::new(HashMap::new()));
 
     //Create the actor system that will manage all of the actors instantiate during runtime
     let sys = ActorSystem::with_config("coordinator", config.clone()).unwrap();
@@ -91,29 +129,29 @@ async fn server_setup() {
 
     let user_profile = warp::path("profile")
         .and(warp::get())
-        .and(with_auth(Role::Viewer))
+        .and(RoleAuthorizer::verify(&roauth, Role::Viewer))
         .and_then(profile_handler);
 
     let get_users = warp::path("get-users")
         .and(warp::get())
-        .and(with_auth(Role::SuperUser))
+        .and(RoleAuthorizer::verify(&roauth, Role::SuperUser))
         .and_then(get_users_handler);
 
     let delete_user = warp::path("delete-user")
         .and(warp::post())
-        .and(with_auth(Role::SuperUser))
+        .and(RoleAuthorizer::verify(&roauth, Role::SuperUser))
         .and(warp::body::json())
         .and_then(delete_user_handler);
 
     let update_user = warp::path("update-user")
         .and(warp::post())
-        .and(with_auth(Role::SuperUser))
+        .and(RoleAuthorizer::verify(&roauth, Role::SuperUser))
         .and(warp::body::json())
         .and_then(update_user_handler);
 
     let create_user = warp::path("create-user")
         .and(warp::post())
-        .and(with_auth(Role::SuperUser))
+        .and(RoleAuthorizer::verify(&roauth, Role::SuperUser))
         .and(warp::body::json())
         .and_then(create_user_handler);
 
@@ -153,24 +191,24 @@ async fn server_setup() {
 
     let equipment_routes = warp::path("equipment-list")
         .and(warp::get())
-        .and(with_auth(Role::SuperUser))
+        .and(RoleAuthorizer::verify(&roauth, Role::SuperUser))
         .and_then(equipment_handler);
 
     let delete_equipment = warp::path("delete-equipment")
         .and(warp::post())
-        .and(with_auth(Role::SuperUser))
+        .and(RoleAuthorizer::verify(&roauth, Role::SuperUser))
         .and(warp::body::json())
         .and_then(delete_equipment_handler);
 
     let update_equipment = warp::path("update-equipment")
         .and(warp::post())
-        .and(with_auth(Role::SuperUser))
+        .and(RoleAuthorizer::verify(&roauth, Role::SuperUser))
         .and(warp::body::json())
         .and_then(update_equipment_handler);
 
     let create_equipment = warp::path("create-equipment")
         .and(warp::post())
-        .and(with_auth(Role::SuperUser))
+        .and(RoleAuthorizer::verify(&roauth, Role::SuperUser))
         .and(warp::body::json())
         .and_then(create_equipment_handler);
 
@@ -328,7 +366,9 @@ async fn server_setup() {
     let auth_client_id = config.get_str("auth.client_id").unwrap_or("".to_string());
     let auth_domain = config.get_str("auth.domain").unwrap_or("".to_string());
     let auth_scope = config.get_str("auth.scope").unwrap_or("".to_string());
-    let auth_authorize_path = config.get_str("auth.authorize_path").unwrap_or("".to_string());
+    let auth_authorize_path = config
+        .get_str("auth.authorize_path")
+        .unwrap_or("".to_string());
     let auth_token_path = config.get_str("auth.token_path").unwrap_or("".to_string());
     let auth_logout_path = config.get_str("auth.auth_logout").unwrap_or("".to_string());
 
