@@ -21,6 +21,7 @@ http_scheme = "https"
 ws_scheme = "ws"
 
 [auth]
+cert_path = "/certs/rootCA.pem"
 audience = "openfmb-hmi"
 authorize_path = "authorize"
 token_path = "oauth/token"

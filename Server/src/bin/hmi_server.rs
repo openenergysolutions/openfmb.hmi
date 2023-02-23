@@ -34,9 +34,20 @@ use config::Config;
 lazy_static! {
     // Client for verifying tokens from keycloak/auth0.
     static ref ROLE_AUTHORIZER: RoleAuthorizer = {
-        let mut buf = Vec::new();
+        let config = riker::load_config();
 
-        let _ = fs::File::open("/certs/rootCA.pem")
+        let cert_path = config.get_str("auth.cert_path")
+            .ok()
+            .expect("No certificate provided");
+
+        let auth = config.get_str("auth.authority").ok();
+        let aud = config.get_str("auth.audience").ok();
+        let jwk_url = config
+            .get_str("auth.authorization_jwks_uri")
+            .ok();
+
+        let mut buf = Vec::new();
+        let _ = fs::File::open(&cert_path)
             .expect("No root certificate provided")
             .read_to_end(&mut buf)
             .expect("Unable to read root certificate");
@@ -48,14 +59,6 @@ lazy_static! {
             .add_root_certificate(cert)
             .build()
             .expect("Failed to build http client for validating access tokens");
-
-        let config = riker::load_config();
-
-        let auth = config.get_str("auth.authority").ok();
-        let aud = config.get_str("auth.audience").ok();
-        let jwk_url = config
-            .get_str("auth.authorization_jwks_uri")
-            .ok();
 
         RoleAuthorizer::new(
             client,

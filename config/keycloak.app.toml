@@ -21,6 +21,7 @@ http_scheme = "https"
 ws_scheme = "ws"
 
 [auth]
+cert_path = "/certs/rootCA.pem"
 audience = "gms"
 authorize_path = "protocol/openid-connect/auth"
 token_path = "protocol/openid-connect/token"
