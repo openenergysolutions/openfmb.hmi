@@ -31,53 +31,46 @@ use riker::system::ActorSystem;
 
 use config::Config;
 
-lazy_static! {
-    // Client for verifying tokens from keycloak/auth0.
-    static ref ROLE_AUTHORIZER: RoleAuthorizer = {
-        let config = riker::load_config();
-
-        let cert_path = config.get_str("auth.cert_path")
-            .ok()
-            .expect("No certificate provided");
-
-        let auth = config.get_str("auth.authority").ok();
-        let aud = config.get_str("auth.audience").ok();
-        let jwk_url = config
-            .get_str("auth.authorization_jwks_uri")
-            .ok();
-
-        let mut buf = Vec::new();
-        let _ = fs::File::open(&cert_path)
-            .expect("No root certificate provided")
-            .read_to_end(&mut buf)
-            .expect("Unable to read root certificate");
-
-        let cert = reqwest::Certificate::from_pem(&buf)
-            .expect("Unable to parse certificate from buffer");
-
-        let client = reqwest::Client::builder()
-            .add_root_certificate(cert)
-            .build()
-            .expect("Failed to build http client for validating access tokens");
-
-        RoleAuthorizer::new(
-            client,
-            auth,
-            aud,
-            jwk_url
-        )
+macro_rules! leaked {
+    ($val:expr) => {
+        Box::leak(Box::new($val))
     };
 }
 
 #[tokio::main]
 async fn main() {
-    server_setup(&*ROLE_AUTHORIZER).await;
+    let config = riker::load_config();
+
+    let cert_path = config
+        .get_str("auth.cert_path")
+        .ok()
+        .expect("No certificate provided");
+
+    let auth = config.get_str("auth.authority").ok();
+    let aud = config.get_str("auth.audience").ok();
+    let jwk_url = config.get_str("auth.authorization_jwks_uri").ok();
+
+    let mut buf = Vec::new();
+    let _ = fs::File::open(&cert_path)
+        .expect("No root certificate provided")
+        .read_to_end(&mut buf)
+        .expect("Unable to read root certificate");
+
+    let cert =
+        reqwest::Certificate::from_pem(&buf).expect("Unable to parse certificate from buffer");
+    let auth_client: &'static reqwest::Client = leaked!(reqwest::Client::builder()
+        .add_root_certificate(cert)
+        .build()
+        .expect("Failed to build http client for validating access tokens"));
+
+    let roauth: &'static RoleAuthorizer =
+        leaked!(RoleAuthorizer::new(auth_client, auth, aud, jwk_url));
+
+    server_setup(roauth, config).await;
 }
 
-async fn server_setup(auth: &'static RoleAuthorizer) {
+async fn server_setup(auth: &'static RoleAuthorizer<'_>, config: Config) {
     let clients: Clients = Arc::new(RwLock::new(HashMap::new()));
-
-    let config = riker::load_config();
 
     setup_logger(&config).unwrap();
 

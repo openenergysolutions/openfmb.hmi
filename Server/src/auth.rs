@@ -111,20 +111,20 @@ struct Claims {
 /// validated against information obtained
 /// from the service that issued the access
 /// token. Ie, keycloak or auth0.
-pub struct RoleAuthorizer {
-    client: reqwest::Client,
+pub struct RoleAuthorizer<'a> {
+    client: &'a reqwest::Client,
     auth: Option<String>,
     aud: Option<String>,
     jwk_url: Option<String>,
 }
 
-impl RoleAuthorizer {
+impl<'a> RoleAuthorizer<'a> {
     pub fn new(
-        client: reqwest::Client,
+        client: &'a reqwest::Client,
         auth: Option<String>,
         aud: Option<String>,
         jwk_url: Option<String>,
-    ) -> RoleAuthorizer {
+    ) -> RoleAuthorizer<'a> {
         Self {
             client,
             auth,
@@ -159,8 +159,8 @@ impl RoleAuthorizer {
             let jwks = self.get_jwks(&url)?;
 
             let validations = vec![
-                alcoholic_jwt::Validation::Issuer(auth.clone()),
-                alcoholic_jwt::Validation::Audience(aud.clone()),
+                alcoholic_jwt::Validation::Issuer(auth.to_string()),
+                alcoholic_jwt::Validation::Audience(aud.to_string()),
                 alcoholic_jwt::Validation::SubjectPresent,
             ];
 
