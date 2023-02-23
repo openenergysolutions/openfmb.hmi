@@ -10,7 +10,6 @@ use log::error;
 use pwhash::bcrypt;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::env;
 use std::fmt;
 use std::fs;
 use std::fs::File;
@@ -26,7 +25,6 @@ use warp::{
     reply::json,
     Filter, Rejection, Reply,
 };
-use riker;
 
 pub type JsonValue = serde_json::Value;
 
@@ -105,13 +103,96 @@ struct Claims {
     exp: usize,
 }
 
-pub fn with_auth(role: Role) -> impl Filter<Extract = (String,), Error = Rejection> + Clone {
-    headers_cloned()
-        .map(move |headers: HeaderMap<HeaderValue>| (role.clone(), headers))
-        .and_then(authorize)
+/// A `RoleAuthorizer` is used to perform
+/// what is known in OAuth-speak as
+/// 'introspection'. All that really means
+/// is that all access tokens we receive
+/// must have their claims and signature
+/// validated against information obtained
+/// from the service that issued the access
+/// token. Ie, keycloak or auth0.
+pub struct RoleAuthorizer<'a> {
+    client: &'a reqwest::Client,
+    auth: Option<String>,
+    aud: Option<String>,
+    jwk_url: Option<String>,
 }
 
-pub fn create_jwt(uid: &str, name: &str, role: &Role) -> std::result::Result<String, Error> {
+impl<'a> RoleAuthorizer<'a> {
+    pub fn new(
+        client: &'a reqwest::Client,
+        auth: Option<String>,
+        aud: Option<String>,
+        jwk_url: Option<String>,
+    ) -> RoleAuthorizer<'a> {
+        Self {
+            client,
+            auth,
+            aud,
+            jwk_url,
+        }
+    }
+
+    pub fn verify(
+        &self,
+        role: Role,
+    ) -> impl Filter<Extract = (String,), Error = Rejection> + Clone + '_ {
+        headers_cloned().and_then(move |headers: HeaderMap<HeaderValue>| {
+            RoleAuthorizer::authorize(&self, (role.clone(), headers))
+        })
+    }
+
+    async fn authorize(
+        &self,
+        (role, headers): (Role, HeaderMap<HeaderValue>),
+    ) -> std::result::Result<String, Rejection> {
+        match jwt_from_header(&headers) {
+            Ok(jwt) => self.valid_jwt(&jwt, role),
+            Err(e) => return Err(reject::custom(e)),
+        }
+    }
+
+    fn valid_jwt(&self, jwt: &str, role: Role) -> Result<String> {
+        if let (Some(url), Some(auth), Some(aud)) =
+            (self.jwk_url.as_ref(), self.auth.as_ref(), self.aud.as_ref())
+        {
+            let jwks = self.get_jwks(&url)?;
+
+            let validations = vec![
+                alcoholic_jwt::Validation::Issuer(auth.to_string()),
+                alcoholic_jwt::Validation::Audience(aud.to_string()),
+                alcoholic_jwt::Validation::SubjectPresent,
+            ];
+
+            let kid = extract_kid(&jwt)?;
+            let jwk = jwks
+                .find(&kid)
+                .ok_or(reject::custom(Error::WrongCredentialsError))?;
+
+            match validate(&jwt, jwk, validations) {
+                Ok(jwt) => check_role(jwt.claims, role),
+                _ => Err(reject::custom(Error::JWTTokenError)),
+            }
+        } else {
+            Err(reject::custom(Error::ParseJWKError))
+        }
+    }
+
+    fn get_jwks(&self, uri: &str) -> Result<JWKS> {
+        match self.client.get(uri).send() {
+            Ok(mut res) => {
+                let v = res.json::<JWKS>();
+                if let Err(_) = v {
+                    return Err(reject::custom(Error::ParseJWKError));
+                }
+                Ok(v.unwrap())
+            }
+            Err(_) => Err(reject::custom(Error::GetJWKError)),
+        }
+    }
+}
+
+fn create_jwt(uid: &str, name: &str, role: &Role) -> std::result::Result<String, Error> {
     let expiration = Utc::now()
         .checked_add_signed(chrono::Duration::days(7))
         .expect("valid timestamp")
@@ -126,15 +207,6 @@ pub fn create_jwt(uid: &str, name: &str, role: &Role) -> std::result::Result<Str
     let header = Header::new(Algorithm::HS512);
     encode(&header, &claims, &EncodingKey::from_secret(JWT_SECRET))
         .map_err(|_| Error::JWTTokenCreationError)
-}
-
-async fn authorize(
-    (role, headers): (Role, HeaderMap<HeaderValue>),
-) -> std::result::Result<String, Rejection> {
-    match jwt_from_header(&headers) {
-        Ok(jwt) => valid_jwt(&jwt, role),
-        Err(e) => return Err(reject::custom(e)),
-    }
 }
 
 fn jwt_from_header(headers: &HeaderMap<HeaderValue>) -> std::result::Result<String, Error> {
@@ -165,25 +237,6 @@ fn verify_password(password: &str, hash: &str) -> bool {
     bcrypt::verify(password, hash)
 }
 
-fn get_jwks(uri: &str) -> Result<JWKS> {
-    let get_jwk = reqwest::Client::builder()
-        .danger_accept_invalid_certs(true)
-        .build()
-        .unwrap()
-        .get(uri);
-
-    match get_jwk.send() {
-        Ok(mut res) => {
-            let v = res.json::<JWKS>();
-            if let Err(_) = v {
-                return Err(reject::custom(Error::ParseJWKError));
-            }
-            Ok(v.unwrap())
-        }
-        Err(_) => Err(reject::custom(Error::GetJWKError)),
-    }
-}
-
 fn extract_kid(jwt: &str) -> Result<String> {
     match token_kid(&jwt) {
         Ok(kid) if kid.is_some() => Ok(kid.unwrap()),
@@ -212,30 +265,6 @@ fn check_role(mut claims: JsonValue, role: Role) -> Result<String> {
         None => {
             return Err(reject::custom(Error::JWTTokenError));
         }
-    }
-}
-
-fn valid_jwt(jwt: &str, role: Role) -> Result<String> {
-    let config = riker::load_config();
-    let auth = config.get_str("auth.authority").expect("config auth.authority must be set!");
-    let aud = config.get_str("auth.audience").expect("config auth.audience must be set!");
-    let jwk_url = config.get_str("auth.authorization_jwks_uri").expect("config auth.authorization_jwks_uri must be set!");
-    let jwks = get_jwks( jwk_url.as_str())?;
-
-    let validations = vec![
-        alcoholic_jwt::Validation::Issuer(auth),
-        alcoholic_jwt::Validation::Audience(aud),
-        alcoholic_jwt::Validation::SubjectPresent,
-    ];
-
-    let kid = extract_kid(&jwt)?;
-    let jwk = jwks
-        .find(&kid)
-        .ok_or(reject::custom(Error::WrongCredentialsError))?;
-    print!("{}", jwt);
-    match validate(&jwt, jwk, validations) {
-        Ok(jwt) => check_role(jwt.claims, role),
-        _ => Err(reject::custom(Error::JWTTokenError)),
     }
 }
 

@@ -6,10 +6,13 @@
 use std::collections::HashMap;
 use std::convert::Infallible;
 use std::fs;
+use std::io::Read;
 use std::net::ToSocketAddrs;
 use std::path::Path;
 use std::sync::Arc;
 
+#[macro_use]
+extern crate lazy_static;
 use tokio::sync::RwLock;
 
 use warp::Filter;
@@ -28,15 +31,46 @@ use riker::system::ActorSystem;
 
 use config::Config;
 
-#[tokio::main]
-async fn main() {
-    server_setup().await;
+macro_rules! leaked {
+    ($val:expr) => {
+        Box::leak(Box::new($val))
+    };
 }
 
-async fn server_setup() {
-    let clients: Clients = Arc::new(RwLock::new(HashMap::new()));
-
+#[tokio::main]
+async fn main() {
     let config = riker::load_config();
+
+    let cert_path = config
+        .get_str("auth.cert_path")
+        .ok()
+        .expect("No certificate provided");
+
+    let auth = config.get_str("auth.authority").ok();
+    let aud = config.get_str("auth.audience").ok();
+    let jwk_url = config.get_str("auth.authorization_jwks_uri").ok();
+
+    let mut buf = Vec::new();
+    let _ = fs::File::open(&cert_path)
+        .expect("No root certificate provided")
+        .read_to_end(&mut buf)
+        .expect("Unable to read root certificate");
+
+    let cert =
+        reqwest::Certificate::from_pem(&buf).expect("Unable to parse certificate from buffer");
+    let auth_client: &'static reqwest::Client = leaked!(reqwest::Client::builder()
+        .add_root_certificate(cert)
+        .build()
+        .expect("Failed to build http client for validating access tokens"));
+
+    let roauth: &'static RoleAuthorizer =
+        leaked!(RoleAuthorizer::new(auth_client, auth, aud, jwk_url));
+
+    server_setup(roauth, config).await;
+}
+
+async fn server_setup(auth: &'static RoleAuthorizer<'_>, config: Config) {
+    let clients: Clients = Arc::new(RwLock::new(HashMap::new()));
 
     setup_logger(&config).unwrap();
 
@@ -91,29 +125,29 @@ async fn server_setup() {
 
     let user_profile = warp::path("profile")
         .and(warp::get())
-        .and(with_auth(Role::Viewer))
+        .and(RoleAuthorizer::verify(&auth, Role::Viewer))
         .and_then(profile_handler);
 
     let get_users = warp::path("get-users")
         .and(warp::get())
-        .and(with_auth(Role::SuperUser))
+        .and(RoleAuthorizer::verify(&auth, Role::SuperUser))
         .and_then(get_users_handler);
 
     let delete_user = warp::path("delete-user")
         .and(warp::post())
-        .and(with_auth(Role::SuperUser))
+        .and(RoleAuthorizer::verify(&auth, Role::SuperUser))
         .and(warp::body::json())
         .and_then(delete_user_handler);
 
     let update_user = warp::path("update-user")
         .and(warp::post())
-        .and(with_auth(Role::SuperUser))
+        .and(RoleAuthorizer::verify(&auth, Role::SuperUser))
         .and(warp::body::json())
         .and_then(update_user_handler);
 
     let create_user = warp::path("create-user")
         .and(warp::post())
-        .and(with_auth(Role::SuperUser))
+        .and(RoleAuthorizer::verify(&auth, Role::SuperUser))
         .and(warp::body::json())
         .and_then(create_user_handler);
 
@@ -153,24 +187,24 @@ async fn server_setup() {
 
     let equipment_routes = warp::path("equipment-list")
         .and(warp::get())
-        .and(with_auth(Role::SuperUser))
+        .and(RoleAuthorizer::verify(&auth, Role::SuperUser))
         .and_then(equipment_handler);
 
     let delete_equipment = warp::path("delete-equipment")
         .and(warp::post())
-        .and(with_auth(Role::SuperUser))
+        .and(RoleAuthorizer::verify(&auth, Role::SuperUser))
         .and(warp::body::json())
         .and_then(delete_equipment_handler);
 
     let update_equipment = warp::path("update-equipment")
         .and(warp::post())
-        .and(with_auth(Role::SuperUser))
+        .and(RoleAuthorizer::verify(&auth, Role::SuperUser))
         .and(warp::body::json())
         .and_then(update_equipment_handler);
 
     let create_equipment = warp::path("create-equipment")
         .and(warp::post())
-        .and(with_auth(Role::SuperUser))
+        .and(RoleAuthorizer::verify(&auth, Role::SuperUser))
         .and(warp::body::json())
         .and_then(create_equipment_handler);
 
@@ -328,12 +362,24 @@ async fn server_setup() {
     let auth_client_id = config.get_str("auth.client_id").unwrap_or("".to_string());
     let auth_domain = config.get_str("auth.domain").unwrap_or("".to_string());
     let auth_scope = config.get_str("auth.scope").unwrap_or("".to_string());
-    let auth_authorize_path = config.get_str("auth.authorize_path").unwrap_or("".to_string());
+    let auth_authorize_path = config
+        .get_str("auth.authorize_path")
+        .unwrap_or("".to_string());
     let auth_token_path = config.get_str("auth.token_path").unwrap_or("".to_string());
 
     let hmi_local_ip = format!("{}:{}", host, port);
 
-    let _ = write_hmi_env(&hmi_local_ip, &http_scheme, &ws_scheme, &auth_audience, &auth_client_id, &auth_domain, &auth_scope, &auth_authorize_path, &auth_token_path);
+    let _ = write_hmi_env(
+        &hmi_local_ip,
+        &http_scheme,
+        &ws_scheme,
+        &auth_audience,
+        &auth_client_id,
+        &auth_domain,
+        &auth_scope,
+        &auth_authorize_path,
+        &auth_token_path,
+    );
 
     let server_uri = format!("0.0.0.0:{}", port);
 
@@ -367,7 +413,17 @@ fn with_hmi(
     warp::any().map(move || hmi.clone())
 }
 
-fn write_hmi_env(hmi_local_ip: &str, http_scheme: &str, ws_scheme: &str, auth_audience: &str, auth_client_id: &str, auth_domain: &str, auth_scope: &str, auth_authorize_path: &str, auth_token_path: &str) -> std::io::Result<()> {
+fn write_hmi_env(
+    hmi_local_ip: &str,
+    http_scheme: &str,
+    ws_scheme: &str,
+    auth_audience: &str,
+    auth_client_id: &str,
+    auth_domain: &str,
+    auth_scope: &str,
+    auth_authorize_path: &str,
+    auth_token_path: &str,
+) -> std::io::Result<()> {
     for entry in fs::read_dir("Client/dist/openfmb-hmi")? {
         let entry = entry?;
         if let Some(file_name) = entry.path().as_path().file_name() {
@@ -392,7 +448,7 @@ fn write_hmi_env(hmi_local_ip: &str, http_scheme: &str, ws_scheme: &str, auth_au
                     let auth_scope_search = "AUTH_SCOPE";
                     let auth_authorize_path_search = "AUTH_AUTHORIZE_PATH";
                     let auth_token_path_search = "AUTH_TOKEN_PATH";
-                    
+
                     let http_uri = format!("{}://{}/", http_scheme, hmi_local_ip);
                     let ws_uri = format!("{}://{}/", ws_scheme, hmi_local_ip);
 
