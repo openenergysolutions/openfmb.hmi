@@ -14,6 +14,7 @@ import { CommunicationStatus } from '../../store/reducers/hmi.reducer';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { AuthService } from '@auth0/auth0-angular';
 import { DOCUMENT } from "@angular/common";
+import envSettings from '../../../assets/env.json';
 
 @Component({
   selector: 'app-header-tool',
@@ -134,6 +135,9 @@ export class HeaderToolComponent implements OnInit {
   }
 
   logout() {
-    this.auth.logout({ returnTo: this.doc.location.origin });
+    window.onbeforeunload = () => {
+      this.auth.logout();
+    }
+    location.href = envSettings.auth_logout_path;
   }
 }
