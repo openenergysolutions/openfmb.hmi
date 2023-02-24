@@ -5,11 +5,13 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, Inject } from "@angular/core";
 import { NavigationService } from "../../../shared/services/navigation.service";
 import { ThemeService } from "../../services/theme.service";
-import { Subscription } from "rxjs";
+import { Observable, Subscription } from "rxjs";
 import { ILayoutConf, LayoutService } from "../../../../app/shared/services/layout.service";
 import { LocalStoreService } from "../../services/local-store.service";
 import { AuthService } from "@auth0/auth0-angular";
 import { DOCUMENT } from "@angular/common";
+import { map } from "rxjs/operators";
+import envSettings from '../../../../assets/env.json';
 
 @Component({
   selector: "app-sidebar-side",
@@ -21,7 +23,7 @@ export class SidebarSideComponent implements OnInit, OnDestroy, AfterViewInit {
   public iconTypeMenuTitle: string;
   private menuItemsSub: Subscription;
   public layoutConf: ILayoutConf;
-  public userDisplayName: string;
+  public userDisplayName: Observable<string>;
 
   constructor(
     private navService: NavigationService,
@@ -48,7 +50,9 @@ export class SidebarSideComponent implements OnInit, OnDestroy, AfterViewInit {
       ).length;
     });
     this.layoutConf = this.layout.layoutConf;
-    this.userDisplayName = this.auth.getUser()['nickname'];
+    this.userDisplayName = this.auth.user$.pipe(
+      map(user => user.nickname ? user.nickname : user.name)
+    );
   }
 
   ngAfterViewInit() { }
@@ -75,6 +79,9 @@ export class SidebarSideComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   logout() {
-    this.auth.logout({ returnTo: this.doc.location.origin });
+    window.onbeforeunload = () => {
+      this.auth.logout();
+    }
+    location.href = envSettings.auth_logout_path;
   }
 }

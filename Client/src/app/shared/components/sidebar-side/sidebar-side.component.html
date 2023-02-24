@@ -27,8 +27,8 @@
         <span class="app-user-name mb-05">
           <button class="text-muted" mat-icon-button mat-xs-button [matMenuTriggerFor]="appUserMenu">
             <mat-icon>lock</mat-icon>
-            <span *ngIf="auth.user$ | async as user">
-              {{ user.nickname }}
+            <span *ngIf="userDisplayName | async as displayName">
+              {{ displayName }}
             </span>
           </button>
         </span>
