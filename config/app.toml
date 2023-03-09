@@ -12,10 +12,8 @@ server_id = "741df6b5-5bdd-4ea6-a6aa-541fba744721"
 # creds = "meter.creds"
 
 [hmi]
-server_host = "192.168.86.39"
-server_port = 32771 # available ports are: 80 8080 443 32771 42771
-ssl = false
-ssl_cert = "ca-cert.pem"
-ssl_key = "ca.key"
-http_scheme = "http"
-ws_scheme = "ws"
+server_host = "0.0.0.0"
+# server_port = 443 # default is 443 for https and 80 for http
+# comment out these two items if not TLS needed
+ssl_cert = "/server/certs/server/server-cert.pem"
+ssl_key = "/server/certs/server/server-key.pem"

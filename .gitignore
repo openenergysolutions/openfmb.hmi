@@ -52,3 +52,5 @@ equipment*.json
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+/certs

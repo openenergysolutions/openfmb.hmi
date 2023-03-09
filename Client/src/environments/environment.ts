@@ -11,6 +11,6 @@ import envSettings from '../assets/env_prod.json';
 
 export const environment = {
   production: true,
-  apiUrl: envSettings.apiUrl,
-  ws: envSettings.ws
+  apiUrl: window.location.protocol + "//" + window.location.host + "/",
+  ws: window.location.protocol == "https:" ? "wss://" + window.location.hostname + ":" + window.location.port + "/data/" : "ws://" + window.location.hostname + ":" + window.location.port + "/data/"
 };

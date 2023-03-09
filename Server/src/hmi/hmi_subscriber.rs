@@ -25,7 +25,7 @@ pub struct NatsMessage(Arc<nats::Message>);
 #[derive(Clone, Debug)]
 pub struct HmiSubscriber {
     pub message_count: u32,
-    pub nats_client: Option<nats::Connection>,    
+    pub nats_client: Option<nats::Connection>,
     pub processor: ActorRef<ProcessorMsg>,
     openfmb_profile_actors: HashMap<OpenFMBProfileType, ActorRef<ProfileSubscriberMsg>>,
 }
@@ -36,7 +36,7 @@ impl ActorFactoryArgs<ActorRef<ProcessorMsg>> for HmiSubscriber {
             message_count: 0,
             processor: args,
             nats_client: None,
-            openfmb_profile_actors: Default::default(),            
+            openfmb_profile_actors: Default::default(),
         }
     }
 }
@@ -46,13 +46,13 @@ impl HmiSubscriber {
         &mut self,
         ctx: &Context<<HmiSubscriber as Actor>::Msg>,
         msg: &StartProcessingMessages,
-    ) {  
+    ) {
         self.nats_client = None;
-        
+
         info!(
             "HmiSubscriber connects to NATS with options: {:?}",
             msg.pubsub_options
-        );        
+        );
 
         let options = msg.pubsub_options.options().unwrap();
         let connection_url = msg.pubsub_options.connection_url.clone();
@@ -66,8 +66,8 @@ impl HmiSubscriber {
             .error_callback(|err| CoordinatorOptions::on_error(err))
             .close_callback(move || HmiSubscriber::on_closed(&myself))
             .retry_on_failed_connect()
-            .connect(connection_url) {
-
+            .connect(connection_url)
+        {
             Ok(connection) => {
                 info!("****** HmiSubscriber successfully connected");
 
@@ -83,14 +83,13 @@ impl HmiSubscriber {
                 let myself = ctx.myself.clone();
                 // dropping the returned Handler does not unsubscribe here
                 sub.with_handler(move |msg| {
-                    log::trace!("Got message from NATS");
                     let nats_msg = NatsMessage(Arc::new(msg));
                     myself.send_msg(nats_msg.into(), None);
                     Ok(())
                 });
             }
             Err(e) => {
-                error!("Unable to connect to nats.  {:?}", e);                          
+                error!("Unable to connect to nats.  {:?}", e);
             }
         }
     }
@@ -98,9 +97,12 @@ impl HmiSubscriber {
     fn on_closed(hmi: &ActorRef<HmiSubscriberMsg>) {
         info!("Connection to pub/sub broker has been closed!");
 
-        hmi.tell(StartProcessingMessages {
-            pubsub_options: CoordinatorOptions::new(),
-        }, None);
+        hmi.tell(
+            StartProcessingMessages {
+                pubsub_options: CoordinatorOptions::new(),
+            },
+            None,
+        );
     }
 
     fn ensure_actor(

@@ -151,7 +151,6 @@ impl Receive<OpenFMBMessage> for Processor {
 
     fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: OpenFMBMessage, _sender: Sender) {
         let rt = tokio::runtime::Runtime::new().unwrap();
-        log::trace!("Receive OpenFMB message");
         rt.block_on(handle_openfmb_message(&self.clients, msg));
     }
 }
@@ -178,7 +177,6 @@ impl Receive<CoordinatorStatus> for Processor {
     type Msg = ProcessorMsg;
 
     fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: CoordinatorStatus, _sender: Sender) {
-        //log::trace!("Received coordinator status {:?}", msg);
         let rt = tokio::runtime::Runtime::new().unwrap();
         let clients = self.clients.clone();
         rt.spawn(async {

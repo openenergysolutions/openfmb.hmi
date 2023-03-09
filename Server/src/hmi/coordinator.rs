@@ -336,7 +336,7 @@ impl CoordinatorOptions {
         CoordinatorOptions::get_options(env)
     }
 
-    pub fn options(&self) -> std::io::Result<nats::Options> {        
+    pub fn options(&self) -> std::io::Result<nats::Options> {
         let options = match self.authentication_type {
             Authentication::UserPwd => {
                 info!("NATS with default username/pwd");
@@ -357,22 +357,19 @@ impl CoordinatorOptions {
                 info!("NATS with default option");
                 nats::Options::new()
             }
-        };       
+        };
 
         match self.security_type {
             Security::TlsServer => {
-                Ok(options                
-                .add_root_certificate(self.root_cert.as_ref().unwrap()))
-            }                              
-            Security::TlsMutual => {
-                Ok(options                
+                Ok(options.add_root_certificate(self.root_cert.as_ref().unwrap()))
+            }
+            Security::TlsMutual => Ok(options
                 .add_root_certificate(self.root_cert.as_ref().unwrap())
                 .client_cert(
                     self.client_cert.as_ref().unwrap(),
                     self.client_key.as_ref().unwrap(),
-                )) 
-            }                    
-            Security::None => Ok(options)      
+                )),
+            Security::None => Ok(options),
         }
     }
 
