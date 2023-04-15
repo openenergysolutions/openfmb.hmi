@@ -1877,6 +1877,25 @@ impl Receive<GenericControl> for HmiPublisher {
                         profile.encode(&mut buffer).unwrap();
                         self.publish(&subject, &mut buffer);
                     }
+                    microgrid::generic_control::ControlType::StartTransaction => {
+                        let profile = ResourceDiscreteControlProfile::start_transaction(
+                            &msg.mrid,
+                            msg.args2.unwrap_or_default() as i32,
+                        );
+                        let mut buffer = Vec::<u8>::new();
+                        profile.encode(&mut buffer).unwrap();
+                        self.publish(&subject, &mut buffer);
+                    }
+                    microgrid::generic_control::ControlType::StopTransaction => {
+                        let profile = ResourceDiscreteControlProfile::stop_transaction(
+                            &msg.mrid,
+                            msg.args2.map(|f| f as i32),
+                            None,
+                        );
+                        let mut buffer = Vec::<u8>::new();
+                        profile.encode(&mut buffer).unwrap();
+                        self.publish(&subject, &mut buffer);
+                    }
                     _ => {
                         warn!("Unsupport control type: {:?}", msg.message)
                     }

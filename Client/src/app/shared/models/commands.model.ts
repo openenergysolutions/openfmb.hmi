@@ -1168,6 +1168,28 @@ export const COMMANDS = {
 				"type": "set-point",
 				"measurement": ""
 			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "StartTransaction",
+				"path": "StartTransaction",
+				"type": "command",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "StopTransaction",
+				"path": "StopTransaction",
+				"type": "command",
+				"measurement": ""
+			}
 		}
     ],
     "HmiControl": [
