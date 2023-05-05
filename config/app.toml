@@ -1,19 +1,16 @@
-[coordinator]
-environment = "dev" # dev or prod
+[hmi]
 app_name = "openfmb-hmi" # name of the application
+environment = "dev" # dev or prod refering to nats.dev_uri or nats.prod_uri accordingly
 log-level = "Debug" # Off, Error, Info, Debug, Trace
+# server_host = "0.0.0.0"
+# server_port = 80 # default is 443 for https and 80 for http
+# comment out these two ssl related items if TLS is needed
+# ssl_cert = "/server/certs/server/server-cert.pem"
+# ssl_key = "/server/certs/server/server-key.pem"
 
-[openfmb_nats_subscriber]
-prod_uri = "10.10.200.111:32224"
-dev_uri = "192.168.86.39:4222"
-send_status_update = true
+[nats]
+prod_uri = "172.16.1.30:4222"
+dev_uri = "192.168.86.30:4222"
 server_id = "741df6b5-5bdd-4ea6-a6aa-541fba744721"
 # authentication_type = "creds"
 # creds = "meter.creds"
-
-[hmi]
-server_host = "0.0.0.0"
-# server_port = 443 # default is 443 for https and 80 for http
-# comment out these two items if not TLS needed
-ssl_cert = "/server/certs/server/server-cert.pem"
-ssl_key = "/server/certs/server/server-key.pem"

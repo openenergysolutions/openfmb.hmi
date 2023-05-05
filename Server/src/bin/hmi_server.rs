@@ -60,7 +60,7 @@ async fn server_setup() {
     let subscriber = sys
         .actor_of_args::<HmiSubscriber, ActorRef<ProcessorMsg>>("HmiSubscriber", processor.clone())
         .unwrap();
-    if let Ok(send_status_update) = config.get_bool("openfmb_nats_subscriber.send_status_update") {
+    if let Ok(send_status_update) = config.get_bool("nats.send_status_update") {
         if send_status_update {
             let _monitor = sys
                 .actor_of_args::<Monitor, ActorRef<ProcessorMsg>>("HmiMonitor", processor.clone())

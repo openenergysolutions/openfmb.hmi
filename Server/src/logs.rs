@@ -52,9 +52,7 @@ impl Actor for SystemEventLog {
 pub fn setup_logger(config: &Config) -> Result<(), fern::InitError> {
     use fern::colors::{Color, ColoredLevelConfig};
 
-    let s = config
-        .get_str("coordinator.log-level")
-        .unwrap_or("INFO".into());
+    let s = config.get_str("hmi.log-level").unwrap_or("INFO".into());
     let level = log::LevelFilter::from_str(&s).unwrap_or(log::LevelFilter::Info);
 
     // configure colors for the whole line
