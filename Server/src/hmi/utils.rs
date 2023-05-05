@@ -50,108 +50,93 @@ pub fn set_ess_csg(
     }
 }
 
-fn create_ess_point(schedule_time: SystemTime) -> EssPoint {
-    let mut pt = EssPoint::default();
-    pt.start_time = Some(ControlTimestamp {
-        nanoseconds: schedule_time
-            .duration_since(SystemTime::UNIX_EPOCH)
-            .unwrap()
-            .subsec_nanos(),
-        seconds: schedule_time
-            .duration_since(SystemTime::UNIX_EPOCH)
-            .unwrap()
-            .as_secs(),
-    });
-    pt
+fn create_ess_point(schedule_time: SystemTime) -> EssCurvePoint {
+    EssCurvePoint {
+        start_time: Some(ControlTimestamp {
+            nanoseconds: schedule_time
+                .duration_since(SystemTime::UNIX_EPOCH)
+                .unwrap()
+                .subsec_nanos(),
+            seconds: schedule_time
+                .duration_since(SystemTime::UNIX_EPOCH)
+                .unwrap()
+                .as_secs(),
+        }),
+        control: None,
+    }
 }
 
-fn ess_point(generic_control: ControlType, schedule_time: SystemTime) -> Option<EssPoint> {
+fn ess_point(generic_control: ControlType, schedule_time: SystemTime) -> Option<EssCurvePoint> {
     match generic_control {
         ControlType::BlackStartEnable => {
             let mut pt = create_ess_point(schedule_time);
-            pt.black_start_enabled = Some(ControlSpc { ctl_val: true });
+            pt.control = Some(EssPoint {
+                black_start_enabled: Some(ControlSpc { ctl_val: true }),
+                ..Default::default()
+            });
             return Some(pt);
         }
         ControlType::BlackStartDisable => {
             let mut pt = create_ess_point(schedule_time);
-            pt.black_start_enabled = Some(ControlSpc { ctl_val: false });
-            return Some(pt);
-        }
-        ControlType::FrequencySetPointEnable => {
-            let mut pt = create_ess_point(schedule_time);
-            pt.frequency_set_point_enabled = Some(ControlSpc { ctl_val: true });
-            return Some(pt);
-        }
-        ControlType::FrequencySetPointDisable => {
-            let mut pt = create_ess_point(schedule_time);
-            pt.frequency_set_point_enabled = Some(ControlSpc { ctl_val: false });
-            return Some(pt);
-        }
-        ControlType::ReactivePowerSetPointEnable => {
-            let mut pt = create_ess_point(schedule_time);
-            pt.reactive_pwr_set_point_enabled = Some(ControlSpc { ctl_val: true });
-            return Some(pt);
-        }
-        ControlType::ReactivePowerSetPointDisable => {
-            let mut pt = create_ess_point(schedule_time);
-            pt.reactive_pwr_set_point_enabled = Some(ControlSpc { ctl_val: false });
-            return Some(pt);
-        }
-        ControlType::RealPowerSetPointEnable => {
-            let mut pt = create_ess_point(schedule_time);
-            pt.real_pwr_set_point_enabled = Some(ControlSpc { ctl_val: true });
-            return Some(pt);
-        }
-        ControlType::RealPowerSetPointDisable => {
-            let mut pt = create_ess_point(schedule_time);
-            pt.real_pwr_set_point_enabled = Some(ControlSpc { ctl_val: false });
+            pt.control = Some(EssPoint {
+                black_start_enabled: Some(ControlSpc { ctl_val: false }),
+                ..Default::default()
+            });
             return Some(pt);
         }
         ControlType::TransToIslandOnGridLossEnable => {
             let mut pt = create_ess_point(schedule_time);
-            pt.trans_to_islnd_on_grid_loss_enabled = Some(ControlSpc { ctl_val: true });
+            pt.control = Some(EssPoint {
+                trans_to_islnd_on_grid_loss_enabled: Some(ControlSpc { ctl_val: true }),
+                ..Default::default()
+            });
             return Some(pt);
         }
         ControlType::TransToIslandOnGridLossDisable => {
             let mut pt = create_ess_point(schedule_time);
-            pt.trans_to_islnd_on_grid_loss_enabled = Some(ControlSpc { ctl_val: false });
-            return Some(pt);
-        }
-        ControlType::VoltageSetPointEnable => {
-            let mut pt = create_ess_point(schedule_time);
-            pt.voltage_set_point_enabled = Some(ControlSpc { ctl_val: true });
-            return Some(pt);
-        }
-        ControlType::VoltageSetPointDisable => {
-            let mut pt = create_ess_point(schedule_time);
-            pt.voltage_set_point_enabled = Some(ControlSpc { ctl_val: false });
+            pt.control = Some(EssPoint {
+                trans_to_islnd_on_grid_loss_enabled: Some(ControlSpc { ctl_val: false }),
+                ..Default::default()
+            });
             return Some(pt);
         }
         ControlType::SetStateKindUndefined => {
             let mut pt = create_ess_point(schedule_time);
-            pt.state = Some(OptionalStateKind {
-                value: StateKind::Undefined as i32,
+            pt.control = Some(EssPoint {
+                state: Some(OptionalStateKind {
+                    value: StateKind::Undefined as i32,
+                }),
+                ..Default::default()
             });
             return Some(pt);
         }
         ControlType::SetStateKindOff => {
             let mut pt = create_ess_point(schedule_time);
-            pt.state = Some(OptionalStateKind {
-                value: StateKind::Off as i32,
+            pt.control = Some(EssPoint {
+                state: Some(OptionalStateKind {
+                    value: StateKind::Off as i32,
+                }),
+                ..Default::default()
             });
             return Some(pt);
         }
         ControlType::SetStateKindOn => {
             let mut pt = create_ess_point(schedule_time);
-            pt.state = Some(OptionalStateKind {
-                value: StateKind::On as i32,
+            pt.control = Some(EssPoint {
+                state: Some(OptionalStateKind {
+                    value: StateKind::On as i32,
+                }),
+                ..Default::default()
             });
             return Some(pt);
         }
         ControlType::SetStateKindStandBy => {
             let mut pt = create_ess_point(schedule_time);
-            pt.state = Some(OptionalStateKind {
-                value: StateKind::Standby as i32,
+            pt.control = Some(EssPoint {
+                state: Some(OptionalStateKind {
+                    value: StateKind::Standby as i32,
+                }),
+                ..Default::default()
             });
             return Some(pt);
         }
@@ -197,88 +182,61 @@ pub fn set_solar_csg(
     }
 }
 
-fn create_solar_point(schedule_time: SystemTime) -> SolarPoint {
-    let mut pt = SolarPoint::default();
-    pt.start_time = Some(ControlTimestamp {
-        nanoseconds: schedule_time
-            .duration_since(SystemTime::UNIX_EPOCH)
-            .unwrap()
-            .subsec_nanos(),
-        seconds: schedule_time
-            .duration_since(SystemTime::UNIX_EPOCH)
-            .unwrap()
-            .as_secs(),
-    });
-    pt
+fn create_solar_point(schedule_time: SystemTime) -> SolarCurvePoint {
+    SolarCurvePoint {
+        start_time: Some(ControlTimestamp {
+            nanoseconds: schedule_time
+                .duration_since(SystemTime::UNIX_EPOCH)
+                .unwrap()
+                .subsec_nanos(),
+            seconds: schedule_time
+                .duration_since(SystemTime::UNIX_EPOCH)
+                .unwrap()
+                .as_secs(),
+        }),
+        control: None,
+    }
 }
 
-fn solar_point(generic_control: ControlType, schedule_time: SystemTime) -> Option<SolarPoint> {
+fn solar_point(generic_control: ControlType, schedule_time: SystemTime) -> Option<SolarCurvePoint> {
     match generic_control {
-        ControlType::FrequencySetPointEnable => {
-            let mut pt = create_solar_point(schedule_time);
-            pt.frequency_set_point_enabled = Some(ControlSpc { ctl_val: true });
-            return Some(pt);
-        }
-        ControlType::FrequencySetPointDisable => {
-            let mut pt = create_solar_point(schedule_time);
-            pt.frequency_set_point_enabled = Some(ControlSpc { ctl_val: false });
-            return Some(pt);
-        }
-        ControlType::ReactivePowerSetPointEnable => {
-            let mut pt = create_solar_point(schedule_time);
-            pt.reactive_pwr_set_point_enabled = Some(ControlSpc { ctl_val: true });
-            return Some(pt);
-        }
-        ControlType::ReactivePowerSetPointDisable => {
-            let mut pt = create_solar_point(schedule_time);
-            pt.reactive_pwr_set_point_enabled = Some(ControlSpc { ctl_val: false });
-            return Some(pt);
-        }
-        ControlType::RealPowerSetPointEnable => {
-            let mut pt = create_solar_point(schedule_time);
-            pt.real_pwr_set_point_enabled = Some(ControlSpc { ctl_val: true });
-            return Some(pt);
-        }
-        ControlType::RealPowerSetPointDisable => {
-            let mut pt = create_solar_point(schedule_time);
-            pt.real_pwr_set_point_enabled = Some(ControlSpc { ctl_val: false });
-            return Some(pt);
-        }
-        ControlType::VoltageSetPointEnable => {
-            let mut pt = create_solar_point(schedule_time);
-            pt.voltage_set_point_enabled = Some(ControlSpc { ctl_val: true });
-            return Some(pt);
-        }
-        ControlType::VoltageSetPointDisable => {
-            let mut pt = create_solar_point(schedule_time);
-            pt.voltage_set_point_enabled = Some(ControlSpc { ctl_val: false });
-            return Some(pt);
-        }
         ControlType::SetStateKindUndefined => {
             let mut pt = create_solar_point(schedule_time);
-            pt.state = Some(OptionalStateKind {
-                value: StateKind::Undefined as i32,
+            pt.control = Some(SolarPoint {
+                state: Some(OptionalStateKind {
+                    value: StateKind::Undefined as i32,
+                }),
+                ..Default::default()
             });
             return Some(pt);
         }
         ControlType::SetStateKindOff => {
             let mut pt = create_solar_point(schedule_time);
-            pt.state = Some(OptionalStateKind {
-                value: StateKind::Off as i32,
+            pt.control = Some(SolarPoint {
+                state: Some(OptionalStateKind {
+                    value: StateKind::Off as i32,
+                }),
+                ..Default::default()
             });
             return Some(pt);
         }
         ControlType::SetStateKindOn => {
             let mut pt = create_solar_point(schedule_time);
-            pt.state = Some(OptionalStateKind {
-                value: StateKind::On as i32,
+            pt.control = Some(SolarPoint {
+                state: Some(OptionalStateKind {
+                    value: StateKind::On as i32,
+                }),
+                ..Default::default()
             });
             return Some(pt);
         }
         ControlType::SetStateKindStandBy => {
             let mut pt = create_solar_point(schedule_time);
-            pt.state = Some(OptionalStateKind {
-                value: StateKind::Standby as i32,
+            pt.control = Some(SolarPoint {
+                state: Some(OptionalStateKind {
+                    value: StateKind::Standby as i32,
+                }),
+                ..Default::default()
             });
             return Some(pt);
         }
