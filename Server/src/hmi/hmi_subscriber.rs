@@ -138,6 +138,9 @@ impl HmiSubscriber {
             ESSReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::ESS),
             ESSStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::ESS),
             ESSControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::ESS),
+            ESSDiscreteControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::ESS),
+            ESSCapability(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::ESS),
+            ESSCapabilityOverride(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::ESS),
             GenerationControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Generation),
             GenerationDiscreteControl(_msg) => {
                 self.ensure_actor_type(ctx, OpenFMBProfileType::Generation)
@@ -145,6 +148,12 @@ impl HmiSubscriber {
             GenerationReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Generation),
             GenerationEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Generation),
             GenerationStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Generation),
+            GenerationCapability(_msg) => {
+                self.ensure_actor_type(ctx, OpenFMBProfileType::Generation)
+            }
+            GenerationCapabilityOverride(_msg) => {
+                self.ensure_actor_type(ctx, OpenFMBProfileType::Generation)
+            }
             LoadControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Load),
             LoadEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Load),
             LoadReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Load),
@@ -170,6 +179,9 @@ impl HmiSubscriber {
             ResourceEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Resource),
             ResourceStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Resource),
             SolarControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Solar),
+            SolarDiscreteControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Solar),
+            SolarCapability(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Solar),
+            SolarCapabilityOverride(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Solar),
             SolarEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Solar),
             SolarReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Solar),
             SolarStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Solar),

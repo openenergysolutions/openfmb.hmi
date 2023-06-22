@@ -241,9 +241,9 @@ dependencies = [
 
 [[package]]
 name = "cmake"
-version = "0.1.48"
+version = "0.1.50"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e8ad8cef104ac57b68b89df3208164d228503abbdce70f6880ffa3d970e7443a"
+checksum = "a31c789563b815f77f4250caee12365734369f942439b7defd71e18a48197130"
 dependencies = [
  "cc",
 ]
@@ -554,9 +554,9 @@ checksum = "37ab347416e802de484e4d03c7316c48f1ecb56574dfd4a46a80f173ce1de04d"
 
 [[package]]
 name = "fixedbitset"
-version = "0.4.1"
+version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "279fb028e20b3c4c320317955b77c5e0c9701f05a1d309905d6fc702cdc5053e"
+checksum = "0ce7134b9999ecaf8bcd65542e436736ef32ddca1b3e06094cb6ec5755203b80"
 
 [[package]]
 name = "fnv"
@@ -772,9 +772,9 @@ dependencies = [
 
 [[package]]
 name = "heck"
-version = "0.4.0"
+version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2540771e65fc8cb83cd6e8a237f70c319bd5c29f78ed1084ba5d50eeac86f7f9"
+checksum = "95505c38b4572b2d910cecb0281560f54b440a19336cbbcb27bf6ce6adc6f5a8"
 
 [[package]]
 name = "hermit-abi"
@@ -1119,7 +1119,7 @@ checksum = "2dffe52ecf27772e601905b7522cb4ef790d2cc203488bbd0e2fe85fcb74566d"
 [[package]]
 name = "microgrid-protobuf"
 version = "0.1.0"
-source = "git+https://github.com/openenergysolutions/openfmb-rs?tag=v2.1.0#b4e830cecfe60e2997d42ad5e7217bbe532f2277"
+source = "git+https://github.com/openenergysolutions/openfmb-rs#5039ff308216fa91aff4b301673175ee96f895db"
 dependencies = [
  "prost",
  "prost-build",
@@ -1322,7 +1322,7 @@ checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
 [[package]]
 name = "openfmb"
 version = "0.2.0"
-source = "git+https://github.com/openenergysolutions/openfmb-rs?tag=v2.1.0#b4e830cecfe60e2997d42ad5e7217bbe532f2277"
+source = "git+https://github.com/openenergysolutions/openfmb-rs#5039ff308216fa91aff4b301673175ee96f895db"
 dependencies = [
  "async-trait",
  "bytes 1.1.0",
@@ -1340,7 +1340,7 @@ dependencies = [
 [[package]]
 name = "openfmb-codegen"
 version = "0.6.1"
-source = "git+https://github.com/openenergysolutions/openfmb-rs?tag=v2.1.0#b4e830cecfe60e2997d42ad5e7217bbe532f2277"
+source = "git+https://github.com/openenergysolutions/openfmb-rs#5039ff308216fa91aff4b301673175ee96f895db"
 dependencies = [
  "bytes 0.5.6",
  "heck 0.3.3",
@@ -1358,7 +1358,7 @@ dependencies = [
 [[package]]
 name = "openfmb-descriptors"
 version = "0.1.0"
-source = "git+https://github.com/openenergysolutions/openfmb-rs?tag=v2.1.0#b4e830cecfe60e2997d42ad5e7217bbe532f2277"
+source = "git+https://github.com/openenergysolutions/openfmb-rs#5039ff308216fa91aff4b301673175ee96f895db"
 dependencies = [
  "lazy_static",
  "prost",
@@ -1369,7 +1369,7 @@ dependencies = [
 [[package]]
 name = "openfmb-messages"
 version = "2.1.0"
-source = "git+https://github.com/openenergysolutions/openfmb-rs?tag=v2.1.0#b4e830cecfe60e2997d42ad5e7217bbe532f2277"
+source = "git+https://github.com/openenergysolutions/openfmb-rs#5039ff308216fa91aff4b301673175ee96f895db"
 dependencies = [
  "bytes 1.1.0",
  "env_logger 0.9.0",
@@ -1383,7 +1383,7 @@ dependencies = [
 [[package]]
 name = "openfmb-messages-ext"
 version = "2.1.0"
-source = "git+https://github.com/openenergysolutions/openfmb-rs?tag=v2.1.0#b4e830cecfe60e2997d42ad5e7217bbe532f2277"
+source = "git+https://github.com/openenergysolutions/openfmb-rs#5039ff308216fa91aff4b301673175ee96f895db"
 dependencies = [
  "chrono",
  "log",
@@ -1467,11 +1467,11 @@ dependencies = [
 
 [[package]]
 name = "petgraph"
-version = "0.6.2"
+version = "0.6.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e6d5014253a1331579ce62aa67443b4a658c5e7dd03d4bc6d302b94474888143"
+checksum = "4dd7d28ee937e54fe3080c91faa1c3a46c06de6252988a7f4592ba2310ef22a4"
 dependencies = [
- "fixedbitset 0.4.1",
+ "fixedbitset 0.4.2",
  "indexmap",
 ]
 
@@ -1578,12 +1578,12 @@ dependencies = [
  "bytes 1.1.0",
  "cfg-if 1.0.0",
  "cmake",
- "heck 0.4.0",
+ "heck 0.4.1",
  "itertools 0.10.3",
  "lazy_static",
  "log",
  "multimap",
- "petgraph 0.6.2",
+ "petgraph 0.6.3",
  "prost",
  "prost-types",
  "regex",
@@ -1617,7 +1617,7 @@ dependencies = [
 [[package]]
 name = "proto-types"
 version = "0.7.0"
-source = "git+https://github.com/openenergysolutions/openfmb-rs?tag=v2.1.0#b4e830cecfe60e2997d42ad5e7217bbe532f2277"
+source = "git+https://github.com/openenergysolutions/openfmb-rs#5039ff308216fa91aff4b301673175ee96f895db"
 dependencies = [
  "bytes 1.1.0",
  "prost",
