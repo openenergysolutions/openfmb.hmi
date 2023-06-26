@@ -387,6 +387,22 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                             topic
                         )
                     }
+                    OpenFMBMessage::ESSCapability(message) => {
+                        extract!(
+                            data_maps,
+                            message,
+                            format!("{}Profile", msg.message_type()),
+                            topic
+                        )
+                    }
+                    OpenFMBMessage::ESSCapabilityOverride(message) => {
+                        extract!(
+                            data_maps,
+                            message,
+                            format!("{}Profile", msg.message_type()),
+                            topic
+                        )
+                    }
                     OpenFMBMessage::GenerationReading(message) => {
                         extract!(
                             data_maps,
@@ -404,6 +420,22 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                         )
                     }
                     OpenFMBMessage::GenerationStatus(message) => {
+                        extract!(
+                            data_maps,
+                            message,
+                            format!("{}Profile", msg.message_type()),
+                            topic
+                        )
+                    }
+                    OpenFMBMessage::GenerationCapability(message) => {
+                        extract!(
+                            data_maps,
+                            message,
+                            format!("{}Profile", msg.message_type()),
+                            topic
+                        )
+                    }
+                    OpenFMBMessage::GenerationCapabilityOverride(message) => {
                         extract!(
                             data_maps,
                             message,
@@ -532,6 +564,22 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                         )
                     }
                     OpenFMBMessage::SolarStatus(message) => {
+                        extract!(
+                            data_maps,
+                            message,
+                            format!("{}Profile", msg.message_type()),
+                            topic
+                        )
+                    }
+                    OpenFMBMessage::SolarCapability(message) => {
+                        extract!(
+                            data_maps,
+                            message,
+                            format!("{}Profile", msg.message_type()),
+                            topic
+                        )
+                    }
+                    OpenFMBMessage::SolarCapabilityOverride(message) => {
                         extract!(
                             data_maps,
                             message,
