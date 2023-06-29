@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use crate::handler::*;
-use crate::messages::*;
 use openfmb_messages_ext::OpenFMBMessage;
 
 use super::coordinator::{CoordinatorOptions, CoordinatorStatus};
@@ -12,6 +11,7 @@ use super::hmi_publisher::HmiPublisherMsg;
 use riker::actors::*;
 use serde_json::Value;
 use std::collections::btree_map::BTreeMap;
+use std::sync::Arc;
 
 use log::{debug, error};
 
@@ -98,7 +98,6 @@ impl Node {
 
 #[actor(
     OpenFMBMessage,
-    PublisherRefWrap,
     MicrogridControl,
     DeviceControl,
     GenericControl,
@@ -106,17 +105,17 @@ impl Node {
 )]
 #[derive(Clone, Debug)]
 pub struct Processor {
-    message_count: u32,
     publisher: ActorRef<HmiPublisherMsg>,
     clients: Clients,
+    rt: Arc<tokio::runtime::Runtime>,
 }
 
 impl ActorFactoryArgs<(ActorRef<HmiPublisherMsg>, Clients)> for Processor {
     fn create_args(args: (ActorRef<HmiPublisherMsg>, Clients)) -> Self {
         Processor {
-            message_count: 0,
             publisher: args.0,
             clients: args.1,
+            rt: Arc::new(tokio::runtime::Runtime::new().unwrap()),
         }
     }
 }
@@ -127,22 +126,7 @@ impl Actor for Processor {
     fn pre_start(&mut self, _ctx: &Context<Self::Msg>) {}
 
     fn recv(&mut self, ctx: &Context<Self::Msg>, msg: Self::Msg, sender: Option<BasicActorRef>) {
-        self.message_count += 1;
         self.receive(ctx, msg, sender);
-    }
-}
-
-type PublisherRefWrap = ActorRefWrap<HmiPublisherMsg>;
-
-impl Receive<ActorRefWrap<HmiPublisherMsg>> for Processor {
-    type Msg = ProcessorMsg;
-    fn receive(
-        &mut self,
-        _ctx: &Context<Self::Msg>,
-        msg: ActorRefWrap<HmiPublisherMsg>,
-        _sender: Sender,
-    ) {
-        self.publisher = msg.clone().0;
     }
 }
 
@@ -150,8 +134,8 @@ impl Receive<OpenFMBMessage> for Processor {
     type Msg = ProcessorMsg;
 
     fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: OpenFMBMessage, _sender: Sender) {
-        let rt = tokio::runtime::Runtime::new().unwrap();
-        rt.block_on(handle_openfmb_message(&self.clients, msg));
+        //let rt = tokio::runtime::Runtime::new().unwrap();
+        self.rt.block_on(handle_openfmb_message(&self.clients, msg));
     }
 }
 
@@ -177,9 +161,9 @@ impl Receive<CoordinatorStatus> for Processor {
     type Msg = ProcessorMsg;
 
     fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: CoordinatorStatus, _sender: Sender) {
-        let rt = tokio::runtime::Runtime::new().unwrap();
+        //let rt = tokio::runtime::Runtime::new().unwrap();
         let clients = self.clients.clone();
-        rt.spawn(async {
+        self.rt.spawn(async {
             let _ = send_status(msg, clients).await;
         });
     }
@@ -190,8 +174,8 @@ impl Receive<GenericControl> for Processor {
 
     fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: GenericControl, _sender: Sender) {
         debug!("Received generic control message {:?}", msg);
-        let rt = tokio::runtime::Runtime::new().unwrap();
-        rt.block_on(handle_generic_control(self, msg));
+        //let rt = tokio::runtime::Runtime::new().unwrap();
+        self.rt.block_on(handle_generic_control(self, msg));
     }
 }
 

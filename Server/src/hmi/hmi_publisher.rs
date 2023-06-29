@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use crate::coordinator::*;
-use crate::messages::*;
+use bytes::Bytes;
 use openfmb_messages_ext::OpenFMBMessage;
 
 use openfmb::messages::commonmodule::ScheduleParameterKind;
@@ -48,6 +48,7 @@ use config::Config;
 use log::{debug, error, info, warn};
 use riker::actors::*;
 use std::fmt::Debug;
+use std::sync::Arc;
 use std::time::SystemTime;
 
 #[actor(
@@ -59,70 +60,22 @@ use std::time::SystemTime;
 )]
 #[derive(Clone, Debug)]
 pub struct HmiPublisher {
-    pub message_count: u32,
-    pub nats_client: Option<nats::Connection>,
+    pub nats_client: Option<async_nats::Client>,
     pub cfg: Config,
+    rt: Arc<tokio::runtime::Runtime>,
 }
 
 impl ActorFactoryArgs<Config> for HmiPublisher {
     fn create_args(config: Config) -> Self {
         HmiPublisher {
-            message_count: 0,
             nats_client: None,
             cfg: config,
+            rt: Arc::new(tokio::runtime::Runtime::new().unwrap()),
         }
     }
 }
 
 impl HmiPublisher {
-    fn connect_to_nats_broker(
-        &mut self,
-        ctx: &Context<<HmiPublisher as Actor>::Msg>,
-        msg: &StartProcessingMessages,
-    ) {
-        self.nats_client = None;
-
-        info!(
-            "HmiPublisher connects to NATS with options: {:?}",
-            msg.pubsub_options
-        );
-
-        let options = msg.pubsub_options.options().unwrap();
-        let connection_url = msg.pubsub_options.connection_url.clone();
-
-        let myself = ctx.myself.clone();
-
-        match options
-            .disconnect_callback(|| CoordinatorOptions::on_disconnect())
-            .reconnect_callback(|| CoordinatorOptions::on_reconnect())
-            .reconnect_delay_callback(|c| CoordinatorOptions::on_delay_reconnect(c))
-            .error_callback(|err| CoordinatorOptions::on_error(err))
-            .close_callback(move || HmiPublisher::on_closed(&myself))
-            .retry_on_failed_connect()
-            .connect(connection_url)
-        {
-            Ok(connection) => {
-                info!("****** HmiPublisher successfully connected");
-
-                self.nats_client = Some(connection);
-            }
-            Err(e) => {
-                error!("Unable to connect to nats.  {:?}", e);
-            }
-        }
-    }
-
-    fn on_closed(hmi: &ActorRef<HmiPublisherMsg>) {
-        info!("Connection to pub/sub broker has been closed!");
-
-        hmi.tell(
-            StartProcessingMessages {
-                pubsub_options: CoordinatorOptions::new(),
-            },
-            None,
-        );
-    }
-
     fn get_device_type_by_mrid(&self, mrid: String) -> Option<String> {
         let devices = read_equipment_list().ok()?;
         for eq in devices.iter() {
@@ -158,14 +111,17 @@ impl HmiPublisher {
     }
     fn publish(&self, subject: &str, buffer: &mut Vec<u8>) {
         if let Some(connnection) = &self.nats_client {
-            match connnection.publish(subject, buffer) {
-                Ok(_) => {
-                    debug!("Message with subject {} published succesfully.", subject)
+            let buffer = Bytes::copy_from_slice(buffer);
+            self.rt.block_on(async {
+                match connnection.publish(subject.to_string(), buffer).await {
+                    Ok(_) => {
+                        debug!("Message with subject {} published succesfully.", subject)
+                    }
+                    Err(e) => {
+                        error!("Error publishing message: {:?}", e);
+                    }
                 }
-                Err(e) => {
-                    error!("Error publishing message: {:?}", e);
-                }
-            }
+            });
         } else {
             error!("NATS connection is not available.");
         }
@@ -189,16 +145,7 @@ impl Actor for HmiPublisher {
     }
 
     fn recv(&mut self, ctx: &Context<Self::Msg>, msg: Self::Msg, sender: Option<BasicActorRef>) {
-        self.message_count += 1;
         self.receive(ctx, msg, sender);
-    }
-}
-
-impl Receive<GetChildActors> for HmiPublisher {
-    type Msg = HmiPublisherMsg;
-
-    fn receive(&mut self, _ctx: &Context<Self::Msg>, _msg: GetChildActors, _sender: Sender) {
-        self.message_count += 1;
     }
 }
 
@@ -3426,7 +3373,19 @@ impl Receive<GenericControl> for HmiPublisher {
 impl Receive<StartProcessingMessages> for HmiPublisher {
     type Msg = HmiPublisherMsg;
 
-    fn receive(&mut self, ctx: &Context<Self::Msg>, msg: StartProcessingMessages, _sender: Sender) {
-        self.connect_to_nats_broker(ctx, &msg);
+    fn receive(
+        &mut self,
+        _ctx: &Context<Self::Msg>,
+        mut msg: StartProcessingMessages,
+        _sender: Sender,
+    ) {
+        self.nats_client = None;
+        match self
+            .rt
+            .block_on(async { msg.pubsub_options.connect().await })
+        {
+            Ok(c) => self.nats_client = Some(c),
+            Err(e) => log::error!("Failed to connect to nats: {}", e),
+        }
     }
 }

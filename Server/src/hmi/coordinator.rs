@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+use async_nats::ConnectOptions;
 use config::Config;
 use lazy_static::lazy_static;
 use log::info;
@@ -286,38 +287,39 @@ impl CoordinatorOptions {
         CoordinatorOptions::get_options(env)
     }
 
-    pub fn options(&self) -> std::io::Result<nats::Options> {
+    pub fn options(&self) -> std::io::Result<ConnectOptions> {
         let options = match self.authentication_type {
             Authentication::UserPwd => {
                 info!("NATS with default username/pwd");
-                nats::Options::with_user_pass(
-                    self.username.as_ref().unwrap(),
-                    self.password.as_ref().unwrap(),
+                ConnectOptions::with_user_and_password(
+                    self.username.as_ref().unwrap().to_string(),
+                    self.password.as_ref().unwrap().to_string(),
                 )
             }
             Authentication::Token => {
                 info!("NATS options with token: {:?}", self.token);
-                nats::Options::with_token(self.token.as_ref().unwrap())
+                ConnectOptions::with_token(self.token.as_ref().unwrap().to_string())
             }
             Authentication::Creds => {
                 info!("NATS options with credential file: {:?}", self.creds_file);
-                nats::Options::with_credentials(self.creds_file.as_ref().unwrap())
+                ConnectOptions::with_credentials(self.creds_file.as_ref().unwrap().as_str())?
             }
             Authentication::None => {
                 info!("NATS with default option");
-                nats::Options::new()
+                ConnectOptions::new()
             }
         };
 
         match self.security_type {
-            Security::TlsServer => {
-                Ok(options.add_root_certificate(self.root_cert.as_ref().unwrap()))
-            }
+            Security::TlsServer => Ok(options
+                .require_tls(true)
+                .add_root_certificates(self.root_cert.as_ref().unwrap().into())),
             Security::TlsMutual => Ok(options
-                .add_root_certificate(self.root_cert.as_ref().unwrap())
-                .client_cert(
-                    self.client_cert.as_ref().unwrap(),
-                    self.client_key.as_ref().unwrap(),
+                .require_tls(true)
+                .add_root_certificates(self.root_cert.as_ref().unwrap().into())
+                .add_client_certificate(
+                    self.client_cert.as_ref().unwrap().into(),
+                    self.client_key.as_ref().unwrap().into(),
                 )),
             Security::None => Ok(options),
         }
@@ -410,5 +412,11 @@ impl CoordinatorOptions {
 
     pub fn on_closed() {
         log::info!("Connection to pub/sub broker has been closed!");
+    }
+
+    pub async fn connect(&mut self) -> Result<async_nats::Client, async_nats::Error> {
+        log::info!("Connecting to nats...{}", self.connection_url);
+
+        Ok(self.options()?.connect(self.connection_url.clone()).await?)
     }
 }

@@ -9,16 +9,12 @@ use riker::actors::*;
 #[actor(OpenFMBMessage)]
 #[derive(Debug, Clone)]
 pub struct ProfileSubscriber {
-    pub message_count: u32,
     pub processor: ActorRef<ProcessorMsg>,
 }
 
 impl ActorFactoryArgs<ActorRef<ProcessorMsg>> for ProfileSubscriber {
     fn create_args(args: ActorRef<ProcessorMsg>) -> Self {
-        ProfileSubscriber {
-            message_count: 0,
-            processor: args,
-        }
+        ProfileSubscriber { processor: args }
     }
 }
 
@@ -34,7 +30,6 @@ impl Actor for ProfileSubscriber {
     fn post_stop(&mut self) {}
 
     fn recv(&mut self, ctx: &Context<Self::Msg>, msg: Self::Msg, sender: Option<BasicActorRef>) {
-        self.message_count += 1;
         self.receive(ctx, msg, sender);
     }
 }

@@ -51,14 +51,12 @@ use openfmb::messages::{
 #[actor(StartProcessingMessages)]
 #[derive(Clone, Debug)]
 pub struct Hmi {
-    pub message_count: u32,
     pub publisher: ActorRef<HmiPublisherMsg>,
     pub subscriber: ActorRef<HmiSubscriberMsg>,
 }
 impl ActorFactoryArgs<(ActorRef<HmiPublisherMsg>, ActorRef<HmiSubscriberMsg>)> for Hmi {
     fn create_args(args: (ActorRef<HmiPublisherMsg>, ActorRef<HmiSubscriberMsg>)) -> Self {
         Hmi {
-            message_count: 0,
             publisher: args.0,
             subscriber: args.1,
         }
@@ -87,7 +85,6 @@ impl Actor for Hmi {
     }
 
     fn recv(&mut self, ctx: &Context<Self::Msg>, msg: Self::Msg, sender: Option<BasicActorRef>) {
-        self.message_count += 1;
         self.receive(ctx, msg.clone(), sender);
     }
 }
