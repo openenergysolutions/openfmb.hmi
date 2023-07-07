@@ -10,9 +10,9 @@ name="hmi_server"
 tokio = { version = "1", features = ["macros", "sync", "rt-multi-thread", "time"] }
 tokio-stream = "0.1"
 warp = { version = "0.3.5", features = ["tls"] }
-openfmb = {git="https://github.com/openenergysolutions/openfmb-rs", rev = "aea94849"}
-openfmb-messages-ext = {git="https://github.com/openenergysolutions/openfmb-rs", rev = "aea94849", features=["nats-async"]}
-microgrid-protobuf = {git="https://github.com/openenergysolutions/openfmb-rs", rev = "aea94849"}
+openfmb = {git="https://github.com/openenergysolutions/openfmb-rs"}
+openfmb-messages-ext = {git="https://github.com/openenergysolutions/openfmb-rs", features=["nats-async"]}
+microgrid-protobuf = {git="https://github.com/openenergysolutions/openfmb-rs"}
 serde = {version = "1.0.114", features = ["derive"] }
 serde_json = "1.0.57"
 futures = { version = "0.3.5", default-features = false }
@@ -20,14 +20,14 @@ uuid = {version = "1.1.2", features = ["serde", "v4"]}
 log = "0.4.11"
 fern = { version = "0.6", features = ["colored"] }
 env_logger = "0.10.0"
-static_dir = "0.2.0"
+static_dir = {git="https://github.com/corynguyenfl/static_dir.git"}
 pretty_env_logger = "0.5.0"
 riker = "0.4.2"
 async-nats = "0.29.0"
 config = "0.10.1"
 jsonwebtoken = "8.1.0"
 thiserror = "1.0.21"
-chrono = "0.4.19"
+chrono = {vesion = "0.4.26", default-features = false, features = ["clock"]}
 bytes = "1"
 pwhash = "1.0.0"
 lazy_static = "1.4.0"
