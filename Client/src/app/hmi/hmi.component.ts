@@ -1366,18 +1366,30 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   setDataFieldValue(element: Element, userObject: any, topic: any): string {     
-    var value = topic?.value;    
+    var value = topic?.value;
     
     if (typeof value.Double !== 'undefined') {
       if (element.className.match(/\bfield-item-value-state\b/)) {
-        if (value.Double === 0.0 ) {
+        if (value.Double === 0.0) {
+          element.classList.add('red-color-value');
+          element.classList.remove('green-color-value');
+          return 'invalid';
+        } 
+        else if (value.Double === 1.0) {
           element.classList.add('red-color-value');
           element.classList.remove('green-color-value');
           return 'off';
-        } else {
+        }
+        else if (value.Double === 2.0) {
           element.classList.add('green-color-value');
           element.classList.remove('red-color-value');
           return 'on';
+        }
+        else 
+        {
+          element.classList.add('red-color-value');
+          element.classList.remove('green-color-value');
+          return 'stand-by';
         }
       } else if (element.className.match(/\bfield-item-value-status\b/)) {
         if (value.Double === 1.0) {
