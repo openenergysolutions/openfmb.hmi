@@ -40,8 +40,6 @@ use openfmb::messages::regulatormodule::{
 };
 use openfmb_messages_ext::regulator::{RegulatorControlExt, RegulatorDiscreteControlExt};
 
-use prost::Message;
-
 use super::utils::*;
 use crate::handler::*;
 use config::Config;
@@ -50,6 +48,14 @@ use riker::actors::*;
 use std::fmt::Debug;
 use std::sync::Arc;
 use std::time::SystemTime;
+
+macro_rules! publish_profile {
+    ( $publisher:expr, $profile:expr, $subject:expr) => {{
+        let mut buffer = Vec::<u8>::new();
+        $profile.encode_to(&mut buffer).unwrap();
+        $publisher.publish(&$subject, &mut buffer);
+    }};
+}
 
 #[actor(
     OpenFMBMessage,
@@ -177,7 +183,7 @@ impl Receive<DeviceControl> for HmiPublisher {
             mrid: msg.text,
             msg: msg.message.into(),
         };
-        device_control_msg.encode(&mut buffer).unwrap();
+        device_control_msg.encode_to(&mut buffer).unwrap();
         self.publish(&subject, &mut buffer);
     }
 }
@@ -206,21 +212,15 @@ impl Receive<GenericControl> for HmiPublisher {
                 match msg.message {
                     microgrid::generic_control::ControlType::Open => {
                         let profile = BreakerDiscreteControlProfile::breaker_open_msg(&msg.mrid);
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::Close => {
                         let profile = BreakerDiscreteControlProfile::breaker_close_msg(&msg.mrid);
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::ResetBreaker => {
                         let profile = BreakerDiscreteControlProfile::breaker_reset_msg(&msg.mrid);
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     _ => {
                         warn!("Unsupport control type: {:?}", msg.message)
@@ -235,15 +235,11 @@ impl Receive<GenericControl> for HmiPublisher {
                 match msg.message {
                     microgrid::generic_control::ControlType::Open => {
                         let profile = RecloserDiscreteControlProfile::recloser_open_msg(&msg.mrid);
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::Close => {
                         let profile = RecloserDiscreteControlProfile::recloser_close_msg(&msg.mrid);
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     _ => {
                         warn!("Unsupport control type: {:?}", msg.message)
@@ -258,29 +254,21 @@ impl Receive<GenericControl> for HmiPublisher {
                 match msg.message {
                     microgrid::generic_control::ControlType::Open => {
                         let profile = SwitchDiscreteControlProfile::switch_open_msg(&msg.mrid);
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::Close => {
                         let profile = SwitchDiscreteControlProfile::switch_close_msg(&msg.mrid);
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::SetModBlkOn => {
                         let profile =
                             SwitchDiscreteControlProfile::switch_modblk_msg(&msg.mrid, true);
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::SetModBlkOff => {
                         let profile =
                             SwitchDiscreteControlProfile::switch_modblk_msg(&msg.mrid, false);
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     _ => {
                         warn!("Unsupport control type: {:?}", msg.message)
@@ -292,22 +280,16 @@ impl Receive<GenericControl> for HmiPublisher {
                 match msg.message {
                     microgrid::generic_control::ControlType::SetModBlkOn => {
                         let profile = EssControlProfile::ess_modblk_msg(&msg.mrid, true);
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::SetModBlkOff => {
                         let profile = EssControlProfile::ess_modblk_msg(&msg.mrid, false);
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::SetValue => {
                         let profile =
                             EssControlProfile::discharge_now_msg(&msg.mrid, msg.args.unwrap());
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::ANetMag => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -316,9 +298,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::ANeutMag => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -327,9 +307,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::APhsAMag => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -338,9 +316,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::APhsBMag => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -349,9 +325,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::APhsCMag => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -360,9 +334,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::HzMag => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -371,9 +343,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PfNetMag => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -382,9 +352,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PfNeutMag => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -393,9 +361,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PfPhsAMag => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -404,9 +370,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PfPhsBMag => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -415,9 +379,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PfPhsCMag => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -426,9 +388,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVNetAng => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -437,9 +397,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVNetMag => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -448,9 +406,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVNeutAng => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -459,9 +415,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVNeutMag => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -470,9 +424,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsAAng => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -481,9 +433,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsAMag => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -492,9 +442,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsBAng => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -503,9 +451,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsBMag => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -514,9 +460,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsCAng => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -525,9 +469,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsCMag => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -536,9 +478,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsAbAng => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -547,9 +487,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsAbMag => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -558,9 +496,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsBcAng => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -569,9 +505,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsBcMag => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -580,9 +514,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsCaAng => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -591,9 +523,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsCaMag => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -602,9 +532,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VaNetMag => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -613,9 +541,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VaNeutMag => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -624,9 +550,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VaPhsAMag => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -635,9 +559,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VaPhsBMag => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -646,9 +568,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VaPhsCMag => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -657,9 +577,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VArNetMag
                     | microgrid::generic_control::ControlType::SetVarNetMag => {
@@ -669,9 +587,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VArNeutMag => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -680,9 +596,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VArPhsAMag => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -691,9 +605,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VArPhsBMag => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -702,9 +614,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VArPhsCMag => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -713,9 +623,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::WNetMag
                     | microgrid::generic_control::ControlType::SetWNetMag => {
@@ -725,9 +633,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::WNeutMag => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -736,9 +642,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::WPhsAMag => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -747,9 +651,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::WPhsBMag => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -758,9 +660,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::WPhsCMag => {
                         let profile = EssControlProfile::schedule_ess_control(
@@ -769,21 +669,17 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
 
                     microgrid::generic_control::ControlType::ResetEss => {
                         let profile = EssControlProfile::ess_reset_msg(&msg.mrid);
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     _ => match set_ess_csg(&msg.mrid, msg.message, SystemTime::now()) {
                         Some(profile) => {
                             let mut buffer = Vec::<u8>::new();
-                            profile.encode(&mut buffer).unwrap();
+                            profile.encode_to(&mut buffer).unwrap();
                             self.publish(&subject, &mut buffer);
                         }
                         None => {
@@ -797,15 +693,11 @@ impl Receive<GenericControl> for HmiPublisher {
                 match msg.message {
                     microgrid::generic_control::ControlType::SetModBlkOn => {
                         let profile = SolarControlProfile::solar_modblk_msg(&msg.mrid, true);
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::SetModBlkOff => {
                         let profile = SolarControlProfile::solar_modblk_msg(&msg.mrid, false);
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::ANetMag => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -814,9 +706,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::ANeutMag => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -825,9 +715,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::APhsAMag => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -836,9 +724,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::APhsBMag => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -847,9 +733,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::APhsCMag => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -858,9 +742,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::HzMag => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -869,9 +751,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PfNetMag => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -880,9 +760,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PfNeutMag => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -891,9 +769,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PfPhsAMag => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -902,9 +778,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PfPhsBMag => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -913,9 +787,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PfPhsCMag => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -924,9 +796,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVNetAng => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -935,9 +805,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVNetMag => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -946,9 +814,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVNeutAng => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -957,9 +823,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVNeutMag => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -968,9 +832,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsAAng => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -979,9 +841,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsAMag => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -990,9 +850,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsBAng => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -1001,9 +859,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsBMag => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -1012,9 +868,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsCAng => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -1023,9 +877,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsCMag => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -1034,9 +886,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsAbAng => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -1045,9 +895,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsAbMag => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -1056,9 +904,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsBcAng => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -1067,9 +913,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsBcMag => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -1078,9 +922,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsCaAng => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -1089,9 +931,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsCaMag => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -1100,9 +940,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VaNetMag => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -1111,9 +949,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VaNeutMag => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -1122,9 +958,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VaPhsAMag => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -1133,9 +967,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VaPhsBMag => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -1144,9 +976,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VaPhsCMag => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -1155,9 +985,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VArNetMag
                     | microgrid::generic_control::ControlType::SetVarNetMag => {
@@ -1167,9 +995,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VArNeutMag => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -1178,9 +1004,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VArPhsAMag => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -1189,9 +1013,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VArPhsBMag => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -1200,9 +1022,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VArPhsCMag => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -1211,9 +1031,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::WNetMag
                     | microgrid::generic_control::ControlType::SetWNetMag => {
@@ -1223,9 +1041,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::WNeutMag => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -1234,9 +1050,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::WPhsAMag => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -1245,9 +1059,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::WPhsBMag => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -1256,9 +1068,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::WPhsCMag => {
                         let profile = SolarControlProfile::schedule_solar_control(
@@ -1267,21 +1077,17 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
 
                     microgrid::generic_control::ControlType::ResetSolar => {
                         let profile = SolarControlProfile::solar_reset_msg(&msg.mrid);
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     _ => match set_solar_csg(&msg.mrid, msg.message, SystemTime::now()) {
                         Some(profile) => {
                             let mut buffer = Vec::<u8>::new();
-                            profile.encode(&mut buffer).unwrap();
+                            profile.encode_to(&mut buffer).unwrap();
                             self.publish(&subject, &mut buffer);
                         }
                         None => {
@@ -1295,23 +1101,17 @@ impl Receive<GenericControl> for HmiPublisher {
                 match msg.message {
                     microgrid::generic_control::ControlType::StateOn => {
                         let profile = LoadControlProfile::loadbank_on_msg(&msg.mrid, 125000.0);
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::StateOff => {
                         let profile = LoadControlProfile::loadbank_off_msg(&msg.mrid);
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::SetWNetMag
                     | microgrid::generic_control::ControlType::SetValue => {
                         let profile =
                             LoadControlProfile::loadbank_on_msg(&msg.mrid, msg.args.unwrap().abs());
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::ANetMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1320,9 +1120,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::ANeutMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1331,9 +1129,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::APhsAMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1342,9 +1138,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::APhsBMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1353,9 +1147,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::APhsCMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1364,9 +1156,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::HzMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1375,9 +1165,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PfNetMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1386,9 +1174,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PfNeutMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1397,9 +1183,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PfPhsAMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1408,9 +1192,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PfPhsBMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1419,9 +1201,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PfPhsCMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1430,9 +1210,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVNetAng => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1441,9 +1219,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVNetMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1452,9 +1228,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVNeutAng => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1463,9 +1237,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVNeutMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1474,9 +1246,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsAAng => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1485,9 +1255,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsAMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1496,9 +1264,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsBAng => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1507,9 +1273,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsBMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1518,9 +1282,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsCAng => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1529,9 +1291,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsCMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1540,9 +1300,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsAbAng => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1551,9 +1309,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsAbMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1562,9 +1318,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsBcAng => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1573,9 +1327,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsBcMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1584,9 +1336,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsCaAng => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1595,9 +1345,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsCaMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1606,9 +1354,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VaNetMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1617,9 +1363,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VaNeutMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1628,9 +1372,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VaPhsAMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1639,9 +1381,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VaPhsBMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1650,9 +1390,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VaPhsCMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1661,9 +1399,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VArNetMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1672,9 +1408,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VArNeutMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1683,9 +1417,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VArPhsAMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1694,9 +1426,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VArPhsBMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1705,9 +1435,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VArPhsCMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1716,9 +1444,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::WNetMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1727,9 +1453,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::WNeutMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1738,9 +1462,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::WPhsAMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1749,9 +1471,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::WPhsBMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1760,9 +1480,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::WPhsCMag => {
                         let profile = LoadControlProfile::schedule_load_control(
@@ -1771,16 +1489,12 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
 
                     microgrid::generic_control::ControlType::ResetLoad => {
                         let profile = LoadControlProfile::load_reset_msg(&msg.mrid);
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     _ => {
                         warn!("Unsupport control type: {:?}", msg.message)
@@ -1800,9 +1514,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             msg.args2.unwrap_or_default() as usize,
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::SetGgioValueInteger => {
                         let profile = ResourceDiscreteControlProfile::set_int_msg(
@@ -1810,9 +1522,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap() as i32,
                             msg.args2.unwrap_or_default() as usize,
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::SetGgioValueBool => {
                         let profile = ResourceDiscreteControlProfile::set_bool_msg(
@@ -1820,18 +1530,14 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap_or_default() > 0.0,
                             msg.args2.unwrap_or_default() as usize,
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::StartTransaction => {
                         let profile = ResourceDiscreteControlProfile::start_transaction(
                             &msg.mrid,
                             msg.args2.unwrap_or_default() as i32,
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::StopTransaction => {
                         let profile = ResourceDiscreteControlProfile::stop_transaction(
@@ -1839,9 +1545,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args2.map(|f| f as i32),
                             None,
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     _ => {
                         warn!("Unsupport control type: {:?}", msg.message)
@@ -1858,71 +1562,55 @@ impl Receive<GenericControl> for HmiPublisher {
                         let profile = RegulatorDiscreteControlProfile::regulator_tap_lower_phs3_msg(
                             &msg.mrid, false,
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::TapChangeRaisePhs3 => {
                         let profile = RegulatorDiscreteControlProfile::regulator_tap_raise_phs3_msg(
                             &msg.mrid, true,
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::TapChangeLowerPhsA => {
                         let profile =
                             RegulatorDiscreteControlProfile::regulator_tap_lower_phs_a_msg(
                                 &msg.mrid, false,
                             );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::TapChangeRaisePhsA => {
                         let profile =
                             RegulatorDiscreteControlProfile::regulator_tap_raise_phs_a_msg(
                                 &msg.mrid, true,
                             );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::TapChangeLowerPhsB => {
                         let profile =
                             RegulatorDiscreteControlProfile::regulator_tap_lower_phs_b_msg(
                                 &msg.mrid, false,
                             );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::TapChangeRaisePhsB => {
                         let profile =
                             RegulatorDiscreteControlProfile::regulator_tap_raise_phs_b_msg(
                                 &msg.mrid, true,
                             );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::TapChangeLowerPhsC => {
                         let profile =
                             RegulatorDiscreteControlProfile::regulator_tap_lower_phs_c_msg(
                                 &msg.mrid, false,
                             );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::TapChangeRaisePhsC => {
                         let profile =
                             RegulatorDiscreteControlProfile::regulator_tap_raise_phs_c_msg(
                                 &msg.mrid, true,
                             );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::ANetMag => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -1931,9 +1619,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::ANeutMag => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -1942,9 +1628,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::APhsAMag => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -1953,9 +1637,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::APhsBMag => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -1964,9 +1646,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::APhsCMag => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -1975,9 +1655,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::HzMag => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -1986,9 +1664,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PfNetMag => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -1997,9 +1673,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PfNeutMag => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2008,9 +1682,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PfPhsAMag => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2019,9 +1691,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PfPhsBMag => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2030,9 +1700,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PfPhsCMag => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2041,9 +1709,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVNetAng => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2052,9 +1718,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVNetMag => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2063,9 +1727,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVNeutAng => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2074,9 +1736,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVNeutMag => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2085,9 +1745,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsAAng => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2096,9 +1754,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsAMag => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2107,9 +1763,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsBAng => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2118,9 +1772,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsBMag => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2129,9 +1781,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsCAng => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2140,9 +1790,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsCMag => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2151,9 +1799,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsAbAng => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2162,9 +1808,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsAbMag => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2173,9 +1817,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsBcAng => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2184,9 +1826,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsBcMag => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2195,9 +1835,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsCaAng => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2206,9 +1844,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsCaMag => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2217,9 +1853,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VaNetMag => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2228,9 +1862,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VaNeutMag => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2239,9 +1871,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VaPhsAMag => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2250,9 +1880,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VaPhsBMag => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2261,9 +1889,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VaPhsCMag => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2272,9 +1898,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VArNetMag
                     | microgrid::generic_control::ControlType::SetVarNetMag => {
@@ -2284,9 +1908,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VArNeutMag => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2295,9 +1917,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VArPhsAMag => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2306,9 +1926,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VArPhsBMag => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2317,9 +1935,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VArPhsCMag => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2328,9 +1944,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::WNetMag
                     | microgrid::generic_control::ControlType::SetWNetMag => {
@@ -2340,9 +1954,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::WNeutMag => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2351,9 +1963,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::WPhsAMag => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2362,9 +1972,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::WPhsBMag => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2373,9 +1981,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::WPhsCMag => {
                         let profile = RegulatorControlProfile::schedule_regulator_control(
@@ -2384,9 +1990,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     _ => {
                         warn!("Unsupport control type: {:?}", msg.message)
@@ -2404,9 +2008,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             &msg.mrid,
                             msg.args.unwrap().abs(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::ANetMag => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2415,9 +2017,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::ANeutMag => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2426,9 +2026,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::APhsAMag => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2437,9 +2035,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::APhsBMag => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2448,9 +2044,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::APhsCMag => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2459,9 +2053,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::HzMag => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2470,9 +2062,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PfNetMag => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2481,9 +2071,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PfNeutMag => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2492,9 +2080,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PfPhsAMag => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2503,9 +2089,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PfPhsBMag => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2514,9 +2098,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PfPhsCMag => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2525,9 +2107,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVNetAng => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2536,9 +2116,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVNetMag => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2547,9 +2125,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVNeutAng => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2558,9 +2134,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVNeutMag => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2569,9 +2143,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsAAng => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2580,9 +2152,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsAMag => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2591,9 +2161,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsBAng => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2602,9 +2170,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsBMag => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2613,9 +2179,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsCAng => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2624,9 +2188,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsCMag => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2635,9 +2197,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsAbAng => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2646,9 +2206,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsAbMag => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2657,9 +2215,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsBcAng => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2668,9 +2224,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsBcMag => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2679,9 +2233,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsCaAng => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2690,9 +2242,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsCaMag => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2701,9 +2251,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VaNetMag => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2712,9 +2260,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VaNeutMag => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2723,9 +2269,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VaPhsAMag => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2734,9 +2278,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VaPhsBMag => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2745,9 +2287,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VaPhsCMag => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2756,9 +2296,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VArNetMag
                     | microgrid::generic_control::ControlType::SetVarNetMag => {
@@ -2768,9 +2306,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VArNeutMag => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2779,9 +2315,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VArPhsAMag => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2790,9 +2324,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VArPhsBMag => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2801,9 +2333,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VArPhsCMag => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2812,9 +2342,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::WNetMag
                     | microgrid::generic_control::ControlType::SetWNetMag => {
@@ -2824,9 +2352,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::WNeutMag => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2835,9 +2361,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::WPhsAMag => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2846,9 +2370,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::WPhsBMag => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2857,9 +2379,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::WPhsCMag => {
                         let profile = GenerationControlProfile::schedule_generation_control(
@@ -2868,21 +2388,17 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
 
                     microgrid::generic_control::ControlType::ResetSolar => {
                         let profile = GenerationControlProfile::generation_reset_msg(&msg.mrid);
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     _ => match set_generation_csg(&msg.mrid, msg.message, SystemTime::now()) {
                         Some(profile) => {
                             let mut buffer = Vec::<u8>::new();
-                            profile.encode(&mut buffer).unwrap();
+                            profile.encode_to(&mut buffer).unwrap();
                             self.publish(&subject, &mut buffer);
                         }
                         None => {
@@ -2901,9 +2417,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::ANeutMag => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -2912,9 +2426,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::APhsAMag => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -2923,9 +2435,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::APhsBMag => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -2934,9 +2444,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::APhsCMag => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -2945,9 +2453,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::HzMag => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -2956,9 +2462,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PfNetMag => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -2967,9 +2471,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PfNeutMag => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -2978,9 +2480,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PfPhsAMag => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -2989,9 +2489,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PfPhsBMag => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -3000,9 +2498,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PfPhsCMag => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -3011,9 +2507,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVNetAng => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -3022,9 +2516,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVNetMag => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -3033,9 +2525,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVNeutAng => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -3044,9 +2534,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVNeutMag => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -3055,9 +2543,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsAAng => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -3066,9 +2552,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsAMag => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -3077,9 +2561,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsBAng => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -3088,9 +2570,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsBMag => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -3099,9 +2579,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsCAng => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -3110,9 +2588,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PhVPhsCMag => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -3121,9 +2597,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsAbAng => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -3132,9 +2606,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsAbMag => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -3143,9 +2615,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsBcAng => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -3154,9 +2624,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsBcMag => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -3165,9 +2633,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsCaAng => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -3176,9 +2642,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::PpvPhsCaMag => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -3187,9 +2651,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VaNetMag => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -3198,9 +2660,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VaNeutMag => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -3209,9 +2669,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VaPhsAMag => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -3220,9 +2678,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VaPhsBMag => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -3231,9 +2687,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VaPhsCMag => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -3242,9 +2696,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VArNetMag
                     | microgrid::generic_control::ControlType::SetVarNetMag => {
@@ -3254,9 +2706,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VArNeutMag => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -3265,9 +2715,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VArPhsAMag => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -3276,9 +2724,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VArPhsBMag => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -3287,9 +2733,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::VArPhsCMag => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -3298,9 +2742,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::WNetMag
                     | microgrid::generic_control::ControlType::SetWNetMag => {
@@ -3310,9 +2752,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::WNeutMag => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -3321,9 +2761,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::WPhsAMag => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -3332,9 +2770,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::WPhsBMag => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -3343,9 +2779,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     microgrid::generic_control::ControlType::WPhsCMag => {
                         let profile = CapBankControlProfile::schedule_capbank_control(
@@ -3354,9 +2788,7 @@ impl Receive<GenericControl> for HmiPublisher {
                             msg.args.unwrap(),
                             SystemTime::now(),
                         );
-                        let mut buffer = Vec::<u8>::new();
-                        profile.encode(&mut buffer).unwrap();
-                        self.publish(&subject, &mut buffer);
+                        publish_profile!(self, profile, subject);
                     }
                     _ => {
                         warn!("Unsupport control type: {:?}", msg.message)
