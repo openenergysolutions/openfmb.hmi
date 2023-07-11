@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-use async_nats::ConnectOptions;
+use async_nats::{ConnectOptions, ServerAddr};
 use config::Config;
 use lazy_static::lazy_static;
 use log::info;
@@ -414,9 +414,13 @@ impl CoordinatorOptions {
         log::info!("Connection to pub/sub broker has been closed!");
     }
 
+    fn connection_urls(&self) -> Result<Vec<ServerAddr>, async_nats::Error> {
+        Ok(self.connection_url.clone().split(',').map(|s| s.parse::<ServerAddr>().unwrap()).collect())        
+    }
+
     pub async fn connect(&mut self) -> Result<async_nats::Client, async_nats::Error> {
         log::info!("Connecting to nats...{}", self.connection_url);
 
-        Ok(self.options()?.connect(self.connection_url.clone()).await?)
+        Ok(self.options()?.retry_on_initial_connect().connect(self.connection_urls()?).await?)
     }
 }
