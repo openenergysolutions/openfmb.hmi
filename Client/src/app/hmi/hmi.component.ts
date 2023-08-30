@@ -1351,7 +1351,15 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
             }
             else if (elem.scale === "toCelsius") {
               scaled = (value - 32.0) * 5/9;                           
-            }            
+            }
+            else {
+              const pattern = /^abs\((-?\d+(\.\d+)?)\)$/;
+              const match = elem.scale.match(pattern);
+              if (match) {
+                const numericValue = parseFloat(match[1]);
+                scaled = Math.abs(numericValue);                
+              }
+            }        
           }
           break;
         }
