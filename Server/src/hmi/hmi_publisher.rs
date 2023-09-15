@@ -1909,7 +1909,7 @@ impl Receive<GenericControl> for HmiPublisher {
                 match msg.message {
                     microgrid::generic_control::ControlType::TapChangeLowerPhs3 => {
                         let profile = RegulatorDiscreteControlProfile::regulator_tap_lower_phs3_msg(
-                            &msg.mrid, false,
+                            &msg.mrid, true,
                         );
                         let mut buffer = Vec::<u8>::new();
                         profile.encode(&mut buffer).unwrap();
@@ -1926,7 +1926,7 @@ impl Receive<GenericControl> for HmiPublisher {
                     microgrid::generic_control::ControlType::TapChangeLowerPhsA => {
                         let profile =
                             RegulatorDiscreteControlProfile::regulator_tap_lower_phs_a_msg(
-                                &msg.mrid, false,
+                                &msg.mrid, true,
                             );
                         let mut buffer = Vec::<u8>::new();
                         profile.encode(&mut buffer).unwrap();
@@ -1944,7 +1944,7 @@ impl Receive<GenericControl> for HmiPublisher {
                     microgrid::generic_control::ControlType::TapChangeLowerPhsB => {
                         let profile =
                             RegulatorDiscreteControlProfile::regulator_tap_lower_phs_b_msg(
-                                &msg.mrid, false,
+                                &msg.mrid, true,
                             );
                         let mut buffer = Vec::<u8>::new();
                         profile.encode(&mut buffer).unwrap();
@@ -1962,7 +1962,7 @@ impl Receive<GenericControl> for HmiPublisher {
                     microgrid::generic_control::ControlType::TapChangeLowerPhsC => {
                         let profile =
                             RegulatorDiscreteControlProfile::regulator_tap_lower_phs_c_msg(
-                                &msg.mrid, false,
+                                &msg.mrid, true,
                             );
                         let mut buffer = Vec::<u8>::new();
                         profile.encode(&mut buffer).unwrap();
