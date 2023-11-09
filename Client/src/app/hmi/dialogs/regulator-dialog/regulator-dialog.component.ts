@@ -6,6 +6,8 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CommandAction } from '../../../shared/hmi.constants'
 import { DiagramData } from '../../../shared/models/userobject.model';
+import { Authorization } from '../../../shared/models/user.model';
+import { JwtAuthService } from "../../../shared/services/auth/jwt-auth.service";
 
 @Component({
   selector: 'app-regulator-dialog',
@@ -43,11 +45,13 @@ export class RegulatorDialogComponent implements OnInit {
   hasLastUpdate: boolean = false;    
 
   constructor(
-    public dialogRef: MatDialogRef<RegulatorDialogComponent>,    
+    public dialogRef: MatDialogRef<RegulatorDialogComponent>,
+    private jwtService: JwtAuthService,    
     @Inject(MAT_DIALOG_DATA) public data: any
   ) { }
 
-  ngOnInit() {                    
+  ngOnInit() {  
+    const canControl = Authorization.canControl(this.jwtService.getUserRole());                  
     this.diagramId = this.data.diagramId;   
     this.diagramData = this.data.diagramData;
     this.name = this.diagramData.name,
@@ -70,35 +74,35 @@ export class RegulatorDialogComponent implements OnInit {
         var controlData = this.diagramData.controlData[i];
 
         if (controlData.path.endsWith('.TapOpL.phs3.ctlVal')) {
-          this.has3PhaseLowerMapped = true;
+          this.has3PhaseLowerMapped = canControl;
           this.phase3LowerPath = controlData.path;
         }
         else if (controlData.path.endsWith('.TapOpR.phs3.ctlVal')) {
-          this.has3PhaseRaiseMapped = true;
+          this.has3PhaseRaiseMapped = canControl;
           this.phase3RaisePath = controlData.path;
         }
         else if (controlData.path.endsWith('.TapOpL.phsA.ctlVal')) {
-          this.hasPhaseALowerMapped = true;
+          this.hasPhaseALowerMapped = canControl;
           this.phaseALowerPath = controlData.path;
         }
         else if (controlData.path.endsWith('.TapOpR.phsA.ctlVal')) {
-          this.hasPhaseARaiseMapped = true;
+          this.hasPhaseARaiseMapped = canControl;
           this.phaseARaisePath = controlData.path;
         }
         else if (controlData.path.endsWith('.TapOpL.phsB.ctlVal')) {
-          this.hasPhaseBLowerMapped = true;
+          this.hasPhaseBLowerMapped = canControl;
           this.phaseBLowerPath = controlData.path;
         }
         else if (controlData.path.endsWith('.TapOpR.phsB.ctlVal')) {
-          this.hasPhaseBRaiseMapped = true;
+          this.hasPhaseBRaiseMapped = canControl;
           this.phaseBRaisePath = controlData.path;
         }
         else if (controlData.path.endsWith('.TapOpL.phsC.ctlVal')) {
-          this.hasPhaseCLowerMapped = true;
+          this.hasPhaseCLowerMapped = canControl;
           this.phaseCLowerPath = controlData.path;
         }
         else if (controlData.path.endsWith('.TapOpR.phsC.ctlVal')) {
-          this.hasPhaseCRaiseMapped = true;
+          this.hasPhaseCRaiseMapped = canControl;
           this.phaseCRaisePath = controlData.path;
         }
       }

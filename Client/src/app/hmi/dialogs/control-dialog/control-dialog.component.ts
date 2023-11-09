@@ -8,6 +8,8 @@ import { ButtonFunction, CommandAction } from '../../../shared/hmi.constants'
 import { Symbol } from '../../../shared/hmi.constants'
 import { DiagramData } from '../../../shared/models/userobject.model';
 import { getCommands, getCommandsByType } from '../../../shared/models/commands.model';
+import { Authorization } from '../../../shared/models/user.model';
+import { JwtAuthService } from "../../../shared/services/auth/jwt-auth.service";
 
 @Component({
   selector: 'app-control-dialog',
@@ -37,11 +39,13 @@ export class ControlDialogComponent implements OnInit {
   commands: any[] = [];
 
   constructor(
-    public dialogRef: MatDialogRef<ControlDialogComponent>,    
+    public dialogRef: MatDialogRef<ControlDialogComponent>, 
+    private jwtService: JwtAuthService,   
     @Inject(MAT_DIALOG_DATA) public data: any
   ) { }
 
   ngOnInit() {  
+    const canControl = Authorization.canControl(this.jwtService.getUserRole());
     let commandTypes = getCommands();
     for (let entry of commandTypes) {
       let a = getCommandsByType(entry);
@@ -79,7 +83,7 @@ export class ControlDialogComponent implements OnInit {
       else if (this.diagramData.func === ButtonFunction.setPoint)
       {
         this.hasDataMapped = this.diagramData.verb && this.diagramData.verb !== "";
-        this.isControllable = true; 
+        this.isControllable = canControl; 
         this.isSetPoint = true;        
       }
       else {
@@ -113,7 +117,7 @@ export class ControlDialogComponent implements OnInit {
 
         var cmd = this.findCommand(this.diagramData.controlData[0].path);
         if (cmd != null) {
-          this.isControllable = true;
+          this.isControllable = canControl;
           this.hasDataMapped = true; 
           this.isSetPoint = cmd.attributes.type == "set-point";  
           this.isSetBoolean = cmd.attributes.type == "set-boolean";          
@@ -128,7 +132,7 @@ export class ControlDialogComponent implements OnInit {
           this.isControllable = false;
         }
       }
-    }     
+    }    
   }
 
   findCommand(name: String) : any {

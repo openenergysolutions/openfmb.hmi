@@ -13,6 +13,9 @@ export const Authorization = {
   },  
   canUpdateSettings: (role: string) => {
     return role === Authorization.authRoles.admin;
+  },
+  canControl: (role: string) => {
+    return role === Authorization.authRoles.admin || role === Authorization.authRoles.engineer;
   }
 }
 

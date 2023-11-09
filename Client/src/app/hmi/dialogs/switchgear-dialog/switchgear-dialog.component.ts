@@ -7,6 +7,8 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CommandAction, PosString, InternalTopic } from '../../../shared/hmi.constants'
 import { DiagramData } from '../../../shared/models/userobject.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Authorization } from '../../../shared/models/user.model';
+import { JwtAuthService } from "../../../shared/services/auth/jwt-auth.service";
 
 @Component({
   selector: 'app-switchgear-dialog',
@@ -31,11 +33,13 @@ export class SwitchgearDialogComponent implements OnInit {
 
   constructor(
     public dialogRef: MatDialogRef<SwitchgearDialogComponent>,
-    private snack: MatSnackBar,    
+    private snack: MatSnackBar,
+    private jwtService: JwtAuthService,    
     @Inject(MAT_DIALOG_DATA) public data: any
   ) { }
 
-  ngOnInit() {                       
+  ngOnInit() { 
+    this.actionEnabled = Authorization.canControl(this.jwtService.getUserRole());                      
     this.diagramId = this.data.diagramId;   
     this.diagramData = this.data.diagramData;
     this.name = this.diagramData.name,
