@@ -284,8 +284,6 @@ async fn server_setup() {
         .and(warp::fs::file(index))
         .map(|_, file| file);
 
-    let any = warp::any().map(warp::reply);
-
     let routes = static_route
         .or(home)
         .or(hmi)
@@ -311,7 +309,6 @@ async fn server_setup() {
         .or(design_routes)
         .or(data_route)
         .or(update)
-        .or(any)
         .with(cors)
         .with(warp::log("warp::server"));
 
