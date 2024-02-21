@@ -5,7 +5,7 @@
 name: CI to Docker Hub
 on:
   push:
-    branches: [feature/v2.1-testing]
+    branches: [develop]
     tags:
       - 'v*'
 env:
@@ -21,6 +21,12 @@ jobs:
           - linux/arm/v7
           - linux/arm64
     steps:
+      - 
+        name: Git sha
+        uses: benjlevesque/short-sha@v2.1
+        id: git-sha
+        with:
+          length: 8
       -
         name: Check Out Repo
         uses: actions/checkout@v3
@@ -32,8 +38,7 @@ jobs:
           images: ${{ env.REGISTRY_IMAGE }}
           tags: |                        
             type=ref,event=tag
-            type=raw,value=v2.1-rc1
-            type=raw,value=${{ github.sha }}
+            type=raw,value=${{ steps.git-sha.outputs.sha }}            
             type=raw,value=latest,enable={{is_default_branch}}          
           labels: |
             maintainer=OES
@@ -84,6 +89,12 @@ jobs:
     needs:
       - build
     steps:
+      - 
+        name: Git sha
+        uses: benjlevesque/short-sha@v2.1
+        id: git-sha
+        with:
+          length: 8
       -
         name: Download digests
         uses: actions/download-artifact@v3
@@ -101,8 +112,7 @@ jobs:
           images: ${{ env.REGISTRY_IMAGE }}
           tags: |
             type=ref,event=tag
-            type=raw,value=v2.1-rc1
-            type=raw,value=${{ github.sha }}
+            type=raw,value=${{ steps.git-sha.outputs.sha }}
             type=raw,value=latest,enable={{is_default_branch}}          
           labels: |
             maintainer=OES
