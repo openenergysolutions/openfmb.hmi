@@ -189,6 +189,21 @@ impl HmiSubscriber {
             SwitchEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Switch),
             SwitchReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Switch),
             SwitchStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Switch),
+            EVSEDiscreteControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::EVSE),
+            EVSEControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::EVSE),
+            EVSEEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::EVSE),
+            EVSEReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::EVSE),
+            EVSEStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::EVSE),
+            EVSECapability(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::EVSE),
+            EVSECapabilityOverride(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::EVSE),
+            InterconnectionPlannedSchedule(_msg) => {
+                self.ensure_actor_type(ctx, OpenFMBProfileType::Interconnection)
+            }
+            InterconnectionRequestedSchedule(_msg) => {
+                self.ensure_actor_type(ctx, OpenFMBProfileType::Interconnection)
+            }
+            ReserveAvailability(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Reserve),
+            ReserveRequest(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Reserve),
         }
     }
 
