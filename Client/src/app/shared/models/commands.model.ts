@@ -1185,8 +1185,30 @@ export const COMMANDS = {
 			"name": "Object",
 			"attributes": {
 				"label": "",
-				"name": "StopTransaction",
-				"path": "StopTransaction",
+				"name": "InitiateFault",
+				"path": "InitiateFault",
+				"type": "command",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "ClearFault",
+				"path": "ClearFault",
+				"type": "command",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "ResetProtectionPickup",
+				"path": "ResetProtectionPickup",
 				"type": "command",
 				"measurement": ""
 			}

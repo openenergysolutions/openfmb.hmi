@@ -9,7 +9,7 @@ name="hmi_server"
 [dependencies]
 tokio = { version = "1", features = ["macros", "sync", "rt-multi-thread", "time"] }
 tokio-stream = "0.1"
-warp = { version = "0.3", features = ["tls"] }
+warp = { version = "0.3.7", features = ["tls"] }
 openfmb = {git="https://github.com/openenergysolutions/openfmb-rs"}
 openfmb-messages-ext = {git="https://github.com/openenergysolutions/openfmb-rs", features = ["nats-sync"]}
 microgrid-protobuf = {git="https://github.com/openenergysolutions/openfmb-rs"}
@@ -27,7 +27,7 @@ nats = "0.24.0"
 config = "0.10.1"
 jsonwebtoken = "8.1.0"
 thiserror = "1.0.21"
-chrono = "0.4.19"
+chrono = "0.4.26"
 bytes = "1"
 prost = "0.10.4"
 pwhash = "1.0.0"

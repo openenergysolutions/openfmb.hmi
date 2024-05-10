@@ -7,10 +7,11 @@ log-level = "Debug" # Off, Error, Info, Debug, Trace
 # comment out these two ssl related items if TLS is needed
 # ssl_cert = "/server/certs/server/server-cert.pem"
 # ssl_key = "/server/certs/server/server-key.pem"
+server_port = 32771
 
 [nats]
 prod_uri = "172.16.1.30:4222"
-dev_uri = "192.168.86.30:4222"
+dev_uri = "192.168.86.58:4222"
 server_id = "741df6b5-5bdd-4ea6-a6aa-541fba744721"
 # authentication_type = "creds"
 # creds = "meter.creds"

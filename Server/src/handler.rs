@@ -435,7 +435,7 @@ pub async fn update_equipment_handler(_id: String, eq: Equipment) -> Result<impl
     let mut list = read_equipment_list().unwrap();
 
     if let Some(pos) = list.iter().position(|x| *x.mrid == eq.mrid) {
-        let mut e = list.get_mut(pos).unwrap();
+        let e = list.get_mut(pos).unwrap();
         e.name = eq.name;
         e.mrid = eq.mrid;
         e.device_type = eq.device_type;

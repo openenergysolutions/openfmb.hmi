@@ -189,6 +189,14 @@ impl HmiSubscriber {
             SwitchEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Switch),
             SwitchReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Switch),
             SwitchStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Switch),
+            ReserveRequest(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Reserve),
+            ReserveAvailability(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Reserve),
+            InterconnectionPlannedSchedule(_msg) => {
+                self.ensure_actor_type(ctx, OpenFMBProfileType::Interconnection)
+            }
+            InterconnectionRequestedSchedule(_msg) => {
+                self.ensure_actor_type(ctx, OpenFMBProfileType::Interconnection)
+            }
         }
     }
 

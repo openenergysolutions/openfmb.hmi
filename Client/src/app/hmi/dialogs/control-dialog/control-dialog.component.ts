@@ -155,6 +155,11 @@ export class ControlDialogComponent implements OnInit {
 
   onAction() : void {
 
+    let arg = this.diagramData.controlData[0]?.measurement;
+    if (!arg || arg === '') {
+      arg = null;
+    }
+
     if (this.isSetPoint) {
       if (!this.isNumeric(this.setpointValue)) {
         alert('Please specify valid numeric setpoint value');
@@ -182,14 +187,14 @@ export class ControlDialogComponent implements OnInit {
       this.dialogRef.close({
         proceed: true,
         action: CommandAction.VERB,
-        value: this.controlValue  
+        value: arg  
       });
     }
     else {  // status indicator
       this.dialogRef.close({
         proceed: true,
         action: CommandAction.PRECONFIGURED,
-        value: this.controlValue  
+        value: arg  
       });
     }       
   }
