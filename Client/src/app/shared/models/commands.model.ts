@@ -1135,6 +1135,39 @@ export const COMMANDS = {
 				"type": "set-point",
 				"measurement": ""
 			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "InitiateFault",
+				"path": "InitiateFault",
+				"type": "command",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "ClearFault",
+				"path": "ClearFault",
+				"type": "command",
+				"measurement": ""
+			}
+		},
+		{
+			"type": "element",
+			"name": "Object",
+			"attributes": {
+				"label": "",
+				"name": "ResetProtectionPickup",
+				"path": "ResetProtectionPickup",
+				"type": "command",
+				"measurement": ""
+			}
 		}
     ],
     "HmiControl": [
