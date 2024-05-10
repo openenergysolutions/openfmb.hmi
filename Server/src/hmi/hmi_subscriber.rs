@@ -25,7 +25,7 @@ pub struct NatsMessage(Arc<nats::Message>);
 #[derive(Clone, Debug)]
 pub struct HmiSubscriber {
     pub message_count: u32,
-    pub nats_client: Option<nats::Connection>,    
+    pub nats_client: Option<nats::Connection>,
     pub processor: ActorRef<ProcessorMsg>,
     openfmb_profile_actors: HashMap<OpenFMBProfileType, ActorRef<ProfileSubscriberMsg>>,
 }
@@ -36,7 +36,7 @@ impl ActorFactoryArgs<ActorRef<ProcessorMsg>> for HmiSubscriber {
             message_count: 0,
             processor: args,
             nats_client: None,
-            openfmb_profile_actors: Default::default(),            
+            openfmb_profile_actors: Default::default(),
         }
     }
 }
@@ -46,13 +46,13 @@ impl HmiSubscriber {
         &mut self,
         ctx: &Context<<HmiSubscriber as Actor>::Msg>,
         msg: &StartProcessingMessages,
-    ) {  
+    ) {
         self.nats_client = None;
-        
+
         info!(
             "HmiSubscriber connects to NATS with options: {:?}",
             msg.pubsub_options
-        );        
+        );
 
         let options = msg.pubsub_options.options().unwrap();
         let connection_url = msg.pubsub_options.connection_url.clone();
@@ -66,8 +66,8 @@ impl HmiSubscriber {
             .error_callback(|err| CoordinatorOptions::on_error(err))
             .close_callback(move || HmiSubscriber::on_closed(&myself))
             .retry_on_failed_connect()
-            .connect(connection_url) {
-
+            .connect(connection_url)
+        {
             Ok(connection) => {
                 info!("****** HmiSubscriber successfully connected");
 
@@ -90,7 +90,7 @@ impl HmiSubscriber {
                 });
             }
             Err(e) => {
-                error!("Unable to connect to nats.  {:?}", e);                          
+                error!("Unable to connect to nats.  {:?}", e);
             }
         }
     }
@@ -98,9 +98,12 @@ impl HmiSubscriber {
     fn on_closed(hmi: &ActorRef<HmiSubscriberMsg>) {
         info!("Connection to pub/sub broker has been closed!");
 
-        hmi.tell(StartProcessingMessages {
-            pubsub_options: CoordinatorOptions::new(),
-        }, None);
+        hmi.tell(
+            StartProcessingMessages {
+                pubsub_options: CoordinatorOptions::new(),
+            },
+            None,
+        );
     }
 
     fn ensure_actor(
@@ -136,6 +139,9 @@ impl HmiSubscriber {
             ESSReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::ESS),
             ESSStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::ESS),
             ESSControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::ESS),
+            ESSDiscreteControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::ESS),
+            ESSCapability(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::ESS),
+            ESSCapabilityOverride(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::ESS),
             GenerationControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Generation),
             GenerationDiscreteControl(_msg) => {
                 self.ensure_actor_type(ctx, OpenFMBProfileType::Generation)
@@ -143,6 +149,12 @@ impl HmiSubscriber {
             GenerationReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Generation),
             GenerationEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Generation),
             GenerationStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Generation),
+            GenerationCapability(_msg) => {
+                self.ensure_actor_type(ctx, OpenFMBProfileType::Generation)
+            }
+            GenerationCapabilityOverride(_msg) => {
+                self.ensure_actor_type(ctx, OpenFMBProfileType::Generation)
+            }
             LoadControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Load),
             LoadEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Load),
             LoadReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Load),
@@ -168,6 +180,9 @@ impl HmiSubscriber {
             ResourceEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Resource),
             ResourceStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Resource),
             SolarControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Solar),
+            SolarDiscreteControl(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Solar),
+            SolarCapability(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Solar),
+            SolarCapabilityOverride(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Solar),
             SolarEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Solar),
             SolarReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Solar),
             SolarStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Solar),
@@ -175,6 +190,14 @@ impl HmiSubscriber {
             SwitchEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Switch),
             SwitchReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Switch),
             SwitchStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Switch),
+            ReserveRequest(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Reserve),
+            ReserveAvailability(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::Reserve),
+            InterconnectionPlannedSchedule(_msg) => {
+                self.ensure_actor_type(ctx, OpenFMBProfileType::Interconnection)
+            }
+            InterconnectionRequestedSchedule(_msg) => {
+                self.ensure_actor_type(ctx, OpenFMBProfileType::Interconnection)
+            }
         }
     }
 

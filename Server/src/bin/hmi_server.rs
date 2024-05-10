@@ -49,7 +49,6 @@ async fn server_setup() {
     let aud = config.get_str("auth.audience").ok();
     let jwk_url = config.get_str("auth.authorization_jwks_uri").ok();
 
-
     // Self-signed CA for token-verification client to trust.
     let auth_client = match config.get_str("auth.cert_path") {
         Ok(cert_path) => {
@@ -58,18 +57,18 @@ async fn server_setup() {
                 .expect("No root certificate provided")
                 .read_to_end(&mut buf)
                 .expect("Unable to read root certificate");
-    
-            let cert =
-                reqwest::Certificate::from_pem(&buf).expect("Unable to parse certificate from buffer");
-        
+
+            let cert = reqwest::Certificate::from_pem(&buf)
+                .expect("Unable to parse certificate from buffer");
+
             leaked!(reqwest::Client::builder()
                 .add_root_certificate(cert)
                 .build()
                 .expect("Failed to build http client for validating access tokens"))
-        },
+        }
         _ => leaked!(reqwest::Client::builder()
-                .build()
-                .expect("Failed to build http client for validating access tokens"))
+            .build()
+            .expect("Failed to build http client for validating access tokens")),
     };
 
     // Create client for token-verification against 3rd party service.
@@ -374,7 +373,18 @@ async fn server_setup() {
 
     let hmi_local_ip = format!("{}:{}", host, port);
 
-    let _ = write_hmi_env(&hmi_local_ip, &http_scheme, &ws_scheme, &auth_audience, &auth_client_id, &auth_domain, &auth_scope, &auth_authorize_path, &auth_token_path, &auth_logout_path);
+    let _ = write_hmi_env(
+        &hmi_local_ip,
+        &http_scheme,
+        &ws_scheme,
+        &auth_audience,
+        &auth_client_id,
+        &auth_domain,
+        &auth_scope,
+        &auth_authorize_path,
+        &auth_token_path,
+        &auth_logout_path,
+    );
 
     let server_uri = format!("0.0.0.0:{}", port);
 
@@ -408,7 +418,18 @@ fn with_hmi(
     warp::any().map(move || hmi.clone())
 }
 
-fn write_hmi_env(hmi_local_ip: &str, http_scheme: &str, ws_scheme: &str, auth_audience: &str, auth_client_id: &str, auth_domain: &str, auth_scope: &str, auth_authorize_path: &str, auth_token_path: &str, auth_logout_path: &str) -> std::io::Result<()> {
+fn write_hmi_env(
+    hmi_local_ip: &str,
+    http_scheme: &str,
+    ws_scheme: &str,
+    auth_audience: &str,
+    auth_client_id: &str,
+    auth_domain: &str,
+    auth_scope: &str,
+    auth_authorize_path: &str,
+    auth_token_path: &str,
+    auth_logout_path: &str,
+) -> std::io::Result<()> {
     for entry in fs::read_dir("Client/dist/openfmb-hmi")? {
         let entry = entry?;
         if let Some(file_name) = entry.path().as_path().file_name() {

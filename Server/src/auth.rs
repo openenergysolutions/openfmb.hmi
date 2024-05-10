@@ -395,7 +395,7 @@ pub async fn update_user_handler(_id: String, user: User) -> Result<impl Reply> 
     let mut list = get_user_list(get_user_file()).unwrap();
 
     if let Some(pos) = list.iter().position(|x| *x.id == user.id) {
-        let mut usr = list.get_mut(pos).unwrap();
+        let usr = list.get_mut(pos).unwrap();
         usr.displayname = user.displayname;
         usr.role = user.role;
         usr.pwd = hash_password(&user.pwd);
