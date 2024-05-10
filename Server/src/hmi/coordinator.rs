@@ -169,7 +169,7 @@ impl CoordinatorOptions {
             SETTINGS
                 .read()
                 .unwrap()
-                .get_str("coordinator.environment")
+                .get_str("hmi.environment")
                 .unwrap()
                 .as_str(),
         )
@@ -177,7 +177,7 @@ impl CoordinatorOptions {
         let _ = SETTINGS
             .write()
             .unwrap()
-            .set_default("openfmb_nats_subscriber.connected", true);
+            .set_default("nats.connected", true);
 
         CoordinatorOptions::get_options(env)
     }
@@ -185,36 +185,18 @@ impl CoordinatorOptions {
     fn get_options(env: Environment) -> CoordinatorOptions {
         let nats_server_uri = match env {
             Environment::Prod => {
-                let _ = SETTINGS
-                    .write()
-                    .unwrap()
-                    .set("coordinator.environment", "prod");
-                SETTINGS
-                    .read()
-                    .unwrap()
-                    .get_str("openfmb_nats_subscriber.prod_uri")
-                    .unwrap()
+                let _ = SETTINGS.write().unwrap().set("hmi.environment", "prod");
+                SETTINGS.read().unwrap().get_str("nats.prod_uri").unwrap()
             }
             Environment::Dev => {
-                let _ = SETTINGS
-                    .write()
-                    .unwrap()
-                    .set("coordinator.environment", "dev");
-                SETTINGS
-                    .read()
-                    .unwrap()
-                    .get_str("openfmb_nats_subscriber.dev_uri")
-                    .unwrap()
+                let _ = SETTINGS.write().unwrap().set("hmi.environment", "dev");
+                SETTINGS.read().unwrap().get_str("nats.dev_uri").unwrap()
             }
         };
 
         let mut authentication_type = Authentication::None;
 
-        if let Ok(s) = SETTINGS
-            .read()
-            .unwrap()
-            .get_str("openfmb_nats_subscriber.authentication_type")
-        {
+        if let Ok(s) = SETTINGS.read().unwrap().get_str("nats.authentication_type") {
             if let Ok(sec) = Authentication::from_str(&s) {
                 authentication_type = sec;
             } else {
@@ -224,11 +206,7 @@ impl CoordinatorOptions {
 
         let mut security_type = Security::None;
 
-        if let Ok(s) = SETTINGS
-            .read()
-            .unwrap()
-            .get_str("openfmb_nats_subscriber.security_type")
-        {
+        if let Ok(s) = SETTINGS.read().unwrap().get_str("nats.security_type") {
             if let Ok(sec) = Security::from_str(&s) {
                 security_type = sec;
             } else {
@@ -250,65 +228,37 @@ impl CoordinatorOptions {
             root_cert: None,
         };
 
-        if let Ok(s) = SETTINGS
-            .read()
-            .unwrap()
-            .get_str("openfmb_nats_subscriber.token")
-        {
+        if let Ok(s) = SETTINGS.read().unwrap().get_str("nats.token") {
             if s.len() > 0 {
                 options.token = Some(s);
             }
         }
-        if let Ok(s) = SETTINGS
-            .read()
-            .unwrap()
-            .get_str("openfmb_nats_subscriber.creds")
-        {
+        if let Ok(s) = SETTINGS.read().unwrap().get_str("nats.creds") {
             if s.len() > 0 {
                 options.creds_file = Some(s);
             }
         }
-        if let Ok(s) = SETTINGS
-            .read()
-            .unwrap()
-            .get_str("openfmb_nats_subscriber.username")
-        {
+        if let Ok(s) = SETTINGS.read().unwrap().get_str("nats.username") {
             if s.len() > 0 {
                 options.username = Some(s);
             }
         }
-        if let Ok(s) = SETTINGS
-            .read()
-            .unwrap()
-            .get_str("openfmb_nats_subscriber.password")
-        {
+        if let Ok(s) = SETTINGS.read().unwrap().get_str("nats.password") {
             if s.len() > 0 {
                 options.password = Some(s);
             }
         }
-        if let Ok(s) = SETTINGS
-            .read()
-            .unwrap()
-            .get_str("openfmb_nats_subscriber.client_cert")
-        {
+        if let Ok(s) = SETTINGS.read().unwrap().get_str("nats.client_cert") {
             if s.len() > 0 {
                 options.client_cert = Some(s);
             }
         }
-        if let Ok(s) = SETTINGS
-            .read()
-            .unwrap()
-            .get_str("openfmb_nats_subscriber.client_key")
-        {
+        if let Ok(s) = SETTINGS.read().unwrap().get_str("nats.client_key") {
             if s.len() > 0 {
                 options.client_key = Some(s);
             }
         }
-        if let Ok(s) = SETTINGS
-            .read()
-            .unwrap()
-            .get_str("openfmb_nats_subscriber.root_cert")
-        {
+        if let Ok(s) = SETTINGS.read().unwrap().get_str("nats.root_cert") {
             if s.len() > 0 {
                 options.root_cert = Some(s);
             }
@@ -322,7 +272,7 @@ impl CoordinatorOptions {
             SETTINGS
                 .read()
                 .unwrap()
-                .get_str("coordinator.environment")
+                .get_str("hmi.environment")
                 .unwrap()
                 .as_str(),
         )
@@ -374,20 +324,13 @@ impl CoordinatorOptions {
     }
 
     pub fn current_status() -> CoordinatorStatus {
-        let mut send_update_status = match SETTINGS
-            .read()
-            .unwrap()
-            .get_bool("openfmb_nats_subscriber.send_status_update")
-        {
-            Ok(b) => b,
-            _ => false,
-        };
+        let mut send_update_status =
+            match SETTINGS.read().unwrap().get_bool("nats.send_status_update") {
+                Ok(b) => b,
+                _ => false,
+            };
 
-        let server_id = match SETTINGS
-            .read()
-            .unwrap()
-            .get_str("openfmb_nats_subscriber.server_id")
-        {
+        let server_id = match SETTINGS.read().unwrap().get_str("nats.server_id") {
             Ok(b) => b,
             _ => {
                 if send_update_status {
@@ -403,48 +346,36 @@ impl CoordinatorOptions {
                 SETTINGS
                     .read()
                     .unwrap()
-                    .get_str("coordinator.environment")
+                    .get_str("hmi.environment")
                     .unwrap()
                     .as_str(),
             )
             .unwrap(),
-            connected: SETTINGS
-                .read()
-                .unwrap()
-                .get_bool("openfmb_nats_subscriber.connected")
-                .unwrap(),
+            connected: SETTINGS.read().unwrap().get_bool("nats.connected").unwrap(),
             send_status_update: send_update_status,
             server_id: server_id,
             coordinator_active: SETTINGS
                 .read()
                 .unwrap()
-                .get_bool("coordinator.active")
+                .get_bool("hmi.active")
                 .unwrap_or(false),
             comm_ok: SETTINGS
                 .read()
                 .unwrap()
-                .get_bool("coordinator.comm_ok")
+                .get_bool("hmi.comm_ok")
                 .unwrap_or(false),
         }
     }
 
     pub fn update_coordinator_status(is_active: bool, overall_comm: bool) {
-        match SETTINGS
-            .write()
-            .unwrap()
-            .set("coordinator.active", is_active)
-        {
+        match SETTINGS.write().unwrap().set("hmi.active", is_active) {
             Ok(_) => {}
             Err(e) => {
                 log::error!("Unable to write to configuration: {:?}", e);
             }
         }
 
-        match SETTINGS
-            .write()
-            .unwrap()
-            .set("coordinator.comm_ok", overall_comm)
-        {
+        match SETTINGS.write().unwrap().set("hmi.comm_ok", overall_comm) {
             Ok(_) => {}
             Err(e) => {
                 log::error!("Unable to write to configuration: {:?}", e);
@@ -453,11 +384,7 @@ impl CoordinatorOptions {
     }
 
     pub fn server_id() -> Option<String> {
-        match SETTINGS
-            .read()
-            .unwrap()
-            .get_str("openfmb_nats_subscriber.server_id")
-        {
+        match SETTINGS.read().unwrap().get_str("nats.server_id") {
             Ok(b) => Some(b),
             _ => None,
         }
@@ -465,18 +392,12 @@ impl CoordinatorOptions {
 
     pub fn on_disconnect() {
         log::error!("Connection to pub/sub broker has lost!");
-        let _ = SETTINGS
-            .write()
-            .unwrap()
-            .set("openfmb_nats_subscriber.connected", false);
+        let _ = SETTINGS.write().unwrap().set("nats.connected", false);
     }
 
     pub fn on_reconnect() {
         log::info!("Reconnected to pub/sub broker.");
-        let _ = SETTINGS
-            .write()
-            .unwrap()
-            .set("openfmb_nats_subscriber.connected", true);
+        let _ = SETTINGS.write().unwrap().set("nats.connected", true);
     }
 
     pub fn on_delay_reconnect(c: usize) -> Duration {

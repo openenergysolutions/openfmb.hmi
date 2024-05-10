@@ -2,18 +2,22 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CommandAction, PosString, InternalTopic } from '../../../shared/hmi.constants'
 import { DiagramData } from '../../../shared/models/userobject.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Authorization } from '../../../shared/models/user.model';
+import { Subscription } from 'rxjs';
+import { AuthService } from "@auth0/auth0-angular";
+import { parseJwt } from '../../../shared/helpers/utils';
 
 @Component({
   selector: 'app-switchgear-dialog',
   templateUrl: './switchgear-dialog.component.html',
   styleUrls: ['./switchgear-dialog.component.scss']
 })
-export class SwitchgearDialogComponent implements OnInit {  
+export class SwitchgearDialogComponent implements OnInit, OnDestroy {  
   status: string;
   name: string;
   description: string;
@@ -27,15 +31,27 @@ export class SwitchgearDialogComponent implements OnInit {
   hasDataMapped: boolean = false;
   lastUpdate: string;
   hasLastUpdate: boolean = false; 
-  isCoordinatorActive: boolean = false;   
-
+  isCoordinatorActive: boolean = false; 
+  userSub: Subscription;
+  
   constructor(
     public dialogRef: MatDialogRef<SwitchgearDialogComponent>,
-    private snack: MatSnackBar,    
+    private snack: MatSnackBar,
+    private auth: AuthService,       
     @Inject(MAT_DIALOG_DATA) public data: any
-  ) { }
+  ) {
+    this.userSub = this.auth.user$.subscribe(user => {
+      if (user) {
+        this.auth.getAccessTokenSilently().toPromise().then(access_token => {
+          const access_token_d = parseJwt(access_token);
+          const roles = access_token_d.resource_access.gms.roles;
+          this.actionEnabled = Authorization.canControl(roles);
+        });
+      }
+    }); 
+   }
 
-  ngOnInit() {                       
+  ngOnInit() {                   
     this.diagramId = this.data.diagramId;   
     this.diagramData = this.data.diagramData;
     this.name = this.diagramData.name,
@@ -68,6 +84,12 @@ export class SwitchgearDialogComponent implements OnInit {
       this.actionText = "INVALID";
       this.actionColor = "gray";
       this.actionEnabled = false;
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.userSub) {
+      this.userSub.unsubscribe()
     }
   }
 

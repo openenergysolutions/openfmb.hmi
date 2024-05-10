@@ -2,17 +2,21 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CommandAction } from '../../../shared/hmi.constants'
 import { DiagramData } from '../../../shared/models/userobject.model';
+import { Authorization } from '../../../shared/models/user.model';
+import { Subscription } from 'rxjs';
+import { AuthService } from "@auth0/auth0-angular";
+import { parseJwt } from '../../../shared/helpers/utils';
 
 @Component({
   selector: 'app-regulator-dialog',
   templateUrl: './regulator-dialog.component.html',
   styleUrls: ['./regulator-dialog.component.scss']
 })
-export class RegulatorDialogComponent implements OnInit {  
+export class RegulatorDialogComponent implements OnInit, OnDestroy {  
   status: string;
   name: string;    
   diagramId: string;
@@ -40,14 +44,28 @@ export class RegulatorDialogComponent implements OnInit {
   phaseCRaisePath: string = "";
 
   lastUpdate: string;
-  hasLastUpdate: boolean = false;    
+  hasLastUpdate: boolean = false;  
+  
+  userSub: Subscription;
+  canControl: boolean = false;
 
   constructor(
-    public dialogRef: MatDialogRef<RegulatorDialogComponent>,    
+    public dialogRef: MatDialogRef<RegulatorDialogComponent>,
+    private auth: AuthService,        
     @Inject(MAT_DIALOG_DATA) public data: any
-  ) { }
+  ) {
+    this.userSub = this.auth.user$.subscribe(user => {
+      if (user) {
+        this.auth.getAccessTokenSilently().toPromise().then(access_token => {
+          const access_token_d = parseJwt(access_token);
+          const roles = access_token_d.resource_access.gms.roles;
+          this.canControl = Authorization.canControl(roles);
+        });
+      }
+    });
+   }
 
-  ngOnInit() {                    
+  ngOnInit() {
     this.diagramId = this.data.diagramId;   
     this.diagramData = this.data.diagramData;
     this.name = this.diagramData.name,
@@ -70,39 +88,45 @@ export class RegulatorDialogComponent implements OnInit {
         var controlData = this.diagramData.controlData[i];
 
         if (controlData.path.endsWith('.TapOpL.phs3.ctlVal')) {
-          this.has3PhaseLowerMapped = true;
+          this.has3PhaseLowerMapped = this.canControl;
           this.phase3LowerPath = controlData.path;
         }
         else if (controlData.path.endsWith('.TapOpR.phs3.ctlVal')) {
-          this.has3PhaseRaiseMapped = true;
+          this.has3PhaseRaiseMapped = this.canControl;
           this.phase3RaisePath = controlData.path;
         }
         else if (controlData.path.endsWith('.TapOpL.phsA.ctlVal')) {
-          this.hasPhaseALowerMapped = true;
+          this.hasPhaseALowerMapped = this.canControl;
           this.phaseALowerPath = controlData.path;
         }
         else if (controlData.path.endsWith('.TapOpR.phsA.ctlVal')) {
-          this.hasPhaseARaiseMapped = true;
+          this.hasPhaseARaiseMapped = this.canControl;
           this.phaseARaisePath = controlData.path;
         }
         else if (controlData.path.endsWith('.TapOpL.phsB.ctlVal')) {
-          this.hasPhaseBLowerMapped = true;
+          this.hasPhaseBLowerMapped = this.canControl;
           this.phaseBLowerPath = controlData.path;
         }
         else if (controlData.path.endsWith('.TapOpR.phsB.ctlVal')) {
-          this.hasPhaseBRaiseMapped = true;
+          this.hasPhaseBRaiseMapped = this.canControl;
           this.phaseBRaisePath = controlData.path;
         }
         else if (controlData.path.endsWith('.TapOpL.phsC.ctlVal')) {
-          this.hasPhaseCLowerMapped = true;
+          this.hasPhaseCLowerMapped = this.canControl;
           this.phaseCLowerPath = controlData.path;
         }
         else if (controlData.path.endsWith('.TapOpR.phsC.ctlVal')) {
-          this.hasPhaseCRaiseMapped = true;
+          this.hasPhaseCRaiseMapped = this.canControl;
           this.phaseCRaisePath = controlData.path;
         }
       }
     }        
+  }
+  
+  ngOnDestroy() {
+    if (this.userSub) {
+      this.userSub.unsubscribe()
+    }
   }
   
   onClose(): void {    

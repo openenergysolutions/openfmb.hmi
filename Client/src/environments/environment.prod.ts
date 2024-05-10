@@ -5,9 +5,9 @@
 import envSettings from '../assets/env_prod.json';
 
 export const environment = {
-  production: true,
-  apiUrl: envSettings.apiUrl,
-  ws: envSettings.ws,
+  production: false,
+  apiUrl: window.location.protocol + "//" + window.location.host + "/",
+  ws: window.location.protocol == "https:" ? "wss://" + window.location.hostname + ":" + window.location.port + "/data/" : "ws://" + window.location.hostname + ":" + window.location.port + "/data/",
   auth: {
     authorize_path: envSettings.auth_authorize_path,
     token_path: envSettings.auth_token_path,

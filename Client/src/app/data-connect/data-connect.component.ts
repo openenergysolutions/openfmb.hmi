@@ -54,6 +54,7 @@ export class DataConnectComponent implements OnInit {
   currentVisibilityPoints = [];
 
   availableCommands = [];
+  tempCommands = [];
   selectedCommand: string;
 
   graphItemControllable: boolean = false;
@@ -85,7 +86,8 @@ export class DataConnectComponent implements OnInit {
     const to = this.clamp(targetIndex, targetArray.length);
     if (currentArray.length) {
         // override the default behavior: not remove item from current array        
-        targetArray.splice(to, 0, currentArray[from]);
+        const cloned = JSON.parse(JSON.stringify(currentArray[from]));
+        targetArray.splice(to, 0, cloned);
     }
   }
 
@@ -323,7 +325,8 @@ export class DataConnectComponent implements OnInit {
       this.snack.open('Only one mapping is allowed.', 'OK', { duration: 4000 });
     }
     else {
-      this.currentPoints.push({ ...item});
+      const cloned = JSON.parse(JSON.stringify(item));
+      this.currentPoints.push(cloned);
     }
   }
 
@@ -353,7 +356,7 @@ export class DataConnectComponent implements OnInit {
   onCommandTypeChanged(name: string) {
     this.availableCommands = [];
     if (name) {
-      this.availableCommands = getCommandsByType(name);
+      this.availableCommands = this.tempCommands = getCommandsByType(name);
     }
   }
 
@@ -400,6 +403,28 @@ export class DataConnectComponent implements OnInit {
     });
 
     this.availablePoints = rows;
+  }
+
+  updatePredefinedCommandFilter(event) {
+    console.log("updatePredefinedCommandFilter");
+
+    const val = event.target.value.toLowerCase();
+    
+    const rows = this.tempCommands.filter(function(d) {
+      if (d.attributes) {
+        if (d.attributes.label && d.attributes.label.toString().toLowerCase().indexOf(val) > -1) {
+          return true;
+        }
+        else if (d.attributes.name && d.attributes.name.toString().toLowerCase().indexOf(val) > -1) {
+          return true;
+        }
+        else if (d.attributes.path && d.attributes.path.toString().toLowerCase().indexOf(val) > -1) {
+          return true;
+        }
+      }
+    });
+
+    this.availableCommands = rows;
   }
 
   updateDiagram() {

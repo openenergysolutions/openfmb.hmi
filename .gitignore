@@ -53,3 +53,5 @@ certs/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+/certs

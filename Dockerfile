@@ -1,4 +1,4 @@
-FROM rust:alpine3.16 as backend-build
+FROM rust:1.70.0-alpine3.17 as backend-build
 WORKDIR /openfmb.hmi
 COPY Cargo.toml Cargo.lock ./
 COPY Server/ ./Server
@@ -9,7 +9,7 @@ RUN apk update && apk add --no-cache \
     protobuf-dev
 RUN RUSTFLAGS=-Ctarget-feature=-crt-static cargo build --release
 
-FROM node:alpine3.16 AS frontend-build
+FROM node:18.16.1-alpine3.17 AS frontend-build
 WORKDIR /Client
 COPY Client .
 RUN apk --no-cache add git
@@ -18,7 +18,7 @@ RUN yarn --version
 RUN yarn install
 RUN yarn run build
 
-FROM alpine:3.16 AS final
+FROM alpine:3.17 AS final
 RUN apk update && apk add --no-cache \ 
     linux-headers \
     libressl-dev \

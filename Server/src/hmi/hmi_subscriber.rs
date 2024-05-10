@@ -83,7 +83,6 @@ impl HmiSubscriber {
                 let myself = ctx.myself.clone();
                 // dropping the returned Handler does not unsubscribe here
                 sub.with_handler(move |msg| {
-                    log::trace!("Got message from NATS");
                     let nats_msg = NatsMessage(Arc::new(msg));
                     myself.send_msg(nats_msg.into(), None);
                     Ok(())
