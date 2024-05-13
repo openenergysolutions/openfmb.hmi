@@ -151,7 +151,6 @@ impl Receive<OpenFMBMessage> for Processor {
 
     fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: OpenFMBMessage, _sender: Sender) {
         let rt = tokio::runtime::Runtime::new().unwrap();
-        log::trace!("Receive OpenFMB message");
         rt.block_on(handle_openfmb_message(&self.clients, msg));
     }
 }
@@ -178,7 +177,6 @@ impl Receive<CoordinatorStatus> for Processor {
     type Msg = ProcessorMsg;
 
     fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: CoordinatorStatus, _sender: Sender) {
-        //log::trace!("Received coordinator status {:?}", msg);
         let rt = tokio::runtime::Runtime::new().unwrap();
         let clients = self.clients.clone();
         rt.spawn(async {
@@ -288,6 +286,7 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                                     value: Some(value.clone()),
                                     action: None,
                                     args: None,
+                                    args2: None,
                                 },
                             };
 
@@ -388,6 +387,22 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                             topic
                         )
                     }
+                    OpenFMBMessage::ESSCapability(message) => {
+                        extract!(
+                            data_maps,
+                            message,
+                            format!("{}Profile", msg.message_type()),
+                            topic
+                        )
+                    }
+                    OpenFMBMessage::ESSCapabilityOverride(message) => {
+                        extract!(
+                            data_maps,
+                            message,
+                            format!("{}Profile", msg.message_type()),
+                            topic
+                        )
+                    }
                     OpenFMBMessage::GenerationReading(message) => {
                         extract!(
                             data_maps,
@@ -405,6 +420,22 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                         )
                     }
                     OpenFMBMessage::GenerationStatus(message) => {
+                        extract!(
+                            data_maps,
+                            message,
+                            format!("{}Profile", msg.message_type()),
+                            topic
+                        )
+                    }
+                    OpenFMBMessage::GenerationCapability(message) => {
+                        extract!(
+                            data_maps,
+                            message,
+                            format!("{}Profile", msg.message_type()),
+                            topic
+                        )
+                    }
+                    OpenFMBMessage::GenerationCapabilityOverride(message) => {
                         extract!(
                             data_maps,
                             message,
@@ -533,6 +564,22 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                         )
                     }
                     OpenFMBMessage::SolarStatus(message) => {
+                        extract!(
+                            data_maps,
+                            message,
+                            format!("{}Profile", msg.message_type()),
+                            topic
+                        )
+                    }
+                    OpenFMBMessage::SolarCapability(message) => {
+                        extract!(
+                            data_maps,
+                            message,
+                            format!("{}Profile", msg.message_type()),
+                            topic
+                        )
+                    }
+                    OpenFMBMessage::SolarCapabilityOverride(message) => {
                         extract!(
                             data_maps,
                             message,

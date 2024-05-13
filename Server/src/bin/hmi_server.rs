@@ -99,7 +99,7 @@ async fn server_setup() {
     let subscriber = sys
         .actor_of_args::<HmiSubscriber, ActorRef<ProcessorMsg>>("HmiSubscriber", processor.clone())
         .unwrap();
-    if let Ok(send_status_update) = config.get_bool("openfmb_nats_subscriber.send_status_update") {
+    if let Ok(send_status_update) = config.get_bool("nats.send_status_update") {
         if send_status_update {
             let _monitor = sys
                 .actor_of_args::<Monitor, ActorRef<ProcessorMsg>>("HmiMonitor", processor.clone())
@@ -222,8 +222,10 @@ async fn server_setup() {
             "Access-Control-Request-Method",
             "Access-Control-Request-Headers",
             "content-type",
+            "content-length",
             "upgrade",
             "authorization",
+            "Accept",
         ]);
 
     let static_dir = "Client/dist/openfmb-hmi/";
@@ -349,18 +351,6 @@ async fn server_setup() {
         .with(cors)
         .with(warp::log("warp::server"));
 
-    let host = config
-        .get_str("hmi.server_host")
-        .unwrap_or("127.0.0.1".to_string());
-    let port = config.get_int("hmi.server_port").unwrap_or(80);
-
-    let ssl = config.get_bool("hmi.ssl").unwrap_or(false);
-    let ssl_cert = config.get_str("hmi.ssl_cert").unwrap_or("".to_string());
-    let ssl_key = config.get_str("hmi.ssl_key").unwrap_or("".to_string());
-    let http_scheme = config
-        .get_str("hmi.http_scheme")
-        .unwrap_or("http".to_string());
-    let ws_scheme = config.get_str("hmi.ws_scheme").unwrap_or("ws".to_string());
     let auth_audience = config.get_str("auth.audience").unwrap_or("".to_string());
     let auth_client_id = config.get_str("auth.client_id").unwrap_or("".to_string());
     let auth_domain = config.get_str("auth.domain").unwrap_or("".to_string());
@@ -371,12 +361,7 @@ async fn server_setup() {
     let auth_token_path = config.get_str("auth.token_path").unwrap_or("".to_string());
     let auth_logout_path = config.get_str("auth.auth_logout").unwrap_or("".to_string());
 
-    let hmi_local_ip = format!("{}:{}", host, port);
-
     let _ = write_hmi_env(
-        &hmi_local_ip,
-        &http_scheme,
-        &ws_scheme,
         &auth_audience,
         &auth_client_id,
         &auth_domain,
@@ -386,9 +371,17 @@ async fn server_setup() {
         &auth_logout_path,
     );
 
-    let server_uri = format!("0.0.0.0:{}", port);
+    let host = config
+        .get_str("hmi.server_host")
+        .unwrap_or("0.0.0.0".to_string());
 
-    if ssl && ssl_cert.len() > 0 && ssl_key.len() > 0 {
+    let ssl_cert = config.get_str("hmi.ssl_cert").unwrap_or("".to_string());
+    let ssl_key = config.get_str("hmi.ssl_key").unwrap_or("".to_string());
+
+    if ssl_cert.len() > 0 && ssl_key.len() > 0 {
+        let port = config.get_int("hmi.server_port").unwrap_or(443);
+        let server_uri = format!("{}:{}", host, port);
+
         warp::serve(routes)
             .tls()
             .cert_path(ssl_cert)
@@ -396,6 +389,9 @@ async fn server_setup() {
             .run(server_uri.to_socket_addrs().unwrap().next().unwrap())
             .await;
     } else {
+        let port = config.get_int("hmi.server_port").unwrap_or(80);
+        let server_uri = format!("{}:{}", host, port);
+
         warp::serve(routes)
             .run(server_uri.to_socket_addrs().unwrap().next().unwrap())
             .await;
@@ -419,9 +415,6 @@ fn with_hmi(
 }
 
 fn write_hmi_env(
-    hmi_local_ip: &str,
-    http_scheme: &str,
-    ws_scheme: &str,
     auth_audience: &str,
     auth_client_id: &str,
     auth_domain: &str,
@@ -446,8 +439,6 @@ fn write_hmi_env(
                     let mut contents = fs::read_to_string(backup)?;
 
                     // search for
-                    let http_search = "http://HOST_PORT/";
-                    let ws_search = "ws://HOST_PORT/";
                     let auth_audience_search = "AUTH_AUDIENCE";
                     let auth_client_id_search = "AUTH_CLIENT_ID";
                     let auth_domain_search = "AUTH_DOMAIN";
@@ -456,12 +447,7 @@ fn write_hmi_env(
                     let auth_token_path_search = "AUTH_TOKEN_PATH";
                     let auth_logout_path_search = "AUTH_LOGOUT_PATH";
 
-                    let http_uri = format!("{}://{}/", http_scheme, hmi_local_ip);
-                    let ws_uri = format!("{}://{}/", ws_scheme, hmi_local_ip);
-
                     contents = contents
-                        .replace(http_search, &http_uri)
-                        .replace(ws_search, &ws_uri)
                         .replace(auth_audience_search, &auth_audience)
                         .replace(auth_client_id_search, &auth_client_id)
                         .replace(auth_domain_search, &auth_domain)

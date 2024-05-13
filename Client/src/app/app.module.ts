@@ -60,8 +60,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         useFactory: HttpLoaderFactory,
         deps: [HttpClient]
       }
-    }),
-    RouterModule.forRoot(rootRouterConfig, { useHash: false, relativeLinkResolution: 'legacy' }),
+    }),    
+    RouterModule.forRoot(rootRouterConfig, { useHash: false }),
     StoreModule.forRoot(reducers, {
       metaReducers,
       runtimeChecks: {

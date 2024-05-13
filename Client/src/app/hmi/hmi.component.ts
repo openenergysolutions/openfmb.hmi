@@ -768,7 +768,7 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
-      if (result && result.proceed) {
+      if (result && result.proceed) {                      
         this.sendCommand(currentCellData, result.action);
       }
     });
@@ -818,8 +818,8 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
-      if (result && result.proceed) {
-        this.sendCommand(currentCellData, result.action, result.value);
+      if (result && result.proceed) {                
+        this.sendCommand(currentCellData, result.action, result.value, result.index);
       }
     });
   }
@@ -1160,31 +1160,32 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
       const t: Topic = {
         name: path,
         mrid: userObject.mRID,
-        action: action,
-        args: value,
+        action: action,   
+        args: value,     
       };
 
       const data: UpdateData = {
         topic: t
       };
 
-      this.diagramService.updateData(data)
-        .subscribe(data => {
+      this.diagramService.updateData( data)
+        .subscribe(data => {                              
           // success
         }, error => {
           console.error(error);
           this.snack.open(error, 'OK', { duration: 4000 });
-        });
+      });
     }
   }
 
-  sendCommand(userObject: DiagramData, action: string, value?: any) {
-    console.log("Sending command with action " + action + " with value: " + value);
-
-    if (action == CommandAction.VERB) {
-      const t: Topic = {
-        name: value,
-        mrid: userObject.mRID,
+  sendCommand(userObject: DiagramData, action: string, args?: any, args2?: any) {
+    console.log("Sending command with action " + action + " with args = " + args + " and args2 = " + args2);         
+    
+    if (action == CommandAction.VERB)
+    {      
+      const t : Topic = {
+        name: args,
+        mrid: userObject.mRID,                    
       };
 
       const data: UpdateData = {
@@ -1192,12 +1193,12 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
       };
 
       this.diagramService.updateData(data)
-        .subscribe(_data => {
+        .subscribe(_data => {                              
           this.snack.open("Command executed successfully.", 'OK', { duration: 4000 });
         }, error => {
           console.error(error);
           this.snack.open(error, 'OK', { duration: 4000 });
-        });
+      });
     }
     else if (userObject?.controlData?.length > 0) {
       const control = userObject?.controlData[0];
@@ -1209,19 +1210,20 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
         this.snack.open('Unable to send command.  No sepcified mRID.', 'OK', { duration: 2000 });
       }
 
-      const t: Topic = {
+      const t : Topic = {
         name: control?.path,
         mrid: userObject.mRID,
-        action: action,
-        args: value,
+        action: action,   
+        args: args,
+        args2: args2,     
       };
 
       const data: UpdateData = {
         topic: t
       };
 
-      this.diagramService.updateData(data)
-        .subscribe(_data => {
+      this.diagramService.updateData( data)
+        .subscribe(_data => {                              
           this.snack.open("Command executed successfully.", 'OK', { duration: 4000 });
         }, error => {
           console.error(error);
@@ -1342,8 +1344,16 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
               scaled = (value * 9 / 5) + 32.0;
             }
             else if (elem.scale === "toCelsius") {
-              scaled = (value - 32.0) * 5 / 9;
+              scaled = (value - 32.0) * 5/9;                           
             }
+            else {
+              const pattern = /^abs\((-?\d+(\.\d+)?)\)$/;
+              const match = elem.scale.match(pattern);
+              if (match) {
+                const numericValue = parseFloat(match[1]);
+                scaled = Math.abs(numericValue);                
+              }
+            }        
           }
           break;
         }
@@ -1357,19 +1367,31 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
     return [scaled, decimals];
   }
 
-  setDataFieldValue(element: Element, userObject: any, topic: any): string {
+  setDataFieldValue(element: Element, userObject: any, topic: any): string {     
     var value = topic?.value;
-
+    
     if (typeof value.Double !== 'undefined') {
       if (element.className.match(/\bfield-item-value-state\b/)) {
         if (value.Double === 0.0) {
           element.classList.add('red-color-value');
           element.classList.remove('green-color-value');
+          return 'invalid';
+        } 
+        else if (value.Double === 1.0) {
+          element.classList.add('red-color-value');
+          element.classList.remove('green-color-value');
           return 'off';
-        } else {
+        }
+        else if (value.Double === 2.0) {
           element.classList.add('green-color-value');
           element.classList.remove('red-color-value');
           return 'on';
+        }
+        else 
+        {
+          element.classList.add('red-color-value');
+          element.classList.remove('green-color-value');
+          return 'stand-by';
         }
       } else if (element.className.match(/\bfield-item-value-status\b/)) {
         if (value.Double === 1.0) {

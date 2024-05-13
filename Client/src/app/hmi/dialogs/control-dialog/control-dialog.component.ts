@@ -2,22 +2,30 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ButtonFunction, CommandAction } from '../../../shared/hmi.constants'
 import { Symbol } from '../../../shared/hmi.constants'
 import { DiagramData } from '../../../shared/models/userobject.model';
 import { getCommands, getCommandsByType } from '../../../shared/models/commands.model';
+import { Authorization } from '../../../shared/models/user.model';
+import { Subscription } from 'rxjs';
+import { AuthService } from "@auth0/auth0-angular";
+import { parseJwt } from '../../../shared/helpers/utils';
 
 @Component({
   selector: 'app-control-dialog',
   templateUrl: './control-dialog.component.html',
   styleUrls: ['./control-dialog.component.scss']
 })
-export class ControlDialogComponent implements OnInit {  
+export class ControlDialogComponent implements OnInit, OnDestroy {  
   setpointValue: number;
   controlValue: any;
+  ggioIndex: any; // used for resource ggio
   isSetPoint: boolean = false;
+  isSetBoolean: boolean = false;
+  onOffs: boolean[] = [false, true];
+  onOffCommand: boolean = false;
   isFixedCommand: boolean;
   name: string;  
   diagramId: string;
@@ -31,13 +39,28 @@ export class ControlDialogComponent implements OnInit {
   lastUpdate: string;
   hasLastUpdate: boolean = false;
   commands: any[] = [];
+  userSub: Subscription;
+  canControl: boolean = false;
 
   constructor(
-    public dialogRef: MatDialogRef<ControlDialogComponent>,    
+    public dialogRef: MatDialogRef<ControlDialogComponent>, 
+    private auth: AuthService,  
     @Inject(MAT_DIALOG_DATA) public data: any
-  ) { }
+  ) { 
+    this.userSub = this.auth.user$.subscribe(user => {
+      if (user) {
+        this.auth.getAccessTokenSilently().toPromise().then(access_token => {
+          const access_token_d = parseJwt(access_token);
+          const roles = access_token_d.resource_access.gms.roles;
+          this.canControl = Authorization.canControl(roles);
+        });
+      }
+    });
+  }
 
-  ngOnInit() {  
+  ngOnInit() {
+    console.log('*********Can control: ' + this.canControl);
+    
     let commandTypes = getCommands();
     for (let entry of commandTypes) {
       let a = getCommandsByType(entry);
@@ -64,7 +87,7 @@ export class ControlDialogComponent implements OnInit {
     
     this.type = this.diagramData.type;        
     //this.isSetPoint = this.type === Symbol.setPointButton;
-    
+    console.log(JSON.stringify(this.diagramData));
     if (this.type == Symbol.button) {
       if (this.diagramData.func === ButtonFunction.command)
       {
@@ -75,7 +98,7 @@ export class ControlDialogComponent implements OnInit {
       else if (this.diagramData.func === ButtonFunction.setPoint)
       {
         this.hasDataMapped = this.diagramData.verb && this.diagramData.verb !== "";
-        this.isControllable = true; 
+        this.isControllable = this.canControl; 
         this.isSetPoint = true;        
       }
       else {
@@ -97,7 +120,7 @@ export class ControlDialogComponent implements OnInit {
       
       if (dataType === 'binary') {
         this.controlValue = this.diagramData.controlData[0].measurement;
-        if (!this.controlValue || this.controlValue === '') {
+        if (this.controlValue === undefined || this.controlValue === '') {
           this.isControllable = false;
         }
       }
@@ -109,16 +132,28 @@ export class ControlDialogComponent implements OnInit {
 
         var cmd = this.findCommand(this.diagramData.controlData[0].path);
         if (cmd != null) {
-          this.isControllable = true;
+          this.isControllable = this.canControl;
           this.hasDataMapped = true; 
-          this.isSetPoint = cmd.attributes.type == "set-point";
+          this.isSetPoint = cmd.attributes.type == "set-point";  
+          this.isSetBoolean = cmd.attributes.type == "set-boolean";          
+          let index = parseInt( this.diagramData.controlData[0].measurement);       
+          if (isNaN(index)) {
+            index = 0;
+          }
+          this.ggioIndex = index;
         }
         else {
           console.error('Data type for control point is not supported: ' + dataType);
           this.isControllable = false;
         }
       }
-    }     
+    }    
+  }
+
+  ngOnDestroy() {
+    if (this.userSub) {
+      this.userSub.unsubscribe()
+    }
   }
 
   findCommand(name: String) : any {
@@ -156,7 +191,16 @@ export class ControlDialogComponent implements OnInit {
         proceed: true,
         //action: CommandAction.SETVALUE,
         action: this.diagramData.verb ? this.diagramData.verb : CommandAction.SETVALUE,
-        value: this.setpointValue  
+        value: this.setpointValue,
+        index: this.ggioIndex,  
+      });
+    }    
+    else if (this.isSetBoolean) {        
+      this.dialogRef.close({
+        proceed: true,        
+        action: this.diagramData.verb ? this.diagramData.verb : CommandAction.SETVALUE,
+        value: this.onOffCommand ? 1.0 : 0.0,
+        index: this.ggioIndex,  
       });
     }
     else if (this.type == Symbol.button)
@@ -164,14 +208,14 @@ export class ControlDialogComponent implements OnInit {
       this.dialogRef.close({
         proceed: true,
         action: CommandAction.VERB,
-        value: arg 
+        value: arg  
       });
     }
     else {  // status indicator
       this.dialogRef.close({
         proceed: true,
         action: CommandAction.PRECONFIGURED,
-        value: arg
+        value: arg  
       });
     }       
   }

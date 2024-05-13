@@ -18,10 +18,14 @@ export const Authorization = {
     engineer: 'Engineer' as authRole,
     viewer: 'Viewer' as authRole,
   },
-  canEditDiagram: (roles: string[]) => {
+
+  canEditDiagram: (roles: Array<string>) => {
     return canX(roles, [Authorization.authRoles.admin, Authorization.authRoles.engineer]);
   },
   canUpdateSettings: (roles: Array<string>) => {
     return canX(roles, [Authorization.authRoles.admin]);
+  },
+  canControl: (roles: Array<string>) => {
+    return canX(roles, [Authorization.authRoles.admin, Authorization.authRoles.engineer]);
   }
 }

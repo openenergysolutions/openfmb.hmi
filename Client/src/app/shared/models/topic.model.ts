@@ -8,6 +8,7 @@ export interface Topic {
   value?: any,
   action?: string,
   args?: number,
+  args2?: number,
 }
 
 export interface UpdateData {
