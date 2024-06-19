@@ -134,6 +134,9 @@ impl HmiSubscriber {
             CircuitSegmentStatus(_msg) => {
                 self.ensure_actor_type(ctx, OpenFMBProfileType::CircuitSegmentService)
             }
+            EnvironmentReading(_msg) => {
+                self.ensure_actor_type(ctx, OpenFMBProfileType::Environment)
+            }
             ESSEvent(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::ESS),
             ESSReading(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::ESS),
             ESSStatus(_msg) => self.ensure_actor_type(ctx, OpenFMBProfileType::ESS),

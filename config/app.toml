@@ -10,7 +10,7 @@ server_port = 32771 # default is 443 for https and 80 for http
 
 [nats]
 prod_uri = "172.16.1.30:4222"
-dev_uri = "192.168.86.58:4222"
+dev_uri = "192.168.86.35:4222"
 server_id = "741df6b5-5bdd-4ea6-a6aa-541fba744721"
 # authentication_type = "creds"
 # creds = "meter.creds"

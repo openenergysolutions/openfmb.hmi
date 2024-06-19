@@ -5,7 +5,7 @@
 name: CI to Docker Hub
 on:
   push:
-    branches: [develop]
+    branches: [v2.2.0-oes-extension]
     tags:
       - 'v*'
 env:
@@ -38,8 +38,8 @@ jobs:
           images: ${{ env.REGISTRY_IMAGE }}
           tags: |                        
             type=ref,event=tag
-            type=raw,value=${{ steps.git-sha.outputs.sha }}            
-            type=raw,value=latest,enable={{is_default_branch}}          
+            type=raw,value=oes-extension-${{ steps.git-sha.outputs.sha }}            
+            type=raw,value=oes-extension-latest        
           labels: |
             maintainer=OES
             org.opencontainers.image.title=openfmb.hmi
@@ -112,8 +112,8 @@ jobs:
           images: ${{ env.REGISTRY_IMAGE }}
           tags: |
             type=ref,event=tag
-            type=raw,value=${{ steps.git-sha.outputs.sha }}
-            type=raw,value=latest,enable={{is_default_branch}}          
+            type=raw,value=oes-extension-${{ steps.git-sha.outputs.sha }}
+            type=raw,value=oes-extension-latest          
           labels: |
             maintainer=OES
             org.opencontainers.image.title=openfmb.hmi
