@@ -6,44 +6,22 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     env:
       DOCKER_REPO: "oesinc/openfmb.hmi"
     steps:
-      - name: Generate Docker Tags
-        shell: bash
-        run: |
-          GIT_HASH=${{ github.sha }}
-          GIT_HASH_SHORT=${GIT_HASH::8}
-          
-          if [[ "${{ github.event.repository.default_branch }}" == "${GITHUB_REF##*/}" ]]; then
-            echo "DOCKER_TAGS=${{env.DOCKER_REPO}}:latest,${{env.DOCKER_REPO}}:${GIT_HASH_SHORT}" >> $GITHUB_ENV
-          else
-            echo "DOCKER_TAGS=${{env.DOCKER_REPO}}:${GITHUB_REF##*/}-${GIT_HASH_SHORT}" >> $GITHUB_ENV
-          fi
-
-      - name: Verify Docker Tags
-        shell: bash
-        run: |
-          if [[ -z "${{env.DOCKER_TAGS}}" ]]; then
-            echo "DOCKER_TAGS is not assigned a value"
-            exit 1
-          fi
-
-      - name: Check Out Repo
-        uses: actions/checkout@v2
-
-      - name: Clone submodule
-        uses: actions/checkout@v2
+      - name: Git sha
+        uses: benjlevesque/short-sha@v2.1
+        id: git-sha
         with:
-          repository: openenergysolutions/openfmb-rs
-          path: deps/openfmb-rs
-          ssh-key: ${{ secrets.GH_OPENFMB_RS_KEY }}
-          persist-credentials: true
+          length: 8
 
-      - name: Checkout submodule
-        run: |
-          git submodule init
-          git submodule update
+      - name: Checkout code with submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
 
       - name: Login to Docker Hub
         uses: docker/login-action@v1
@@ -63,7 +41,25 @@ jobs:
           file: ./Dockerfile
           no-cache: true
           push: true
-          tags: ${{ env.DOCKER_TAGS }}
+          labels: |
+            com.openenergysolutions/signed=true
+          tags: ${{ env.DOCKER_REPO }}:${{ steps.git-sha.outputs.sha }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
+
+      - name: cosign
+        uses: sigstore/cosign-installer@main    
+  
+      - name: Sign Image with Cosign for sha tag
+        env:
+          COSIGN_EXPERIMENTAL: "1"
+        run: |        
+          cosign sign --yes --rekor-url "https://rekor.sigstore.dev/" ${{ env.DOCKER_REPO }}:${{ steps.git-sha.outputs.sha }}
+      
+      - name: Verify the image signing
+        run: |
+          cosign verify \
+          --rekor-url "https://rekor.sigstore.dev/" ${{ env.DOCKER_REPO }}:${{ steps.git-sha.outputs.sha }} \
+          --certificate-identity "https://github.com/openenergysolutions/${{ github.event.repository.name }}/.github/workflows/docker.yml@refs/heads/OAuth" \
+          --certificate-oidc-issuer "https://token.actions.githubusercontent.com" | jq .

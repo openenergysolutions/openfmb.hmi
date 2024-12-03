@@ -1,6 +1,6 @@
-FROM rust:1.70.0-alpine3.17 as backend-build
+FROM rust:1.74.1-alpine3.17 as backend-build
 WORKDIR /openfmb.hmi
-COPY Cargo.toml Cargo.lock ./
+COPY Cargo.toml ./
 COPY Server/ ./Server
 RUN apk update && apk add --no-cache \ 
     build-base \
