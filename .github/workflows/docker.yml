@@ -11,6 +11,7 @@ jobs:
       id-token: write
     env:
       DOCKER_REPO: "oesinc/openfmb.hmi"
+      BRANCH: "OAuth"
     steps:
       - name: Git sha
         uses: benjlevesque/short-sha@v2.1
@@ -43,7 +44,7 @@ jobs:
           push: true
           labels: |
             com.openenergysolutions/signed=true
-          tags: ${{ env.DOCKER_REPO }}:${{ steps.git-sha.outputs.sha }}
+          tags: ${{ env.DOCKER_REPO }}:${{env.BRANCH}}-${{ steps.git-sha.outputs.sha }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
@@ -55,11 +56,11 @@ jobs:
         env:
           COSIGN_EXPERIMENTAL: "1"
         run: |        
-          cosign sign --yes --rekor-url "https://rekor.sigstore.dev/" ${{ env.DOCKER_REPO }}:${{ steps.git-sha.outputs.sha }}
+          cosign sign --yes --rekor-url "https://rekor.sigstore.dev/" ${{ env.DOCKER_REPO }}:${{env.BRANCH}}-${{ steps.git-sha.outputs.sha }}
       
       - name: Verify the image signing
         run: |
           cosign verify \
-          --rekor-url "https://rekor.sigstore.dev/" ${{ env.DOCKER_REPO }}:${{ steps.git-sha.outputs.sha }} \
+          --rekor-url "https://rekor.sigstore.dev/" ${{ env.DOCKER_REPO }}:${{env.BRANCH}}-${{ steps.git-sha.outputs.sha }} \
           --certificate-identity "https://github.com/openenergysolutions/${{ github.event.repository.name }}/.github/workflows/docker.yml@refs/heads/OAuth" \
           --certificate-oidc-issuer "https://token.actions.githubusercontent.com" | jq .
