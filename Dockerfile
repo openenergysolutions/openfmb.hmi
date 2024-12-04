@@ -18,8 +18,10 @@ WORKDIR /Client
 COPY Client .
 # RUN npx browserslist --update-db
 RUN yarn --version
-RUN yarn install
-RUN yarn run build
+RUN yarn config set network-timeout 600000 -g
+RUN yarn config set network-concurrency 2 -g
+RUN yarn install --verbose
+RUN yarn run build --verbose
 
 FROM alpine:3.17 AS final
 WORKDIR /hmi_server
