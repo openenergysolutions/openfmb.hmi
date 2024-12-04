@@ -5,14 +5,12 @@
 name: CI to Docker Hub
 on:
   push:
-    branches: [develop]
-    tags:
-      - 'v*'
+    branches: [experiment/cosign]
+env:
+  REGISTRY_IMAGE: oesinc/openfmb.hmi
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      REGISTRY_IMAGE: oesinc/openfmb.hmi
     permissions:
       contents: read
       id-token: write
@@ -20,72 +18,143 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - linux/amd64          
+          - linux/amd64
+          - linux/arm/v7
           - linux/arm64
     steps:
-      - name: Git sha
+      - 
+        name: Git sha
         uses: benjlevesque/short-sha@v2.1
         id: git-sha
         with:
           length: 8
-
-      - name: Check Out Repo
+      -
+        name: Check Out Repo
         uses: actions/checkout@v3
-
-      - name: Docker meta
+      -
+        name: Docker meta
         id: meta
         uses: docker/metadata-action@v4
         with:
           images: ${{ env.REGISTRY_IMAGE }}
           tags: |                        
             type=ref,event=tag
-            type=raw,value=${{ steps.git-sha.outputs.sha }}                      
+            type=raw,value=${{ steps.git-sha.outputs.sha }}            
+            type=raw,value=latest,enable={{is_default_branch}}          
           labels: |
             maintainer=OES
             org.opencontainers.image.title=openfmb.hmi
             org.opencontainers.image.description=Single line diagram and HMI for OpenFMB 
             org.opencontainers.image.vendor=Open Energy Solutions, Inc
-            com.openenergysolutions/signed=true
-
-      - name: Set up QEMU
+            com.openenergysolutions/signed=true            
+      -
+        name: Set up QEMU
         uses: docker/setup-qemu-action@v2
         with:
           image: tonistiigi/binfmt:latest
           platforms: all
-
-      - name: Set up Docker Buildx
+      -
+        name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-
-      - name: Login to Docker Hub
+      -
+        name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
-
-      - name: Build and push by digest
+      -
+        name: Build and push by digest
         id: build
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./Dockerfile
           platforms: ${{ matrix.platform }}
-          no-cache: true
-          push: true
           labels: ${{ steps.meta.outputs.labels }}
-          tags: ${{ env.REGISTRY_IMAGE }}:${{ steps.git-sha.outputs.sha }}
-
-      - name: cosign
-        uses: sigstore/cosign-installer@main    
-
-      - name: Sign Image with Cosign for sha tag
+          outputs: type=image,name=${{ env.REGISTRY_IMAGE }},push-by-digest=true,name-canonical=true,push=true
+      -
+        name: Export digest
+        run: |
+          mkdir -p /tmp/digests
+          digest="${{ steps.build.outputs.digest }}"
+          touch "/tmp/digests/${digest#sha256:}"
+      -
+        name: Upload digest
+        uses: actions/upload-artifact@v3
+        with:
+          name: digests
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+  
+  merge:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    needs:
+      - build
+    steps:
+      - 
+        name: Git sha
+        uses: benjlevesque/short-sha@v2.1
+        id: git-sha
+        with:
+          length: 8
+      -
+        name: Download digests
+        uses: actions/download-artifact@v3
+        with:
+          name: digests
+          path: /tmp/digests
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      -
+        name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY_IMAGE }}
+          tags: |
+            type=ref,event=tag
+            type=raw,value=${{ steps.git-sha.outputs.sha }}
+            type=raw,value=latest,enable={{is_default_branch}}          
+          labels: |
+            maintainer=OES
+            org.opencontainers.image.title=openfmb.hmi
+            org.opencontainers.image.description=Single line diagram and HMI for OpenFMB 
+            org.opencontainers.image.vendor=Open Energy Solutions, Inc
+            com.openenergysolutions/signed=true            
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+      -
+        name: Create manifest list and push
+        working-directory: /tmp/digests
+        run: |
+          docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+            $(printf '${{ env.REGISTRY_IMAGE }}@sha256:%s ' *)
+      -
+        name: Inspect image
+        run: |
+          docker buildx imagetools inspect ${{ env.REGISTRY_IMAGE }}:${{ steps.meta.outputs.version }}
+      - 
+        name: cosign
+        uses: sigstore/cosign-installer@main
+      - 
+        name: Push manifest list
+        run: |
+          IMAGE_URI="${{ env.REGISTRY_IMAGE }}:${{ steps.meta.outputs.version }}"
+          docker pull $IMAGE_URI
+          IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' "$IMAGE_URI")
+      - name: Sign Image with Cosign
         env:
           COSIGN_EXPERIMENTAL: "1"
-        run: |        
-          cosign sign --yes --rekor-url "https://rekor.sigstore.dev/" ${{ env.REGISTRY_IMAGE }}:${{ steps.git-sha.outputs.sha }}
-      
-      - name: Verify the image signing
         run: |
-          cosign verify \
-          --rekor-url "https://rekor.sigstore.dev/" ${{ env.REGISTRY_IMAGE }}:${{ steps.git-sha.outputs.sha }} \
-          --certificate-identity "https://github.com/openenergysolutions/${{ github.event.repository.name }}/.github/workflows/docker.yml@refs/heads/develop" \
-          --certificate-oidc-issuer "https://token.actions.githubusercontent.com" | jq .
+          IMAGE_URI="${{ env.REGISTRY_IMAGE }}:${{ steps.meta.outputs.version }}"
+          docker pull $IMAGE_URI
+          IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' "$IMAGE_URI")        
+          cosign sign --yes --rekor-url "https://rekor.sigstore.dev/" ${{ env.REGISTRY_IMAGE }}@$IMAGE_DIGEST
