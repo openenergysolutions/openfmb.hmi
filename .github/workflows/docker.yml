@@ -153,7 +153,6 @@ jobs:
         env:
           COSIGN_EXPERIMENTAL: "1"
         run: |
-          IMAGE_URI="${{ env.REGISTRY_IMAGE }}:${{ steps.meta.outputs.version }}"
-          docker pull $IMAGE_URI
+          IMAGE_URI="${{ env.REGISTRY_IMAGE }}:${{ steps.meta.outputs.version }}"        
           IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' "$IMAGE_URI")        
-          cosign sign --yes --rekor-url "https://rekor.sigstore.dev/" ${{ env.REGISTRY_IMAGE }}@$IMAGE_DIGEST
+          cosign sign --yes --rekor-url "https://rekor.sigstore.dev/" @$IMAGE_DIGEST

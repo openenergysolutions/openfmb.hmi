@@ -20,8 +20,8 @@ COPY Client .
 RUN yarn --version
 RUN yarn config set network-timeout 600000 -g
 RUN yarn config set network-concurrency 2 -g
-RUN yarn install --verbose
-RUN yarn run build --verbose
+RUN yarn install
+RUN yarn run build
 
 FROM alpine:3.17 AS final
 WORKDIR /hmi_server
