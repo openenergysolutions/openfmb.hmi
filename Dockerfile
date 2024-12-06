@@ -18,6 +18,8 @@ WORKDIR /Client
 COPY Client .
 # RUN npx browserslist --update-db
 RUN yarn --version
+RUN yarn config set network-timeout 600000 -g
+RUN yarn config set network-concurrency 2 -g
 RUN yarn install
 RUN yarn run build
 
