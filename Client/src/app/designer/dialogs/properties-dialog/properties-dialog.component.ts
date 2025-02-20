@@ -7,7 +7,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DiagramsService } from '../../../shared/services/diagrams.service';
 import { ArrowDirection, DiagramData, LinkData, StatusDefinition, WeatherStatusDefinition } from '../../../shared/models/userobject.model'
 import { Diagram } from '../../../shared/models/diagram.model';
-import { Symbol, ButtonFunction } from '../../../shared/hmi.constants'
+import { Symbol, ButtonFunction, ExternalLink } from '../../../shared/hmi.constants'
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Hmi } from '../../../shared/hmi.constants'
@@ -57,6 +57,8 @@ export class PropertiesDialogComponent implements OnInit {
   buttonFunction: string;
   buttonFunctionOptions: string[] = [ButtonFunction.link, ButtonFunction.command, ButtonFunction.setPoint];
   showLink: boolean = true;
+  showExternalLink: boolean = false;
+  externalLink: string;
   selectedCommand: string;  
   commandList: any[] = [];
   
@@ -144,14 +146,25 @@ export class PropertiesDialogComponent implements OnInit {
     }
     else {
       this.showLink = false;
-    }            
+    }   
+    
+    console.log(this.data);
+    console.log(this.linkAllowed)
 
     if (this.linkAllowed) {      
       this.linkTargetOptions = ['_blank', '_top',];
 
       if (this.data.linkData) {
         this.selectedDiagramId = this.data.linkData.diagramId;
+        this.externalLink = this.data.linkData.url;
         this.selectedLinkTarget = this.data.linkData.target;
+        if (this.showLink) {
+          if (this.selectedDiagramId === '[EXTERNAL LINK]') {
+            this.showExternalLink = true;
+          } else {
+            this.showExternalLink = false;
+          }
+        }
       }
 
       this.getDiagrams();      
@@ -206,7 +219,10 @@ export class PropertiesDialogComponent implements OnInit {
   getDiagrams() {
     this.getItemSub = this.service.getAll()
       .subscribe(data => {
-        this.diagrams = data;        
+        //this.diagrams = data;
+        var empty = {diagramId: ExternalLink.id, name: ExternalLink.name};
+        // add emtpy to the first position of the array
+        this.diagrams = [empty, ...data];        
       });
   }
 
@@ -277,6 +293,7 @@ export class PropertiesDialogComponent implements OnInit {
     if (this.linkAllowed) {
       linkData = {
         diagramId: this.selectedDiagramId,
+        url: this.externalLink,
         target: this.selectedLinkTarget
       };
     }
@@ -383,10 +400,23 @@ export class PropertiesDialogComponent implements OnInit {
     if (this.buttonFunction === ButtonFunction.command) {
       this.getCommandList(ButtonFunction.command);
       this.selectedCommand = "";
+      this.showExternalLink = false;
     }
     else if (this.buttonFunction === ButtonFunction.setPoint) {
       this.getCommandList(ButtonFunction.setPoint);
       this.selectedCommand = "";
+      this.showExternalLink = false;
+    } else {
+      this.onSelectLinkChange(this.selectedDiagramId);
+    }
+  }
+
+  onSelectLinkChange(id: string) {    
+    if (id === ExternalLink.id) {
+      this.showExternalLink = true;
+    }
+    else {
+      this.showExternalLink = false;
     }
   }
 }

@@ -226,3 +226,8 @@ export const InternalTopic = {
     isCoordinatorActive: 'hmi.coordinator.active',
     isCoordinatorCommOk: 'hmi.coordinator.comm_ok'
 }
+
+export const ExternalLink = {
+    id: '[EXTERNAL LINK]',
+    name: 'External Link',
+}

@@ -24,3 +24,8 @@ function navigateToDiagram(diagramId, target) {
     var w = window.open('/hmi?id=' + diagramId, target, 'toolbar=0,width=750,height=700', true);
     hmiPopupWindows.push(w);    
 }
+
+function navigateToExternalLink(url, target) {
+    console.log("Navigating to external link: " + url);
+    window.open(url, target);
+}

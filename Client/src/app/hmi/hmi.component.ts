@@ -401,7 +401,11 @@ export class HmiComponent implements OnInit, AfterViewInit, OnDestroy {
             if (userObject.linkData) {
               if (userObject.linkData.diagramId) {
                 var target = userObject.linkData.target ? userObject.linkData.target : '_blank';
-                this.renderer.setAttribute(span, 'ondblclick', "navigateToDiagram('" + userObject.linkData.diagramId + "', '" + target + "')");
+                if (userObject.linkData.diagramId === '[EXTERNAL LINK]') {
+                  this.renderer.setAttribute(span, 'ondblclick', "navigateToExternalLink('" + userObject.linkData.url + "', '" + target + "')");
+                } else {
+                  this.renderer.setAttribute(span, 'ondblclick', "navigateToDiagram('" + userObject.linkData.diagramId + "', '" + target + "')");
+                }                
               }
             }
 
