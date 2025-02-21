@@ -1,3 +1,0 @@
-[submodule "deps/openfmb-rs"]
-	path = deps/openfmb-rs
-	url = git@github.com:openenergysolutions/openfmb-rs.git
