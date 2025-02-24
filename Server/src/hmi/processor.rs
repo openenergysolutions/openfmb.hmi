@@ -363,6 +363,14 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                             topic
                         )
                     }
+                    OpenFMBMessage::EnvironmentReading(message) => {
+                        extract!(
+                            data_maps,
+                            message,
+                            format!("{}Profile", msg.message_type()),
+                            topic
+                        )
+                    }
                     OpenFMBMessage::ESSEvent(message) => {
                         extract!(
                             data_maps,
@@ -396,6 +404,46 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                         )
                     }
                     OpenFMBMessage::ESSCapabilityOverride(message) => {
+                        extract!(
+                            data_maps,
+                            message,
+                            format!("{}Profile", msg.message_type()),
+                            topic
+                        )
+                    }
+                    OpenFMBMessage::EVSECapability(message) => {
+                        extract!(
+                            data_maps,
+                            message,
+                            format!("{}Profile", msg.message_type()),
+                            topic
+                        )
+                    }
+                    OpenFMBMessage::EVSECapabilityOverride(message) => {
+                        extract!(
+                            data_maps,
+                            message,
+                            format!("{}Profile", msg.message_type()),
+                            topic
+                        )
+                    }
+                    OpenFMBMessage::EVSEReading(message) => {
+                        extract!(
+                            data_maps,
+                            message,
+                            format!("{}Profile", msg.message_type()),
+                            topic
+                        )
+                    }
+                    OpenFMBMessage::EVSEStatus(message) => {
+                        extract!(
+                            data_maps,
+                            message,
+                            format!("{}Profile", msg.message_type()),
+                            topic
+                        )
+                    }
+                    OpenFMBMessage::EVSEEvent(message) => {
                         extract!(
                             data_maps,
                             message,
@@ -611,7 +659,10 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                             topic
                         )
                     }
-                    _ => &dummy,
+                    _ => {
+                        log::trace!("Unsupported message type: {:?}", msg);
+                        &dummy
+                    }
                 };
 
                 match data.get(&topic.name.to_lowercase()) {

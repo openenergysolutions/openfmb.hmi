@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2021 Open Energy Solutions Inc
+#
+# SPDX-License-Identifier: Apache-2.0
+
 name: CI to Docker Hub
 on: [push, pull_request]
 
@@ -36,13 +40,13 @@ jobs:
           push: false
           labels: |
             com.openenergysolutions/signed=true
-          tags: ${{ env.DOCKER_REPO }}:latest,${{ env.DOCKER_REPO }}:${{ steps.git-sha.outputs.sha }}
+          tags: ${{ env.DOCKER_REPO }}:v2.2.0-latest,${{ env.DOCKER_REPO }}:v2.2.0-${{ steps.git-sha.outputs.sha }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
 
   build_and_push:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/develop' && startsWith(github.event.head_commit.message, 'Merge pull request')
+    if: github.event_name == 'push' && github.ref == 'refs/heads/v2.2.0-testing' && startsWith(github.event.head_commit.message, 'Merge pull request')
     name: build and push docker image
     runs-on: ubuntu-latest
     permissions:
@@ -81,7 +85,7 @@ jobs:
           push: true
           labels: |
             com.openenergysolutions/signed=true
-          tags: ${{ env.DOCKER_REPO }}:latest,${{ env.DOCKER_REPO }}:${{ steps.git-sha.outputs.sha }}
+          tags: ${{ env.DOCKER_REPO }}:v2.2.0-latest,${{ env.DOCKER_REPO }}:v2.2.0-${{ steps.git-sha.outputs.sha }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
@@ -99,5 +103,5 @@ jobs:
         run: |
           cosign verify \
           --rekor-url "https://rekor.sigstore.dev/" ${{ env.DOCKER_REPO }}@${{ steps.docker_build.outputs.digest }} \
-          --certificate-identity "https://github.com/openenergysolutions/${{ github.event.repository.name }}/.github/workflows/docker.yml@refs/heads/develop" \
+          --certificate-identity "https://github.com/openenergysolutions/${{ github.event.repository.name }}/.github/workflows/docker.yml@refs/heads/v2.2.0-testing" \
           --certificate-oidc-issuer "https://token.actions.githubusercontent.com" | jq .
