@@ -1,7 +1,7 @@
 [package]
 name="hmi_server"
 version="0.0.1"
-edition = "2018"
+edition = "2021"
 
 [[bin]]
 name="hmi_server"
@@ -10,9 +10,9 @@ name="hmi_server"
 tokio = { version = "1", features = ["macros", "sync", "rt-multi-thread", "time"] }
 tokio-stream = "0.1"
 warp = { version = "0.3", features = ["tls"] }
-openfmb = {git="https://github.com/openenergysolutions/openfmb-rs", branch = "v2.2.0-oes-extension"}
-openfmb-messages-ext = {git="https://github.com/openenergysolutions/openfmb-rs", features = ["nats-sync"], branch = "v2.2.0-oes-extension"}
-microgrid-protobuf = {git="https://github.com/openenergysolutions/openfmb-rs", branch = "v2.2.0-oes-extension"}
+openfmb = {git="https://github.com/openenergysolutions/openfmb-rs", branch = "v2.2.0-testing"}
+openfmb-messages-ext = {git="https://github.com/openenergysolutions/openfmb-rs", features = ["nats-sync"], branch = "v2.2.0-testing"}
+microgrid-protobuf = {git="https://github.com/openenergysolutions/openfmb-rs", branch = "v2.2.0-testing"}
 serde = {version = "1.0.114", features = ["derive"] }
 serde_json = "1.0.57"
 futures = { version = "0.3.5", default-features = false }
@@ -23,11 +23,11 @@ env_logger = "0.10.0"
 static_dir = "0.2.0"
 pretty_env_logger = "0.5.0"
 riker = "0.4.2"
-nats = "0.24.0"
+nats = { git = "https://github.com/nats-io/nats.rs.git", rev = "7d63f1dd725c86a4f01723ea3194f17e30a0561b"}
 config = "0.10.1"
 jsonwebtoken = "8.1.0"
 thiserror = "1.0.21"
-chrono = "0.4.19"
+chrono = "0.4.26"
 bytes = "1"
 prost = "0.10.4"
 pwhash = "1.0.0"

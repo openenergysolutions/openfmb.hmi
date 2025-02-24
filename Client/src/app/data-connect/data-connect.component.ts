@@ -435,7 +435,8 @@ export class DataConnectComponent implements OnInit {
           if (item.id === this.selectedGraphItemId) {                             
             var xml = converter.js2xml(this.graphModel);
             console.log(xml);
-            this.diagram.data = xml;                        
+            // escape ampersands
+            this.diagram.data = xml.replace(/&(?!amp;)/g, "&amp;");                        
             this.service.update(this.diagram).subscribe(
               response => {
                 //console.log("Updated diagram:: " + response),

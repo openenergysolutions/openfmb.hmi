@@ -298,6 +298,30 @@ impl Receive<GenericControl> for HmiPublisher {
                         profile.encode(&mut buffer).unwrap();
                         self.publish(&subject, &mut buffer);
                     }
+                    microgrid::generic_control::ControlType::InitiateFault => {
+                        let profile =
+                            RecloserDiscreteControlProfile::recloser_initiate_fault_msg(&msg.mrid);
+                        let mut buffer = Vec::<u8>::new();
+                        profile.encode(&mut buffer).unwrap();
+                        self.publish(&subject, &mut buffer);
+                    }
+                    microgrid::generic_control::ControlType::ClearFault => {
+                        let profile =
+                            RecloserDiscreteControlProfile::recloser_clear_fault_msg(&msg.mrid);
+                        let mut buffer = Vec::<u8>::new();
+                        profile.encode(&mut buffer).unwrap();
+                        self.publish(&subject, &mut buffer);
+                    }
+                    microgrid::generic_control::ControlType::ResetProtectionPickup => {
+                        let profile =
+                            RecloserDiscreteControlProfile::recloser_reset_protection_pickup_msg(
+                                &msg.mrid,
+                                msg.args.map(|x| x > 0.0),
+                            );
+                        let mut buffer = Vec::<u8>::new();
+                        profile.encode(&mut buffer).unwrap();
+                        self.publish(&subject, &mut buffer);
+                    }
                     _ => {
                         warn!("Unsupport control type: {:?}", msg.message)
                     }

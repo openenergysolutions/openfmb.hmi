@@ -3,135 +3,105 @@
 # SPDX-License-Identifier: Apache-2.0
 
 name: CI to Docker Hub
-on:
-  push:
-    branches: [v2.2.0-oes-extension]
-    tags:
-      - 'v*'
-env:
-  REGISTRY_IMAGE: oesinc/openfmb.hmi
+on: [push, pull_request]
+
 jobs:
   build:
+    name: build docker image
+    if: github.event_name == 'push' && github.ref != 'refs/heads/develop'
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - linux/amd64
-          - linux/arm/v7
-          - linux/arm64
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      DOCKER_REPO: "oesinc/openfmb.hmi"
     steps:
-      - 
-        name: Git sha
+      - name: Git sha
         uses: benjlevesque/short-sha@v2.1
         id: git-sha
         with:
           length: 8
-      -
-        name: Check Out Repo
-        uses: actions/checkout@v3
-      -
-        name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v4
+
+      - name: Checkout code with submodules
+        uses: actions/checkout@v4             
+
+      - name: Setup Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
         with:
-          images: ${{ env.REGISTRY_IMAGE }}
-          tags: |                        
-            type=ref,event=tag
-            type=raw,value=oes-extension-${{ steps.git-sha.outputs.sha }}            
-            type=raw,value=oes-extension-latest        
+          context: ./
+          file: ./Dockerfile
+          platforms: linux/amd64,linux/arm64
+          no-cache: true
+          push: false
           labels: |
-            maintainer=OES
-            org.opencontainers.image.title=openfmb.hmi
-            org.opencontainers.image.description=Single line diagram and HMI for OpenFMB 
-            org.opencontainers.image.vendor=Open Energy Solutions, Inc            
-      -
-        name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+            com.openenergysolutions/signed=true
+          tags: ${{ env.DOCKER_REPO }}:v2.2.0-latest,${{ env.DOCKER_REPO }}:v2.2.0-${{ steps.git-sha.outputs.sha }}
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
+
+  build_and_push:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/v2.2.0-testing' && startsWith(github.event.head_commit.message, 'Merge pull request')
+    name: build and push docker image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      DOCKER_REPO: "oesinc/openfmb.hmi"
+    steps:
+      - name: Git sha
+        uses: benjlevesque/short-sha@v2.1
+        id: git-sha
         with:
-          image: tonistiigi/binfmt:latest
-          platforms: all
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      -
-        name: Login to Docker Hub
-        uses: docker/login-action@v2
+          length: 8
+
+      - name: Checkout code with submodules
+        uses: actions/checkout@v4        
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
-      -
-        name: Build and push by digest
-        id: build
-        uses: docker/build-push-action@v4
+
+      - name: Setup Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
         with:
-          context: .
-          platforms: ${{ matrix.platform }}
-          labels: ${{ steps.meta.outputs.labels }}
-          outputs: type=image,name=${{ env.REGISTRY_IMAGE }},push-by-digest=true,name-canonical=true,push=true
-      -
-        name: Export digest
-        run: |
-          mkdir -p /tmp/digests
-          digest="${{ steps.build.outputs.digest }}"
-          touch "/tmp/digests/${digest#sha256:}"
-      -
-        name: Upload digest
-        uses: actions/upload-artifact@v3
-        with:
-          name: digests
-          path: /tmp/digests/*
-          if-no-files-found: error
-          retention-days: 1
+          context: ./
+          file: ./Dockerfile
+          platforms: linux/amd64,linux/arm64
+          no-cache: true
+          push: true
+          labels: |
+            com.openenergysolutions/signed=true
+          tags: ${{ env.DOCKER_REPO }}:v2.2.0-latest,${{ env.DOCKER_REPO }}:v2.2.0-${{ steps.git-sha.outputs.sha }}
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
+
+      - name: cosign
+        uses: sigstore/cosign-installer@main    
   
-  merge:
-    runs-on: ubuntu-latest
-    needs:
-      - build
-    steps:
-      - 
-        name: Git sha
-        uses: benjlevesque/short-sha@v2.1
-        id: git-sha
-        with:
-          length: 8
-      -
-        name: Download digests
-        uses: actions/download-artifact@v3
-        with:
-          name: digests
-          path: /tmp/digests
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      -
-        name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ env.REGISTRY_IMAGE }}
-          tags: |
-            type=ref,event=tag
-            type=raw,value=oes-extension-${{ steps.git-sha.outputs.sha }}
-            type=raw,value=oes-extension-latest          
-          labels: |
-            maintainer=OES
-            org.opencontainers.image.title=openfmb.hmi
-            org.opencontainers.image.description=Single line diagram and HMI for OpenFMB 
-            org.opencontainers.image.vendor=Open Energy Solutions, Inc            
-      -
-        name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}
-      -
-        name: Create manifest list and push
-        working-directory: /tmp/digests
+      - name: Sign Image with Cosign for sha tag
+        env:
+          COSIGN_EXPERIMENTAL: "1"
+        run: |        
+          cosign sign --yes --rekor-url "https://rekor.sigstore.dev/" ${{ env.DOCKER_REPO }}@${{ steps.docker_build.outputs.digest }}
+      
+      - name: Verify the image signing
         run: |
-          docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
-            $(printf '${{ env.REGISTRY_IMAGE }}@sha256:%s ' *)
-      -
-        name: Inspect image
-        run: |
-          docker buildx imagetools inspect ${{ env.REGISTRY_IMAGE }}:${{ steps.meta.outputs.version }}
+          cosign verify \
+          --rekor-url "https://rekor.sigstore.dev/" ${{ env.DOCKER_REPO }}@${{ steps.docker_build.outputs.digest }} \
+          --certificate-identity "https://github.com/openenergysolutions/${{ github.event.repository.name }}/.github/workflows/docker.yml@refs/heads/v2.2.0-testing" \
+          --certificate-oidc-issuer "https://token.actions.githubusercontent.com" | jq .

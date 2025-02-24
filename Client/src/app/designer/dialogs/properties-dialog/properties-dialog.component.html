@@ -38,13 +38,19 @@
       </div>
       <hr/>
       <div mat-dialog-content class="dialog-input-container pt-1" *ngIf="showLink">
-        <strong>Navigator Link</strong><br />
+        <strong>Navigate To</strong><br />
         <mat-form-field class="designer-form-field" floatLabel='never'>
-          <mat-select [(ngModel)]="selectedDiagramId" name="selectDiagram">
+          <mat-select [(ngModel)]="selectedDiagramId" name="selectDiagram" (selectionChange)="onSelectLinkChange($event.value)">
             <mat-option *ngFor="let option of diagrams" [value]="option.diagramId">
               {{option.name}}
             </mat-option>
           </mat-select>
+        </mat-form-field>
+      </div>
+      <div mat-dialog-content class="dialog-input-container pt-1" *ngIf="showExternalLink">
+        <strong>External Link</strong><br />
+        <mat-form-field class="designer-form-field" floatLabel='never'>
+          <input matInput [(ngModel)]="externalLink" placeholder="external link" name="external-link" />
         </mat-form-field>
       </div>
       <div mat-dialog-content class="dialog-input-container pt-1" *ngIf="showLink">
