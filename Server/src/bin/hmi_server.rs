@@ -16,9 +16,9 @@ use hmi_server::coordinator::StartProcessingMessages;
 use hmi_server::logs::{setup_logger, SystemEventLog};
 
 use hmi_server::hmi::{
-    coordinator::*, hmi::*, hmi_publisher::*, hmi_subscriber::*, monitor::*, processor::*,
+    coordinator::*, hmi_publisher::*, hmi_subscriber::*, monitor::*, processor::*,
 };
-use hmi_server::{auth::*, handler::*};
+use hmi_server::{auth::*, handler::*, Hmi, HmiMsg};
 
 use riker::actor::Tell;
 use riker::actor::{ActorRef, ActorRefFactory};
@@ -319,7 +319,7 @@ async fn server_setup() {
     let ssl_cert = config.get_str("hmi.ssl_cert").unwrap_or("".to_string());
     let ssl_key = config.get_str("hmi.ssl_key").unwrap_or("".to_string());
 
-    if ssl_cert.len() > 0 && ssl_key.len() > 0 {
+    if !ssl_cert.is_empty() && !ssl_key.is_empty() {
         let port = config.get_int("hmi.server_port").unwrap_or(443);
         let server_uri = format!("{}:{}", host, port);
 

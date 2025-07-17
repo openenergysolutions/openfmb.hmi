@@ -7,8 +7,8 @@ use crate::coordinator::StartProcessingMessages;
 use crate::error::Error;
 use futures::{FutureExt, StreamExt};
 use hmi::coordinator::{CoordinatorOptions, CoordinatorStatus};
-use hmi::hmi::HmiMsg;
 use hmi::processor::ProcessorMsg;
+use hmi::HmiMsg;
 use log::{error, info};
 use riker::actors::*;
 use serde::{Deserialize, Serialize};
@@ -124,8 +124,8 @@ pub struct UpdateMessage {
 impl UpdateMessage {
     pub fn create(topic: Topic, session_id: String, profile: Option<String>) -> UpdateMessage {
         UpdateMessage {
-            profile: profile,
-            topic: topic,
+            profile,
+            topic,
             session_id: Some(session_id),
         }
     }
@@ -198,8 +198,8 @@ pub async fn data_handler(
                 message: generic_control,
                 mrid: update.topic.mrid.clone(),
                 profile_name: None,
-                args: update.topic.args.clone(),
-                args2: update.topic.args2.clone(),
+                args: update.topic.args,
+                args2: update.topic.args2,
             },
             None,
         );
@@ -211,8 +211,8 @@ pub async fn data_handler(
                     message: generic_control,
                     mrid: update.topic.mrid.clone(),
                     profile_name: None,
-                    args: update.topic.args.clone(),
-                    args2: update.topic.args2.clone(),
+                    args: update.topic.args,
+                    args2: update.topic.args2,
                 },
                 None,
             );
@@ -341,7 +341,7 @@ pub async fn send_inspector_messages(
 fn get_diagram_folder() -> String {
     let app_dir = std::env::var("APP_DIR_NAME").unwrap_or_else(|_| "".into());
     let mut diagrams_dir = "diagrams".to_string();
-    if app_dir != "" {
+    if !app_dir.is_empty() {
         diagrams_dir = format!("/{}/diagrams", app_dir);
     }
 
@@ -387,9 +387,7 @@ pub async fn delete_handler(request: Diagram) -> Result<impl Reply> {
 
 // GET
 pub async fn list_handler() -> Result<impl Reply> {
-    Ok(json(
-        &read_json(format!("{}", get_diagram_folder())).unwrap(),
-    ))
+    Ok(json(&read_json(get_diagram_folder().to_string()).unwrap()))
 }
 
 // GET
@@ -448,7 +446,7 @@ pub async fn update_equipment_handler(_id: String, eq: Equipment) -> Result<impl
 
 fn get_equipment_file() -> String {
     let app_dir = std::env::var("APP_DIR_NAME").unwrap_or_else(|_| "".into());
-    if app_dir != "" {
+    if !app_dir.is_empty() {
         return format!("/{}/equipment.json", app_dir);
     }
     "equipment.json".to_string()
@@ -460,7 +458,7 @@ pub fn read_equipment_list() -> std::io::Result<Vec<Equipment>> {
 
     if let Ok(mut file) = File::open(file_path.clone()) {
         let mut contents = String::new();
-        if let Ok(_) = file.read_to_string(&mut contents) {
+        if file.read_to_string(&mut contents).is_ok() {
             match serde_json::from_str(&contents) {
                 Ok(equipment_list) => {
                     return Ok(equipment_list);
@@ -488,7 +486,7 @@ fn save_equipment_list(equipment_list: &Vec<Equipment>) -> std::io::Result<()> {
 
 // GET
 pub async fn diagram_handler(id: DiagramQuery) -> Result<impl Reply> {
-    let list = read_json(format!("{}", get_diagram_folder())).unwrap();
+    let list = read_json(get_diagram_folder().to_string()).unwrap();
     let id = id.id;
     for d in list {
         if d.diagramId == id {
@@ -500,7 +498,7 @@ pub async fn diagram_handler(id: DiagramQuery) -> Result<impl Reply> {
 }
 
 pub async fn connect_handler(ws: warp::ws::Ws, id: String, clients: Clients) -> Result<impl Reply> {
-    return Ok(ws.on_upgrade(move |socket| client_connection(socket, id, clients)));
+    Ok(ws.on_upgrade(move |socket| client_connection(socket, id, clients)))
 }
 
 pub async fn client_connection(ws: WebSocket, id: String, clients: Clients) {
@@ -553,7 +551,7 @@ async fn client_msg(id: &str, msg: Message, clients: &Clients) {
         Err(_) => return,
     };
 
-    let register_request: RegisterRequest = match from_str(&message) {
+    let register_request: RegisterRequest = match from_str(message) {
         Ok(v) => v,
         Err(e) => {
             println!("Only can handle RegisterRequest at this moment. {:?}", e);

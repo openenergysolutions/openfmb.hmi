@@ -290,18 +290,19 @@ pub fn set_generation_csg(
 }
 
 fn create_generation_point(schedule_time: SystemTime) -> GenerationPoint {
-    let mut pt = GenerationPoint::default();
-    pt.start_time = Some(ControlTimestamp {
-        nanoseconds: schedule_time
-            .duration_since(SystemTime::UNIX_EPOCH)
-            .unwrap()
-            .subsec_nanos(),
-        seconds: schedule_time
-            .duration_since(SystemTime::UNIX_EPOCH)
-            .unwrap()
-            .as_secs(),
-    });
-    pt
+    GenerationPoint {
+        start_time: Some(ControlTimestamp {
+            nanoseconds: schedule_time
+                .duration_since(SystemTime::UNIX_EPOCH)
+                .unwrap()
+                .subsec_nanos(),
+            seconds: schedule_time
+                .duration_since(SystemTime::UNIX_EPOCH)
+                .unwrap()
+                .as_secs(),
+        }),
+        ..Default::default()
+    }
 }
 
 fn generation_point(
@@ -426,30 +427,28 @@ pub fn set_regulator_csg(
 }
 
 fn create_regulator_point(schedule_time: SystemTime) -> RegulatorPoint {
-    let mut pt = RegulatorPoint::default();
-    pt.start_time = Some(Timestamp {
-        nanoseconds: schedule_time
-            .duration_since(SystemTime::UNIX_EPOCH)
-            .unwrap()
-            .subsec_nanos(),
-        seconds: schedule_time
-            .duration_since(SystemTime::UNIX_EPOCH)
-            .unwrap()
-            .as_secs(),
-        tq: None,
-    });
-    pt.control = Some(RegulatorControlAtcc::default());
-    pt
+    RegulatorPoint {
+        start_time: Some(Timestamp {
+            nanoseconds: schedule_time
+                .duration_since(SystemTime::UNIX_EPOCH)
+                .unwrap()
+                .subsec_nanos(),
+            seconds: schedule_time
+                .duration_since(SystemTime::UNIX_EPOCH)
+                .unwrap()
+                .as_secs(),
+            tq: None,
+        }),
+        control: Some(RegulatorControlAtcc::default()),
+    }
 }
 
 fn regulator_point(
-    generic_control: ControlType,
+    _generic_control: ControlType,
     schedule_time: SystemTime,
 ) -> Option<RegulatorPoint> {
     let _pt = create_regulator_point(schedule_time);
     // TODO
-    match generic_control {
-        _ => {}
-    }
+    {}
     None
 }

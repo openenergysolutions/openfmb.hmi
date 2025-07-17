@@ -73,7 +73,7 @@ pub enum Role {
 }
 
 impl Role {
-    pub fn from_str(role: &str) -> Role {
+    pub fn from_string(role: &str) -> Role {
         match role {
             "Admin" => Role::Admin,
             "Engineer" => Role::Engineer,
@@ -135,13 +135,13 @@ async fn authorize(
             )
             .map_err(|_| reject::custom(Error::JWTTokenError))?;
 
-            if role == Role::Admin && Role::from_str(&decoded.claims.role) != Role::Admin {
+            if role == Role::Admin && Role::from_string(&decoded.claims.role) != Role::Admin {
                 return Err(reject::custom(Error::NoPermissionError));
             }
 
             Ok(decoded.claims.sub)
         }
-        Err(e) => return Err(reject::custom(e)),
+        Err(e) => Err(reject::custom(e)),
     }
 }
 
@@ -187,19 +187,16 @@ pub async fn login_handler(body: LoginRequest) -> Result<impl Reply> {
         .filter(|(_, user)| user.username == body.username)
         .filter(|(_, user)| verify_password(&body.pwd, &user.pwd))
         .for_each(|(uid, user)| {
-            token = create_jwt(&uid, &user.displayname, &Role::from_str(&user.role))
-                .map_err(|e| reject::custom(e))
+            token = create_jwt(uid, &user.displayname, &Role::from_string(&user.role))
+                .map_err(reject::custom)
                 .unwrap();
             usr = user.clone();
         });
 
-    if token.len() > 0 {
+    if !token.is_empty() {
         // Delete password
         usr.pwd = String::from("");
-        return Ok(reply::json(&LoginResponse {
-            token: token,
-            user: usr,
-        }));
+        return Ok(reply::json(&LoginResponse { token, user: usr }));
     }
 
     Err(reject::custom(Error::WrongCredentialsError))
@@ -211,7 +208,7 @@ pub async fn profile_handler(_id: String) -> Result<impl Reply> {
 
 fn get_user_file() -> String {
     let app_dir = std::env::var("APP_DIR_NAME").unwrap_or_else(|_| "".into());
-    if app_dir != "" {
+    if !app_dir.is_empty() {
         return format!("/{}/users.json", app_dir);
     }
     "users.json".to_string()
@@ -221,15 +218,13 @@ pub fn init_users() -> HashMap<String, User> {
     let file = get_user_file();
 
     if !Path::new(&file).exists() {
-        let mut users: Vec<User> = vec![];
-
-        users.push(User {
+        let users: Vec<User> = vec![User {
             id: String::from("e2a1eaff-c4ea-4f28-bd59-d88fc2882f39"),
             username: String::from("admin"),
             pwd: hash_password("hm1admin"),
             displayname: String::from("Administrator"),
             role: String::from("Admin"),
-        });
+        }];
 
         let _ = save_user_list(file.clone(), &users);
     }
@@ -259,7 +254,7 @@ fn get_user_list(file_path: String) -> std::io::Result<Vec<User>> {
 
     if let Ok(mut file) = File::open(file_path.clone()) {
         let mut contents = String::new();
-        if let Ok(_) = file.read_to_string(&mut contents) {
+        if file.read_to_string(&mut contents).is_ok() {
             let users: Vec<User> =
                 serde_json::from_str(&contents).expect("User json file was not well-formatted");
             return Ok(users);

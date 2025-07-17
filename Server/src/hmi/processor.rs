@@ -46,7 +46,7 @@ impl Node {
     }
     fn add_node(&mut self, node: Node) {
         let mut n = node;
-        if n.path == "" {
+        if n.path.is_empty() {
             n.path = format!("{}.{}", self.path, n.name);
         }
         self.nodes.push(n);
@@ -57,7 +57,7 @@ impl Node {
                 for (k, v) in m.iter() {
                     let mut child = Node::new(k);
                     child.path = format!("{}.{}", self.path, k);
-                    child.from_json(&v, data);
+                    child.from_json(v, data);
                     self.add_node(child);
                 }
             }
@@ -65,14 +65,14 @@ impl Node {
                 let original_path = self.path();
                 for (i, v) in a.iter().enumerate() {
                     self.path = format!("{}[{}]", original_path, i);
-                    self.from_json(&v, data);
+                    self.from_json(v, data);
                 }
             }
             Value::Bool(b) => {
                 self.set_value(b.to_string().as_str());
                 data.insert(
                     self.path().replace("_", "").to_lowercase(),
-                    DataValue::Bool(b.clone()),
+                    DataValue::Bool(*b),
                 );
             }
             Value::Number(n) => {
@@ -222,7 +222,7 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
         Ok(mrid) => mrid.as_hyphenated().to_string(),
         Err(_) => "".to_string(),
     };
-    if device_mrid.len() == 0 {
+    if device_mrid.is_empty() {
         error!("Missing device MRID in OpenFMB message.");
         return;
     }
@@ -235,32 +235,29 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
     //ResourceStatusProfile updated
     if let Some(server_id) = CoordinatorOptions::server_id() {
         if server_id.to_lowercase() == device_mrid.to_lowercase() {
-            match &msg {
-                OpenFMBMessage::ResourceStatus(message) => {
-                    let mut coord_active = false;
-                    let mut overall_comm = false;
-                    if let Some(resource_status) = &message.resource_status {
-                        for item in &resource_status.boolean_event_and_status_ggio {
-                            if let Some(logical_node) = &item.logical_node {
-                                if let Some(identified_object) = &logical_node.identified_object {
-                                    if let Some(name) = &identified_object.name {
-                                        if name.as_str() == ALGORITHM_ENABLED {
-                                            if let Some(ind) = &item.ind {
-                                                coord_active = ind.st_val;
-                                            }
-                                        } else if name.as_str() == COMM_OK {
-                                            if let Some(ind) = &item.ind {
-                                                overall_comm = ind.st_val;
-                                            }
+            if let OpenFMBMessage::ResourceStatus(message) = &msg {
+                let mut coord_active = false;
+                let mut overall_comm = false;
+                if let Some(resource_status) = &message.resource_status {
+                    for item in &resource_status.boolean_event_and_status_ggio {
+                        if let Some(logical_node) = &item.logical_node {
+                            if let Some(identified_object) = &logical_node.identified_object {
+                                if let Some(name) = &identified_object.name {
+                                    if name.as_str() == ALGORITHM_ENABLED {
+                                        if let Some(ind) = &item.ind {
+                                            coord_active = ind.st_val;
+                                        }
+                                    } else if name.as_str() == COMM_OK {
+                                        if let Some(ind) = &item.ind {
+                                            overall_comm = ind.st_val;
                                         }
                                     }
                                 }
                             }
                         }
                     }
-                    CoordinatorOptions::update_coordinator_status(coord_active, overall_comm);
                 }
-                _ => {}
+                CoordinatorOptions::update_coordinator_status(coord_active, overall_comm);
             }
         }
     }
@@ -273,7 +270,7 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                     if let Ok(my_msg_json) = serde_json::to_string(&msg) {
                         let json: Value = serde_json::from_str(&my_msg_json).unwrap();
                         let mut root = Node::new("mapping");
-                        root.path = format!("{}Profile.mapping", msg.message_type().to_string());
+                        root.path = format!("{}Profile.mapping", msg.message_type());
                         root.from_json(&json, &mut d);
 
                         for (key, value) in d.into_iter() {
@@ -292,7 +289,7 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
 
                             update_messages
                                 .entry(client.session_id.clone())
-                                .or_insert(Vec::new())
+                                .or_default()
                                 .push(update_msg);
                         }
                     }
@@ -672,7 +669,7 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
                         update_msg.topic.value = Some(v.clone());
                         update_messages
                             .entry(client.session_id.clone())
-                            .or_insert(Vec::new())
+                            .or_default()
                             .push(update_msg);
                     }
                     _ => {
@@ -688,7 +685,7 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
         }
     });
 
-    if update_messages.len() > 0 {
+    if !update_messages.is_empty() {
         for (key, value) in update_messages.into_iter() {
             let _ = send_updates(UpdateMessages::new(value, key.clone()), clients.clone()).await;
         }

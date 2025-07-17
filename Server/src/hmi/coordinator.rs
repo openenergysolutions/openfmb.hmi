@@ -163,6 +163,12 @@ pub struct CoordinatorOptions {
     pub client_key: Option<String>,
 }
 
+impl Default for CoordinatorOptions {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl CoordinatorOptions {
     pub fn new() -> CoordinatorOptions {
         let env = Environment::from_str(
@@ -217,54 +223,54 @@ impl CoordinatorOptions {
         let mut options = CoordinatorOptions {
             connection_url: nats_server_uri,
             authentication_type: authentication_type.clone(),
-            env: env,
+            env,
             token: None,
             creds_file: None,
             username: None,
             password: None,
-            security_type: security_type,
+            security_type,
             client_cert: None,
             client_key: None,
             root_cert: None,
         };
 
         if let Ok(s) = SETTINGS.read().unwrap().get_str("nats.token") {
-            if s.len() > 0 {
+            if !s.is_empty() {
                 options.token = Some(s);
             }
         }
         if let Ok(s) = SETTINGS.read().unwrap().get_str("nats.creds") {
-            if s.len() > 0 {
+            if !s.is_empty() {
                 options.creds_file = Some(s);
             }
         }
         if let Ok(s) = SETTINGS.read().unwrap().get_str("nats.username") {
-            if s.len() > 0 {
+            if !s.is_empty() {
                 options.username = Some(s);
             }
         }
         if let Ok(s) = SETTINGS.read().unwrap().get_str("nats.password") {
-            if s.len() > 0 {
+            if !s.is_empty() {
                 options.password = Some(s);
             }
         }
         if let Ok(s) = SETTINGS.read().unwrap().get_str("nats.client_cert") {
-            if s.len() > 0 {
+            if !s.is_empty() {
                 options.client_cert = Some(s);
             }
         }
         if let Ok(s) = SETTINGS.read().unwrap().get_str("nats.client_key") {
-            if s.len() > 0 {
+            if !s.is_empty() {
                 options.client_key = Some(s);
             }
         }
         if let Ok(s) = SETTINGS.read().unwrap().get_str("nats.root_cert") {
-            if s.len() > 0 {
+            if !s.is_empty() {
                 options.root_cert = Some(s);
             }
         }
 
-        return options;
+        options
     }
 
     pub fn toggle_environment() -> CoordinatorOptions {
@@ -324,11 +330,11 @@ impl CoordinatorOptions {
     }
 
     pub fn current_status() -> CoordinatorStatus {
-        let mut send_update_status =
-            match SETTINGS.read().unwrap().get_bool("nats.send_status_update") {
-                Ok(b) => b,
-                _ => false,
-            };
+        let mut send_update_status = SETTINGS
+            .read()
+            .unwrap()
+            .get_bool("nats.send_status_update")
+            .unwrap_or_default();
 
         let server_id = match SETTINGS.read().unwrap().get_str("nats.server_id") {
             Ok(b) => b,
@@ -353,7 +359,7 @@ impl CoordinatorOptions {
             .unwrap(),
             connected: SETTINGS.read().unwrap().get_bool("nats.connected").unwrap(),
             send_status_update: send_update_status,
-            server_id: server_id,
+            server_id,
             coordinator_active: SETTINGS
                 .read()
                 .unwrap()
@@ -384,10 +390,7 @@ impl CoordinatorOptions {
     }
 
     pub fn server_id() -> Option<String> {
-        match SETTINGS.read().unwrap().get_str("nats.server_id") {
-            Ok(b) => Some(b),
-            _ => None,
-        }
+        SETTINGS.read().unwrap().get_str("nats.server_id").ok()
     }
 
     pub fn on_disconnect() {

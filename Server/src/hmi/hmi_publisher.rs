@@ -93,10 +93,10 @@ impl HmiPublisher {
         let myself = ctx.myself.clone();
 
         match options
-            .disconnect_callback(|| CoordinatorOptions::on_disconnect())
-            .reconnect_callback(|| CoordinatorOptions::on_reconnect())
-            .reconnect_delay_callback(|c| CoordinatorOptions::on_delay_reconnect(c))
-            .error_callback(|err| CoordinatorOptions::on_error(err))
+            .disconnect_callback(CoordinatorOptions::on_disconnect)
+            .reconnect_callback(CoordinatorOptions::on_reconnect)
+            .reconnect_delay_callback(CoordinatorOptions::on_delay_reconnect)
+            .error_callback(CoordinatorOptions::on_error)
             .close_callback(move || HmiPublisher::on_closed(&myself))
             .retry_on_failed_connect()
             .connect(connection_url)
@@ -215,7 +215,7 @@ impl Receive<MicrogridControl> for HmiPublisher {
         info!("Sending {:?} to NATS topic {}", msg, subject);
         let mut buffer = Vec::<u8>::new();
         msg.message.encode(&mut buffer);
-        self.publish(&subject, &mut buffer);
+        self.publish(subject, &mut buffer);
     }
 }
 
@@ -231,7 +231,7 @@ impl Receive<DeviceControl> for HmiPublisher {
             msg: msg.message.into(),
         };
         device_control_msg.encode(&mut buffer).unwrap();
-        self.publish(&subject, &mut buffer);
+        self.publish(subject, &mut buffer);
     }
 }
 

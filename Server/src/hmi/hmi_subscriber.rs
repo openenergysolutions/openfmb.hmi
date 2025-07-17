@@ -60,10 +60,10 @@ impl HmiSubscriber {
         let myself = ctx.myself.clone();
 
         match options
-            .disconnect_callback(|| CoordinatorOptions::on_disconnect())
-            .reconnect_callback(|| CoordinatorOptions::on_reconnect())
-            .reconnect_delay_callback(|c| CoordinatorOptions::on_delay_reconnect(c))
-            .error_callback(|err| CoordinatorOptions::on_error(err))
+            .disconnect_callback(CoordinatorOptions::on_disconnect)
+            .reconnect_callback(CoordinatorOptions::on_reconnect)
+            .reconnect_delay_callback(CoordinatorOptions::on_delay_reconnect)
+            .error_callback(CoordinatorOptions::on_error)
             .close_callback(move || HmiSubscriber::on_closed(&myself))
             .retry_on_failed_connect()
             .connect(connection_url)
@@ -279,16 +279,12 @@ impl Receive<OpenFMBMessage> for HmiSubscriber {
 impl Receive<NatsMessage> for HmiSubscriber {
     type Msg = HmiSubscriberMsg;
     fn receive(&mut self, ctx: &Context<Self::Msg>, msg: NatsMessage, _sender: Sender) {
-        match msg.0.subject.as_str() {
-            _ => {
-                let result: Result<OpenFMBMessage, _> = msg.0.as_ref().try_into();
-                if let Ok(msg) = result {
-                    let actor = self.ensure_actor(ctx, &msg);
-                    actor.send_msg(msg.clone().into(), ctx.myself.clone());
-                } else {
-                    debug!("Ignore message: {:?}.", msg);
-                }
-            }
+        let result: Result<OpenFMBMessage, _> = msg.0.as_ref().try_into();
+        if let Ok(msg) = result {
+            let actor = self.ensure_actor(ctx, &msg);
+            actor.send_msg(msg.clone().into(), ctx.myself.clone());
+        } else {
+            debug!("Ignore message: {:?}.", msg);
         }
     }
 }

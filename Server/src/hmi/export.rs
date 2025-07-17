@@ -253,55 +253,53 @@ fn transform_coords(x: f32, y: f32) -> (f32, f32) {
 pub fn export() {
     let filename = "design.xml";
 
-    match File::open(&filename) {
-        Ok(mut file) => {
-            let mut content = String::new();
+    if let Ok(mut file) = File::open(filename) {
+        let mut content = String::new();
 
-            // Read all the file content into a variable (ignoring the result of the operation).
-            file.read_to_string(&mut content).unwrap();
+        // Read all the file content into a variable (ignoring the result of the operation).
+        file.read_to_string(&mut content).unwrap();
 
-            // Create xml document
-            let doc = Document::parse(&content).unwrap();
+        // Create xml document
+        let doc = Document::parse(&content).unwrap();
 
-            // Root tag
-            let root = doc.descendants().find(|n| n.has_tag_name("root")).unwrap();
+        // Root tag
+        let root = doc.descendants().find(|n| n.has_tag_name("root")).unwrap();
 
-            let mut mav = Mav::default();
+        let mut mav = Mav::default();
 
-            for elem in root.children() {
-                if elem.node_type() == NodeType::Element {
-                    if let Some(parent) = elem.attribute("parent") {
-                        if parent == "1" {
-                            // Get mxGeometry
-                            match elem.children().find(|n| n.has_tag_name("mxGeometry")) {
-                                Some(geometry) => {
-                                    if let Some(relative) = geometry.attribute("relative") {
-                                        if relative == "1" {
-                                            println!("This is a line");
-                                        }
-                                    } else {
-                                        // Get coordinate
-                                        let x = geometry
-                                            .attribute("x")
-                                            .unwrap_or("0.0")
-                                            .parse::<f32>()
-                                            .unwrap_or(0.0);
-                                        let y = geometry
-                                            .attribute("y")
-                                            .unwrap_or("0.0")
-                                            .parse::<f32>()
-                                            .unwrap_or(0.0);
+        for elem in root.children() {
+            if elem.node_type() == NodeType::Element {
+                if let Some(parent) = elem.attribute("parent") {
+                    if parent == "1" {
+                        // Get mxGeometry
+                        match elem.children().find(|n| n.has_tag_name("mxGeometry")) {
+                            Some(geometry) => {
+                                if let Some(relative) = geometry.attribute("relative") {
+                                    if relative == "1" {
+                                        println!("This is a line");
+                                    }
+                                } else {
+                                    // Get coordinate
+                                    let x = geometry
+                                        .attribute("x")
+                                        .unwrap_or("0.0")
+                                        .parse::<f32>()
+                                        .unwrap_or(0.0);
+                                    let y = geometry
+                                        .attribute("y")
+                                        .unwrap_or("0.0")
+                                        .parse::<f32>()
+                                        .unwrap_or(0.0);
 
-                                        let mut asset_type = "";
-                                        let mut mrid = "";
-                                        let mut label = "";
+                                    let mut asset_type = "";
+                                    let mut mrid = "";
+                                    let mut label = "";
 
-                                        let coords: (f32, f32) = transform_coords(x, y);
+                                    let coords: (f32, f32) = transform_coords(x, y);
 
-                                        match elem.children().find(|n| n.has_tag_name("Object")) {
-                                            Some(obj) => match obj
-                                                .children()
-                                                .find(|n| n.has_tag_name("Object"))
+                                    match elem.children().find(|n| n.has_tag_name("Object")) {
+                                        Some(obj) => {
+                                            match obj.children().find(|n| n.has_tag_name("Object"))
                                             {
                                                 Some(obj) => {
                                                     // Get type
@@ -333,79 +331,72 @@ pub fn export() {
                                                     }
                                                 }
                                                 None => log::error!("Missing Object tag"),
-                                            },
-                                            None => log::error!("Missing Object tag"),
+                                            }
                                         }
+                                        None => log::error!("Missing Object tag"),
+                                    }
 
-                                        println!(
-                                            "Type = {} [{}, {}]",
-                                            asset_type, coords.0, coords.1
-                                        );
+                                    println!("Type = {} [{}, {}]", asset_type, coords.0, coords.1);
 
-                                        match asset_type {
-                                            "breaker" => {
-                                                mav.devices.breakers.push(Breaker {
-                                                    name: label.to_string(),
-                                                    mrid: mrid.to_string(),
-                                                    coordinate: Coordinate {
-                                                        x: coords.0,
-                                                        y: coords.1,
-                                                    },
-                                                });
-                                            }
-                                            "switch" | "switch-horizontal" | "switch-vertical" => {
-                                                mav.devices.switches.push(Switch {
-                                                    name: label.to_string(),
-                                                    mrid: mrid.to_string(),
-                                                    coordinate: Coordinate {
-                                                        x: coords.0,
-                                                        y: coords.1,
-                                                    },
-                                                });
-                                            }
-                                            "recloser" => {
-                                                mav.devices.reclosers.push(Recloser {
-                                                    name: label.to_string(),
-                                                    mrid: mrid.to_string(),
-                                                    coordinate: Coordinate {
-                                                        x: coords.0,
-                                                        y: coords.1,
-                                                    },
-                                                });
-                                            }
-                                            "regulator" => {
-                                                mav.devices.regulators.push(Regulator {
-                                                    name: label.to_string(),
-                                                    mrid: mrid.to_string(),
-                                                    coordinate: Coordinate {
-                                                        x: coords.0,
-                                                        y: coords.1,
-                                                    },
-                                                    ..Default::default()
-                                                });
-                                            }
-                                            _ => {
-                                                log::error!(
-                                                    "Can't handle asset type: {}",
-                                                    asset_type
-                                                )
-                                            }
+                                    match asset_type {
+                                        "breaker" => {
+                                            mav.devices.breakers.push(Breaker {
+                                                name: label.to_string(),
+                                                mrid: mrid.to_string(),
+                                                coordinate: Coordinate {
+                                                    x: coords.0,
+                                                    y: coords.1,
+                                                },
+                                            });
+                                        }
+                                        "switch" | "switch-horizontal" | "switch-vertical" => {
+                                            mav.devices.switches.push(Switch {
+                                                name: label.to_string(),
+                                                mrid: mrid.to_string(),
+                                                coordinate: Coordinate {
+                                                    x: coords.0,
+                                                    y: coords.1,
+                                                },
+                                            });
+                                        }
+                                        "recloser" => {
+                                            mav.devices.reclosers.push(Recloser {
+                                                name: label.to_string(),
+                                                mrid: mrid.to_string(),
+                                                coordinate: Coordinate {
+                                                    x: coords.0,
+                                                    y: coords.1,
+                                                },
+                                            });
+                                        }
+                                        "regulator" => {
+                                            mav.devices.regulators.push(Regulator {
+                                                name: label.to_string(),
+                                                mrid: mrid.to_string(),
+                                                coordinate: Coordinate {
+                                                    x: coords.0,
+                                                    y: coords.1,
+                                                },
+                                                ..Default::default()
+                                            });
+                                        }
+                                        _ => {
+                                            log::error!("Can't handle asset type: {}", asset_type)
                                         }
                                     }
                                 }
-                                None => {
-                                    log::warn!("No mxGeometry Node for element {:?}.", elem);
-                                }
+                            }
+                            None => {
+                                log::warn!("No mxGeometry Node for element {:?}.", elem);
                             }
                         }
                     }
                 }
             }
-
-            let serialized = serde_json::to_string(&mav).unwrap();
-
-            println!("{}", serialized);
         }
-        _ => {}
+
+        let serialized = serde_json::to_string(&mav).unwrap();
+
+        println!("{}", serialized);
     }
 }
