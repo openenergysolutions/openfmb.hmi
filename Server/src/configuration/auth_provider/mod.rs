@@ -2,6 +2,5 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-mod actor_ref;
-
-pub use actor_ref::*;
+pub mod auth_type;
+pub(crate) mod keycloak;

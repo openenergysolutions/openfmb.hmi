@@ -6,8 +6,7 @@ pub mod auth;
 pub mod error;
 pub mod handler;
 pub mod hmi;
-pub mod logs;
-pub mod messages;
 
 pub use hmi::*;
-pub use messages::*;
+
+pub mod configuration;

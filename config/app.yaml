@@ -1,0 +1,12 @@
+oes-app:
+  app_name: openfmb.hmi
+  log_level: info
+hmi:  
+  server_port: 32771
+  # server_host: 0.0.0.0
+  # ssl_cert: "/server/certs/server/server-cert.pem"
+  # ssl_key: "/server/certs/server/server-key.pem"
+nats:
+  connection_url: '192.168.86.54:4222'
+  creds: ''
+  auth: NIL

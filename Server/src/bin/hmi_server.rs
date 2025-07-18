@@ -12,19 +12,13 @@ use tokio::sync::RwLock;
 
 use warp::Filter;
 
-use hmi_server::coordinator::StartProcessingMessages;
-use hmi_server::logs::{setup_logger, SystemEventLog};
-
-use hmi_server::hmi::{
-    coordinator::*, hmi_publisher::*, hmi_subscriber::*, monitor::*, processor::*,
+use hmi_server::{
+    auth::*,
+    configuration::{logging::setup_logger, Configuration},
+    handler::*,
+    processor::Processor,
+    Publisher, Subscriber,
 };
-use hmi_server::{auth::*, handler::*, Hmi, HmiMsg};
-
-use riker::actor::Tell;
-use riker::actor::{ActorRef, ActorRefFactory};
-use riker::system::ActorSystem;
-
-use config::Config;
 
 #[tokio::main]
 async fn main() {
@@ -32,55 +26,23 @@ async fn main() {
 }
 
 async fn server_setup() {
+    let configuration = Configuration::new();
+    let log_settings = configuration.oes_settings.clone();
+    let _ = setup_logger(log_settings);
+
     let clients: Clients = Arc::new(RwLock::new(HashMap::new()));
 
-    let config = riker::load_config();
+    let mut publisher = Publisher::new(configuration.nats.clone());
+    publisher.start().await;
 
-    setup_logger(&config).unwrap();
+    let processor = Processor::new(publisher, clients.clone());
+    let mut subscriber = Subscriber::new(configuration.nats.clone(), processor.clone());
 
-    //Create the actor system that will manage all of the actors instantiate during runtime
-    let sys = ActorSystem::with_config("coordinator", config.clone()).unwrap();
-
-    // System event logger before other actors are started
-    sys.actor_of::<SystemEventLog>("SysEventLogger").unwrap();
-
-    // Start Hmi related
-
-    let publisher = sys
-        .actor_of_args::<HmiPublisher, Config>("HmiPublisher", sys.config().clone())
-        .unwrap();
-
-    let processor = sys
-        .actor_of_args::<Processor, (ActorRef<HmiPublisherMsg>, Clients)>(
-            "HmiProcessor",
-            (publisher.clone(), clients.clone()),
-        )
-        .unwrap();
-
-    let subscriber = sys
-        .actor_of_args::<HmiSubscriber, ActorRef<ProcessorMsg>>("HmiSubscriber", processor.clone())
-        .unwrap();
-    if let Ok(send_status_update) = config.get_bool("nats.send_status_update") {
-        if send_status_update {
-            let _monitor = sys
-                .actor_of_args::<Monitor, ActorRef<ProcessorMsg>>("HmiMonitor", processor.clone())
-                .unwrap();
+    tokio::spawn(async move {
+        if let Err(e) = subscriber.start().await {
+            log::error!("Unable to start subscriber: {}", e);
         }
-    }
-
-    let hmi_actor = sys
-        .actor_of_args::<Hmi, (ActorRef<HmiPublisherMsg>, ActorRef<HmiSubscriberMsg>)>(
-            "HMI",
-            (publisher.clone(), subscriber.clone()),
-        )
-        .unwrap();
-
-    let run_mode = StartProcessingMessages {
-        pubsub_options: CoordinatorOptions::new(),
-    };
-
-    let start_processing_msg: HmiMsg = run_mode.into();
-    hmi_actor.tell(start_processing_msg, Some(sys.user_root().clone()));
+    });
 
     let login_routes = warp::path("login")
         .and(warp::post())
@@ -140,7 +102,6 @@ async fn server_setup() {
     let update = warp::path!("update-data")
         .and(warp::body::json())
         .and(with_processor(processor.clone()))
-        .and(with_hmi(hmi_actor.clone()))
         .and_then(data_handler);
 
     let data_route = warp::path("data")
@@ -312,15 +273,13 @@ async fn server_setup() {
         .with(cors)
         .with(warp::log("warp::server"));
 
-    let host = config
-        .get_str("hmi.server_host")
-        .unwrap_or("0.0.0.0".to_string());
+    let host = configuration.hmi.server_host();
 
-    let ssl_cert = config.get_str("hmi.ssl_cert").unwrap_or("".to_string());
-    let ssl_key = config.get_str("hmi.ssl_key").unwrap_or("".to_string());
+    let ssl_cert = configuration.hmi.ssl_cert();
+    let ssl_key = configuration.hmi.ssl_key();
 
     if !ssl_cert.is_empty() && !ssl_key.is_empty() {
-        let port = config.get_int("hmi.server_port").unwrap_or(443);
+        let port = configuration.hmi.server_port();
         let server_uri = format!("{}:{}", host, port);
 
         warp::serve(routes)
@@ -330,7 +289,7 @@ async fn server_setup() {
             .run(server_uri.to_socket_addrs().unwrap().next().unwrap())
             .await;
     } else {
-        let port = config.get_int("hmi.server_port").unwrap_or(80);
+        let port = configuration.hmi.server_port();
         let server_uri = format!("{}:{}", host, port);
 
         warp::serve(routes)
@@ -344,13 +303,7 @@ fn with_clients(clients: Clients) -> impl Filter<Extract = (Clients,), Error = I
 }
 
 fn with_processor(
-    process: ActorRef<ProcessorMsg>,
-) -> impl Filter<Extract = (ActorRef<ProcessorMsg>,), Error = Infallible> + Clone {
+    process: Processor,
+) -> impl Filter<Extract = (Processor,), Error = Infallible> + Clone {
     warp::any().map(move || process.clone())
-}
-
-fn with_hmi(
-    hmi: ActorRef<HmiMsg>,
-) -> impl Filter<Extract = (ActorRef<HmiMsg>,), Error = Infallible> + Clone {
-    warp::any().map(move || hmi.clone())
 }

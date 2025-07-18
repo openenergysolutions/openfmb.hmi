@@ -2,15 +2,9 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-use super::hmi;
-use crate::coordinator::StartProcessingMessages;
-use crate::error::Error;
+use crate::{error::Error, processor::Processor};
 use futures::{FutureExt, StreamExt};
-use hmi::coordinator::{CoordinatorOptions, CoordinatorStatus};
-use hmi::processor::ProcessorMsg;
-use hmi::HmiMsg;
 use log::{error, info};
-use riker::actors::*;
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
 use std::collections::HashMap;
@@ -151,71 +145,52 @@ impl UpdateMessages {
     }
 }
 
-pub async fn data_handler(
-    update: UpdateMessage,
-    processor: ActorRef<ProcessorMsg>,
-    hmi: ActorRef<HmiMsg>,
-) -> Result<impl Reply> {
+pub async fn data_handler(update: UpdateMessage, processor: Processor) -> Result<impl Reply> {
     info!("Handle data: {:?}", update);
-
-    // This action is applied to all client sessions
-    if update.topic.name == "ToggleEnvironment" {
-        hmi.tell(
-            StartProcessingMessages {
-                pubsub_options: CoordinatorOptions::toggle_environment(),
-            },
-            None,
-        );
-        return Ok(StatusCode::OK);
-    }
 
     if let Ok(microgrid_control) =
         microgrid::microgrid_control::ControlMessage::from_str(&update.topic.name)
     {
-        processor.tell(
-            MicrogridControl {
+        processor
+            .receive_microgrid_control_message(MicrogridControl {
                 text: update.topic.name.clone(),
                 message: microgrid_control,
-            },
-            None,
-        );
+            })
+            .await;
     } else if let Ok(device_control) =
         microgrid::device_control::DeviceControlMessage::from_str(&update.topic.name)
     {
-        processor.tell(
-            DeviceControl {
+        processor
+            .receive_device_control(DeviceControl {
                 text: update.topic.mrid.clone(),
                 message: device_control,
-            },
-            None,
-        );
+            })
+            .await;
     } else if let Ok(generic_control) =
         microgrid::generic_control::ControlType::from_str(&update.topic.name)
     {
-        processor.tell(
-            GenericControl {
+        processor
+            .receive_generic_control_message(GenericControl {
                 text: update.topic.name.clone(),
                 message: generic_control,
                 mrid: update.topic.mrid.clone(),
                 profile_name: None,
                 args: update.topic.args,
                 args2: update.topic.args2,
-            },
-            None,
-        );
+            })
+            .await;
     } else if let Some(action) = &update.topic.action {
         if let Ok(generic_control) = microgrid::generic_control::ControlType::from_str(action) {
-            processor.tell(
-                GenericControl {
+            processor
+                .receive_generic_control_message(GenericControl {
                     text: update.topic.name.clone(),
                     message: generic_control,
                     mrid: update.topic.mrid.clone(),
                     profile_name: None,
                     args: update.topic.args,
                     args2: update.topic.args2,
-                },
-                None,
-            );
+                })
+                .await;
         } else {
             info!("Received unknown action: {}", action);
         }
@@ -249,76 +224,6 @@ pub async fn send_updates(updates: UpdateMessages, clients: Clients) -> Result<i
                 let _ = sender.send(Ok(Message::text(json)));
             }
         });
-
-    Ok(StatusCode::OK)
-}
-
-pub async fn send_status(status: CoordinatorStatus, clients: Clients) -> Result<impl Reply> {
-    let hmi_pubsub_status_connected = "hmi.pubsub.status.connected".to_string();
-    let hmi_pubsub_status_environment = "hmi.pubsub.status.environment".to_string();
-    let hmi_coordinator_active = "hmi.coordinator.active".to_string();
-    let hmi_coordinator_comm_ok = "hmi.coordinator.comm_ok".to_string();
-
-    let updates = UpdateMessages {
-        updates: vec![
-            UpdateMessage {
-                profile: None,
-                session_id: None,
-                topic: Topic {
-                    name: hmi_pubsub_status_connected,
-                    mrid: status.server_id.clone(),
-                    value: Some(DataValue::Bool(status.connected)),
-                    action: None,
-                    args: None,
-                    args2: None,
-                },
-            },
-            UpdateMessage {
-                profile: None,
-                session_id: None,
-                topic: Topic {
-                    name: hmi_pubsub_status_environment,
-                    mrid: status.server_id.clone(),
-                    value: Some(DataValue::Double((status.env as u8) as f64)),
-                    action: None,
-                    args: None,
-                    args2: None,
-                },
-            },
-            UpdateMessage {
-                profile: None,
-                session_id: None,
-                topic: Topic {
-                    name: hmi_coordinator_active,
-                    mrid: status.server_id.clone(),
-                    value: Some(DataValue::Bool(status.coordinator_active)),
-                    action: None,
-                    args: None,
-                    args2: None,
-                },
-            },
-            UpdateMessage {
-                profile: None,
-                session_id: None,
-                topic: Topic {
-                    name: hmi_coordinator_comm_ok,
-                    mrid: status.server_id.clone(),
-                    value: Some(DataValue::Bool(status.comm_ok)),
-                    action: None,
-                    args: None,
-                    args2: None,
-                },
-            },
-        ],
-        session_id: None,
-    };
-
-    clients.read().await.iter().for_each(|(_, client)| {
-        if let Some(sender) = &client.sender {
-            let json = serde_json::to_string(&updates).unwrap();
-            let _ = sender.send(Ok(Message::text(json)));
-        }
-    });
 
     Ok(StatusCode::OK)
 }
