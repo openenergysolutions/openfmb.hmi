@@ -17,7 +17,7 @@ import { AppLoaderService } from "./services/app-loader/app-loader.service";
 import { SharedComponentsModule } from "./components/shared-components.module";
 import { SharedDirectivesModule } from "./directives/shared-directives.module";
 
-import { FlexLayoutModule } from "@angular/flex-layout";
+import { FlexLayoutModule } from "ngx-flexible-layout";
 import { MatCardModule } from "@angular/material/card";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { ReactiveFormsModule, FormsModule } from "@angular/forms";

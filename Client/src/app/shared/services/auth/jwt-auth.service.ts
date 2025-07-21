@@ -112,7 +112,7 @@ export class JwtAuthService {
   getDecodedAccessToken(token: string): any {
     try {
       return jwt_decode(token);
-    } catch (_e) {
+    } catch (_) {
       return null;
     }
   }

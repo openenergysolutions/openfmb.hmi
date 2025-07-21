@@ -12,9 +12,10 @@ import { AppLoaderService } from "../../shared/services/app-loader/app-loader.se
 import { v4 as uuidv4 } from "uuid";
 
 @Component({
-  selector: "app-users",
-  templateUrl: "./users.component.html",
-  styleUrls: ["./users.component.scss"],
+    selector: "app-users",
+    templateUrl: "./users.component.html",
+    styleUrls: ["./users.component.scss"],
+    standalone: false
 })
 export class UsersComponent implements OnInit, OnDestroy {
   public rows = [];

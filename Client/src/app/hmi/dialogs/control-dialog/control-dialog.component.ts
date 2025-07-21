@@ -15,9 +15,10 @@ import { Authorization } from "../../../shared/models/user.model";
 import { JwtAuthService } from "../../../shared/services/auth/jwt-auth.service";
 
 @Component({
-  selector: "app-control-dialog",
-  templateUrl: "./control-dialog.component.html",
-  styleUrls: ["./control-dialog.component.scss"],
+    selector: "app-control-dialog",
+    templateUrl: "./control-dialog.component.html",
+    styleUrls: ["./control-dialog.component.scss"],
+    standalone: false
 })
 export class ControlDialogComponent implements OnInit {
   setpointValue: number;

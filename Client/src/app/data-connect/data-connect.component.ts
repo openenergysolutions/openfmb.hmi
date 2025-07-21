@@ -22,9 +22,10 @@ import { ActivatedRoute } from "@angular/router";
 import { Hmi } from "../shared/hmi.constants";
 
 @Component({
-  selector: "app-data-connect",
-  templateUrl: "./data-connect.component.html",
-  styleUrls: ["./data-connect.component.scss"],
+    selector: "app-data-connect",
+    templateUrl: "./data-connect.component.html",
+    styleUrls: ["./data-connect.component.scss"],
+    standalone: false
 })
 export class DataConnectComponent implements OnInit {
   selectDiagramControl = new UntypedFormControl();

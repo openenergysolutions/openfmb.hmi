@@ -20,9 +20,10 @@ import * as designerActions from "../../store/actions/designer.actions";
 import { NgxSpinnerService } from "ngx-spinner";
 
 @Component({
-  selector: "app-header-tool",
-  templateUrl: "./header-tool.component.html",
-  styleUrls: ["./header-tool.component.scss"],
+    selector: "app-header-tool",
+    templateUrl: "./header-tool.component.html",
+    styleUrls: ["./header-tool.component.scss"],
+    standalone: false
 })
 export class HeaderToolComponent implements OnInit {
   @ViewChild("fileInput", { static: true })

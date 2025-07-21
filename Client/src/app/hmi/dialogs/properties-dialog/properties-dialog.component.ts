@@ -7,9 +7,10 @@ import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { DiagramData } from "../../../shared/models/userobject.model";
 
 @Component({
-  selector: "app-properties-dialog",
-  templateUrl: "./properties-dialog.component.html",
-  styleUrls: ["./properties-dialog.component.scss"],
+    selector: "app-properties-dialog",
+    templateUrl: "./properties-dialog.component.html",
+    styleUrls: ["./properties-dialog.component.scss"],
+    standalone: false
 })
 export class PropertiesDialogComponent implements OnInit {
   label: string;

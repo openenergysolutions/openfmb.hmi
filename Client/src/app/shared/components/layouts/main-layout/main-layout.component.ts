@@ -25,8 +25,9 @@ import { filter } from "rxjs/operators";
 import { JwtAuthService } from "../../../services/auth/jwt-auth.service";
 
 @Component({
-  selector: "app-main-layout",
-  templateUrl: "./main-layout.component.html",
+    selector: "app-main-layout",
+    templateUrl: "./main-layout.component.html",
+    standalone: false
 })
 export class MainLayoutComponent implements OnInit, OnDestroy {
   public isModuleLoading: boolean = false;
@@ -124,7 +125,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
     });
   }
 
-  sidebarMouseenter(_e) {
+  sidebarMouseenter(_) {
     // console.log(this.layoutConf);
     if (this.layoutConf.sidebarStyle === "compact") {
       this.layout.publishLayoutChange(
@@ -134,7 +135,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
     }
   }
 
-  sidebarMouseleave(_e) {
+  sidebarMouseleave(_) {
     // console.log(this.layoutConf);
     if (
       this.layoutConf.sidebarStyle === "full" &&

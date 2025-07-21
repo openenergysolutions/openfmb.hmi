@@ -15,9 +15,10 @@ import { Authorization } from "../../../shared/models/user.model";
 import { JwtAuthService } from "../../../shared/services/auth/jwt-auth.service";
 
 @Component({
-  selector: "app-switchgear-dialog",
-  templateUrl: "./switchgear-dialog.component.html",
-  styleUrls: ["./switchgear-dialog.component.scss"],
+    selector: "app-switchgear-dialog",
+    templateUrl: "./switchgear-dialog.component.html",
+    styleUrls: ["./switchgear-dialog.component.scss"],
+    standalone: false
 })
 export class SwitchgearDialogComponent implements OnInit {
   status: string;

@@ -9,7 +9,8 @@ import { Subscription } from "rxjs";
 import { filter } from "rxjs/operators";
 
 @Directive({
-  selector: "[appDropdown]",
+    selector: "[appDropdown]",
+    standalone: false
 })
 export class AppDropdownDirective implements OnInit {
   protected navlinks: Array<DropdownLinkDirective> = [];
@@ -42,7 +43,7 @@ export class AppDropdownDirective implements OnInit {
   public ngOnInit(): any {
     this._router = this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe((event: NavigationEnd) => {
+      .subscribe((_: NavigationEnd) => {
         this.navlinks.forEach((link: DropdownLinkDirective) => {
           if (link.group) {
             const routeUrl = this.getUrl();

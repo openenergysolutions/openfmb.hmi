@@ -5,9 +5,10 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
 
 @Component({
-  selector: "app-properties-select-section",
-  templateUrl: "./properties-select-section.component.html",
-  styleUrls: ["./properties-select-section.component.scss"],
+    selector: "app-properties-select-section",
+    templateUrl: "./properties-select-section.component.html",
+    styleUrls: ["./properties-select-section.component.scss"],
+    standalone: false
 })
 export class PropertiesSelectSectionComponent {
   @Input() fields = [];

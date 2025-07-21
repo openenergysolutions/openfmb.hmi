@@ -17,9 +17,10 @@ import { v4 as uuidv4 } from "uuid";
 import { Authorization } from "../shared/models/user.model";
 
 @Component({
-  selector: "app-diagrams",
-  templateUrl: "./diagrams.component.html",
-  styleUrls: ["./diagrams.component.scss"],
+    selector: "app-diagrams",
+    templateUrl: "./diagrams.component.html",
+    styleUrls: ["./diagrams.component.scss"],
+    standalone: false
 })
 export class DiagramsComponent implements OnInit, OnDestroy {
   public rows = [];

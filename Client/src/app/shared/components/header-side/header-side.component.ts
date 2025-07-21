@@ -9,8 +9,9 @@ import { TranslateService } from "@ngx-translate/core";
 import { JwtAuthService } from "../../services/auth/jwt-auth.service";
 
 @Component({
-  selector: "app-header-side",
-  templateUrl: "./header-side.template.html",
+    selector: "app-header-side",
+    templateUrl: "./header-side.template.html",
+    standalone: false
 })
 export class HeaderSideComponent implements OnInit {
   @Input() notificPanel;
@@ -85,7 +86,7 @@ export class HeaderSideComponent implements OnInit {
     );
   }
 
-  onSearch(e) {
+  onSearch(_) {
     //   console.log(e)
   }
 }

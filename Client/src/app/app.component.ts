@@ -10,9 +10,10 @@ import { Store } from "@ngrx/store";
 import { RoutePartsService } from "./shared/services/route-parts.service";
 import { filter } from "rxjs/operators";
 @Component({
-  selector: "app-root",
-  templateUrl: "./app.component.html",
-  styleUrls: ["./app.component.scss"],
+    selector: "app-root",
+    templateUrl: "./app.component.html",
+    styleUrls: ["./app.component.scss"],
+    standalone: false
 })
 export class AppComponent implements OnInit {
   appTitle = "HMI";
@@ -32,7 +33,7 @@ export class AppComponent implements OnInit {
   changePageTitle() {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe((_routeChange) => {
+      .subscribe(() => {
         const routeParts = this.routePartsService.generateRouteParts(
           this.activeRoute.snapshot,
         );

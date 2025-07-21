@@ -6,9 +6,10 @@ import { Component, OnInit, Inject } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 
 @Component({
-  selector: "app-generic-dialog",
-  templateUrl: "./generic-dialog.component.html",
-  styleUrls: ["./generic-dialog.component.scss"],
+    selector: "app-generic-dialog",
+    templateUrl: "./generic-dialog.component.html",
+    styleUrls: ["./generic-dialog.component.scss"],
+    standalone: false
 })
 export class GenericDialogComponent implements OnInit {
   title: string;

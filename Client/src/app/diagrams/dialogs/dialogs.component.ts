@@ -11,9 +11,10 @@ import {
 } from "@angular/forms";
 
 @Component({
-  selector: "app-dialogs",
-  templateUrl: "./dialogs.component.html",
-  styleUrls: ["./dialogs.component.scss"],
+    selector: "app-dialogs",
+    templateUrl: "./dialogs.component.html",
+    styleUrls: ["./dialogs.component.scss"],
+    standalone: false
 })
 export class DialogsComponent implements OnInit {
   public itemForm: UntypedFormGroup;

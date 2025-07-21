@@ -10,7 +10,7 @@ import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { PerfectScrollbarModule } from "ngx-perfect-scrollbar-portable";
 import { SearchModule } from "../search/search.module";
-import { FlexLayoutModule } from "@angular/flex-layout";
+import { FlexLayoutModule } from "ngx-flexible-layout";
 import { SharedDirectivesModule } from "../directives/shared-directives.module";
 
 import { HeaderSideComponent } from "./header-side/header-side.component";

@@ -15,15 +15,16 @@ import {
   ChangeDetectorRef,
 } from "@angular/core";
 import { MatchMediaService } from "../../../../app/shared/services/match-media.service";
-import { MediaObserver } from "@angular/flex-layout";
+import { MediaObserver } from "ngx-flexible-layout";
 import { Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { SidebarHelperService } from "./sidebar-helper.service";
 
 @Component({
-  selector: "hmi-sidebar",
-  templateUrl: "./sidebar.component.html",
-  styleUrls: ["./sidebar.component.scss"],
+    selector: "hmi-sidebar",
+    templateUrl: "./sidebar.component.html",
+    styleUrls: ["./sidebar.component.scss"],
+    standalone: false
 })
 export class SidebarComponent implements OnInit, OnDestroy {
   // Name
@@ -140,7 +141,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
 }
 
 @Directive({
-  selector: "[sidebarToggler]",
+    selector: "[sidebarToggler]",
+    standalone: false
 })
 export class SidebarTogglerDirective {
   @Input("sidebarToggler")

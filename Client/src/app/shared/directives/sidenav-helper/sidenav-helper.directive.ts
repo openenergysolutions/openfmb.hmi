@@ -15,10 +15,11 @@ import { Subject } from "rxjs";
 import { MatchMediaService } from "../../services/match-media.service";
 import { SidenavHelperService } from "./sidenav-helper.service";
 import { MatSidenav } from "@angular/material/sidenav";
-import { MediaObserver } from "@angular/flex-layout";
+import { MediaObserver } from "ngx-flexible-layout";
 
 @Directive({
-  selector: "[sidenavHelper]",
+    selector: "[sidenavHelper]",
+    standalone: false
 })
 export class SidenavHelperDirective implements OnInit, OnDestroy {
   @HostBinding("class.is-open")
@@ -78,7 +79,8 @@ export class SidenavHelperDirective implements OnInit, OnDestroy {
 }
 
 @Directive({
-  selector: "[sidenavToggler]",
+    selector: "[sidenavToggler]",
+    standalone: false
 })
 export class SidenavTogglerDirective {
   @Input("sidenavToggler")

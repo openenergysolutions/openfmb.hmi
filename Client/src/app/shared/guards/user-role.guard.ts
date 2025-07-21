@@ -19,7 +19,7 @@ export class UserRoleGuard {
     private snack: MatSnackBar,
   ) {}
 
-  canActivate(route: ActivatedRouteSnapshot, _state: RouterStateSnapshot) {
+  canActivate(route: ActivatedRouteSnapshot, _: RouterStateSnapshot) {
     const user = this.jwtAuth.getUser();
 
     if (

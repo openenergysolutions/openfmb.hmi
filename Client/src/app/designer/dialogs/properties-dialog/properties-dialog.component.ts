@@ -27,9 +27,10 @@ import {
 } from "../../../shared/models/commands.model";
 
 @Component({
-  selector: "app-properties-dialog",
-  templateUrl: "./properties-dialog.component.html",
-  styleUrls: ["./properties-dialog.component.scss"],
+    selector: "app-properties-dialog",
+    templateUrl: "./properties-dialog.component.html",
+    styleUrls: ["./properties-dialog.component.scss"],
+    standalone: false
 })
 export class PropertiesDialogComponent implements OnInit {
   label: string;

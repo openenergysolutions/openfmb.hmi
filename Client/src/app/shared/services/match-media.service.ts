@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Injectable } from "@angular/core";
-import { MediaObserver, MediaChange } from "@angular/flex-layout";
+import { MediaObserver, MediaChange } from "ngx-flexible-layout";
 import { BehaviorSubject } from "rxjs";
 
 @Injectable({

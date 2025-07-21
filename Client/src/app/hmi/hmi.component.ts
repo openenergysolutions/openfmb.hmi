@@ -46,7 +46,6 @@ import { CommunicationStatus } from "../store/reducers/hmi.reducer";
 const {
   mxGraph,
   mxUtils,
-  mxRubberband,
   mxEdgeHandler,
   mxPoint,
   mxConstraintHandler,
@@ -63,9 +62,10 @@ const {
 });
 
 @Component({
-  selector: "app-hmi",
-  templateUrl: "./hmi.component.html",
-  styleUrls: ["../hmi/hmi.component.scss"],
+    selector: "app-hmi",
+    templateUrl: "./hmi.component.html",
+    styleUrls: ["../hmi/hmi.component.scss"],
+    standalone: false
 })
 export class HmiComponent implements AfterViewInit, OnDestroy {
   @ViewChild("graphContainer", { static: false }) graphContainer: ElementRef;
@@ -258,8 +258,6 @@ export class HmiComponent implements AfterViewInit, OnDestroy {
       this.register();
     });
 
-    const rubberband = new mxRubberband(this.graph);
-
     // disable cell connection.
     this.graph.connectionHandler.isConnectableCell = () => {
       return false;
@@ -269,7 +267,7 @@ export class HmiComponent implements AfterViewInit, OnDestroy {
       return this.graph.connectionHandler.isConnectableCell(cell);
     };
 
-    this.graph.view.getTerminalPort = (state, terminal, source) => {
+    this.graph.view.getTerminalPort = (_, terminal, __) => {
       return terminal;
     };
 
@@ -299,8 +297,7 @@ export class HmiComponent implements AfterViewInit, OnDestroy {
 
       if (cellValue && cellValue.userObject) {
         const userObject = cellValue.userObject;
-        const displayData = cellValue.userObject.displayData;
-        const controlData = cellValue.userObject.controlData;
+        const displayData = cellValue.userObject.displayData;        
         const visibilityData = cellValue.userObject.visibilityData;
         let visibilityMapping = null;
         if (
@@ -758,7 +755,7 @@ export class HmiComponent implements AfterViewInit, OnDestroy {
     };
 
     // get all available connection ports
-    this.graph.getAllConnectionConstraints = (terminal, source) => {
+    this.graph.getAllConnectionConstraints = (terminal, _) => {
       if (
         terminal != null &&
         terminal.shape != null &&
@@ -1038,7 +1035,7 @@ export class HmiComponent implements AfterViewInit, OnDestroy {
     dialogRef
       .afterClosed()
       .pipe(takeUntil(this.destroy$))
-      .subscribe((result) => {
+      .subscribe(() => {
         this.showingLostConnection = false;
       });
   }
@@ -1135,8 +1132,7 @@ export class HmiComponent implements AfterViewInit, OnDestroy {
                   }
                 } else if (Hmi.isBattery(objType)) {
                   const cell = this.graph.getModel().getCell(svgId);
-                  if (cell) {
-                    const diagramData = cell.value.userObject;
+                  if (cell) {                    
                     const state = this.graph.view.getState(cell, false);
                     if (state) {
                       const node = state.shape.node;

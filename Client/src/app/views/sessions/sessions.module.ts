@@ -9,7 +9,7 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
 import { SharedMaterialModule } from "../../../app/shared/shared-material.module";
 
-import { FlexLayoutModule } from "@angular/flex-layout";
+import { FlexLayoutModule } from "ngx-flexible-layout";
 import { SigninComponent } from "./signin/signin.component";
 import { SessionsRoutes } from "./sessions.routing";
 import { NotFoundComponent } from "./not-found/not-found.component";

@@ -13,9 +13,10 @@ import { getEquipmentTypeList } from "../../../shared/models/equipment.model";
 import { v4 as uuidv4 } from "uuid";
 
 @Component({
-  selector: "app-devicedialogs",
-  templateUrl: "./devicedialogs.component.html",
-  styleUrls: ["./devicedialogs.component.scss"],
+    selector: "app-devicedialogs",
+    templateUrl: "./devicedialogs.component.html",
+    styleUrls: ["./devicedialogs.component.scss"],
+    standalone: false
 })
 export class DeviceDialogsComponent implements OnInit {
   public itemForm: UntypedFormGroup;

@@ -17,9 +17,10 @@ import { SearchService } from "../search.service";
 import { Router, ActivatedRoute } from "@angular/router";
 
 @Component({
-  selector: "hmi-search-input-over",
-  templateUrl: "./search-input-over.component.html",
-  styleUrls: ["./search-input-over.component.scss"],
+    selector: "hmi-search-input-over",
+    templateUrl: "./search-input-over.component.html",
+    styleUrls: ["./search-input-over.component.scss"],
+    standalone: false
 })
 export class SearchInputOverComponent implements OnInit, OnDestroy {
   isOpen: boolean;

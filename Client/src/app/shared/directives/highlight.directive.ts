@@ -18,11 +18,12 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
 @UntilDestroy()
 @Directive({
-  host: {
-    "[class.hljs]": "true",
-    "[innerHTML]": "highlightedCode",
-  },
-  selector: "[hmiHighlight]",
+    host: {
+        "[class.hljs]": "true",
+        "[innerHTML]": "highlightedCode",
+    },
+    selector: "[hmiHighlight]",
+    standalone: false
 })
 export class HighlightDirective implements OnInit, OnChanges {
   constructor(
@@ -65,7 +66,7 @@ export class HighlightDirective implements OnInit, OnChanges {
     }
   }
 
-  highlightElement(code: string, _languages?: string[]) {
+  highlightElement(code: string, _?: string[]) {
     this._zone.runOutsideAngular(() => {
       const res = hljs.highlightAuto(code);
       this.highlightedCode = res.value;

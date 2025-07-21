@@ -12,9 +12,10 @@ import {
 import { Authorization } from "../../../shared/models/user.model";
 
 @Component({
-  selector: "app-dialogs",
-  templateUrl: "./dialogs.component.html",
-  styleUrls: ["./dialogs.component.scss"],
+    selector: "app-dialogs",
+    templateUrl: "./dialogs.component.html",
+    styleUrls: ["./dialogs.component.scss"],
+    standalone: false
 })
 export class DialogsComponent implements OnInit {
   public itemForm: UntypedFormGroup;

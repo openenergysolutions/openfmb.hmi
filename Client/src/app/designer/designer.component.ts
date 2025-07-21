@@ -59,9 +59,10 @@ const {
 });
 
 @Component({
-  selector: "app-designer",
-  templateUrl: "./designer.component.html",
-  styleUrls: ["./designer.component.scss"],
+    selector: "app-designer",
+    templateUrl: "./designer.component.html",
+    styleUrls: ["./designer.component.scss"],
+    standalone: false
 })
 export class DesignerComponent implements AfterViewInit, OnDestroy {
   @ViewChild("graphContainer", { static: false }) graphContainer: ElementRef;
@@ -225,9 +226,7 @@ export class DesignerComponent implements AfterViewInit, OnDestroy {
       mxEvent.consume(evt);
     });
 
-    this.graph.getModel().addListener(mxEvent.CHANGE, (_evt: Event) => {});
-
-    const _rubberband = new mxRubberband(this.graph);
+    this.graph.getModel().addListener(mxEvent.CHANGE, (_: Event) => {});    
 
     // disable cell connection.
     this.graph.connectionHandler.isConnectableCell = () => {
@@ -238,7 +237,7 @@ export class DesignerComponent implements AfterViewInit, OnDestroy {
       return this.graph.connectionHandler.isConnectableCell(cell);
     };
 
-    this.graph.view.getTerminalPort = (_state, terminal, _source) => {
+    this.graph.view.getTerminalPort = (_, terminal, __) => {
       return terminal;
     };
 

@@ -4,7 +4,10 @@
 
 import { Directive, ElementRef, Attribute, HostListener } from "@angular/core";
 
-@Directive({ selector: "[scrollTo]" })
+@Directive({
+    selector: "[scrollTo]",
+    standalone: false
+})
 export class ScrollToDirective {
   constructor(
     @Attribute("scrollTo") public elmID: string,

@@ -11,9 +11,10 @@ import { DeviceDialogsComponent } from "./dialogs/devicedialogs.component";
 import { AppLoaderService } from "../../shared/services/app-loader/app-loader.service";
 
 @Component({
-  selector: "app-devices",
-  templateUrl: "./devices.component.html",
-  styleUrls: ["./devices.component.scss"],
+    selector: "app-devices",
+    templateUrl: "./devices.component.html",
+    styleUrls: ["./devices.component.scss"],
+    standalone: false
 })
 export class DevicesComponent implements OnInit, OnDestroy {
   public rows = [];

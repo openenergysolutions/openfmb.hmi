@@ -1,12 +1,15 @@
-# This file is used by the build system to adjust CSS and JS output to support the specified browsers below.
+# This file is used by the build system to adjust CSS and JavaScript output to support the specified browsers below.
 # For additional information regarding the format and rule options, please see:
-# https://github.com/browserslist/browserslist#queries
+# https://github.com/browserslist/browserslist
 
-# You can see what browsers were selected by your queries by running:
-#   npx browserslist
 
-> 0.5%
-last 2 versions
-Firefox ESR
-not dead
-not IE 9-11 # For IE 9-11 support, remove 'not'.
+# Browsers that we support
+
+# Last 2 versions of each major browser
+last 2 Chrome versions
+last 2 Firefox versions
+last 2 Safari versions
+last 2 Edge versions
+
+# Include all major browsers with at least 1% market share globally
+> 1%

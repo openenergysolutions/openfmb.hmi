@@ -5,9 +5,10 @@
 import { Component } from "@angular/core";
 
 @Component({
-  selector: "app-document-toolbar",
-  templateUrl: "./document-toolbar.component.html",
-  styleUrls: ["./document-toolbar.component.scss"],
+    selector: "app-document-toolbar",
+    templateUrl: "./document-toolbar.component.html",
+    styleUrls: ["./document-toolbar.component.scss"],
+    standalone: false
 })
 export class DocumentToolbarComponent {
   constructor() {}

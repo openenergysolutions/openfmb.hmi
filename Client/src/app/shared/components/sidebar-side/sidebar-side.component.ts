@@ -14,8 +14,9 @@ import { JwtAuthService } from "../../../../app/shared/services/auth/jwt-auth.se
 import { LocalStoreService } from "../../services/local-store.service";
 
 @Component({
-  selector: "app-sidebar-side",
-  templateUrl: "./sidebar-side.component.html",
+    selector: "app-sidebar-side",
+    templateUrl: "./sidebar-side.component.html",
+    standalone: false
 })
 export class SidebarSideComponent implements OnInit, OnDestroy {
   public menuItems: any[] = [];

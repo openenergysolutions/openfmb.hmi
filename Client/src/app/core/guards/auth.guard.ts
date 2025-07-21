@@ -26,8 +26,8 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   canActivate(
-    _next: ActivatedRouteSnapshot,
-    _state: RouterStateSnapshot,
+    _: ActivatedRouteSnapshot,
+    __: RouterStateSnapshot,
   ):
     | Observable<boolean | UrlTree>
     | Promise<boolean | UrlTree>

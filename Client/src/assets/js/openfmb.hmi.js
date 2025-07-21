@@ -16,7 +16,7 @@ function navigateToDiagram(diagramId, target) {
                         hmiPopupWindows.splice(i, 1);                    
                     }
                 }
-            } catch (e) {}
+            } catch (_) {}
         }                
     }
 

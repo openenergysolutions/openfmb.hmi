@@ -77,7 +77,7 @@ export class LayoutService {
     this.applyMatTheme(this.layoutConf.matTheme);
   }
 
-  publishLayoutChange(lc: ILayoutConf, _opt: ILayoutChangeOptions = {}) {
+  publishLayoutChange(lc: ILayoutConf, _: ILayoutChangeOptions = {}) {
     if (this.layoutConf.matTheme !== lc.matTheme && lc.matTheme) {
       this.themeService.changeTheme(this.layoutConf.matTheme, lc.matTheme);
     }

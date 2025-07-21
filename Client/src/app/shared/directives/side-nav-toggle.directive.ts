@@ -10,12 +10,13 @@ import {
   OnDestroy,
   OnInit,
 } from "@angular/core";
-import { MediaChange, MediaObserver } from "@angular/flex-layout";
+import { MediaChange, MediaObserver } from "ngx-flexible-layout";
 import { Subscription } from "rxjs";
 import { MatSidenav } from "@angular/material/sidenav";
 
 @Directive({
-  selector: "[sideNavToggle]",
+    selector: "[sideNavToggle]",
+    standalone: false
 })
 export class SideNavToggleDirective implements OnInit, OnDestroy {
   isMobile;

@@ -11,9 +11,10 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { MatTableDataSource } from "@angular/material/table";
 
 @Component({
-  selector: "app-inspector-dialog",
-  templateUrl: "./inspector-dialog.component.html",
-  styleUrls: ["./inspector-dialog.component.scss"],
+    selector: "app-inspector-dialog",
+    templateUrl: "./inspector-dialog.component.html",
+    styleUrls: ["./inspector-dialog.component.scss"],
+    standalone: false
 })
 export class InspectorDialogComponent implements OnInit, AfterViewInit {
   mrid: string;

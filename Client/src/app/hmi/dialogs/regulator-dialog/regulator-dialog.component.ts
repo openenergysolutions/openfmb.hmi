@@ -10,9 +10,10 @@ import { Authorization } from "../../../shared/models/user.model";
 import { JwtAuthService } from "../../../shared/services/auth/jwt-auth.service";
 
 @Component({
-  selector: "app-regulator-dialog",
-  templateUrl: "./regulator-dialog.component.html",
-  styleUrls: ["./regulator-dialog.component.scss"],
+    selector: "app-regulator-dialog",
+    templateUrl: "./regulator-dialog.component.html",
+    styleUrls: ["./regulator-dialog.component.scss"],
+    standalone: false
 })
 export class RegulatorDialogComponent implements OnInit {
   status: string;

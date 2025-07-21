@@ -14,7 +14,8 @@ import {
 import { AppDropdownDirective } from "./dropdown.directive";
 
 @Directive({
-  selector: "[appDropdownLink]",
+    selector: "[appDropdownLink]",
+    standalone: false
 })
 export class DropdownLinkDirective implements OnInit, OnDestroy {
   @Input() public group: any;

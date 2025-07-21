@@ -10,9 +10,10 @@ import { Subscription } from "rxjs";
 import { filter } from "rxjs/operators";
 
 @Component({
-  selector: "app-breadcrumb",
-  templateUrl: "./breadcrumb.component.html",
-  styleUrls: ["./breadcrumb.component.scss"],
+    selector: "app-breadcrumb",
+    templateUrl: "./breadcrumb.component.html",
+    styleUrls: ["./breadcrumb.component.scss"],
+    standalone: false
 })
 export class BreadcrumbComponent implements OnDestroy {
   routeParts: any[];
@@ -30,7 +31,7 @@ export class BreadcrumbComponent implements OnDestroy {
 
     this.routerEventSub = this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe((routeChange) => {
+      .subscribe(() => {
         this.routeParts = this.routePartsService.generateRouteParts(
           this.activeRoute.snapshot,
         );

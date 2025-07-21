@@ -22,9 +22,10 @@ import { AppLoaderService } from "../../../shared/services/app-loader/app-loader
 import { JwtAuthService } from "../../../shared/services/auth/jwt-auth.service";
 
 @Component({
-  selector: "app-signin",
-  templateUrl: "./signin.component.html",
-  styleUrls: ["./signin.component.scss"],
+    selector: "app-signin",
+    templateUrl: "./signin.component.html",
+    styleUrls: ["./signin.component.scss"],
+    standalone: false
 })
 export class SigninComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatProgressBar) progressBar: MatProgressBar;
@@ -68,7 +69,7 @@ export class SigninComponent implements OnInit, AfterViewInit, OnDestroy {
     this.errorMsg = "";
 
     this.jwtAuth.signin(signinData.username, signinData.password).subscribe(
-      (_response) => {
+      () => {
         this.router.navigateByUrl(this.jwtAuth.return);
       },
       (err) => {
