@@ -26,8 +26,8 @@ function currentYPosition() {
 }
 
 function elmYPosition(elm) {
-  var y = elm.offsetTop;
-  var node = elm;
+  let y = elm.offsetTop;
+  let node = elm;
   while (node.offsetParent && node.offsetParent !== document.body) {
     node = node.offsetParent;
     y += node.offsetTop;
@@ -36,31 +36,31 @@ function elmYPosition(elm) {
 }
 
 export function scrollTo(selector) {
-  var elm = document.querySelector(selector);
+  const elm = document.querySelector(selector);
   if (!selector || !elm) {
     return;
   }
-  var startY = currentYPosition();
-  var stopY = elmYPosition(elm);
-  var distance = stopY > startY ? stopY - startY : startY - stopY;
+  const startY = currentYPosition();
+  const stopY = elmYPosition(elm);
+  const distance = stopY > startY ? stopY - startY : startY - stopY;
   if (distance < 100) {
     window.scrollTo(0, stopY);
     return;
   }
-  var speed = Math.round(distance / 50);
+  let speed = Math.round(distance / 50);
   if (speed >= 20) speed = 20;
-  var step = Math.round(distance / 25);
-  var leapY = stopY > startY ? startY + step : startY - step;
-  var timer = 0;
+  const step = Math.round(distance / 25);
+  let leapY = stopY > startY ? startY + step : startY - step;
+  let timer = 0;
   if (stopY > startY) {
-    for (var i = startY; i < stopY; i += step) {
+    for (let i = startY; i < stopY; i += step) {
       setTimeout(
-        (function(leapY) {
+        (function (leapY) {
           return () => {
             window.scrollTo(0, leapY);
           };
         })(leapY),
-        timer * speed
+        timer * speed,
       );
       leapY += step;
       if (leapY > stopY) leapY = stopY;
@@ -70,12 +70,12 @@ export function scrollTo(selector) {
   }
   for (let i = startY; i > stopY; i -= step) {
     setTimeout(
-      (function(leapY) {
+      (function (leapY) {
         return () => {
           window.scrollTo(0, leapY);
         };
       })(leapY),
-      timer * speed
+      timer * speed,
     );
     leapY -= step;
     if (leapY < stopY) leapY = stopY;

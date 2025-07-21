@@ -2,26 +2,20 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input } from "@angular/core";
 
 @Component({
-  selector: 'button-loading',
-  templateUrl: './button-loading.component.html',
-  styleUrls: ['./button-loading.component.scss']
+  selector: "button-loading",
+  templateUrl: "./button-loading.component.html",
+  styleUrls: ["./button-loading.component.scss"],
 })
-export class ButtonLoadingComponent implements OnInit {
+export class ButtonLoadingComponent {
+  @Input() loading: boolean;
+  @Input() btnClass: string;
+  @Input() raised: boolean = true;
+  @Input() loadingText = "Please wait";
+  @Input() type: "button" | "submit" = "submit";
+  @Input() color: "primary" | "accent" | "warn";
 
-  @Input('loading') loading: boolean;
-  @Input('btnClass') btnClass: string;
-  @Input('raised') raised: boolean = true;
-  @Input('loadingText') loadingText = 'Please wait';
-  @Input('type') type: 'button' | 'submit' = 'submit';
-  @Input('color') color: 'primary' | 'accent' | 'warn';
-
-  constructor() { 
-  }
-
-  ngOnInit() {
-  }
-
+  constructor() {}
 }

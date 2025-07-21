@@ -2,10 +2,10 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Action, createReducer, on } from '@ngrx/store';
-import * as hmiActions from '../actions/hmi.actions';
+import { Action, createReducer, on } from "@ngrx/store";
+import * as hmiActions from "../actions/hmi.actions";
 
-export const hmiFeatureKey = 'hmi';
+export const hmiFeatureKey = "hmi";
 
 export class CommunicationStatus {
   public static UNKNOWN = 0;
@@ -23,13 +23,10 @@ export const initialState: CommState = {
 
 const hmiReducer = createReducer(
   initialState,
-  on(
-    hmiActions.commStatus,
-    (state, { status }) => ({
-      ...state,
-      status
-    })
-  )
+  on(hmiActions.commStatus, (state, { status }) => ({
+    ...state,
+    status,
+  })),
 );
 
 export function reducer(state: CommState | undefined, action: Action) {

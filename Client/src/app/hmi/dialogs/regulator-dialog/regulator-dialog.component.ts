@@ -2,26 +2,26 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, OnInit, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { CommandAction } from '../../../shared/hmi.constants'
-import { DiagramData } from '../../../shared/models/userobject.model';
-import { Authorization } from '../../../shared/models/user.model';
+import { Component, OnInit, Inject } from "@angular/core";
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { CommandAction } from "../../../shared/hmi.constants";
+import { DiagramData } from "../../../shared/models/userobject.model";
+import { Authorization } from "../../../shared/models/user.model";
 import { JwtAuthService } from "../../../shared/services/auth/jwt-auth.service";
 
 @Component({
-  selector: 'app-regulator-dialog',
-  templateUrl: './regulator-dialog.component.html',
-  styleUrls: ['./regulator-dialog.component.scss']
+  selector: "app-regulator-dialog",
+  templateUrl: "./regulator-dialog.component.html",
+  styleUrls: ["./regulator-dialog.component.scss"],
 })
-export class RegulatorDialogComponent implements OnInit {  
+export class RegulatorDialogComponent implements OnInit {
   status: string;
-  name: string;    
+  name: string;
   diagramId: string;
   mRID: string;
   description: string;
   showDescription: boolean = false;
-  diagramData: DiagramData;  
+  diagramData: DiagramData;
   hasDataMapped: boolean = false;
   has3PhaseLowerMapped: boolean = false;
   has3PhaseRaiseMapped: boolean = false;
@@ -42,20 +42,19 @@ export class RegulatorDialogComponent implements OnInit {
   phaseCRaisePath: string = "";
 
   lastUpdate: string;
-  hasLastUpdate: boolean = false;    
+  hasLastUpdate: boolean = false;
 
   constructor(
     public dialogRef: MatDialogRef<RegulatorDialogComponent>,
-    private jwtService: JwtAuthService,    
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) { }
+    private jwtService: JwtAuthService,
+    @Inject(MAT_DIALOG_DATA) public data: any,
+  ) {}
 
-  ngOnInit() {  
-    const canControl = Authorization.canControl(this.jwtService.getUserRole());                  
-    this.diagramId = this.data.diagramId;   
+  ngOnInit() {
+    const canControl = Authorization.canControl(this.jwtService.getUserRole());
+    this.diagramId = this.data.diagramId;
     this.diagramData = this.data.diagramData;
-    this.name = this.diagramData.name,
-    this.mRID = this.diagramData.mRID;
+    ((this.name = this.diagramData.name), (this.mRID = this.diagramData.mRID));
     this.description = this.diagramData.description;
     this.showDescription = this.description && this.description !== "";
     this.status = this.diagramData.tag;
@@ -63,157 +62,148 @@ export class RegulatorDialogComponent implements OnInit {
     if (this.lastUpdate) {
       this.hasLastUpdate = true;
     }
-    
-    if (!this.diagramData.controlData || this.diagramData.controlData.length == 0) {      
+
+    if (
+      !this.diagramData.controlData ||
+      this.diagramData.controlData.length == 0
+    ) {
       this.hasDataMapped = false;
-    }
-    else {
+    } else {
       this.hasDataMapped = true;
 
-      for(var i = 0; i < this.diagramData.controlData.length; ++i) {
-        var controlData = this.diagramData.controlData[i];
+      for (let i = 0; i < this.diagramData.controlData.length; ++i) {
+        const controlData = this.diagramData.controlData[i];
 
-        if (controlData.path.endsWith('.TapOpL.phs3.ctlVal')) {
+        if (controlData.path.endsWith(".TapOpL.phs3.ctlVal")) {
           this.has3PhaseLowerMapped = canControl;
           this.phase3LowerPath = controlData.path;
-        }
-        else if (controlData.path.endsWith('.TapOpR.phs3.ctlVal')) {
+        } else if (controlData.path.endsWith(".TapOpR.phs3.ctlVal")) {
           this.has3PhaseRaiseMapped = canControl;
           this.phase3RaisePath = controlData.path;
-        }
-        else if (controlData.path.endsWith('.TapOpL.phsA.ctlVal')) {
+        } else if (controlData.path.endsWith(".TapOpL.phsA.ctlVal")) {
           this.hasPhaseALowerMapped = canControl;
           this.phaseALowerPath = controlData.path;
-        }
-        else if (controlData.path.endsWith('.TapOpR.phsA.ctlVal')) {
+        } else if (controlData.path.endsWith(".TapOpR.phsA.ctlVal")) {
           this.hasPhaseARaiseMapped = canControl;
           this.phaseARaisePath = controlData.path;
-        }
-        else if (controlData.path.endsWith('.TapOpL.phsB.ctlVal')) {
+        } else if (controlData.path.endsWith(".TapOpL.phsB.ctlVal")) {
           this.hasPhaseBLowerMapped = canControl;
           this.phaseBLowerPath = controlData.path;
-        }
-        else if (controlData.path.endsWith('.TapOpR.phsB.ctlVal')) {
+        } else if (controlData.path.endsWith(".TapOpR.phsB.ctlVal")) {
           this.hasPhaseBRaiseMapped = canControl;
           this.phaseBRaisePath = controlData.path;
-        }
-        else if (controlData.path.endsWith('.TapOpL.phsC.ctlVal')) {
+        } else if (controlData.path.endsWith(".TapOpL.phsC.ctlVal")) {
           this.hasPhaseCLowerMapped = canControl;
           this.phaseCLowerPath = controlData.path;
-        }
-        else if (controlData.path.endsWith('.TapOpR.phsC.ctlVal')) {
+        } else if (controlData.path.endsWith(".TapOpR.phsC.ctlVal")) {
           this.hasPhaseCRaiseMapped = canControl;
           this.phaseCRaisePath = controlData.path;
         }
       }
-    }        
+    }
   }
-  
-  onClose(): void {    
-    this.dialogRef.close();
-  }  
 
-  onLowerPhs3() : void {
+  onClose(): void {
+    this.dialogRef.close();
+  }
+
+  onLowerPhs3(): void {
     if (this.has3PhaseLowerMapped) {
       this.dialogRef.close({
         proceed: true,
         action: CommandAction.TAP_LOWER_PHS3,
-        path: this.phase3LowerPath
+        path: this.phase3LowerPath,
       });
-    }
-    else {
-      alert('3-Phase Tap Lower is not mapped.');
+    } else {
+      alert("3-Phase Tap Lower is not mapped.");
     }
   }
-  onRaisePhs3() : void {
+  onRaisePhs3(): void {
     if (this.has3PhaseRaiseMapped) {
       this.dialogRef.close({
         proceed: true,
         action: CommandAction.TAP_RAISE_PHS3,
-        path: this.phase3RaisePath
+        path: this.phase3RaisePath,
       });
-    }
-    else {
-      alert('3-Phase Tap Raise is not mapped.');
+    } else {
+      alert("3-Phase Tap Raise is not mapped.");
     }
   }
-  onLowerPhsA() : void {
+  onLowerPhsA(): void {
     if (this.hasPhaseALowerMapped) {
       this.dialogRef.close({
         proceed: true,
         action: CommandAction.TAP_LOWER_PHSA,
-        path: this.phaseALowerPath
+        path: this.phaseALowerPath,
       });
-    }
-    else {
-      alert('Phase A Tap Lower is not mapped.');
+    } else {
+      alert("Phase A Tap Lower is not mapped.");
     }
   }
-  onRaisePhsA() : void {
+  onRaisePhsA(): void {
     if (this.hasPhaseARaiseMapped) {
       this.dialogRef.close({
         proceed: true,
         action: CommandAction.TAP_RAISE_PHSA,
-        path: this.phaseARaisePath
+        path: this.phaseARaisePath,
       });
-    }
-    else {
-      alert('Phase A Tap Raise is not mapped.');
+    } else {
+      alert("Phase A Tap Raise is not mapped.");
     }
   }
-  onLowerPhsB() : void {
+  onLowerPhsB(): void {
     if (this.hasPhaseBLowerMapped) {
       this.dialogRef.close({
         proceed: true,
         action: CommandAction.TAP_LOWER_PHSB,
-        path: this.phaseBLowerPath
+        path: this.phaseBLowerPath,
       });
-    }
-    else {
-      alert('Phase B Tap Lower is not mapped.');
+    } else {
+      alert("Phase B Tap Lower is not mapped.");
     }
   }
-  onRaisePhsB() : void {
+  onRaisePhsB(): void {
     if (this.hasPhaseBRaiseMapped) {
       this.dialogRef.close({
         proceed: true,
         action: CommandAction.TAP_RAISE_PHSB,
-        path: this.phaseBRaisePath
+        path: this.phaseBRaisePath,
       });
-    }
-    else {
-      alert('Phase B Tap Raise is not mapped.');
+    } else {
+      alert("Phase B Tap Raise is not mapped.");
     }
   }
-  onLowerPhsC() : void {
+  onLowerPhsC(): void {
     if (this.hasPhaseCLowerMapped) {
       this.dialogRef.close({
         proceed: true,
         action: CommandAction.TAP_LOWER_PHSC,
-        path: this.phaseCLowerPath
+        path: this.phaseCLowerPath,
       });
-    }
-    else {
-      alert('Phase C Tap Lower is not mapped.');
+    } else {
+      alert("Phase C Tap Lower is not mapped.");
     }
   }
-  onRaisePhsC() : void {
+  onRaisePhsC(): void {
     if (this.hasPhaseCRaiseMapped) {
       this.dialogRef.close({
         proceed: true,
         action: CommandAction.TAP_RAISE_PHSC,
-        path: this.phaseCRaisePath
+        path: this.phaseCRaisePath,
       });
-    }
-    else {
-      alert('Phase C Tap Raise is not mapped.');
+    } else {
+      alert("Phase C Tap Raise is not mapped.");
     }
   }
 
   onMessageInspector(): void {
-    window.open('/inspector?mrid=' + this.mRID, '_blank', 'toolbar=0,width=850,height=700');
+    window.open(
+      "/inspector?mrid=" + this.mRID,
+      "_blank",
+      "toolbar=0,width=850,height=700",
+    );
     this.dialogRef.close({
-      proceed: false      
+      proceed: false,
     });
   }
 }

@@ -8,7 +8,7 @@ import {
   OnDestroy,
   HostBinding,
   Input,
-  HostListener
+  HostListener,
 } from "@angular/core";
 import { takeUntil } from "rxjs/operators";
 import { Subject } from "rxjs";
@@ -18,7 +18,7 @@ import { MatSidenav } from "@angular/material/sidenav";
 import { MediaObserver } from "@angular/flex-layout";
 
 @Directive({
-  selector: "[sidenavHelper]"
+  selector: "[sidenavHelper]",
 })
 export class SidenavHelperDirective implements OnInit, OnDestroy {
   @HostBinding("class.is-open")
@@ -36,7 +36,7 @@ export class SidenavHelperDirective implements OnInit, OnDestroy {
     private matchMediaService: MatchMediaService,
     private sidenavHelperService: SidenavHelperService,
     private matSidenav: MatSidenav,
-    private mediaObserver: MediaObserver
+    private mediaObserver: MediaObserver,
   ) {
     // Set the default value
     this.isOpen = true;
@@ -73,13 +73,12 @@ export class SidenavHelperDirective implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.unsubscribeAll.next();
     this.unsubscribeAll.complete();
   }
 }
 
 @Directive({
-  selector: "[sidenavToggler]"
+  selector: "[sidenavToggler]",
 })
 export class SidenavTogglerDirective {
   @Input("sidenavToggler")
@@ -88,7 +87,7 @@ export class SidenavTogglerDirective {
   constructor(private sidenavHelperService: SidenavHelperService) {}
 
   @HostListener("click")
-  onClick() {    
+  onClick() {
     this.sidenavHelperService.getSidenav(this.id).toggle();
   }
 }

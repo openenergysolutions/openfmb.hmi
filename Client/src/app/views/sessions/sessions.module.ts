@@ -2,18 +2,18 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { PerfectScrollbarModule } from "ngx-perfect-scrollbar-portable";
+import { NgModule } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
-import { SharedMaterialModule } from '../../../app/shared/shared-material.module';
+import { SharedMaterialModule } from "../../../app/shared/shared-material.module";
 
-import { FlexLayoutModule } from '@angular/flex-layout';
-import { SigninComponent } from './signin/signin.component';
+import { FlexLayoutModule } from "@angular/flex-layout";
+import { SigninComponent } from "./signin/signin.component";
 import { SessionsRoutes } from "./sessions.routing";
-import { NotFoundComponent } from './not-found/not-found.component';
-import { ErrorComponent } from './error/error.component';
+import { NotFoundComponent } from "./not-found/not-found.component";
+import { ErrorComponent } from "./error/error.component";
 
 @NgModule({
   imports: [
@@ -23,8 +23,8 @@ import { ErrorComponent } from './error/error.component';
     SharedMaterialModule,
     FlexLayoutModule,
     PerfectScrollbarModule,
-    RouterModule.forChild(SessionsRoutes)
+    RouterModule.forChild(SessionsRoutes),
   ],
-  declarations: [SigninComponent, NotFoundComponent, ErrorComponent]
+  declarations: [SigninComponent, NotFoundComponent, ErrorComponent],
 })
-export class SessionsModule { }
+export class SessionsModule {}

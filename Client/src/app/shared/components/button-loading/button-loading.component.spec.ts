@@ -2,19 +2,18 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
 
-import { ButtonLoadingComponent } from './button-loading.component';
+import { ButtonLoadingComponent } from "./button-loading.component";
 
-describe('ButtonLoadingComponent', () => {
+describe("ButtonLoadingComponent", () => {
   let component: ButtonLoadingComponent;
   let fixture: ComponentFixture<ButtonLoadingComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ButtonLoadingComponent ]
-    })
-    .compileComponents();
+      declarations: [ButtonLoadingComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -23,7 +22,7 @@ describe('ButtonLoadingComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

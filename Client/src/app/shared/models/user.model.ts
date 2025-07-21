@@ -3,25 +3,31 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export const Authorization = {
-  authRoles: {    
-    admin: 'Admin',
-    engineer: 'Engineer',
-    viewer: 'viewer'
+  authRoles: {
+    admin: "Admin",
+    engineer: "Engineer",
+    viewer: "viewer",
   },
   canEditDiagram: (role: string) => {
-    return role === Authorization.authRoles.admin || role === Authorization.authRoles.engineer;
-  },  
+    return (
+      role === Authorization.authRoles.admin ||
+      role === Authorization.authRoles.engineer
+    );
+  },
   canUpdateSettings: (role: string) => {
     return role === Authorization.authRoles.admin;
   },
   canControl: (role: string) => {
-    return role === Authorization.authRoles.admin || role === Authorization.authRoles.engineer;
-  }
-}
+    return (
+      role === Authorization.authRoles.admin ||
+      role === Authorization.authRoles.engineer
+    );
+  },
+};
 
 export interface User {
   id?: string;
-  displayname?: string;  
+  displayname?: string;
   role?: string;
   username?: string;
   pwd?: string;

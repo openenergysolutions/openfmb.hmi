@@ -2,23 +2,30 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, OnInit, EventEmitter, Output, ElementRef, ViewChild } from '@angular/core';
-import { MatIconRegistry } from '@angular/material/icon';
-import { DomSanitizer } from '@angular/platform-browser';
-import { DesignerConstant } from './../../core/constants/designer-constant';
-import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import * as fromRoot from '../../store/reducers/index';
-import * as designerActions from '../../store/actions/designer.actions';
-import { NgxSpinnerService } from 'ngx-spinner';
+import {
+  Component,
+  OnInit,
+  EventEmitter,
+  Output,
+  ElementRef,
+  ViewChild,
+} from "@angular/core";
+import { MatIconRegistry } from "@angular/material/icon";
+import { DomSanitizer } from "@angular/platform-browser";
+import { DesignerConstant } from "./../../core/constants/designer-constant";
+import { Store } from "@ngrx/store";
+import { Observable } from "rxjs";
+import * as fromRoot from "../../store/reducers/index";
+import * as designerActions from "../../store/actions/designer.actions";
+import { NgxSpinnerService } from "ngx-spinner";
 
 @Component({
-  selector: 'app-header-tool',
-  templateUrl: './header-tool.component.html',
-  styleUrls: ['./header-tool.component.scss']
+  selector: "app-header-tool",
+  templateUrl: "./header-tool.component.html",
+  styleUrls: ["./header-tool.component.scss"],
 })
 export class HeaderToolComponent implements OnInit {
-  @ViewChild('fileInput', { static: true })
+  @ViewChild("fileInput", { static: true })
   fileInput: ElementRef;
   @Output() saveGraph = new EventEmitter();
   @Output() saveToServerGraph = new EventEmitter();
@@ -45,22 +52,33 @@ export class HeaderToolComponent implements OnInit {
     private iconRegistry: MatIconRegistry,
     private sanitizer: DomSanitizer,
     private store: Store<fromRoot.State>,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
   ) {
     this.iconRegistry.addSvgIcon(
-      'select-icon',
-      this.sanitizer.bypassSecurityTrustResourceUrl('../../../assets/images/cursor.svg'));
+      "select-icon",
+      this.sanitizer.bypassSecurityTrustResourceUrl(
+        "../../../assets/images/cursor.svg",
+      ),
+    );
     this.iconRegistry.addSvgIcon(
-      'move-icon',
-      this.sanitizer.bypassSecurityTrustResourceUrl('../../../assets/images/move.svg'));
+      "move-icon",
+      this.sanitizer.bypassSecurityTrustResourceUrl(
+        "../../../assets/images/move.svg",
+      ),
+    );
     this.iconRegistry.addSvgIcon(
-      'connect-icon',
-      this.sanitizer.bypassSecurityTrustResourceUrl('../../../assets/images/connect.svg'));
+      "connect-icon",
+      this.sanitizer.bypassSecurityTrustResourceUrl(
+        "../../../assets/images/connect.svg",
+      ),
+    );
   }
 
   ngOnInit() {
-    this.selectedMode$ = this.store.select(state => state.designer.mode);
-    this.selectedConnectColor$ = this.store.select(state => state.designer.connectColor);
+    this.selectedMode$ = this.store.select((state) => state.designer.mode);
+    this.selectedConnectColor$ = this.store.select(
+      (state) => state.designer.connectColor,
+    );
   }
 
   onModeSelect(mode: number) {
@@ -102,7 +120,7 @@ export class HeaderToolComponent implements OnInit {
   }
 
   onLoadGraph(file: File) {
-    this.fileInput.nativeElement.value = '';
+    this.fileInput.nativeElement.value = "";
     this.spinner.show();
     this.loadGraph.emit(file);
   }
@@ -110,5 +128,4 @@ export class HeaderToolComponent implements OnInit {
   onRunGraph() {
     this.runGraph.emit();
   }
-
 }

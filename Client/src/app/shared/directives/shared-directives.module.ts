@@ -2,18 +2,20 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { NgModule } from "@angular/core";
+import { CommonModule } from "@angular/common";
 
-import { FontSizeDirective } from './font-size.directive';
-import { ScrollToDirective } from './scroll-to.directive';
-import { AppDropdownDirective } from './dropdown.directive';
-import { DropdownAnchorDirective } from './dropdown-anchor.directive';
-import { DropdownLinkDirective } from './dropdown-link.directive';
-import { SideNavToggleDirective } from './side-nav-toggle.directive';
-import { SidenavHelperDirective, SidenavTogglerDirective } from './sidenav-helper/sidenav-helper.directive';
-import { HighlightDirective } from './highlight.directive';
-
+import { FontSizeDirective } from "./font-size.directive";
+import { ScrollToDirective } from "./scroll-to.directive";
+import { AppDropdownDirective } from "./dropdown.directive";
+import { DropdownAnchorDirective } from "./dropdown-anchor.directive";
+import { DropdownLinkDirective } from "./dropdown-link.directive";
+import { SideNavToggleDirective } from "./side-nav-toggle.directive";
+import {
+  SidenavHelperDirective,
+  SidenavTogglerDirective,
+} from "./sidenav-helper/sidenav-helper.directive";
+import { HighlightDirective } from "./highlight.directive";
 
 const directives = [
   FontSizeDirective,
@@ -24,14 +26,12 @@ const directives = [
   SideNavToggleDirective,
   SidenavHelperDirective,
   SidenavTogglerDirective,
-  HighlightDirective
-]
+  HighlightDirective,
+];
 
 @NgModule({
-  imports: [
-    CommonModule
-  ],
+  imports: [CommonModule],
   declarations: directives,
-  exports: directives
+  exports: directives,
 })
 export class SharedDirectivesModule {}

@@ -2,16 +2,17 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Observable } from 'rxjs';
-import { Topic } from '../../shared/models/topic.model'
+import { Observable } from "rxjs";
+import { Topic } from "../../shared/models/topic.model";
 
 export interface UpdateMessage {
-  session_id: string,
-  topic: Topic
+  profile?: string;
+  session_id: string;
+  topic: Topic;
 }
 
-export interface WsMessage<T> {
-  updates: UpdateMessage[]
+export interface WsMessage {
+  updates: UpdateMessage[];
 }
 
 export interface WebSocketConfig {
@@ -22,12 +23,11 @@ export interface WebSocketConfig {
 
 export interface WebsocketService {
   //getWsData(): Observable<any>;
-  sendWsData(event: string, data: any): void;
+  sendWsData(data: RegisterRequest): void;
   status: Observable<boolean>;
 }
 
-export class RegisterRequest
-{
+export class RegisterRequest {
   session_id: string;
-  topics: Topic[]
+  topics: Topic[];
 }

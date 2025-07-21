@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Injectable } from "@angular/core";
-import { BehaviorSubject } from "rxjs/BehaviorSubject";
+import { BehaviorSubject } from "rxjs";
 import { Observable } from "rxjs";
 
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class SearchService {
   public searchTerm: BehaviorSubject<string> = new BehaviorSubject<string>("");

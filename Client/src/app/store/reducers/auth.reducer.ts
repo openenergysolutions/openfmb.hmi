@@ -2,18 +2,17 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Action, createReducer, on } from '@ngrx/store';
-import * as authActions from '../actions/auth.actions';
+import { Action, createReducer, on } from "@ngrx/store";
+import * as authActions from "../actions/auth.actions";
 
-
-export const authFeatureKey = 'auth';
+export const authFeatureKey = "auth";
 
 export interface State {
   isAuthenticated?: boolean;
 }
 
 export const initialState: State = {
-  isAuthenticated: false
+  isAuthenticated: false,
 };
 
 const authReducer = createReducer(
@@ -23,9 +22,9 @@ const authReducer = createReducer(
     authActions.validateTokenSuccess,
     (state, { data }) => ({
       ...state,
-      isAuthenticated: true
-    })
-  )
+      isAuthenticated: true,
+    }),
+  ),
 );
 
 export function reducer(state: State | undefined, action: Action) {

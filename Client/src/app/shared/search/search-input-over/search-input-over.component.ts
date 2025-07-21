@@ -8,7 +8,7 @@ import {
   Output,
   EventEmitter,
   OnDestroy,
-  Input
+  Input,
 } from "@angular/core";
 import { UntypedFormControl } from "@angular/forms";
 import { Subscription } from "rxjs";
@@ -19,24 +19,23 @@ import { Router, ActivatedRoute } from "@angular/router";
 @Component({
   selector: "hmi-search-input-over",
   templateUrl: "./search-input-over.component.html",
-  styleUrls: ["./search-input-over.component.scss"]
+  styleUrls: ["./search-input-over.component.scss"],
 })
 export class SearchInputOverComponent implements OnInit, OnDestroy {
   isOpen: boolean;
-  @Input('resultPage') resultPage: string;
-  @Input('placeholder') placeholder: string = "Search here";
-  @Output("search") search = new EventEmitter();
+  @Input() resultPage: string;
+  @Input() placeholder: string = "Search here";
+  @Output() search = new EventEmitter();
   searchCtrl = new UntypedFormControl();
   searchCtrlSub: Subscription;
   constructor(
-      private searchService: SearchService,
-      private router: Router,
-      private route: ActivatedRoute
+    private searchService: SearchService,
+    private router: Router,
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit() {
-    this.searchCtrl.valueChanges.pipe(debounceTime(200))
-    .subscribe(value => {
+    this.searchCtrl.valueChanges.pipe(debounceTime(200)).subscribe((value) => {
       this.search.emit(value);
       this.searchService.searchTerm.next(value);
     });
@@ -48,8 +47,8 @@ export class SearchInputOverComponent implements OnInit, OnDestroy {
     }
   }
   navigateToResult() {
-    if(this.resultPage) {
-        this.router.navigateByUrl(this.resultPage);
+    if (this.resultPage) {
+      this.router.navigateByUrl(this.resultPage);
     }
   }
   open() {

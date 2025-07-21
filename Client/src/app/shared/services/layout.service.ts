@@ -19,7 +19,7 @@ export interface ILayoutConf {
   topbarFixed?: boolean; // Fixed header
   footerFixed?: boolean; // Fixed Footer
   topbarColor?: string; // Header background color
-  footerColor?: string // Header background color
+  footerColor?: string; // Header background color
   matTheme?: string; // material theme
   perfectScrollbar?: boolean;
 }
@@ -33,10 +33,10 @@ interface IAdjustScreenOptions {
 }
 
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class LayoutService {
-  public layoutConf: ILayoutConf;  
+  public layoutConf: ILayoutConf;
   layoutConfSubject = null;
   layoutConf$ = null;
   isCompact: boolean;
@@ -44,28 +44,32 @@ export class LayoutService {
   public currentRoute: string;
   public fullWidthRoutes = ["shop"];
 
-  constructor(private themeService: ThemeService, private ls: LocalStoreService) {     
-    this.isCompact = ls.getItem("sidebarCompactToggle") == null ? false : ls.getItem("sidebarCompactToggle");    
-    this.setAppLayout(      
-      {
-        navigationPos: "side", // side, top
-        sidebarStyle: this.isCompact ? "compact" : "full", // full, compact, closed
-        sidebarColor: "slate", 
-        sidebarCompactToggle: this.isCompact, // applied when "sidebarStyle" is "compact"
-        dir: "ltr", // ltr, rtl
-        useBreadcrumb: false,
-        topbarFixed: false,
-        footerFixed: false,
-        topbarColor: "white", 
-        footerColor: "slate",
-        matTheme: "hmi-navy",
-        breadcrumb: "simple", // simple, title
-        perfectScrollbar: true
-      }
-    );    
+  constructor(
+    private themeService: ThemeService,
+    private ls: LocalStoreService,
+  ) {
+    this.isCompact =
+      ls.getItem("sidebarCompactToggle") == null
+        ? false
+        : ls.getItem("sidebarCompactToggle");
+    this.setAppLayout({
+      navigationPos: "side", // side, top
+      sidebarStyle: this.isCompact ? "compact" : "full", // full, compact, closed
+      sidebarColor: "slate",
+      sidebarCompactToggle: this.isCompact, // applied when "sidebarStyle" is "compact"
+      dir: "ltr", // ltr, rtl
+      useBreadcrumb: false,
+      topbarFixed: false,
+      footerFixed: false,
+      topbarColor: "white",
+      footerColor: "slate",
+      matTheme: "hmi-navy",
+      breadcrumb: "simple", // simple, title
+      perfectScrollbar: true,
+    });
 
     this.layoutConfSubject = new BehaviorSubject<ILayoutConf>(this.layoutConf);
-    this. layoutConf$ = this.layoutConfSubject.asObservable();
+    this.layoutConf$ = this.layoutConfSubject.asObservable();
   }
 
   setAppLayout(layoutConf: ILayoutConf) {
@@ -73,13 +77,16 @@ export class LayoutService {
     this.applyMatTheme(this.layoutConf.matTheme);
   }
 
-  publishLayoutChange(lc: ILayoutConf, opt: ILayoutChangeOptions = {}) {    
+  publishLayoutChange(lc: ILayoutConf, _opt: ILayoutChangeOptions = {}) {
     if (this.layoutConf.matTheme !== lc.matTheme && lc.matTheme) {
       this.themeService.changeTheme(this.layoutConf.matTheme, lc.matTheme);
     }
-    this.layoutConf = Object.assign(this.layoutConf, lc);      
+    this.layoutConf = Object.assign(this.layoutConf, lc);
     this.layoutConfSubject.next(this.layoutConf);
-    this.isCompact = this.ls.getItem("sidebarCompactToggle") == null ? false : this.ls.getItem("sidebarCompactToggle");    
+    this.isCompact =
+      this.ls.getItem("sidebarCompactToggle") == null
+        ? false
+        : this.ls.getItem("sidebarCompactToggle");
   }
 
   applyMatTheme(theme) {
@@ -90,10 +97,14 @@ export class LayoutService {
     let sidebarStyle: string;
     this.isMobile = this.isSm();
     this.currentRoute = options.route || this.currentRoute;
-    sidebarStyle = this.isMobile ? "closed" : this.isCompact ? "compact" : "full";
+    sidebarStyle = this.isMobile
+      ? "closed"
+      : this.isCompact
+        ? "compact"
+        : "full";
 
     if (this.currentRoute) {
-      this.fullWidthRoutes.forEach(route => {
+      this.fullWidthRoutes.forEach((route) => {
         if (this.currentRoute.indexOf(route) !== -1) {
           sidebarStyle = "closed";
         }
@@ -102,7 +113,7 @@ export class LayoutService {
 
     this.publishLayoutChange({
       isMobile: this.isMobile,
-      sidebarStyle: sidebarStyle
+      sidebarStyle: sidebarStyle,
     });
   }
   isSm() {

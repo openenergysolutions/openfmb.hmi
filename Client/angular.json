@@ -23,27 +23,34 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "aot": true,
-            "assets": ["src/favicon.ico", "src/assets"],
+            "assets": [
+              "src/favicon.ico",
+              {
+                "glob": "**/*",
+                "input": "src/assets/",
+                "ignore": [
+                  "**/*.scss"
+                ],
+                "output": "/assets/"
+              }
+            ],
             "styles": [
-              "node_modules/mxgraph/javascript/src/css/common.css", 
-              "node_modules/@swimlane/ngx-datatable/index.css",
-              "node_modules/@swimlane/ngx-datatable/themes/material.css",
-              "node_modules/@swimlane/ngx-datatable/assets/icons.css",
-              "src/assets/styles/app.scss",
-              "src/styles.scss"                          
+              "node_modules/mxgraph/javascript/src/css/common.css",
+              "src/assets/styles/app.scss"
             ],
             "scripts": [
-              "node_modules/jquery/dist/jquery.js",              
-              "src/assets/js/openfmb.hmi.js"              
+              "node_modules/jquery/dist/jquery.js",
+              "src/assets/js/openfmb.hmi.js"
             ],
             "allowedCommonJsDependencies": [
-              "rxjs/internal/operators",
+              "rxjs/operators",
               "rxjs/BehaviorSubject",
               "highlight.js",
               "hammerjs",
               "json2yaml",
               "ts-mxgraph",
               "xml-js",
+              "dayjs",
               "debug"
             ]
           },
@@ -91,23 +98,23 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "openfmb-hmi:build",
             "host": "127.0.0.1",
-            "port": 4200                      
+            "port": 4200,
+            "buildTarget": "openfmb-hmi:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "openfmb-hmi:build:production"              
+              "buildTarget": "openfmb-hmi:build:production"
             },
             "dev": {
-              "browserTarget": "openfmb-hmi:build:dev"              
+              "buildTarget": "openfmb-hmi:build:dev"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "openfmb-hmi:build"
+            "buildTarget": "openfmb-hmi:build"
           }
         },
         "test": {
@@ -117,9 +124,23 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
-            "assets": ["src/favicon.ico", "src/assets"],
-            "styles": ["src/styles.scss"],
+            "assets": [
+              "src/favicon.ico",
+              "src/assets"
+            ],
+            "styles": [
+              "src/styles.scss"
+            ],
             "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
           }
         }
       }
@@ -128,6 +149,7 @@
   "cli": {
     "analytics": false,
     "schematicCollections": [
+      "@angular-eslint/schematics",
       "@ngrx/schematics"
     ]
   }

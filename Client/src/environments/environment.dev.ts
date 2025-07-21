@@ -6,12 +6,12 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-import envSettings from '../assets/env.json';
+import envSettings from "../assets/env.json";
 
 export const environment = {
   production: false,
   apiUrl: envSettings.apiUrl,
-  ws: envSettings.ws
+  ws: envSettings.ws,
 };
 
 /*

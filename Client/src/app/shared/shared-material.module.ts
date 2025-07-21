@@ -38,8 +38,6 @@ import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { MatSliderModule } from "@angular/material/slider";
 import { MatToolbarModule } from "@angular/material/toolbar";
-import { MatMomentDateModule } from "@angular/material-moment-adapter";
-
 
 @NgModule({
   exports: [
@@ -74,12 +72,11 @@ import { MatMomentDateModule } from "@angular/material-moment-adapter";
     MatSortModule,
     MatPaginatorModule,
     MatNativeDateModule,
-    MatMomentDateModule,
     MatTreeModule,
     MatRippleModule,
     MatBadgeModule,
     MatBottomSheetModule,
-    MatDividerModule
-  ]
+    MatDividerModule,
+  ],
 })
 export class SharedMaterialModule {}

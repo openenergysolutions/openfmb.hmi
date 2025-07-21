@@ -23,14 +23,11 @@ export class BrowserWindowRef extends WindowRef {
 }
 const browserWindowProvider: ClassProvider = {
   provide: WindowRef,
-  useClass: BrowserWindowRef
+  useClass: BrowserWindowRef,
 };
 export const windowProvider: FactoryProvider = {
   provide: WINDOW,
   useFactory: _window,
-  deps: []
+  deps: [],
 };
-export const WINDOW_PROVIDERS = [
-  browserWindowProvider,
-  windowProvider
-];
+export const WINDOW_PROVIDERS = [browserWindowProvider, windowProvider];

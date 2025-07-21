@@ -5,43 +5,38 @@
 import {
   Directive,
   ElementRef,
-  Attribute,
   OnInit,
   Input,
-  Renderer2,
   NgZone,
   SimpleChanges,
   OnChanges,
-  OnDestroy,
-  ChangeDetectorRef
+  ChangeDetectorRef,
 } from "@angular/core";
-import * as hl from "highlight.js";
+import hljs from "highlight.js";
 import { HttpClient } from "@angular/common/http";
-import { Subject } from "rxjs";
-import { takeUntil } from "rxjs/operators";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
+@UntilDestroy()
 @Directive({
   host: {
     "[class.hljs]": "true",
-    "[innerHTML]": "highlightedCode"
+    "[innerHTML]": "highlightedCode",
   },
-  selector: "[hmiHighlight]"
+  selector: "[hmiHighlight]",
 })
-export class HighlightDirective implements OnInit, OnChanges, OnDestroy {
+export class HighlightDirective implements OnInit, OnChanges {
   constructor(
     private el: ElementRef,
     private cdr: ChangeDetectorRef,
     private _zone: NgZone,
-    private http: HttpClient
-  ) {
-    this.unsubscribeAll = new Subject();
-  }
+    private http: HttpClient,
+  ) {}
+
   // Inner highlighted html
   highlightedCode: string;
 
   @Input() path: string;
   @Input("hmiHighlight") code: string;
-  private unsubscribeAll: Subject<any>;
   @Input() languages: string[];
 
   ngOnInit() {
@@ -49,19 +44,14 @@ export class HighlightDirective implements OnInit, OnChanges, OnDestroy {
       this.highlightElement(this.code);
     }
     if (this.path) {
-      this.highlightedCode = "Loading..."
+      this.highlightedCode = "Loading...";
       this.http
         .get(this.path, { responseType: "text" })
-        .pipe(takeUntil(this.unsubscribeAll))
-        .subscribe(response => {
+        .pipe(untilDestroyed(this))
+        .subscribe((response) => {
           this.highlightElement(response, this.languages);
         });
     }
-  }
-
-  ngOnDestroy() {
-      this.unsubscribeAll.next();
-      this.unsubscribeAll.complete();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -75,10 +65,10 @@ export class HighlightDirective implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  highlightElement(code: string, languages?: string[]) {
+  highlightElement(code: string, _languages?: string[]) {
     this._zone.runOutsideAngular(() => {
-      const res = hl.highlightAuto(code);
-      this.highlightedCode = res.value;     
+      const res = hljs.highlightAuto(code);
+      this.highlightedCode = res.value;
     });
   }
 }

@@ -2,9 +2,9 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { createAction, props } from '@ngrx/store';
+import { createAction, props } from "@ngrx/store";
 
 export const commStatus = createAction(
-    '[HMI] Comm Status',
-    props<{ status: number }>()
+  "[HMI] Comm Status",
+  props<{ status: number }>(),
 );

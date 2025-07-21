@@ -7,10 +7,19 @@
 // `ng build --env=prod` then `environment.prod.ts` will be used instead.
 // The list of which env maps to which file can be found in `angular.json`.
 
-import envSettings from '../assets/env_prod.json';
-
 export const environment = {
   production: true,
   apiUrl: window.location.protocol + "//" + window.location.host + "/",
-  ws: window.location.protocol == "https:" ? "wss://" + window.location.hostname + ":" + window.location.port + "/data/" : "ws://" + window.location.hostname + ":" + window.location.port + "/data/"
+  ws:
+    window.location.protocol == "https:"
+      ? "wss://" +
+        window.location.hostname +
+        ":" +
+        window.location.port +
+        "/data/"
+      : "ws://" +
+        window.location.hostname +
+        ":" +
+        window.location.port +
+        "/data/",
 };

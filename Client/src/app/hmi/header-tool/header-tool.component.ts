@@ -2,25 +2,32 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, OnInit, EventEmitter, Output, ElementRef, ViewChild } from '@angular/core';
-import { MatIconRegistry } from '@angular/material/icon';
-import { DomSanitizer } from '@angular/platform-browser';
-import { DesignerConstant } from './../../core/constants/designer-constant';
-import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import * as fromRoot from '../../store/reducers/index';
-import * as designerActions from '../../store/actions/designer.actions';
-import { CommunicationStatus } from '../../store/reducers/hmi.reducer';
-import { NgxSpinnerService } from 'ngx-spinner';
+import {
+  Component,
+  OnInit,
+  EventEmitter,
+  Output,
+  ElementRef,
+  ViewChild,
+} from "@angular/core";
+import { MatIconRegistry } from "@angular/material/icon";
+import { DomSanitizer } from "@angular/platform-browser";
+import { DesignerConstant } from "./../../core/constants/designer-constant";
+import { Store } from "@ngrx/store";
+import { Observable } from "rxjs";
+import * as fromRoot from "../../store/reducers/index";
+import * as designerActions from "../../store/actions/designer.actions";
+import { CommunicationStatus } from "../../store/reducers/hmi.reducer";
+import { NgxSpinnerService } from "ngx-spinner";
 import { JwtAuthService } from "../../shared/services/auth/jwt-auth.service";
 
 @Component({
-  selector: 'app-header-tool',
-  templateUrl: './header-tool.component.html',
-  styleUrls: ['./header-tool.component.scss']
+  selector: "app-header-tool",
+  templateUrl: "./header-tool.component.html",
+  styleUrls: ["./header-tool.component.scss"],
 })
 export class HeaderToolComponent implements OnInit {
-  @ViewChild('fileInput', { static: true })
+  @ViewChild("fileInput", { static: true })
   fileInput: ElementRef;
   @Output() saveGraph = new EventEmitter();
   @Output() zoomGraph = new EventEmitter();
@@ -50,45 +57,59 @@ export class HeaderToolComponent implements OnInit {
     private sanitizer: DomSanitizer,
     private store: Store<fromRoot.State>,
     private spinner: NgxSpinnerService,
-    public jwtAuth: JwtAuthService
+    public jwtAuth: JwtAuthService,
   ) {
     this.iconRegistry.addSvgIcon(
-      'select-icon',
-      this.sanitizer.bypassSecurityTrustResourceUrl('../../../assets/images/cursor.svg'));
+      "select-icon",
+      this.sanitizer.bypassSecurityTrustResourceUrl(
+        "../../../assets/images/cursor.svg",
+      ),
+    );
     this.iconRegistry.addSvgIcon(
-      'move-icon',
-      this.sanitizer.bypassSecurityTrustResourceUrl('../../../assets/images/move.svg'));
+      "move-icon",
+      this.sanitizer.bypassSecurityTrustResourceUrl(
+        "../../../assets/images/move.svg",
+      ),
+    );
     this.iconRegistry.addSvgIcon(
-      'connect-icon',
-      this.sanitizer.bypassSecurityTrustResourceUrl('../../../assets/images/connect.svg'));
+      "connect-icon",
+      this.sanitizer.bypassSecurityTrustResourceUrl(
+        "../../../assets/images/connect.svg",
+      ),
+    );
   }
 
   ngOnInit() {
-    this.selectedMode$ = this.store.select(state => state.designer.mode);
+    this.selectedMode$ = this.store.select((state) => state.designer.mode);
     this.selectedMode$.subscribe(
-      x => this.isMoveSelected = x === 2,
-      err => console.error('Observer got an error: ' + err),
-      () => console.log('Observer got a complete notification')
+      (x) => (this.isMoveSelected = x === 2),
+      (err) => console.error("Observer got an error: " + err),
+      () => console.log("Observer got a complete notification"),
     );
-    this.selectedConnectColor$ = this.store.select(state => state.designer.connectColor);
+    this.selectedConnectColor$ = this.store.select(
+      (state) => state.designer.connectColor,
+    );
 
-    this.commStatus$ = this.store.select(state => state.hmi.status);
+    this.commStatus$ = this.store.select((state) => state.hmi.status);
     this.commStatus$.subscribe(
-      x => {
+      (x) => {
         this.commLost = x === CommunicationStatus.NOT_OK;
       },
-      err => console.error('Observer got an error: ' + err),
-      () => console.log('Observer got a complete notification')
+      (err) => console.error("Observer got an error: " + err),
+      () => console.log("Observer got a complete notification"),
     );
   }
 
-  onModeSelect() { 
-    if (this.isMoveSelected) {    
-      this.store.dispatch(designerActions.selectMode({ mode: DesignerConstant.SELECT_MODE }));  
+  onModeSelect() {
+    if (this.isMoveSelected) {
+      this.store.dispatch(
+        designerActions.selectMode({ mode: DesignerConstant.SELECT_MODE }),
+      );
+    } else {
+      this.store.dispatch(
+        designerActions.selectMode({ mode: DesignerConstant.MOVE_MODE }),
+      );
     }
-    else {
-      this.store.dispatch(designerActions.selectMode({ mode: DesignerConstant.MOVE_MODE })); 
-    }  
   }
 
   onColorSelect(connectColor: string) {
@@ -122,7 +143,7 @@ export class HeaderToolComponent implements OnInit {
   }
 
   onLoadGraph(file: File) {
-    this.fileInput.nativeElement.value = '';
+    this.fileInput.nativeElement.value = "";
     this.spinner.show();
     this.loadGraph.emit(file);
   }
@@ -130,5 +151,4 @@ export class HeaderToolComponent implements OnInit {
   onRunGraph() {
     this.runGraph.emit();
   }
-
 }

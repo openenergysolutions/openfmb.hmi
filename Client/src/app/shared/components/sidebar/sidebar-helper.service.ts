@@ -6,7 +6,7 @@ import { Injectable } from "@angular/core";
 import { SidebarComponent } from "./sidebar.component";
 
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class SidebarHelperService {
   sidebarList: SidebarComponent[];

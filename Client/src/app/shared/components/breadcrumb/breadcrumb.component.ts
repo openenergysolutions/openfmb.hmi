@@ -2,24 +2,19 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import {
-  Router,
-  NavigationEnd,
-  ActivatedRoute,
-  ActivatedRouteSnapshot,
-} from '@angular/router';
-import { RoutePartsService } from '../../../shared/services/route-parts.service';
-import { LayoutService } from '../../../shared/services/layout.service';
-import { Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { Component, OnDestroy } from "@angular/core";
+import { Router, NavigationEnd, ActivatedRoute } from "@angular/router";
+import { RoutePartsService } from "../../../shared/services/route-parts.service";
+import { LayoutService } from "../../../shared/services/layout.service";
+import { Subscription } from "rxjs";
+import { filter } from "rxjs/operators";
 
 @Component({
-  selector: 'app-breadcrumb',
-  templateUrl: './breadcrumb.component.html',
-  styleUrls: ['./breadcrumb.component.scss'],
+  selector: "app-breadcrumb",
+  templateUrl: "./breadcrumb.component.html",
+  styleUrls: ["./breadcrumb.component.scss"],
 })
-export class BreadcrumbComponent implements OnInit, OnDestroy {
+export class BreadcrumbComponent implements OnDestroy {
   routeParts: any[];
   routerEventSub: Subscription;
   // public isEnabled: boolean = true;
@@ -27,23 +22,25 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
     private router: Router,
     private routePartsService: RoutePartsService,
     private activeRoute: ActivatedRoute,
-    public layout: LayoutService
+    public layout: LayoutService,
   ) {
     this.routeParts = this.routePartsService.generateRouteParts(
-      this.activeRoute.snapshot
-    );    
+      this.activeRoute.snapshot,
+    );
 
     this.routerEventSub = this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((routeChange) => {
         this.routeParts = this.routePartsService.generateRouteParts(
-          this.activeRoute.snapshot
+          this.activeRoute.snapshot,
         );
         // generate url from parts
         this.routeParts.reverse().map((item, i) => {
           item.breadcrumb = this.parseText(item);
           item.urlSegments.forEach((urlSegment, j) => {
-            if (j === 0) { return (item.url = `${urlSegment.path}`); }
+            if (j === 0) {
+              return (item.url = `${urlSegment.path}`);
+            }
             item.url += `/${urlSegment.path}`;
           });
           if (i === 0) {
@@ -56,7 +53,6 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
       });
   }
 
-  ngOnInit() {}
   ngOnDestroy() {
     if (this.routerEventSub) {
       this.routerEventSub.unsubscribe();
@@ -65,11 +61,11 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
 
   parseText(part) {
     if (!part.breadcrumb) {
-      return '';
+      return "";
     }
     part.breadcrumb = part.breadcrumb.replace(/{{([^{}]*)}}/g, function (a, b) {
       const r = part.params[b];
-      return typeof r === 'string' ? r : a;
+      return typeof r === "string" ? r : a;
     });
     return part.breadcrumb;
   }

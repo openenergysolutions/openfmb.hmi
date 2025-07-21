@@ -2,17 +2,16 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input } from "@angular/core";
 
 @Component({
-  selector: 'app-sidenav',
-  templateUrl: './sidenav.template.html'
+  selector: "app-sidenav",
+  templateUrl: "./sidenav.template.html",
 })
 export class SidenavComponent {
-  @Input('items') public menuItems: any[] = [];
-  @Input('hasIconMenu') public hasIconTypeMenuItem: boolean;
-  @Input('iconMenuTitle') public iconTypeMenuTitle: string;
+  @Input("items") public menuItems: any[] = [];
+  @Input("hasIconMenu") public hasIconTypeMenuItem: boolean;
+  @Input("iconMenuTitle") public iconTypeMenuTitle: string;
 
   constructor() {}
-  ngOnInit() {}  
 }

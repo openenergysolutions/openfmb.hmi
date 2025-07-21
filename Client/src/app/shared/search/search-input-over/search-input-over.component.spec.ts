@@ -2,19 +2,18 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
 
-import { SearchInputOverComponent } from './search-input-over.component';
+import { SearchInputOverComponent } from "./search-input-over.component";
 
-describe('SearchInputOverComponent', () => {
+describe("SearchInputOverComponent", () => {
   let component: SearchInputOverComponent;
   let fixture: ComponentFixture<SearchInputOverComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SearchInputOverComponent ]
-    })
-    .compileComponents();
+      declarations: [SearchInputOverComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -23,7 +22,7 @@ describe('SearchInputOverComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

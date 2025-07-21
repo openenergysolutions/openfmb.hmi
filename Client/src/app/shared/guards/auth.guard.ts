@@ -4,7 +4,6 @@
 
 import { Injectable } from "@angular/core";
 import {
-  CanActivate,
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
   Router,
@@ -12,9 +11,11 @@ import {
 import { JwtAuthService } from "../services/auth/jwt-auth.service";
 
 @Injectable()
-export class AuthGuard implements CanActivate {
-
-  constructor(private router: Router, private jwtAuth: JwtAuthService) {}
+export class AuthGuard {
+  constructor(
+    private router: Router,
+    private jwtAuth: JwtAuthService,
+  ) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     if (this.jwtAuth.isLoggedIn()) {
@@ -22,8 +23,8 @@ export class AuthGuard implements CanActivate {
     } else {
       this.router.navigate(["/sessions/signin"], {
         queryParams: {
-          return: state.url
-        }
+          return: state.url,
+        },
       });
       return false;
     }

@@ -2,35 +2,32 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from "@angular/core";
 
 @Component({
-  selector: 'app-properties-select-section',
-  templateUrl: './properties-select-section.component.html',
-  styleUrls: ['./properties-select-section.component.scss']
+  selector: "app-properties-select-section",
+  templateUrl: "./properties-select-section.component.html",
+  styleUrls: ["./properties-select-section.component.scss"],
 })
-export class PropertiesSelectSectionComponent implements OnInit {
+export class PropertiesSelectSectionComponent {
   @Input() fields = [];
   @Input() selectedFields = [];
   @Output() emitter = new EventEmitter();
   @Input() sectionLabel: string = "Data";
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+  constructor() {}
 
   // select field
   selectField(item) {
-    const index = this.selectedFields.findIndex( element => element.value === item.value);
+    const index = this.selectedFields.findIndex(
+      (element) => element.value === item.value,
+    );
     if (index === -1) {
-      const selectedElem = {...item};
+      const selectedElem = { ...item };
       delete selectedElem.selected;
       this.selectedFields.push(selectedElem);
     } else {
-      this.selectedFields.splice(index, 1)
+      this.selectedFields.splice(index, 1);
     }
     this.emitter.emit(this.selectedFields);
   }
-  
 }

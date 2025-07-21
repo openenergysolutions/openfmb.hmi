@@ -11,22 +11,22 @@ import { ErrorComponent } from "./error/error.component";
 export const SessionsRoutes: Routes = [
   {
     path: "",
-    children: [        
+    children: [
       {
         path: "signin",
         component: SigninComponent,
-        data: { title: "Signin" }
-      },             
+        data: { title: "Signin" },
+      },
       {
         path: "404",
         component: NotFoundComponent,
-        data: { title: "Not Found" }
+        data: { title: "Not Found" },
       },
       {
         path: "error",
         component: ErrorComponent,
-        data: { title: "Error" }
-      }
-    ]
-  }
+        data: { title: "Error" },
+      },
+    ],
+  },
 ];

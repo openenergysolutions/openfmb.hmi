@@ -2,11 +2,11 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Action, createReducer, on } from '@ngrx/store';
-import { DesignerConstant } from '../../core/constants/designer-constant';
-import * as designerActions from '../actions/designer.actions';
+import { Action, createReducer, on } from "@ngrx/store";
+import { DesignerConstant } from "../../core/constants/designer-constant";
+import * as designerActions from "../actions/designer.actions";
 
-export const designerFeatureKey = 'designer';
+export const designerFeatureKey = "designer";
 
 export interface State {
   mode: number;
@@ -15,25 +15,19 @@ export interface State {
 
 export const initialState: State = {
   mode: DesignerConstant.SELECT_MODE,
-  connectColor: DesignerConstant.CONNECT_COLORS[0]
+  connectColor: DesignerConstant.CONNECT_COLORS[0],
 };
 
 const designerReducer = createReducer(
   initialState,
-  on(
-    designerActions.selectMode,
-    (state, { mode }) => ({
-      ...state,
-      mode
-    })
-  ),
-  on(
-    designerActions.selectColor,
-    (state, { connectColor }) => ({
-      ...state,
-      connectColor
-    })
-  )
+  on(designerActions.selectMode, (state, { mode }) => ({
+    ...state,
+    mode,
+  })),
+  on(designerActions.selectColor, (state, { connectColor }) => ({
+    ...state,
+    connectColor,
+  })),
 );
 
 export function reducer(state: State | undefined, action: Action) {

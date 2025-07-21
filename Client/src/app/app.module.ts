@@ -2,41 +2,51 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { NgModule, ErrorHandler } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgModule, ErrorHandler } from "@angular/core";
+import { RouterModule } from "@angular/router";
+import { BrowserModule } from "@angular/platform-browser";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 
-import { PerfectScrollbarModule, PERFECT_SCROLLBAR_CONFIG, PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
+import {
+  PerfectScrollbarModule,
+  PERFECT_SCROLLBAR_CONFIG,
+  PerfectScrollbarConfigInterface,
+} from "ngx-perfect-scrollbar-portable";
 
-import { rootRouterConfig } from './app.routing';
-import { SharedModule } from './shared/shared.module';
-import { SharedMaterialModule } from './shared/shared-material.module';
-import { AppComponent } from './app.component';
+import { rootRouterConfig } from "./app.routing";
+import { SharedModule } from "./shared/shared.module";
+import { SharedMaterialModule } from "./shared/shared-material.module";
+import { AppComponent } from "./app.component";
 
-import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { ErrorHandlerService } from './shared/services/error-handler.service';
-import { TokenInterceptor } from './shared/interceptors/token.interceptor';
+import {
+  HttpClient,
+  HTTP_INTERCEPTORS,
+  provideHttpClient,
+  withInterceptorsFromDi,
+  HttpClientModule,
+} from "@angular/common/http";
+import { TranslateModule, TranslateLoader } from "@ngx-translate/core";
+import { TranslateHttpLoader } from "@ngx-translate/http-loader";
+import { ErrorHandlerService } from "./shared/services/error-handler.service";
+import { TokenInterceptor } from "./shared/interceptors/token.interceptor";
 
-import { StoreModule } from '@ngrx/store';
-import { reducers, metaReducers } from './store/reducers';
-import { StoreDevtoolsModule } from '@ngrx/store-devtools';
-import { environment } from '../environments/environment';
-import { EffectsModule } from '@ngrx/effects';
-import { AppEffects } from './app.effects';
-import { StoreRouterConnectingModule } from '@ngrx/router-store';
-import { EntityDataModule } from '@ngrx/data';
-import { entityConfig } from './entity-metadata';
-import { NgxSpinnerModule } from 'ngx-spinner';
-import { AuthEffects } from './store/effects/auth.effects';
-import { AuthModule } from './auth/auth.module';
-import { ErrorInterceptor } from './core/helpers/error-interceptor';
-import { LoadingInterceptor } from './core/helpers/loading-interceptor';
-import { DesignerEffects } from './store/effects/designer.effects';
-import { WebSocketModule } from './web-socket/web-socket.module';
-import { NgxDatatableModule } from '@swimlane/ngx-datatable';
+import { StoreModule } from "@ngrx/store";
+import { reducers, metaReducers } from "./store/reducers";
+import { StoreDevtoolsModule } from "@ngrx/store-devtools";
+import { environment } from "../environments/environment";
+import { EffectsModule } from "@ngrx/effects";
+import { AppEffects } from "./app.effects";
+import { StoreRouterConnectingModule } from "@ngrx/router-store";
+import { EntityDataModule } from "@ngrx/data";
+import { entityConfig } from "./entity-metadata";
+import { NgxSpinnerModule } from "ngx-spinner";
+import { AuthEffects } from "./store/effects/auth.effects";
+import { AuthModule } from "./auth/auth.module";
+import { ErrorInterceptor } from "./core/helpers/error-interceptor";
+import { LoadingInterceptor } from "./core/helpers/loading-interceptor";
+import { DesignerEffects } from "./store/effects/designer.effects";
+import { WebSocketModule } from "./web-socket/web-socket.module";
+import { NgxDatatableModule } from "@swimlane/ngx-datatable";
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(httpClient: HttpClient) {
@@ -44,10 +54,12 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
 }
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
-  suppressScrollX: true
+  suppressScrollX: true,
 };
 
 @NgModule({
+  declarations: [AppComponent],
+  bootstrap: [AppComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -59,56 +71,59 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
       loader: {
         provide: TranslateLoader,
         useFactory: HttpLoaderFactory,
-        deps: [HttpClient]
-      }
-    }),    
+        deps: [HttpClient],
+      },
+    }),
     RouterModule.forRoot(rootRouterConfig, { useHash: false }),
     StoreModule.forRoot(reducers, {
       metaReducers,
       runtimeChecks: {
         strictStateImmutability: true,
-        strictActionImmutability: true
-      }
+        strictActionImmutability: true,
+      },
     }),
-    StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),
+    StoreDevtoolsModule.instrument({
+      maxAge: 25,
+      logOnly: environment.production,
+    }),
     EffectsModule.forRoot([AppEffects]),
     StoreRouterConnectingModule.forRoot(),
     EntityDataModule.forRoot(entityConfig),
     EffectsModule.forFeature([AuthEffects, DesignerEffects]),
     NgxSpinnerModule,
     NgxDatatableModule,
-    HttpClientModule,
-    AuthModule,        
+    AuthModule,
     WebSocketModule.config({
-      url: environment.ws
-    })
+      url: environment.ws,
+    }),
   ],
-  declarations: [AppComponent],
   providers: [
-    { provide: ErrorHandler, useClass: ErrorHandlerService },    
-    { provide: PERFECT_SCROLLBAR_CONFIG, useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG },
-    
+    { provide: ErrorHandler, useClass: ErrorHandlerService },
+    {
+      provide: PERFECT_SCROLLBAR_CONFIG,
+      useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG,
+    },
     // REQUIRED IF YOU USE JWT AUTHENTICATION
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
       multi: true,
-    },    
+    },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: ErrorInterceptor,
-      multi: true
+      multi: true,
     },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: LoadingInterceptor,
-      multi: true
+      multi: true,
     },
-    { 
-      provide: Window, 
-      useValue: window 
-    }    
+    {
+      provide: Window,
+      useValue: window,
+    },
+    provideHttpClient(withInterceptorsFromDi()),
   ],
-  bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}

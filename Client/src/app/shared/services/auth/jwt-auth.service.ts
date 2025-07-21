@@ -6,21 +6,20 @@ import { Injectable } from "@angular/core";
 import { LocalStoreService } from "../local-store.service";
 import { HttpClient } from "@angular/common/http";
 import { Router, ActivatedRoute } from "@angular/router";
-import { map, catchError } from "rxjs/operators";
 import { User } from "../../models/user.model";
-import { of, BehaviorSubject, throwError } from "rxjs";
+import { of, BehaviorSubject, throwError, catchError, map } from "rxjs";
 import { environment } from "../../../../environments/environment";
-import jwt_decode from 'jwt-decode';
+import jwt_decode from "jwt-decode";
 
 @Injectable({
   providedIn: "root",
 })
 export class JwtAuthService {
   token;
-  isAuthenticated: Boolean;
+  isAuthenticated: boolean;
   user: User = {};
-  user$ = (new BehaviorSubject<User>(this.user));
-  signingIn: Boolean;
+  user$ = new BehaviorSubject<User>(this.user);
+  signingIn: boolean;
   return: string;
   JWT_TOKEN = "JWT_TOKEN";
   APP_USER = "HMI_USER";
@@ -29,16 +28,17 @@ export class JwtAuthService {
     private ls: LocalStoreService,
     private http: HttpClient,
     private router: Router,
-    private route: ActivatedRoute    
+    private route: ActivatedRoute,
   ) {
-    this.route.queryParams
-      .subscribe(params => this.return = params['return'] || '/');
+    this.route.queryParams.subscribe(
+      (params) => (this.return = params["return"] || "/"),
+    );
   }
 
   public signin(username, password) {
-    
     this.signingIn = true;
-    return this.http.post(`${environment.apiUrl}login`, {"username": username, "pwd": password})
+    return this.http
+      .post(`${environment.apiUrl}login`, { username: username, pwd: password })
       .pipe(
         map((res: any) => {
           this.setUserAndToken(res.token, res.user, !!res);
@@ -47,7 +47,7 @@ export class JwtAuthService {
         }),
         catchError((error) => {
           return throwError(error);
-        })
+        }),
       );
   }
 
@@ -55,18 +55,17 @@ export class JwtAuthService {
     checkTokenIsValid is called inside constructor of
     shared/components/layouts/admin-layout/admin-layout.component.ts
   */
-  public checkTokenIsValid() {   
-    return this.http.get(`${environment.apiUrl}profile`)
-      .pipe(
-        map((profile: User) => {
-          this.setUserAndToken(this.getJwtToken(), profile, true);
-          return profile;
-        }),
-        catchError((error) => {
-          this.signout();
-          return of(error);
-        })
-      );
+  public checkTokenIsValid() {
+    return this.http.get(`${environment.apiUrl}profile`).pipe(
+      map((profile: User) => {
+        this.setUserAndToken(this.getJwtToken(), profile, true);
+        return profile;
+      }),
+      catchError((error) => {
+        this.signout();
+        return of(error);
+      }),
+    );
   }
 
   public signout() {
@@ -74,34 +73,34 @@ export class JwtAuthService {
     this.router.navigateByUrl("sessions/signin");
   }
 
-  isLoggedIn(): Boolean {
+  isLoggedIn(): boolean {
     return !!this.getJwtToken();
   }
 
   getJwtToken() {
     return this.ls.getItem(this.JWT_TOKEN);
   }
-  getUser() : User {        
-    var usr = this.ls.getItem(this.APP_USER);
+  getUser(): User {
+    let usr = this.ls.getItem(this.APP_USER);
     if (usr == null) {
-      var token = this.getJwtToken();
+      const token = this.getJwtToken();
       if (!!token) {
-        const decodeToken = this.getDecodedAccessToken(token);        
+        const decodeToken = this.getDecodedAccessToken(token);
         usr = {
           id: decodeToken.sub,
           displayname: decodeToken.name,
           role: decodeToken.role,
         };
-      }    
-    }    
+      }
+    }
     return usr;
   }
-  getUserRole() : string {
+  getUserRole(): string {
     const usr = this.getUser();
     return usr?.role;
   }
 
-  setUserAndToken(token: String, user: User, isAuthenticated: Boolean) {
+  setUserAndToken(token: string, user: User, isAuthenticated: boolean) {
     this.isAuthenticated = isAuthenticated;
     this.token = token;
     this.user = user;
@@ -111,11 +110,10 @@ export class JwtAuthService {
   }
 
   getDecodedAccessToken(token: string): any {
-    try{
-        return jwt_decode(token);
-    }
-    catch(Error){
-        return null;
+    try {
+      return jwt_decode(token);
+    } catch (_e) {
+      return null;
     }
   }
 }

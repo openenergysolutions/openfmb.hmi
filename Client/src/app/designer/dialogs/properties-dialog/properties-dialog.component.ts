@@ -2,23 +2,36 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, OnInit, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { DiagramsService } from '../../../shared/services/diagrams.service';
-import { ArrowDirection, DiagramData, LinkData, StatusDefinition, WeatherStatusDefinition } from '../../../shared/models/userobject.model'
-import { Diagram } from '../../../shared/models/diagram.model';
-import { Symbol, ButtonFunction, ExternalLink } from '../../../shared/hmi.constants'
-import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { Hmi } from '../../../shared/hmi.constants'
-import { getCommands, getCommandsByType } from '../../../shared/models/commands.model';
+import { Component, OnInit, Inject } from "@angular/core";
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { DiagramsService } from "../../../shared/services/diagrams.service";
+import {
+  ArrowDirection,
+  DiagramData,
+  LinkData,
+  StatusDefinition,
+  WeatherStatusDefinition,
+} from "../../../shared/models/userobject.model";
+import { Diagram } from "../../../shared/models/diagram.model";
+import {
+  Symbol,
+  ButtonFunction,
+  ExternalLink,
+} from "../../../shared/hmi.constants";
+import { Router } from "@angular/router";
+import { Subscription } from "rxjs";
+import { Hmi } from "../../../shared/hmi.constants";
+import {
+  getCommands,
+  getCommandsByType,
+} from "../../../shared/models/commands.model";
 
 @Component({
-  selector: 'app-properties-dialog',
-  templateUrl: './properties-dialog.component.html',
-  styleUrls: ['./properties-dialog.component.scss']
+  selector: "app-properties-dialog",
+  templateUrl: "./properties-dialog.component.html",
+  styleUrls: ["./properties-dialog.component.scss"],
 })
-export class PropertiesDialogComponent implements OnInit {  
+export class PropertiesDialogComponent implements OnInit {
   label: string;
   description: string;
   name: string;
@@ -45,23 +58,27 @@ export class PropertiesDialogComponent implements OnInit {
   navigateToDataConnection: boolean = false;
   dataConnectAllowed: boolean;
   statusDefinitionAllowed: boolean = false;
-  flowDefinitionAllowed: boolean = false; 
-  weatherDefinitionAllowed: boolean = false; 
-  equipmentList: any[];  
+  flowDefinitionAllowed: boolean = false;
+  weatherDefinitionAllowed: boolean = false;
+  equipmentList: any[];
   selectedEquipment: any;
   textAlign: string;
   fontStyle: string;
-  fontStyles: string[] = ['Normal', 'Bold', 'Italic', 'Bold+Italic'];
-  textAlignAllowed: boolean = false; 
-  fontSizeAllowed: boolean = true; 
+  fontStyles: string[] = ["Normal", "Bold", "Italic", "Bold+Italic"];
+  textAlignAllowed: boolean = false;
+  fontSizeAllowed: boolean = true;
   buttonFunction: string;
-  buttonFunctionOptions: string[] = [ButtonFunction.link, ButtonFunction.command, ButtonFunction.setPoint];
+  buttonFunctionOptions: string[] = [
+    ButtonFunction.link,
+    ButtonFunction.command,
+    ButtonFunction.setPoint,
+  ];
   showLink: boolean = true;
   showExternalLink: boolean = false;
   externalLink: string;
-  selectedCommand: string;  
+  selectedCommand: string;
   commandList: any[] = [];
-  
+
   // For link
   selectedDiagramId: string;
   selectedLinkTarget: string;
@@ -73,63 +90,87 @@ export class PropertiesDialogComponent implements OnInit {
 
   // status definition
   statusDefinitions: StatusDefinition[];
-  statusColors: string[] = ['gray', 'green', 'yellow', 'red'];
+  statusColors: string[] = ["gray", "green", "yellow", "red"];
   isStatusDefinitionNumericDataType: boolean = false;
 
   // arrow definition
-  arrowDirections: string[] = ['', 'east', 'west', 'south', 'north', 'se', 'sw', 'ne', 'nw'];
+  arrowDirections: string[] = [
+    "",
+    "east",
+    "west",
+    "south",
+    "north",
+    "se",
+    "sw",
+    "ne",
+    "nw",
+  ];
   arrowDirection: ArrowDirection;
-  arrowColors: string[] = ['red', 'green'];
+  arrowColors: string[] = ["red", "green"];
 
   // weather definition
   weatherDefinitions: WeatherStatusDefinition[];
-  weatherConditions: string[] = ['clear', 'cloudy', 'rainy', 'storm', 'snow', 'partly-sunny', 'sunny'];
+  weatherConditions: string[] = [
+    "clear",
+    "cloudy",
+    "rainy",
+    "storm",
+    "snow",
+    "partly-sunny",
+    "sunny",
+  ];
 
   constructor(
     public dialogRef: MatDialogRef<PropertiesDialogComponent>,
     private router: Router,
     private service: DiagramsService,
-    @Inject(MAT_DIALOG_DATA) public data: DiagramData
-  ) { 
-    this.selectedEquipment = { name: '', mrid: ''};
-    this.mRID = this.selectedEquipment.mrid = this.data.mRID; 
-    this.getEquipmentList();               
+    @Inject(MAT_DIALOG_DATA) public data: DiagramData,
+  ) {
+    this.selectedEquipment = { name: "", mrid: "" };
+    this.mRID = this.selectedEquipment.mrid = this.data.mRID;
+    this.getEquipmentList();
   }
 
-  ngOnInit() {            
-    this.label = this.data.label; 
-    this.description = this.data.description;   
-    this.name = this.data.name,    
-    this.fontSize = this.data.fontSize;
-    this.containerWidth = this.data.containerWidth;  
-    this.containerHeight = this.data.containerHeight;  
+  ngOnInit() {
+    this.label = this.data.label;
+    this.description = this.data.description;
+    ((this.name = this.data.name), (this.fontSize = this.data.fontSize));
+    this.containerWidth = this.data.containerWidth;
+    this.containerHeight = this.data.containerHeight;
 
-    this.changeStyleAllowed = this.data.type === Symbol.measureBox 
-      || this.data.type === Symbol.label 
-      || this.data.type === Symbol.button 
-      || this.data.type === Symbol.setPointButton
-      || this.data.type === Symbol.statusIndicator 
-      || this.data.type === Symbol.line
-      || this.data.type === Symbol.curve;
+    this.changeStyleAllowed =
+      this.data.type === Symbol.measureBox ||
+      this.data.type === Symbol.label ||
+      this.data.type === Symbol.button ||
+      this.data.type === Symbol.setPointButton ||
+      this.data.type === Symbol.statusIndicator ||
+      this.data.type === Symbol.line ||
+      this.data.type === Symbol.curve;
 
-    this.fontSizeAllowed = this.data.type !== Symbol.line && this.data.type !== Symbol.curve;
-    
-    this.deviceTypeMapping = this.data.deviceTypeMapping; 
+    this.fontSizeAllowed =
+      this.data.type !== Symbol.line && this.data.type !== Symbol.curve;
+
+    this.deviceTypeMapping = this.data.deviceTypeMapping;
     this.changeWidthAllowed = this.data.type === Symbol.measureBox;
-    this.foreColor = this.data.foreColor;  
-    this.backgroundColor = this.data.backgroundColor;      
-    this.changeBackgroundAllowed = this.data.type === Symbol.measureBox || this.data.type === Symbol.button;    
+    this.foreColor = this.data.foreColor;
+    this.backgroundColor = this.data.backgroundColor;
+    this.changeBackgroundAllowed =
+      this.data.type === Symbol.measureBox || this.data.type === Symbol.button;
 
-    this.linkAllowed = this.data.type === Symbol.button;    
+    this.linkAllowed = this.data.type === Symbol.button;
     this.dataConnectAllowed = Hmi.isDataConnectable(this.data.type);
     this.statusDefinitionAllowed = this.data.type === Symbol.statusIndicator;
     this.flowDefinitionAllowed = Hmi.isPowerFlow(this.data.type);
     this.weatherDefinitionAllowed = Hmi.isWeather(this.data.type);
-    if (this.data.type === Symbol.label || this.data.type === Symbol.button || this.data.type === Symbol.statusIndicator) {
+    if (
+      this.data.type === Symbol.label ||
+      this.data.type === Symbol.button ||
+      this.data.type === Symbol.statusIndicator
+    ) {
       this.textAlignAllowed = true;
-      this.textAlign = this.data.textAlign || 'left';
-      this.fontStyle = this.data.fontStyle || '0';
-    }    
+      this.textAlign = this.data.textAlign || "left";
+      this.fontStyle = this.data.fontStyle || "0";
+    }
 
     // Button: link, command, set-point
     if (this.data.type == Symbol.button) {
@@ -137,29 +178,24 @@ export class PropertiesDialogComponent implements OnInit {
       if (!this.buttonFunction) {
         this.buttonFunction = ButtonFunction.link;
         this.showLink = true;
-      }
-      else {
+      } else {
         this.showLink = this.buttonFunction === ButtonFunction.link;
         this.getCommandList(this.buttonFunction);
       }
       this.selectedCommand = this.data.verb;
-    }
-    else {
+    } else {
       this.showLink = false;
-    }   
-    
-    console.log(this.data);
-    console.log(this.linkAllowed)
+    }
 
-    if (this.linkAllowed) {      
-      this.linkTargetOptions = ['_blank', '_top',];
+    if (this.linkAllowed) {
+      this.linkTargetOptions = ["_blank", "_top"];
 
       if (this.data.linkData) {
         this.selectedDiagramId = this.data.linkData.diagramId;
         this.externalLink = this.data.linkData.url;
         this.selectedLinkTarget = this.data.linkData.target;
         if (this.showLink) {
-          if (this.selectedDiagramId === '[EXTERNAL LINK]') {
+          if (this.selectedDiagramId === "[EXTERNAL LINK]") {
             this.showExternalLink = true;
           } else {
             this.showExternalLink = false;
@@ -167,14 +203,13 @@ export class PropertiesDialogComponent implements OnInit {
         }
       }
 
-      this.getDiagrams();      
+      this.getDiagrams();
     }
 
     if (this.statusDefinitionAllowed) {
       if (this.data.statusDefinition) {
         this.statusDefinitions = this.data.statusDefinition;
-      }
-      else {
+      } else {
         this.statusDefinitions = [];
       }
     }
@@ -182,21 +217,21 @@ export class PropertiesDialogComponent implements OnInit {
     if (this.weatherDefinitionAllowed) {
       if (this.data.weatherDefinition) {
         this.weatherDefinitions = this.data.weatherDefinition;
-      }
-      else {
+      } else {
         this.weatherDefinitions = [];
       }
     }
-  
+
     if (this.data.displayData) {
       this.displayData = [...this.data.displayData];
       if (this.displayData.length > 0) {
-        this.isStatusDefinitionNumericDataType = this.displayData[0].type === "analog";        
+        this.isStatusDefinitionNumericDataType =
+          this.displayData[0].type === "analog";
       }
-    } 
+    }
     if (this.data.controlData) {
       this.controlData = [...this.data.controlData];
-    } 
+    }
 
     if (this.data.visibilityData) {
       this.visibilityData = [...this.data.visibilityData];
@@ -205,96 +240,89 @@ export class PropertiesDialogComponent implements OnInit {
     if (this.flowDefinitionAllowed) {
       if (this.data.arrowDirection) {
         this.arrowDirection = this.data.arrowDirection;
-      }
-      else {
-        this.arrowDirection= {
-          positive: '',
-          negative: '',
-          neutral: ''
-        }
+      } else {
+        this.arrowDirection = {
+          positive: "",
+          negative: "",
+          neutral: "",
+        };
       }
     }
   }
 
   getDiagrams() {
-    this.getItemSub = this.service.getAll()
-      .subscribe(data => {
-        //this.diagrams = data;
-        var empty = {diagramId: ExternalLink.id, name: ExternalLink.name};
-        // add emtpy to the first position of the array
-        this.diagrams = [empty, ...data];        
-      });
+    this.getItemSub = this.service.getAll().subscribe((data) => {
+      //this.diagrams = data;
+      const empty = { diagramId: ExternalLink.id, name: ExternalLink.name };
+      // add emtpy to the first position of the array
+      this.diagrams = [empty, ...data];
+    });
   }
 
   getEquipmentList() {
-    this.getEquipmentSub = this.service.getEquipmentList()
-      .subscribe(data => {
-        this.equipmentList = data; 
-        this.equipmentList.unshift({name: '', mrid: ''});       
-        if (this.equipmentList)
-        {
-          for(var i = 0; i < this.equipmentList.length; ++i)
-          {            
-            if (this.equipmentList[i].mrid === this.mRID) {
-              this.selectedEquipment = this.equipmentList[i];
-              break;
-            }
+    this.getEquipmentSub = this.service.getEquipmentList().subscribe((data) => {
+      this.equipmentList = data;
+      this.equipmentList.unshift({ name: "", mrid: "" });
+      if (this.equipmentList) {
+        for (let i = 0; i < this.equipmentList.length; ++i) {
+          if (this.equipmentList[i].mrid === this.mRID) {
+            this.selectedEquipment = this.equipmentList[i];
+            break;
           }
         }
-      });
+      }
+    });
   }
 
-  getCommandList(type: String) {    
-    this.commandList = [];      
-    let commandTypes = getCommands();
-    for (let entry of commandTypes) {
-      let a = getCommandsByType(entry);
+  getCommandList(type: string) {
+    this.commandList = [];
+    const commandTypes = getCommands();
+    for (const entry of commandTypes) {
+      const a = getCommandsByType(entry);
 
-      for (let cmd of a) {        
-        if (cmd.attributes.type === type) {          
+      for (const cmd of a) {
+        if (cmd.attributes.type === type) {
           this.commandList.push(cmd);
         }
-      }      
-    }    
+      }
+    }
   }
 
   // save all grid item data
   onSave(): void {
     console.log(this.backgroundColor);
 
-    var foreC = null;
+    let foreC = null;
     if (this.foreColor) {
       if (this.foreColor.hex) {
-        foreC = '#' + this.foreColor.hex;
-      }
-      else {
-        var temp = '' + this.foreColor;
-        if (temp.startsWith('#')) {
+        foreC = "#" + this.foreColor.hex;
+      } else {
+        const temp = "" + this.foreColor;
+        if (temp.startsWith("#")) {
           foreC = temp;
         }
       }
     }
 
-    var backgroundC = null;
+    let backgroundC = null;
     if (this.backgroundColor) {
       if (this.backgroundColor.hex) {
-        backgroundC = '#' + this.backgroundColor.hex;
-      }
-      else {
-        var temp = '' + this.backgroundColor;
-        if (temp.startsWith('#')) {
+        backgroundC = "#" + this.backgroundColor.hex;
+      } else {
+        const temp = "" + this.backgroundColor;
+        if (temp.startsWith("#")) {
           backgroundC = temp;
         }
       }
-    } 
+    }
 
-    var linkData: LinkData = null;
-    
+    let linkData: LinkData = null;
+
     if (this.linkAllowed) {
       linkData = {
         diagramId: this.selectedDiagramId,
         url: this.externalLink,
-        target: this.selectedLinkTarget
+        target: this.selectedLinkTarget,
       };
     }
 
@@ -320,53 +348,52 @@ export class PropertiesDialogComponent implements OnInit {
       weatherDefinition: this.weatherDefinitions,
       arrowDirection: this.arrowDirection,
       selectedCommand: this.selectedCommand,
-      func: this.buttonFunction
+      func: this.buttonFunction,
     });
   }
 
   // close modal window
   onNoClick(): void {
     this.dialogRef.close();
-  }  
+  }
 
   setSelectedFields(allFields: any[], selectedFields: any[]): any[] {
     if (selectedFields.length) {
-     return allFields.map( elem => {
-       selectedFields.forEach(selectElem => {
-         if (selectElem.value === elem.value) {
-           elem.selected = true;
-         }
-       });
+      return allFields.map((elem) => {
+        selectedFields.forEach((selectElem) => {
+          if (selectElem.value === elem.value) {
+            elem.selected = true;
+          }
+        });
         return elem;
       });
     }
     return allFields;
-  }    
-  
+  }
+
   // navigate to data connect screen
-  dataConnect() { 
-    this.navigateToDataConnection = true;   
-    this.onSave();    
+  dataConnect() {
+    this.navigateToDataConnection = true;
+    this.onSave();
   }
 
   addStatusDefinition() {
     const def: StatusDefinition = {
-      value: 0,      
-      color: "gray"
+      value: 0,
+      color: "gray",
     };
     this.statusDefinitions.push(def);
   }
 
   removeStatusDefinition(item: StatusDefinition) {
     if (item) {
-      for(let index = this.statusDefinitions.length - 1; index >=0; --index) {
-        var obj = this.statusDefinitions[index];
-        if (obj === item) {        
+      for (let index = this.statusDefinitions.length - 1; index >= 0; --index) {
+        const obj = this.statusDefinitions[index];
+        if (obj === item) {
           this.statusDefinitions.splice(index, 1);
         }
       }
-    }
-    else {
+    } else {
       console.error("Unable to delete status definition.  item=" + item);
     }
   }
@@ -375,21 +402,24 @@ export class PropertiesDialogComponent implements OnInit {
     const def: WeatherStatusDefinition = {
       from: 0,
       to: 0,
-      text: 'clear'
+      text: "clear",
     };
     this.weatherDefinitions.push(def);
   }
 
   removeWeatherDefinition(item: WeatherStatusDefinition) {
     if (item) {
-      for(let index = this.weatherDefinitions.length - 1; index >=0; --index) {
-        var obj = this.weatherDefinitions[index];
-        if (obj === item) {        
+      for (
+        let index = this.weatherDefinitions.length - 1;
+        index >= 0;
+        --index
+      ) {
+        const obj = this.weatherDefinitions[index];
+        if (obj === item) {
           this.weatherDefinitions.splice(index, 1);
         }
       }
-    }
-    else {
+    } else {
       console.error("Unable to delete weather definition.  item=" + item);
     }
   }
@@ -401,8 +431,7 @@ export class PropertiesDialogComponent implements OnInit {
       this.getCommandList(ButtonFunction.command);
       this.selectedCommand = "";
       this.showExternalLink = false;
-    }
-    else if (this.buttonFunction === ButtonFunction.setPoint) {
+    } else if (this.buttonFunction === ButtonFunction.setPoint) {
       this.getCommandList(ButtonFunction.setPoint);
       this.selectedCommand = "";
       this.showExternalLink = false;
@@ -411,11 +440,10 @@ export class PropertiesDialogComponent implements OnInit {
     }
   }
 
-  onSelectLinkChange(id: string) {    
+  onSelectLinkChange(id: string) {
     if (id === ExternalLink.id) {
       this.showExternalLink = true;
-    }
-    else {
+    } else {
       this.showExternalLink = false;
     }
   }

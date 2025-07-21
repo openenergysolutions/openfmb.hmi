@@ -12,7 +12,7 @@ import {
   Directive,
   Renderer2,
   ElementRef,
-  ChangeDetectorRef
+  ChangeDetectorRef,
 } from "@angular/core";
 import { MatchMediaService } from "../../../../app/shared/services/match-media.service";
 import { MediaObserver } from "@angular/flex-layout";
@@ -23,7 +23,7 @@ import { SidebarHelperService } from "./sidebar-helper.service";
 @Component({
   selector: "hmi-sidebar",
   templateUrl: "./sidebar.component.html",
-  styleUrls: ["./sidebar.component.scss"]
+  styleUrls: ["./sidebar.component.scss"],
 })
 export class SidebarComponent implements OnInit, OnDestroy {
   // Name
@@ -57,7 +57,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     private sidebarHelperService: SidebarHelperService,
     private _renderer: Renderer2,
     private _elementRef: ElementRef,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {
     this.unsubscribeAll = new Subject();
   }
@@ -113,7 +113,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
     this._renderer.appendChild(
       this._elementRef.nativeElement.parentElement,
-      this.backdrop
+      this.backdrop,
     );
 
     // Close sidebar onclick
@@ -134,14 +134,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.unsubscribeAll.next();
     this.unsubscribeAll.complete();
     this.sidebarHelperService.removeSidebar(this.name);
   }
 }
 
 @Directive({
-  selector: "[sidebarToggler]"
+  selector: "[sidebarToggler]",
 })
 export class SidebarTogglerDirective {
   @Input("sidebarToggler")

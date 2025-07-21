@@ -2,10 +2,10 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable } from "@angular/core";
+import { BehaviorSubject } from "rxjs";
 import { JwtAuthService } from "../../../app/shared/services/auth/jwt-auth.service";
-import { Authorization } from '../../shared/models/user.model';
+import { Authorization } from "../../shared/models/user.model";
 
 interface IMenuItem {
   type: string; // Possible values: link/dropDown/icon/separator/extLink
@@ -37,20 +37,20 @@ export class NavigationService {
 
   iconMenu: IMenuItem[] = [
     {
-      name: 'DIAGRAMS',
-      type: 'link',
-      tooltip: 'Diagrams',
-      icon: 'dashboard',
-      state: 'diagrams',
-      visible: true
+      name: "DIAGRAMS",
+      type: "link",
+      tooltip: "Diagrams",
+      icon: "dashboard",
+      state: "diagrams",
+      visible: true,
     },
     {
-      name: 'DATA CONNECTION',
-      type: 'link',
-      tooltip: 'Data connection',
-      icon: 'settings_remote',
-      state: 'data-connect',
-      visible: Authorization.canEditDiagram(this.userRole)
+      name: "DATA CONNECTION",
+      type: "link",
+      tooltip: "Data connection",
+      icon: "settings_remote",
+      state: "data-connect",
+      visible: Authorization.canEditDiagram(this.userRole),
     },
     {
       name: "SETTINGS",
@@ -59,27 +59,27 @@ export class NavigationService {
       icon: "settings",
       state: "settings",
       visible: Authorization.canUpdateSettings(this.userRole),
-      sub: [        
+      sub: [
         { name: "Users", state: "users" },
-        { name: "Devices", state: "devices" }              
-      ]
-    }
-  ]
+        { name: "Devices", state: "devices" },
+      ],
+    },
+  ];
   // Icon menu TITLE at the very top of navigation.
   // This title will appear if any icon type item is present in menu.
-  iconTypeMenuTitle = 'Frequently Accessed';
+  iconTypeMenuTitle = "Frequently Accessed";
   // sets iconMenu as default;
   menuItems = new BehaviorSubject<IMenuItem[]>(this.iconMenu);
   // navigation component has subscribed to this Observable
   menuItems$ = this.menuItems.asObservable();
 
-  constructor(private jwtService : JwtAuthService) {}  
+  constructor(private jwtService: JwtAuthService) {}
 
   // Customizer component uses this method to change menu.
   // You can remove this method and customizer component.
   // Or you can customize this method to supply different menu for
   // different user type.
-  publishNavigationChange(menuType: string) {
+  publishNavigationChange(_menuType: string) {
     this.menuItems.next(this.iconMenu);
   }
 }

@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-describe('AppComponent', () => {
-  it('true expect to be true', () => {
+describe("AppComponent", () => {
+  it("true expect to be true", () => {
     expect(true).toBe(true);
   });
 });

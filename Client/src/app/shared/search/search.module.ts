@@ -12,6 +12,6 @@ import { MatIconModule } from "@angular/material/icon";
 @NgModule({
   declarations: [SearchInputOverComponent],
   exports: [SearchInputOverComponent],
-  imports: [ReactiveFormsModule, MatIconModule, MatButtonModule, CommonModule]
+  imports: [ReactiveFormsModule, MatIconModule, MatButtonModule, CommonModule],
 })
 export class SearchModule {}

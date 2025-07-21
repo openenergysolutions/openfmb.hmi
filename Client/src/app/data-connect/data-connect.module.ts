@@ -2,16 +2,16 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { NgModule } from "@angular/core";
+import { CommonModule } from "@angular/common";
 
-import { SharedComponentsModule } from '../shared/components/shared-components.module';
-import { SharedModule } from '../shared/shared.module';
+import { SharedComponentsModule } from "../shared/components/shared-components.module";
+import { SharedModule } from "../shared/shared.module";
 
-import { DataConnectRoutingModule } from './data-connect-routing.module';
-import { DataConnectComponent } from './data-connect.component';
-import { SharedMaterialModule } from '../shared/shared-material.module';
-import { DragDropModule } from '@angular/cdk/drag-drop';
+import { DataConnectRoutingModule } from "./data-connect-routing.module";
+import { DataConnectComponent } from "./data-connect.component";
+import { SharedMaterialModule } from "../shared/shared-material.module";
+import { DragDropModule } from "@angular/cdk/drag-drop";
 
 @NgModule({
   declarations: [DataConnectComponent],
@@ -21,7 +21,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     SharedComponentsModule,
     SharedMaterialModule,
     SharedModule,
-    DragDropModule
-  ]
+    DragDropModule,
+  ],
 })
-export class DataConnectModule { }
+export class DataConnectModule {}

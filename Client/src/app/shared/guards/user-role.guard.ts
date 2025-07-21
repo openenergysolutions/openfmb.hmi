@@ -4,7 +4,6 @@
 
 import { Injectable } from "@angular/core";
 import {
-  CanActivate,
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
   Router,
@@ -13,11 +12,15 @@ import { JwtAuthService } from "../services/auth/jwt-auth.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Injectable()
-export class UserRoleGuard implements CanActivate {
-  constructor(private router: Router, private jwtAuth: JwtAuthService, private snack: MatSnackBar) {}
+export class UserRoleGuard {
+  constructor(
+    private router: Router,
+    private jwtAuth: JwtAuthService,
+    private snack: MatSnackBar,
+  ) {}
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    var user = this.jwtAuth.getUser();
+  canActivate(route: ActivatedRouteSnapshot, _state: RouterStateSnapshot) {
+    const user = this.jwtAuth.getUser();
 
     if (
       user &&
@@ -27,7 +30,9 @@ export class UserRoleGuard implements CanActivate {
     ) {
       return true;
     } else {
-      this.snack.open('You do not have access to this page!', 'OK', { duration: 5000 });
+      this.snack.open("You do not have access to this page!", "OK", {
+        duration: 5000,
+      });
       return false;
     }
   }
