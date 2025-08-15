@@ -563,7 +563,7 @@ version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4d3686f5fa27dbc1d76c751300376e167c5a43387f44bb451fd1c24776e49113"
 dependencies = [
- "sct 0.6.1",
+ "sct",
 ]
 
 [[package]]
@@ -1806,7 +1806,7 @@ dependencies = [
 [[package]]
 name = "microgrid-protobuf"
 version = "0.1.0"
-source = "git+https://github.com/openenergysolutions/openfmb-rs#6a51878b3265f5e4e76b1783921572eaea697852"
+source = "git+https://github.com/openenergysolutions/openfmb-rs?rev=bdeb300ccbb5f1c392547d613c7b915a53abcfae#bdeb300ccbb5f1c392547d613c7b915a53abcfae"
 dependencies = [
  "bytes 1.9.0",
  "prost",
@@ -1906,9 +1906,8 @@ checksum = "e5ce46fe64a9d73be07dcbe690a38ce1b293be448fd8ce1e6c1b8062c9f72c6a"
 
 [[package]]
 name = "nats"
-version = "0.24.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3e008b4960823570e06c8804a5c2c91458b91cc1708d5e21095c5e6de3fb92f5"
+version = "0.25.0"
+source = "git+https://github.com/nats-io/nats.rs.git?rev=7d63f1dd725c86a4f01723ea3194f17e30a0561b#7d63f1dd725c86a4f01723ea3194f17e30a0561b"
 dependencies = [
  "base64 0.13.1",
  "base64-url",
@@ -1925,12 +1924,13 @@ dependencies = [
  "nuid",
  "once_cell",
  "parking_lot 0.12.3",
+ "portable-atomic",
  "regex",
- "ring 0.16.20",
- "rustls 0.21.12",
+ "ring 0.17.8",
+ "rustls 0.22.4",
  "rustls-native-certs",
- "rustls-pemfile 1.0.4",
- "rustls-webpki 0.100.3",
+ "rustls-pemfile",
+ "rustls-webpki",
  "serde 1.0.215",
  "serde_json",
  "serde_nanos",
@@ -1953,11 +1953,10 @@ dependencies = [
 
 [[package]]
 name = "nkeys"
-version = "0.3.2"
+version = "0.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aad178aad32087b19042ee36dfd450b73f5f934fbfb058b59b198684dfec4c47"
+checksum = "879011babc47a1c7fdf5a935ae3cfe94f34645ca0cac1c7f6424b36fc743d1bf"
 dependencies = [
- "byteorder",
  "data-encoding",
  "ed25519",
  "ed25519-dalek",
@@ -1980,11 +1979,10 @@ dependencies = [
 
 [[package]]
 name = "nuid"
-version = "0.3.2"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "20c1bb65186718d348306bf1afdeb20d9ab45b2ab80fb793c0fdcf59ffbb4f38"
+checksum = "fc895af95856f929163a0aa20c26a78d26bfdc839f51b9d5aa7a5b79e52b7e83"
 dependencies = [
- "lazy_static",
  "rand 0.8.5",
 ]
 
@@ -2065,7 +2063,7 @@ checksum = "c08d65885ee38876c4f86fa503fb49d7b507c2b62552df7c70b2fce627e06381"
 [[package]]
 name = "openfmb"
 version = "2.1.0"
-source = "git+https://github.com/openenergysolutions/openfmb-rs#6a51878b3265f5e4e76b1783921572eaea697852"
+source = "git+https://github.com/openenergysolutions/openfmb-rs?rev=bdeb300ccbb5f1c392547d613c7b915a53abcfae#bdeb300ccbb5f1c392547d613c7b915a53abcfae"
 dependencies = [
  "async-trait",
  "bytes 1.9.0",
@@ -2080,7 +2078,7 @@ dependencies = [
 [[package]]
 name = "openfmb-codegen"
 version = "0.6.1"
-source = "git+https://github.com/openenergysolutions/openfmb-rs#6a51878b3265f5e4e76b1783921572eaea697852"
+source = "git+https://github.com/openenergysolutions/openfmb-rs?rev=bdeb300ccbb5f1c392547d613c7b915a53abcfae#bdeb300ccbb5f1c392547d613c7b915a53abcfae"
 dependencies = [
  "bytes 0.5.6",
  "heck 0.3.3",
@@ -2098,18 +2096,18 @@ dependencies = [
 [[package]]
 name = "openfmb-descriptors"
 version = "0.1.0"
-source = "git+https://github.com/openenergysolutions/openfmb-rs#6a51878b3265f5e4e76b1783921572eaea697852"
+source = "git+https://github.com/openenergysolutions/openfmb-rs?rev=bdeb300ccbb5f1c392547d613c7b915a53abcfae#bdeb300ccbb5f1c392547d613c7b915a53abcfae"
 dependencies = [
  "lazy_static",
  "prost",
  "proto-types",
- "which 4.4.2",
+ "which 3.1.1",
 ]
 
 [[package]]
 name = "openfmb-messages"
 version = "2.1.0"
-source = "git+https://github.com/openenergysolutions/openfmb-rs#6a51878b3265f5e4e76b1783921572eaea697852"
+source = "git+https://github.com/openenergysolutions/openfmb-rs?rev=bdeb300ccbb5f1c392547d613c7b915a53abcfae#bdeb300ccbb5f1c392547d613c7b915a53abcfae"
 dependencies = [
  "bytes 1.9.0",
  "env_logger 0.9.3",
@@ -2123,7 +2121,7 @@ dependencies = [
 [[package]]
 name = "openfmb-messages-ext"
 version = "2.1.0"
-source = "git+https://github.com/openenergysolutions/openfmb-rs#6a51878b3265f5e4e76b1783921572eaea697852"
+source = "git+https://github.com/openenergysolutions/openfmb-rs?rev=bdeb300ccbb5f1c392547d613c7b915a53abcfae#bdeb300ccbb5f1c392547d613c7b915a53abcfae"
 dependencies = [
  "chrono",
  "log",
@@ -2345,6 +2343,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "953ec861398dccce10c670dfeaf3ec4911ca479e9c02154b3a215178c5f566f2"
 
 [[package]]
+name = "portable-atomic"
+version = "1.11.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f84267b20a16ea918e43c6a88433c2d54fa145c92a811b5b047ccbe153674483"
+
+[[package]]
 name = "powerfmt"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2451,7 +2455,7 @@ dependencies = [
 [[package]]
 name = "proto-types"
 version = "0.7.0"
-source = "git+https://github.com/openenergysolutions/openfmb-rs#6a51878b3265f5e4e76b1783921572eaea697852"
+source = "git+https://github.com/openenergysolutions/openfmb-rs?rev=bdeb300ccbb5f1c392547d613c7b915a53abcfae#bdeb300ccbb5f1c392547d613c7b915a53abcfae"
 dependencies = [
  "bytes 1.9.0",
  "prost",
@@ -2889,20 +2893,8 @@ dependencies = [
  "base64 0.10.1",
  "log",
  "ring 0.16.20",
- "sct 0.6.1",
+ "sct",
  "webpki",
-]
-
-[[package]]
-name = "rustls"
-version = "0.21.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3f56a14d1f48b391359b22f731fd4bd7e43c97f3c50eee276f3aa09c94784d3e"
-dependencies = [
- "log",
- "ring 0.17.8",
- "rustls-webpki 0.101.7",
- "sct 0.7.1",
 ]
 
 [[package]]
@@ -2914,30 +2906,22 @@ dependencies = [
  "log",
  "ring 0.17.8",
  "rustls-pki-types",
- "rustls-webpki 0.102.8",
+ "rustls-webpki",
  "subtle",
  "zeroize",
 ]
 
 [[package]]
 name = "rustls-native-certs"
-version = "0.6.3"
+version = "0.7.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a9aace74cb666635c918e9c12bc0d348266037aa8eb599b5cba565709a8dff00"
+checksum = "e5bfb394eeed242e909609f56089eecfe5fda225042e8b171791b9c95f5931e5"
 dependencies = [
  "openssl-probe",
- "rustls-pemfile 1.0.4",
+ "rustls-pemfile",
+ "rustls-pki-types",
  "schannel",
  "security-framework",
-]
-
-[[package]]
-name = "rustls-pemfile"
-version = "1.0.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1c74cae0a4cf6ccbbf5f359f08efdf8ee7e1dc532573bf0db71968cb56b1448c"
-dependencies = [
- "base64 0.21.7",
 ]
 
 [[package]]
@@ -2954,26 +2938,6 @@ name = "rustls-pki-types"
 version = "1.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "16f1201b3c9a7ee8039bcadc17b7e605e2945b27eee7631788c1bd2b0643674b"
-
-[[package]]
-name = "rustls-webpki"
-version = "0.100.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5f6a5fc258f1c1276dfe3016516945546e2d5383911efc0fc4f1cdc5df3a4ae3"
-dependencies = [
- "ring 0.16.20",
- "untrusted 0.7.1",
-]
-
-[[package]]
-name = "rustls-webpki"
-version = "0.101.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b6275d1ee7a1cd780b64aca7726599a1dbc893b1e64144529e55c3c2f745765"
-dependencies = [
- "ring 0.17.8",
- "untrusted 0.9.0",
-]
 
 [[package]]
 name = "rustls-webpki"
@@ -3021,16 +2985,6 @@ checksum = "b362b83898e0e69f38515b82ee15aa80636befe47c3b6d3d89a911e78fc228ce"
 dependencies = [
  "ring 0.16.20",
  "untrusted 0.7.1",
-]
-
-[[package]]
-name = "sct"
-version = "0.7.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "da046153aa2352493d6cb7da4b6e5c0c057d8a1d0a9aa8560baffdd945acd414"
-dependencies = [
- "ring 0.17.8",
- "untrusted 0.9.0",
 ]
 
 [[package]]
@@ -4078,7 +4032,7 @@ dependencies = [
  "multer",
  "percent-encoding 2.3.1",
  "pin-project",
- "rustls-pemfile 2.2.0",
+ "rustls-pemfile",
  "scoped-tls",
  "serde 1.0.215",
  "serde_json",

@@ -1114,6 +1114,22 @@
   },
   {
     "shape": "image",
+    "image": "assets/images/toolbar/solar-flat.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 240,
+    "height": 240,
+    "title": "Solar",
+    "left": 0,
+    "top": 0,
+    "type": "solar"    
+  },
+  {
+    "shape": "image",
     "image": "assets/images/toolbar/generator-large.svg",
     "points": [
       [1, 0.5],
@@ -1252,7 +1268,23 @@
     "left": 0,
     "top": 0,
     "type": "transformer"        
-  },  
+  }, 
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/transformer2.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 240,
+    "height": 240,
+    "title": "Transformer",
+    "left": 0,
+    "top": 0,
+    "type": "transformer"        
+  }, 
   {
     "shape": "image",
     "image": "assets/images/toolbar/ev.svg",
@@ -1297,5 +1329,101 @@
     "left": 0,
     "top": 0,
     "type": ""
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/car1.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 240,
+    "height": 240,
+    "title": "Car 1",
+    "left": 0,
+    "top": 0,
+    "type": "ev"
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/car2.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 240,
+    "height": 240,
+    "title": "Car 2",
+    "left": 0,
+    "top": 0,
+    "type": "ev"
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/house.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 240,
+    "height": 240,
+    "title": "House",
+    "left": 0,
+    "top": 0,
+    "type": "ev"
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/grid.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 240,
+    "height": 240,
+    "title": "Grid",
+    "left": 0,
+    "top": 0,
+    "type": "ev"
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/meter.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 240,
+    "height": 240,
+    "title": "Meter",
+    "left": 0,
+    "top": 0,
+    "type": "ev"
+  },
+  {
+    "shape": "image",
+    "image": "assets/images/toolbar/invertor.svg",
+    "points": [
+      [1, 0.5],
+      [0, 0.5],
+      [0.5, 0],
+      [0.5, 1]
+    ],
+    "width": 240,
+    "height": 240,
+    "title": "Invertor",
+    "left": 0,
+    "top": 0,
+    "type": "ev"
   }
 ]
