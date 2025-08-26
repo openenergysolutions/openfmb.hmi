@@ -13,8 +13,6 @@ use riker::actors::*;
 use serde_json::Value;
 use std::collections::btree_map::BTreeMap;
 
-use log::{debug, error};
-
 // Special resource names from coordination services
 const ALGORITHM_ENABLED: &str = "algorithm-enabled";
 const COMM_OK: &str = "communications-ok";
@@ -159,7 +157,7 @@ impl Receive<MicrogridControl> for Processor {
     type Msg = ProcessorMsg;
 
     fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: MicrogridControl, sender: Sender) {
-        debug!("Received microgrid control message {:?}", msg);
+        log::debug!("Received microgrid control message {:?}", msg);
         self.publisher.tell(msg, sender)
     }
 }
@@ -168,7 +166,7 @@ impl Receive<DeviceControl> for Processor {
     type Msg = ProcessorMsg;
 
     fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: DeviceControl, sender: Sender) {
-        debug!("Received device control message {:?}", msg);
+        log::debug!("Received device control message {:?}", msg);
         self.publisher.tell(msg, sender)
     }
 }
@@ -189,7 +187,7 @@ impl Receive<GenericControl> for Processor {
     type Msg = ProcessorMsg;
 
     fn receive(&mut self, _ctx: &Context<Self::Msg>, msg: GenericControl, _sender: Sender) {
-        debug!("Received generic control message {:?}", msg);
+        log::debug!("Received generic control message {:?}", msg);
         let rt = tokio::runtime::Runtime::new().unwrap();
         rt.block_on(handle_generic_control(self, msg));
     }
@@ -207,7 +205,7 @@ macro_rules! extract {
                     root.path = format!("{}.mapping", $profile_name);
                     root.from_json(&json, &mut d);
                 } else {
-                    debug!("Unable to save message to json string: {:?}", $message);
+                    log::debug!("Unable to save message to json string: {:?}", $message);
                 }
 
                 $data_maps.insert($topic.mrid.clone(), d);
@@ -223,7 +221,7 @@ async fn handle_openfmb_message(clients: &Clients, msg: OpenFMBMessage) {
         Err(_) => "".to_string(),
     };
     if device_mrid.len() == 0 {
-        error!("Missing device MRID in OpenFMB message.");
+        log::trace!("Missing device MRID in OpenFMB message.");
         return;
     }
 
