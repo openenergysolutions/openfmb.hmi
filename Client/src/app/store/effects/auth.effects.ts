@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import * as authActions from "../actions/auth.actions";
 import { switchMap, map, tap } from "rxjs/operators";
@@ -12,12 +12,11 @@ import { Router } from "@angular/router";
 
 @Injectable()
 export class AuthEffects {
-  constructor(
-    private http: HttpClient,
-    private actions$: Actions,
-    private authenticationService: AuthenticationService,
-    private router: Router,
-  ) {}
+  private http = inject(HttpClient);
+  private actions$ = inject(Actions);
+  private authenticationService = inject(AuthenticationService);
+  private router = inject(Router);
+
 
   validateToken$ = createEffect(() =>
     this.actions$.pipe(

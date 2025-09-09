@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-export function getIndexBy(array: Array<{}>, { name, value }): number {
+export function getIndexBy(array: Array<Record<string, any>>, { name, value }): number {
   for (let i = 0; i < array.length; i++) {
     if (array[i][name] === value) {
       return i;

@@ -2,14 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-  Component,
-  OnInit,
-  EventEmitter,
-  Output,
-  ElementRef,
-  ViewChild,
-} from "@angular/core";
+import { Component, OnInit, EventEmitter, Output, ElementRef, ViewChild, inject } from "@angular/core";
 import { MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
 import { DesignerConstant } from "./../../core/constants/designer-constant";
@@ -24,10 +17,15 @@ import { JwtAuthService } from "../../shared/services/auth/jwt-auth.service";
 @Component({
     selector: "app-header-tool",
     templateUrl: "./header-tool.component.html",
-    styleUrls: ["./header-tool.component.scss"],
-    standalone: false
+    styleUrls: ["./header-tool.component.scss"]
 })
 export class HeaderToolComponent implements OnInit {
+  private iconRegistry = inject(MatIconRegistry);
+  private sanitizer = inject(DomSanitizer);
+  private store = inject<Store<fromRoot.State>>(Store);
+  private spinner = inject(NgxSpinnerService);
+  jwtAuth = inject(JwtAuthService);
+
   @ViewChild("fileInput", { static: true })
   fileInput: ElementRef;
   @Output() saveGraph = new EventEmitter();
@@ -53,13 +51,7 @@ export class HeaderToolComponent implements OnInit {
   tickInterval = 1;
   commLost: boolean = false;
 
-  constructor(
-    private iconRegistry: MatIconRegistry,
-    private sanitizer: DomSanitizer,
-    private store: Store<fromRoot.State>,
-    private spinner: NgxSpinnerService,
-    public jwtAuth: JwtAuthService,
-  ) {
+  constructor() {
     this.iconRegistry.addSvgIcon(
       "select-icon",
       this.sanitizer.bypassSecurityTrustResourceUrl(

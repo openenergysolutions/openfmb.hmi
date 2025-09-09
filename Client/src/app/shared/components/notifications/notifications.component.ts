@@ -2,15 +2,16 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, OnInit, Input } from "@angular/core";
+import { Component, OnInit, Input, inject } from "@angular/core";
 import { Router, NavigationEnd } from "@angular/router";
 
 @Component({
     selector: "app-notifications",
-    templateUrl: "./notifications.component.html",
-    standalone: false
+    templateUrl: "./notifications.component.html"
 })
 export class NotificationsComponent implements OnInit {
+  private router = inject(Router);
+
   @Input() notificPanel;
 
   // Dummy notifications
@@ -37,8 +38,6 @@ export class NotificationsComponent implements OnInit {
       color: "warn",
     },
   ];
-
-  constructor(private router: Router) {}
 
   ngOnInit() {
     this.router.events.subscribe((routeChange) => {

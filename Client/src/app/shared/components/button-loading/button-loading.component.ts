@@ -7,8 +7,7 @@ import { Component, Input } from "@angular/core";
 @Component({
     selector: "button-loading",
     templateUrl: "./button-loading.component.html",
-    styleUrls: ["./button-loading.component.scss"],
-    standalone: false
+    styleUrls: ["./button-loading.component.scss"]
 })
 export class ButtonLoadingComponent {
   @Input() loading: boolean;

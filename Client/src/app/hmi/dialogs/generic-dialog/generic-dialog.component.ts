@@ -2,23 +2,20 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, OnInit, Inject } from "@angular/core";
+import { Component, OnInit, inject } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 
 @Component({
     selector: "app-generic-dialog",
     templateUrl: "./generic-dialog.component.html",
-    styleUrls: ["./generic-dialog.component.scss"],
-    standalone: false
+    styleUrls: ["./generic-dialog.component.scss"]
 })
 export class GenericDialogComponent implements OnInit {
+  dialogRef = inject<MatDialogRef<GenericDialogComponent>>(MatDialogRef);
+  data = inject(MAT_DIALOG_DATA);
+
   title: string;
   message: string;
-
-  constructor(
-    public dialogRef: MatDialogRef<GenericDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any,
-  ) {}
 
   ngOnInit() {
     this.message = this.data.message;

@@ -2,13 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-  Component,
-  OnInit,
-  HostListener,
-  ChangeDetectorRef,
-  OnDestroy,
-} from "@angular/core";
+import { Component, OnInit, HostListener, ChangeDetectorRef, OnDestroy, inject } from "@angular/core";
 import {
   Router,
   NavigationEnd,
@@ -26,10 +20,16 @@ import { JwtAuthService } from "../../../services/auth/jwt-auth.service";
 
 @Component({
     selector: "app-main-layout",
-    templateUrl: "./main-layout.component.html",
-    standalone: false
+    templateUrl: "./main-layout.component.html"
 })
 export class MainLayoutComponent implements OnInit, OnDestroy {
+  private router = inject(Router);
+  translate = inject(TranslateService);
+  themeService = inject(ThemeService);
+  private layout = inject(LayoutService);
+  private cdr = inject(ChangeDetectorRef);
+  private jwtAuth = inject(JwtAuthService);
+
   public isModuleLoading: boolean = false;
   private moduleLoaderSub: Subscription;
   private layoutConfSub: Subscription;
@@ -39,14 +39,10 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   public layoutConf: any = {};
   public adminContainerClasses: any = {};
 
-  constructor(
-    private router: Router,
-    public translate: TranslateService,
-    public themeService: ThemeService,
-    private layout: LayoutService,
-    private cdr: ChangeDetectorRef,
-    private jwtAuth: JwtAuthService,
-  ) {
+  constructor() {
+    const router = this.router;
+    const translate = this.translate;
+
     // Check Auth Token is valid
     this.jwtAuth.checkTokenIsValid().subscribe();
 

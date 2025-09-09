@@ -2,16 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-  Directive,
-  ElementRef,
-  OnInit,
-  Input,
-  NgZone,
-  SimpleChanges,
-  OnChanges,
-  ChangeDetectorRef,
-} from "@angular/core";
+import { Directive, ElementRef, OnInit, Input, NgZone, SimpleChanges, OnChanges, ChangeDetectorRef, inject } from "@angular/core";
 import hljs from "highlight.js";
 import { HttpClient } from "@angular/common/http";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -22,16 +13,14 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
         "[class.hljs]": "true",
         "[innerHTML]": "highlightedCode",
     },
-    selector: "[hmiHighlight]",
-    standalone: false
+    selector: "[hmiHighlight]"
 })
 export class HighlightDirective implements OnInit, OnChanges {
-  constructor(
-    private el: ElementRef,
-    private cdr: ChangeDetectorRef,
-    private _zone: NgZone,
-    private http: HttpClient,
-  ) {}
+  private el = inject(ElementRef);
+  private cdr = inject(ChangeDetectorRef);
+  private _zone = inject(NgZone);
+  private http = inject(HttpClient);
+
 
   // Inner highlighted html
   highlightedCode: string;

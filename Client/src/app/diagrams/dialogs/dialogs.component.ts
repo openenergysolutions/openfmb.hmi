@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, OnInit, Inject } from "@angular/core";
+import { Component, OnInit, inject } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import {
   UntypedFormBuilder,
@@ -13,18 +13,15 @@ import {
 @Component({
     selector: "app-dialogs",
     templateUrl: "./dialogs.component.html",
-    styleUrls: ["./dialogs.component.scss"],
-    standalone: false
+    styleUrls: ["./dialogs.component.scss"]
 })
 export class DialogsComponent implements OnInit {
+  data = inject(MAT_DIALOG_DATA);
+  dialogRef = inject<MatDialogRef<DialogsComponent>>(MatDialogRef);
+  private fb = inject(UntypedFormBuilder);
+
   public itemForm: UntypedFormGroup;
   backgroundColor: any;
-
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public data: any,
-    public dialogRef: MatDialogRef<DialogsComponent>,
-    private fb: UntypedFormBuilder,
-  ) {}
 
   ngOnInit() {
     this.buildItemForm(this.data.payload);

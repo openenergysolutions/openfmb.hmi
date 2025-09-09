@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, inject } from "@angular/core";
 import { Title } from "@angular/platform-browser";
 import { Router, NavigationEnd, ActivatedRoute } from "@angular/router";
 import * as fromRoot from "./store/reducers/index";
@@ -12,20 +12,17 @@ import { filter } from "rxjs/operators";
 @Component({
     selector: "app-root",
     templateUrl: "./app.component.html",
-    styleUrls: ["./app.component.scss"],
-    standalone: false
+    styleUrls: ["./app.component.scss"]
 })
 export class AppComponent implements OnInit {
+  title = inject(Title);
+  private router = inject(Router);
+  private activeRoute = inject(ActivatedRoute);
+  private routePartsService = inject(RoutePartsService);
+  private store = inject<Store<fromRoot.State>>(Store);
+
   appTitle = "HMI";
   pageTitle = "";
-
-  constructor(
-    public title: Title,
-    private router: Router,
-    private activeRoute: ActivatedRoute,
-    private routePartsService: RoutePartsService,
-    private store: Store<fromRoot.State>,
-  ) {}
 
   ngOnInit() {
     this.changePageTitle();

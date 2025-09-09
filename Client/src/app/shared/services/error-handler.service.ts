@@ -2,21 +2,13 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-  ErrorHandler,
-  Injectable,
-  Injector,
-  ApplicationRef,
-  ChangeDetectorRef,
-} from "@angular/core";
+import { ErrorHandler, Injectable, Injector, ApplicationRef, ChangeDetectorRef, inject } from "@angular/core";
 
 @Injectable()
 export class ErrorHandlerService extends ErrorHandler {
-  errorCount = 0;
+  protected injector = inject(Injector);
 
-  constructor(protected injector: Injector) {
-    super();
-  }
+  errorCount = 0;
   // https://github.com/angular/angular/issues/17010
   handleError(error: any) {
     const increment = 5;

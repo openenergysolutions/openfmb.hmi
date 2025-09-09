@@ -2,15 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-  Component,
-  ViewChild,
-  ElementRef,
-  AfterViewInit,
-  Renderer2,
-  HostListener,
-  OnDestroy,
-} from "@angular/core";
+import { Component, ViewChild, ElementRef, AfterViewInit, Renderer2, HostListener, OnDestroy, inject } from "@angular/core";
 import { DesignerConstant } from "./../core/constants/designer-constant";
 import { mxgraph, mxgraphFactory } from "ts-mxgraph";
 import { Store } from "@ngrx/store";
@@ -36,7 +28,6 @@ const {
   mxGraph,
   mxToolbar,
   mxUtils,
-  mxRubberband,
   mxEdgeHandler,
   mxPoint,
   mxConstraintHandler,
@@ -61,10 +52,20 @@ const {
 @Component({
     selector: "app-designer",
     templateUrl: "./designer.component.html",
-    styleUrls: ["./designer.component.scss"],
-    standalone: false
+    styleUrls: ["./designer.component.scss"]
 })
 export class DesignerComponent implements AfterViewInit, OnDestroy {
+  private renderer = inject(Renderer2);
+  private store = inject<Store<fromRoot.State>>(Store);
+  dialog = inject(MatDialog);
+  private spinner = inject(NgxSpinnerService);
+  private wsService = inject(WebSocketService);
+  private router = inject(ActivatedRoute);
+  private diagramService = inject(DiagramsService);
+  private snack = inject(MatSnackBar);
+  private naviator = inject(Router);
+  private jwtAuth = inject(JwtAuthService);
+
   @ViewChild("graphContainer", { static: false }) graphContainer: ElementRef;
   @ViewChild("toolbarContainer", { static: false })
   toolbarContainer: ElementRef;
@@ -98,18 +99,7 @@ export class DesignerComponent implements AfterViewInit, OnDestroy {
 
   private destroy$ = new Subject();
 
-  constructor(
-    private renderer: Renderer2,
-    private store: Store<fromRoot.State>,
-    public dialog: MatDialog,
-    private spinner: NgxSpinnerService,
-    private wsService: WebSocketService,
-    private router: ActivatedRoute,
-    private diagramService: DiagramsService,
-    private snack: MatSnackBar,
-    private naviator: Router,
-    private jwtAuth: JwtAuthService,
-  ) {
+  constructor() {
     // Check Auth Token is valid
     this.jwtAuth.checkTokenIsValid().subscribe();
 

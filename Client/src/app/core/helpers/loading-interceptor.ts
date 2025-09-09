@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import {
   HttpRequest,
   HttpHandler,
@@ -15,7 +15,8 @@ import { NgxSpinnerService } from "ngx-spinner";
 
 @Injectable()
 export class LoadingInterceptor implements HttpInterceptor {
-  constructor(private spinner: NgxSpinnerService) {}
+  private spinner = inject(NgxSpinnerService);
+
 
   intercept(
     request: HttpRequest<any>,

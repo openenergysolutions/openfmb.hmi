@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, OnInit, Inject } from "@angular/core";
+import { Component, OnInit, inject } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { DiagramsService } from "../../../shared/services/diagrams.service";
 import {
@@ -29,10 +29,14 @@ import {
 @Component({
     selector: "app-properties-dialog",
     templateUrl: "./properties-dialog.component.html",
-    styleUrls: ["./properties-dialog.component.scss"],
-    standalone: false
+    styleUrls: ["./properties-dialog.component.scss"]
 })
 export class PropertiesDialogComponent implements OnInit {
+  dialogRef = inject<MatDialogRef<PropertiesDialogComponent>>(MatDialogRef);
+  private router = inject(Router);
+  private service = inject(DiagramsService);
+  data = inject<DiagramData>(MAT_DIALOG_DATA);
+
   label: string;
   description: string;
   name: string;
@@ -121,12 +125,7 @@ export class PropertiesDialogComponent implements OnInit {
     "sunny",
   ];
 
-  constructor(
-    public dialogRef: MatDialogRef<PropertiesDialogComponent>,
-    private router: Router,
-    private service: DiagramsService,
-    @Inject(MAT_DIALOG_DATA) public data: DiagramData,
-  ) {
+  constructor() {
     this.selectedEquipment = { name: "", mrid: "" };
     this.mRID = this.selectedEquipment.mrid = this.data.mRID;
     this.getEquipmentList();

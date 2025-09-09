@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { LocalStoreService } from "../local-store.service";
 import { HttpClient } from "@angular/common/http";
 import { Router, ActivatedRoute } from "@angular/router";
@@ -15,6 +15,11 @@ import jwt_decode from "jwt-decode";
   providedIn: "root",
 })
 export class JwtAuthService {
+  private ls = inject(LocalStoreService);
+  private http = inject(HttpClient);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+
   token;
   isAuthenticated: boolean;
   user: User = {};
@@ -24,12 +29,7 @@ export class JwtAuthService {
   JWT_TOKEN = "JWT_TOKEN";
   APP_USER = "HMI_USER";
 
-  constructor(
-    private ls: LocalStoreService,
-    private http: HttpClient,
-    private router: Router,
-    private route: ActivatedRoute,
-  ) {
+  constructor() {
     this.route.queryParams.subscribe(
       (params) => (this.return = params["return"] || "/"),
     );
@@ -84,7 +84,7 @@ export class JwtAuthService {
     let usr = this.ls.getItem(this.APP_USER);
     if (usr == null) {
       const token = this.getJwtToken();
-      if (!!token) {
+      if (token) {
         const decodeToken = this.getDecodedAccessToken(token);
         usr = {
           id: decodeToken.sub,
@@ -112,7 +112,7 @@ export class JwtAuthService {
   getDecodedAccessToken(token: string): any {
     try {
       return jwt_decode(token);
-    } catch (_) {
+    } catch (e) {
       return null;
     }
   }

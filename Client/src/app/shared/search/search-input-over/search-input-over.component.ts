@@ -2,14 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-  Component,
-  OnInit,
-  Output,
-  EventEmitter,
-  OnDestroy,
-  Input,
-} from "@angular/core";
+import { Component, OnInit, Output, EventEmitter, OnDestroy, Input, inject } from "@angular/core";
 import { UntypedFormControl } from "@angular/forms";
 import { Subscription } from "rxjs";
 import { debounceTime } from "rxjs/operators";
@@ -19,21 +12,19 @@ import { Router, ActivatedRoute } from "@angular/router";
 @Component({
     selector: "hmi-search-input-over",
     templateUrl: "./search-input-over.component.html",
-    styleUrls: ["./search-input-over.component.scss"],
-    standalone: false
+    styleUrls: ["./search-input-over.component.scss"]
 })
 export class SearchInputOverComponent implements OnInit, OnDestroy {
+  private searchService = inject(SearchService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+
   isOpen: boolean;
   @Input() resultPage: string;
   @Input() placeholder: string = "Search here";
   @Output() search = new EventEmitter();
   searchCtrl = new UntypedFormControl();
   searchCtrlSub: Subscription;
-  constructor(
-    private searchService: SearchService,
-    private router: Router,
-    private route: ActivatedRoute,
-  ) {}
 
   ngOnInit() {
     this.searchCtrl.valueChanges.pipe(debounceTime(200)).subscribe((value) => {

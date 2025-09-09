@@ -1,0 +1,53 @@
+{
+    "root": true,
+    "ignorePatterns": [
+        "projects/**/*"
+    ],
+    "overrides": [
+        {
+            "files": [
+                "*.ts"
+            ],
+            "extends": [
+                "eslint:recommended",
+                "plugin:@typescript-eslint/recommended",
+                "plugin:@angular-eslint/recommended",
+                "plugin:@angular-eslint/template/process-inline-templates"
+            ],
+            "rules": {
+                "@angular-eslint/directive-selector": [
+                    "error",
+                    {
+                        "type": "attribute",                        
+                        "style": "camelCase"
+                    }
+                ],
+                "@angular-eslint/component-selector": [
+                    "error",
+                    {
+                        "type": "element",
+                        "style": "kebab-case"
+                    }
+                ],                
+                "@angular-eslint/no-output-native": "off", // allow outputs that match native events       
+                "@typescript-eslint/no-explicit-any": "off", // allow "any",
+                "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }] // ignore unused args that start with "_"
+
+            }
+        },
+        {
+            "files": [
+                "*.html"
+            ],
+            "extends": [
+                "plugin:@angular-eslint/template/recommended",
+                "plugin:@angular-eslint/template/accessibility"
+            ],
+            "rules": {
+                "@angular-eslint/template/click-events-have-key-events": "off", // allow (click) events without key events
+                "@angular-eslint/template/interactive-supports-focus": "off", // allow interactive elements to not be focusable
+                "@angular-eslint/template/label-has-associated-control": "off" // allow labels without associated controls
+            }
+        }
+    ]
+}

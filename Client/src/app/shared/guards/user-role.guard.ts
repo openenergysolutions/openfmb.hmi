@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import {
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
@@ -13,11 +13,10 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Injectable()
 export class UserRoleGuard {
-  constructor(
-    private router: Router,
-    private jwtAuth: JwtAuthService,
-    private snack: MatSnackBar,
-  ) {}
+  private router = inject(Router);
+  private jwtAuth = inject(JwtAuthService);
+  private snack = inject(MatSnackBar);
+
 
   canActivate(route: ActivatedRouteSnapshot, _: RouterStateSnapshot) {
     const user = this.jwtAuth.getUser();

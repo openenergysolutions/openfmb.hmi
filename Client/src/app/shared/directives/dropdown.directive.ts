@@ -2,17 +2,18 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Directive, OnInit } from "@angular/core";
+import { Directive, OnInit, inject } from "@angular/core";
 import { Router, NavigationEnd } from "@angular/router";
 import { DropdownLinkDirective } from "./dropdown-link.directive";
 import { Subscription } from "rxjs";
 import { filter } from "rxjs/operators";
 
 @Directive({
-    selector: "[appDropdown]",
-    standalone: false
+    selector: "[appDropdown]"
 })
 export class AppDropdownDirective implements OnInit {
+  private router = inject(Router);
+
   protected navlinks: Array<DropdownLinkDirective> = [];
 
   private _router: Subscription;
@@ -56,6 +57,4 @@ export class AppDropdownDirective implements OnInit {
         });
       });
   }
-
-  constructor(private router: Router) {}
 }

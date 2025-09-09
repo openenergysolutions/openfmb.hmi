@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { ThemeService } from "./theme.service";
 import { LocalStoreService } from "./local-store.service";
@@ -36,6 +36,9 @@ interface IAdjustScreenOptions {
   providedIn: "root",
 })
 export class LayoutService {
+  private themeService = inject(ThemeService);
+  private ls = inject(LocalStoreService);
+
   public layoutConf: ILayoutConf;
   layoutConfSubject = null;
   layoutConf$ = null;
@@ -44,10 +47,9 @@ export class LayoutService {
   public currentRoute: string;
   public fullWidthRoutes = ["shop"];
 
-  constructor(
-    private themeService: ThemeService,
-    private ls: LocalStoreService,
-  ) {
+  constructor() {
+    const ls = this.ls;
+
     this.isCompact =
       ls.getItem("sidebarCompactToggle") == null
         ? false

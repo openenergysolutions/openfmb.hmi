@@ -20,7 +20,7 @@ const authReducer = createReducer(
   on(
     authActions.loginSuccess,
     authActions.validateTokenSuccess,
-    (state, {}) => ({
+    (state) => ({
       ...state,
       isAuthenticated: true,
     }),

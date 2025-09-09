@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { Component, Inject } from "@angular/core";
+import { Component, inject } from "@angular/core";
 
 @Component({
     selector: "app-confirm",
@@ -28,12 +28,9 @@ import { Component, Inject } from "@angular/core";
       >
         Cancel
       </button>
-    </div>`,
-    standalone: false
+    </div>`
 })
 export class AppComfirmComponent {
-  constructor(
-    public dialogRef: MatDialogRef<AppComfirmComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any,
-  ) {}
+  dialogRef = inject<MatDialogRef<AppComfirmComponent>>(MatDialogRef);
+  data = inject(MAT_DIALOG_DATA);
 }

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 import { Auth } from "../models/auth";
@@ -13,10 +13,12 @@ import { map } from "rxjs/operators";
   providedIn: "root",
 })
 export class AuthenticationService {
+  private http = inject(HttpClient);
+
   private currentUserSubject: BehaviorSubject<Auth>;
   public currentUser: Observable<Auth>;
 
-  constructor(private http: HttpClient) {
+  constructor() {
     this.currentUserSubject = new BehaviorSubject<Auth>(
       JSON.parse(localStorage.getItem("currentUser")),
     );

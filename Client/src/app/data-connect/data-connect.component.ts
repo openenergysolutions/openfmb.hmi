@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, inject } from "@angular/core";
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 import { UntypedFormControl } from "@angular/forms";
 import { DiagramsService } from "../shared/services/diagrams.service";
@@ -24,10 +24,13 @@ import { Hmi } from "../shared/hmi.constants";
 @Component({
     selector: "app-data-connect",
     templateUrl: "./data-connect.component.html",
-    styleUrls: ["./data-connect.component.scss"],
-    standalone: false
+    styleUrls: ["./data-connect.component.scss"]
 })
 export class DataConnectComponent implements OnInit {
+  private service = inject(DiagramsService);
+  private snack = inject(MatSnackBar);
+  private activateRoute = inject(ActivatedRoute);
+
   selectDiagramControl = new UntypedFormControl();
   diagrams: Diagram[] = [];
   graphItems: any[] = [];
@@ -68,11 +71,7 @@ export class DataConnectComponent implements OnInit {
   graphItemDataConnectable: boolean = false;
   graphItemDataVisibility: boolean = false;
 
-  constructor(
-    private service: DiagramsService,
-    private snack: MatSnackBar,
-    private activateRoute: ActivatedRoute,
-  ) {
+  constructor() {
     this.activateRoute.queryParams.subscribe((params) => {
       this.requestDiagramId = params["id"];
       this.requestCellId = params["cell"];

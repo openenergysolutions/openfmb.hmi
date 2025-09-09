@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnInit, OnDestroy, inject } from "@angular/core";
 import { DiagramsService } from "src/app/shared/services/diagrams.service";
 import { Subscription } from "rxjs";
 import { MatDialogRef, MatDialog } from "@angular/material/dialog";
@@ -13,21 +13,18 @@ import { AppLoaderService } from "../../shared/services/app-loader/app-loader.se
 @Component({
     selector: "app-devices",
     templateUrl: "./devices.component.html",
-    styleUrls: ["./devices.component.scss"],
-    standalone: false
+    styleUrls: ["./devices.component.scss"]
 })
 export class DevicesComponent implements OnInit, OnDestroy {
+  private service = inject(DiagramsService);
+  private dialog = inject(MatDialog);
+  private snack = inject(MatSnackBar);
+  private loader = inject(AppLoaderService);
+
   public rows = [];
   columns = [];
   temp = [];
   public getItemSub: Subscription;
-
-  constructor(
-    private service: DiagramsService,
-    private dialog: MatDialog,
-    private snack: MatSnackBar,
-    private loader: AppLoaderService,
-  ) {}
 
   ngOnInit(): void {
     this.getData();
@@ -67,17 +64,17 @@ export class DevicesComponent implements OnInit, OnDestroy {
 
   delete(id: string) {
     if (confirm("Are you sure to delete device with MRID=" + id)) {
-      this.service.deleteEquipment(id).subscribe(
-        (data) => {
+      this.service.deleteEquipment(id).subscribe({
+        next: (data) => {
           this.rows = data;
           this.loader.close();
           this.snack.open("Device Deleted!", "OK", { duration: 4000 });
         },
-        (error) => {
+        error: (_error) => {
           this.loader.close();
           this.snack.open("Unable to delete device!", "OK", { duration: 4000 });
         },
-      );
+      });
     }
   }
 
@@ -98,31 +95,31 @@ export class DevicesComponent implements OnInit, OnDestroy {
       }
       this.loader.open();
       if (isNew) {
-        this.service.createEquipment(res).subscribe(
-          (data) => {
-            this.rows = data;
+        this.service.createEquipment(res).subscribe({
+          next: (_data) => {
+            this.rows = _data;
             this.loader.close();
             this.snack.open("Device Added!", "OK", { duration: 4000 });
           },
-          (error) => {
+          error: (_error) => {
             this.loader.close();
             this.snack.open("Unable to add device!", "OK", { duration: 4000 });
           },
-        );
+        });
       } else {
-        this.service.updateEquipment(res).subscribe(
-          (data) => {
-            this.rows = data;
+        this.service.updateEquipment(res).subscribe({
+          next: (_data) => {
+            this.rows = _data;
             this.loader.close();
             this.snack.open("Device Updated!", "OK", { duration: 4000 });
           },
-          (error) => {
+          error: (_error) => {
             this.loader.close();
             this.snack.open("Unable to update device!", "OK", {
               duration: 4000,
             });
           },
-        );
+        });
       }
     });
   }

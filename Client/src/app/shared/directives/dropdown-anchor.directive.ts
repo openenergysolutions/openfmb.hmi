@@ -2,17 +2,18 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Directive, HostListener, Inject } from "@angular/core";
+import { Directive, HostListener, inject } from "@angular/core";
 import { DropdownLinkDirective } from "./dropdown-link.directive";
 
 @Directive({
-    selector: "[appDropdownToggle]",
-    standalone: false
+    selector: "[appDropdownToggle]"
 })
 export class DropdownAnchorDirective {
   protected navlink: DropdownLinkDirective;
 
-  constructor(@Inject(DropdownLinkDirective) navlink: DropdownLinkDirective) {
+  constructor() {
+    const navlink = inject<DropdownLinkDirective>(DropdownLinkDirective);
+
     this.navlink = navlink;
   }
 

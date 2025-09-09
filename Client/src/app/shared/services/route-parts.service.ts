@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { Router, ActivatedRouteSnapshot, Params } from "@angular/router";
 
 interface IRoutePart {
@@ -15,8 +15,9 @@ interface IRoutePart {
 
 @Injectable()
 export class RoutePartsService {
+  private router = inject(Router);
+
   public routeParts: IRoutePart[];
-  constructor(private router: Router) {}
 
   generateRouteParts(snapshot: ActivatedRouteSnapshot): IRoutePart[] {
     let routeParts = <IRoutePart[]>[];

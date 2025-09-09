@@ -2,18 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-  Component,
-  OnInit,
-  Input,
-  HostBinding,
-  OnDestroy,
-  HostListener,
-  Directive,
-  Renderer2,
-  ElementRef,
-  ChangeDetectorRef,
-} from "@angular/core";
+import { Component, OnInit, Input, HostBinding, OnDestroy, HostListener, Directive, Renderer2, ElementRef, ChangeDetectorRef, inject } from "@angular/core";
 import { MatchMediaService } from "../../../../app/shared/services/match-media.service";
 import { MediaObserver } from "ngx-flexible-layout";
 import { Subject } from "rxjs";
@@ -23,10 +12,16 @@ import { SidebarHelperService } from "./sidebar-helper.service";
 @Component({
     selector: "hmi-sidebar",
     templateUrl: "./sidebar.component.html",
-    styleUrls: ["./sidebar.component.scss"],
-    standalone: false
+    styleUrls: ["./sidebar.component.scss"]
 })
 export class SidebarComponent implements OnInit, OnDestroy {
+  private matchMediaService = inject(MatchMediaService);
+  private mediaObserver = inject(MediaObserver);
+  private sidebarHelperService = inject(SidebarHelperService);
+  private _renderer = inject(Renderer2);
+  private _elementRef = inject(ElementRef);
+  private cdr = inject(ChangeDetectorRef);
+
   // Name
   @Input()
   name: string;
@@ -52,14 +47,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private lockedBreakpoint = "gt-sm";
   private unsubscribeAll: Subject<any>;
 
-  constructor(
-    private matchMediaService: MatchMediaService,
-    private mediaObserver: MediaObserver,
-    private sidebarHelperService: SidebarHelperService,
-    private _renderer: Renderer2,
-    private _elementRef: ElementRef,
-    private cdr: ChangeDetectorRef,
-  ) {
+  constructor() {
     this.unsubscribeAll = new Subject();
   }
 
@@ -141,14 +129,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
 }
 
 @Directive({
-    selector: "[sidebarToggler]",
-    standalone: false
+    selector: "[sidebarToggler]"
 })
 export class SidebarTogglerDirective {
+  private sidebarHelperService = inject(SidebarHelperService);
+
   @Input("sidebarToggler")
   public id: any;
-
-  constructor(private sidebarHelperService: SidebarHelperService) {}
 
   @HostListener("click")
   onClick() {

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, OnInit, Inject } from "@angular/core";
+import { Component, OnInit, inject } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import {
   CommandAction,
@@ -17,10 +17,14 @@ import { JwtAuthService } from "../../../shared/services/auth/jwt-auth.service";
 @Component({
     selector: "app-switchgear-dialog",
     templateUrl: "./switchgear-dialog.component.html",
-    styleUrls: ["./switchgear-dialog.component.scss"],
-    standalone: false
+    styleUrls: ["./switchgear-dialog.component.scss"]
 })
 export class SwitchgearDialogComponent implements OnInit {
+  dialogRef = inject<MatDialogRef<SwitchgearDialogComponent>>(MatDialogRef);
+  private snack = inject(MatSnackBar);
+  private jwtService = inject(JwtAuthService);
+  data = inject(MAT_DIALOG_DATA);
+
   status: string;
   name: string;
   description: string;
@@ -35,13 +39,6 @@ export class SwitchgearDialogComponent implements OnInit {
   lastUpdate: string;
   hasLastUpdate: boolean = false;
   isCoordinatorActive: boolean = false;
-
-  constructor(
-    public dialogRef: MatDialogRef<SwitchgearDialogComponent>,
-    private snack: MatSnackBar,
-    private jwtService: JwtAuthService,
-    @Inject(MAT_DIALOG_DATA) public data: any,
-  ) {}
 
   ngOnInit() {
     this.actionEnabled = Authorization.canControl(

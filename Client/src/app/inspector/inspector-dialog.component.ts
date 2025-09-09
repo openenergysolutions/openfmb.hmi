@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, OnInit, AfterViewInit } from "@angular/core";
+import { Component, OnInit, AfterViewInit, inject } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { v4 as uuidv4 } from "uuid";
 import { WebSocketService } from "../core/services/web-socket.service";
@@ -13,10 +13,14 @@ import { MatTableDataSource } from "@angular/material/table";
 @Component({
     selector: "app-inspector-dialog",
     templateUrl: "./inspector-dialog.component.html",
-    styleUrls: ["./inspector-dialog.component.scss"],
-    standalone: false
+    styleUrls: ["./inspector-dialog.component.scss"]
 })
 export class InspectorDialogComponent implements OnInit, AfterViewInit {
+  private wsService = inject(WebSocketService);
+  private jwtAuth = inject(JwtAuthService);
+  private router = inject(ActivatedRoute);
+  private snack = inject(MatSnackBar);
+
   mrid: string;
   sessionId: string;
 
@@ -24,12 +28,7 @@ export class InspectorDialogComponent implements OnInit, AfterViewInit {
   dataSource: any;
   dataSources: Map<string, any> = new Map<string, any>();
 
-  constructor(
-    private wsService: WebSocketService,
-    private jwtAuth: JwtAuthService,
-    private router: ActivatedRoute,
-    private snack: MatSnackBar,
-  ) {
+  constructor() {
     // Check Auth Token is valid
     this.jwtAuth.checkTokenIsValid().subscribe();
 

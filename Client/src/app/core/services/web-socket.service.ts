@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Inject, Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { WebSocketSubject, WebSocketSubjectConfig } from "rxjs/webSocket";
 import {
   interval,
@@ -26,6 +26,8 @@ import { config } from "src/app/web-socket/web-socket.config";
   providedIn: "root",
 })
 export class WebSocketService implements WebsocketService {
+  private wsConfig = inject<WebSocketConfig>(config);
+
   // Object configuration WebSocketSubject
   private readonly config: WebSocketSubjectConfig<WsMessage>;
 
@@ -57,7 +59,9 @@ export class WebSocketService implements WebsocketService {
   // Connection status
   public status: Observable<boolean>;
 
-  constructor(@Inject(config) private wsConfig: WebSocketConfig) {
+  constructor() {
+    const wsConfig = this.wsConfig;
+
     this.wsMessages$ = new Subject<WsMessage>();
     this.wsConnection$ = new Subject<boolean>();
 

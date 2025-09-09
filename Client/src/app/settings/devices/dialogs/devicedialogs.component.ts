@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, OnInit, Inject } from "@angular/core";
+import { Component, OnInit, inject } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import {
   UntypedFormBuilder,
@@ -15,18 +15,16 @@ import { v4 as uuidv4 } from "uuid";
 @Component({
     selector: "app-devicedialogs",
     templateUrl: "./devicedialogs.component.html",
-    styleUrls: ["./devicedialogs.component.scss"],
-    standalone: false
+    styleUrls: ["./devicedialogs.component.scss"]
 })
 export class DeviceDialogsComponent implements OnInit {
+  data = inject(MAT_DIALOG_DATA);
+  dialogRef = inject<MatDialogRef<DeviceDialogsComponent>>(MatDialogRef);
+  private fb = inject(UntypedFormBuilder);
+
   public itemForm: UntypedFormGroup;
   deviceTypes: any[];
   canEditMrid: boolean = false;
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public data: any,
-    public dialogRef: MatDialogRef<DeviceDialogsComponent>,
-    private fb: UntypedFormBuilder,
-  ) {}
 
   ngOnInit() {
     this.deviceTypes = getEquipmentTypeList();

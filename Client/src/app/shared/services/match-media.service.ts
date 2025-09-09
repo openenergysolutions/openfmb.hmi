@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { MediaObserver, MediaChange } from "ngx-flexible-layout";
 import { BehaviorSubject } from "rxjs";
 
@@ -10,10 +10,12 @@ import { BehaviorSubject } from "rxjs";
   providedIn: "root",
 })
 export class MatchMediaService {
+  private mediaObserver = inject(MediaObserver);
+
   activeMediaQuery: string;
   onMediaChange: BehaviorSubject<string> = new BehaviorSubject<string>("");
 
-  constructor(private mediaObserver: MediaObserver) {
+  constructor() {
     this.activeMediaQuery = "";
     this.init();
   }

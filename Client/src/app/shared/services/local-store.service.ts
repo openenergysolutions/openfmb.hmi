@@ -22,7 +22,7 @@ export class LocalStoreService {
     const value = this.ls.getItem(key);
     try {
       return JSON.parse(value);
-    } catch (_) {
+    } catch (e) {
       return null;
     }
   }

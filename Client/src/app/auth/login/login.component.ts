@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, inject } from "@angular/core";
 import {
   UntypedFormGroup,
   UntypedFormControl,
@@ -16,16 +16,13 @@ import { Store } from "@ngrx/store";
 @Component({
     selector: "app-login",
     templateUrl: "./login.component.html",
-    styleUrls: ["./login.component.scss"],
-    standalone: false
+    styleUrls: ["./login.component.scss"]
 })
 export class LoginComponent implements OnInit {
-  loginForm: UntypedFormGroup;
+  private fb = inject(UntypedFormBuilder);
+  private store = inject<Store<fromRoot.State>>(Store);
 
-  constructor(
-    private fb: UntypedFormBuilder,
-    private store: Store<fromRoot.State>,
-  ) {}
+  loginForm: UntypedFormGroup;
 
   ngOnInit() {
     this.initLoginForm();

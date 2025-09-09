@@ -2,13 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-  Injectable,
-  Inject,
-  Renderer2,
-  RendererFactory2,
-  EventEmitter,
-} from "@angular/core";
+import { Injectable, Renderer2, RendererFactory2, EventEmitter, inject } from "@angular/core";
 import { DOCUMENT } from "@angular/common";
 
 export interface ITheme {
@@ -19,6 +13,8 @@ export interface ITheme {
 
 @Injectable()
 export class ThemeService {
+  private document = inject<Document>(DOCUMENT);
+
   public onThemeChange: EventEmitter<ITheme> = new EventEmitter();
 
   public mainThemes: ITheme[] = [
@@ -30,10 +26,9 @@ export class ThemeService {
   ];
   public activatedTheme: ITheme;
   private renderer: Renderer2;
-  constructor(
-    @Inject(DOCUMENT) private document: Document,
-    rendererFactory: RendererFactory2,
-  ) {
+  constructor() {
+    const rendererFactory = inject(RendererFactory2);
+
     this.renderer = rendererFactory.createRenderer(null, null);
   }
 

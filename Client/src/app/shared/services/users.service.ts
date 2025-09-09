@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { environment } from "../../../environments/environment";
 import { User } from "../models/user.model";
@@ -12,8 +12,9 @@ import { Observable, throwError, catchError } from "rxjs";
   providedIn: "root",
 })
 export class UserService {
+  private httpClient = inject(HttpClient);
+
   private endpoint = environment.apiUrl;
-  constructor(private httpClient: HttpClient) {}
 
   private handleError(error: HttpErrorResponse): any {
     if (error.error instanceof ErrorEvent) {

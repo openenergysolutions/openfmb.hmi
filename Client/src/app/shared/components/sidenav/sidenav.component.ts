@@ -6,13 +6,12 @@ import { Component, Input } from "@angular/core";
 
 @Component({
     selector: "app-sidenav",
-    templateUrl: "./sidenav.template.html",
-    standalone: false
+    templateUrl: "./sidenav.template.html"
 })
 export class SidenavComponent {
-  @Input("items") public menuItems: any[] = [];
-  @Input("hasIconMenu") public hasIconTypeMenuItem: boolean;
-  @Input("iconMenuTitle") public iconTypeMenuTitle: string;
+  @Input() public menuItems: any[] = [];
+  @Input() public hasIconTypeMenuItem: boolean;
+  @Input() public iconTypeMenuTitle: string;
 
   constructor() {}
 }

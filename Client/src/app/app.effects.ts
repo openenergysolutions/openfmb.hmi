@@ -2,10 +2,10 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { Actions } from "@ngrx/effects";
 
 @Injectable()
 export class AppEffects {
-  constructor(private actions$: Actions) {}
+  private actions$ = inject(Actions);
 }

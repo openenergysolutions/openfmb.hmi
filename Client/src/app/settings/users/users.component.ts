@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnInit, OnDestroy, inject } from "@angular/core";
 import { UserService } from "src/app/shared/services/users.service";
 import { Subscription } from "rxjs";
 import { MatDialogRef, MatDialog } from "@angular/material/dialog";
@@ -14,21 +14,18 @@ import { v4 as uuidv4 } from "uuid";
 @Component({
     selector: "app-users",
     templateUrl: "./users.component.html",
-    styleUrls: ["./users.component.scss"],
-    standalone: false
+    styleUrls: ["./users.component.scss"]
 })
 export class UsersComponent implements OnInit, OnDestroy {
+  private service = inject(UserService);
+  private dialog = inject(MatDialog);
+  private snack = inject(MatSnackBar);
+  private loader = inject(AppLoaderService);
+
   public rows = [];
   columns = [];
   temp = [];
   public getItemSub: Subscription;
-
-  constructor(
-    private service: UserService,
-    private dialog: MatDialog,
-    private snack: MatSnackBar,
-    private loader: AppLoaderService,
-  ) {}
 
   ngOnInit(): void {
     this.getData();
@@ -72,17 +69,17 @@ export class UsersComponent implements OnInit, OnDestroy {
     console.log("delete user: " + id);
 
     if (confirm("Are you sure to delete user ID=" + id)) {
-      this.service.delete(id).subscribe(
-        (data) => {
+      this.service.delete(id).subscribe({
+        next: (data) => {
           this.rows = data;
           this.loader.close();
           this.snack.open("User Deleted!", "OK", { duration: 4000 });
         },
-        (error) => {
+        error: (_error) => {
           this.loader.close();
           this.snack.open("Unable to delete user!", "OK", { duration: 4000 });
         },
-      );
+      });
     }
   }
 
@@ -101,29 +98,29 @@ export class UsersComponent implements OnInit, OnDestroy {
       this.loader.open();
       if (isNew) {
         res.id = uuidv4();
-        this.service.create(res).subscribe(
-          (data) => {
-            this.rows = data;
+        this.service.create(res).subscribe({
+          next: (_data) => {
+            this.rows = _data;
             this.loader.close();
             this.snack.open("User Added!", "OK", { duration: 4000 });
           },
-          (error) => {
+          error: (_error) => {
             this.loader.close();
             this.snack.open("Unable to add user!", "OK", { duration: 4000 });
           },
-        );
+        });
       } else {
-        this.service.update(res).subscribe(
-          (data) => {
-            this.rows = data;
+        this.service.update(res).subscribe({
+          next: (_data) => {
+            this.rows = _data;
             this.loader.close();
             this.snack.open("User Updated!", "OK", { duration: 4000 });
           },
-          (error) => {
+          error: (_error) => {
             this.loader.close();
             this.snack.open("Unable to update user!", "OK", { duration: 4000 });
           },
-        );
+        });
       }
     });
   }

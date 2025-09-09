@@ -2,14 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-  Component,
-  OnInit,
-  EventEmitter,
-  Output,
-  ElementRef,
-  ViewChild,
-} from "@angular/core";
+import { Component, OnInit, EventEmitter, Output, ElementRef, ViewChild, inject } from "@angular/core";
 import { MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
 import { DesignerConstant } from "./../../core/constants/designer-constant";
@@ -22,10 +15,14 @@ import { NgxSpinnerService } from "ngx-spinner";
 @Component({
     selector: "app-header-tool",
     templateUrl: "./header-tool.component.html",
-    styleUrls: ["./header-tool.component.scss"],
-    standalone: false
+    styleUrls: ["./header-tool.component.scss"]
 })
 export class HeaderToolComponent implements OnInit {
+  private iconRegistry = inject(MatIconRegistry);
+  private sanitizer = inject(DomSanitizer);
+  private store = inject<Store<fromRoot.State>>(Store);
+  private spinner = inject(NgxSpinnerService);
+
   @ViewChild("fileInput", { static: true })
   fileInput: ElementRef;
   @Output() saveGraph = new EventEmitter();
@@ -49,12 +46,7 @@ export class HeaderToolComponent implements OnInit {
   vertical = false;
   tickInterval = 1;
 
-  constructor(
-    private iconRegistry: MatIconRegistry,
-    private sanitizer: DomSanitizer,
-    private store: Store<fromRoot.State>,
-    private spinner: NgxSpinnerService,
-  ) {
+  constructor() {
     this.iconRegistry.addSvgIcon(
       "select-icon",
       this.sanitizer.bypassSecurityTrustResourceUrl(

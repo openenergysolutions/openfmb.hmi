@@ -2,17 +2,19 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, OnInit, Inject } from "@angular/core";
+import { Component, OnInit, inject } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { DiagramData } from "../../../shared/models/userobject.model";
 
 @Component({
     selector: "app-properties-dialog",
     templateUrl: "./properties-dialog.component.html",
-    styleUrls: ["./properties-dialog.component.scss"],
-    standalone: false
+    styleUrls: ["./properties-dialog.component.scss"]
 })
 export class PropertiesDialogComponent implements OnInit {
+  dialogRef = inject<MatDialogRef<PropertiesDialogComponent>>(MatDialogRef);
+  data = inject<DiagramData>(MAT_DIALOG_DATA);
+
   label: string;
   name: string;
   description: string;
@@ -21,11 +23,6 @@ export class PropertiesDialogComponent implements OnInit {
   mRID: string;
   lastUpdate: string;
   hasLastUpdate: boolean = false;
-
-  constructor(
-    public dialogRef: MatDialogRef<PropertiesDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: DiagramData,
-  ) {}
 
   ngOnInit() {
     this.label = this.data.label;

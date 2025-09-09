@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { JwtAuthService } from "../../../app/shared/services/auth/jwt-auth.service";
 import { Authorization } from "../../shared/models/user.model";
@@ -33,6 +33,8 @@ interface IBadge {
 
 @Injectable()
 export class NavigationService {
+  private jwtService = inject(JwtAuthService);
+
   userRole: string = this.jwtService.getUserRole();
 
   iconMenu: IMenuItem[] = [
@@ -72,8 +74,6 @@ export class NavigationService {
   menuItems = new BehaviorSubject<IMenuItem[]>(this.iconMenu);
   // navigation component has subscribed to this Observable
   menuItems$ = this.menuItems.asObservable();
-
-  constructor(private jwtService: JwtAuthService) {}
 
   // Customizer component uses this method to change menu.
   // You can remove this method and customizer component.

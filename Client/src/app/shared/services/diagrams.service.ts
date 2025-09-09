@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { environment } from "../../../environments/environment";
 import { Diagram } from "../models/diagram.model";
 import { Equipment } from "../models/equipment.model";
@@ -15,9 +15,9 @@ import { catchError, Observable, throwError } from "rxjs";
   providedIn: "root",
 })
 export class DiagramsService {
-  private endpoint = environment.apiUrl;
+  private httpClient = inject(HttpClient);
 
-  constructor(private httpClient: HttpClient) {}
+  private endpoint = environment.apiUrl;
 
   private handleError(error: HttpErrorResponse): any {
     if (error.error instanceof ErrorEvent) {

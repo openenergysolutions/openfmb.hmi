@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, OnInit, Inject } from "@angular/core";
+import { Component, OnInit, inject } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { ButtonFunction, CommandAction } from "../../../shared/hmi.constants";
 import { Symbol } from "../../../shared/hmi.constants";
@@ -17,10 +17,13 @@ import { JwtAuthService } from "../../../shared/services/auth/jwt-auth.service";
 @Component({
     selector: "app-control-dialog",
     templateUrl: "./control-dialog.component.html",
-    styleUrls: ["./control-dialog.component.scss"],
-    standalone: false
+    styleUrls: ["./control-dialog.component.scss"]
 })
 export class ControlDialogComponent implements OnInit {
+  dialogRef = inject<MatDialogRef<ControlDialogComponent>>(MatDialogRef);
+  private jwtService = inject(JwtAuthService);
+  data = inject(MAT_DIALOG_DATA);
+
   setpointValue: number;
   controlValue: any;
   ggioIndex: any; // used for resource ggio
@@ -41,12 +44,6 @@ export class ControlDialogComponent implements OnInit {
   lastUpdate: string;
   hasLastUpdate: boolean = false;
   commands: any[] = [];
-
-  constructor(
-    public dialogRef: MatDialogRef<ControlDialogComponent>,
-    private jwtService: JwtAuthService,
-    @Inject(MAT_DIALOG_DATA) public data: any,
-  ) {}
 
   ngOnInit() {
     const canControl = Authorization.canControl(this.jwtService.getUserRole());

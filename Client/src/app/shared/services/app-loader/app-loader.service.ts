@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { Observable } from "rxjs";
 import { AppLoaderComponent } from "./app-loader.component";
@@ -13,8 +13,9 @@ interface Config {
 
 @Injectable()
 export class AppLoaderService {
+  private dialog = inject(MatDialog);
+
   dialogRef: MatDialogRef<AppLoaderComponent>;
-  constructor(private dialog: MatDialog) {}
 
   public open(
     title: string = "Please wait",

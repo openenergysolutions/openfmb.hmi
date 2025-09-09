@@ -2,13 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-  Component,
-  OnInit,
-  ViewChild,
-  OnDestroy,
-  AfterViewInit,
-} from "@angular/core";
+import { Component, OnInit, ViewChild, OnDestroy, AfterViewInit, inject } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { MatButton } from "@angular/material/button";
 import { MatProgressBar } from "@angular/material/progress-bar";
@@ -24,10 +18,14 @@ import { JwtAuthService } from "../../../shared/services/auth/jwt-auth.service";
 @Component({
     selector: "app-signin",
     templateUrl: "./signin.component.html",
-    styleUrls: ["./signin.component.scss"],
-    standalone: false
+    styleUrls: ["./signin.component.scss"]
 })
 export class SigninComponent implements OnInit, AfterViewInit, OnDestroy {
+  private jwtAuth = inject(JwtAuthService);
+  private loader = inject(AppLoaderService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+
   @ViewChild(MatProgressBar) progressBar: MatProgressBar;
   @ViewChild(MatButton) submitButton: MatButton;
 
@@ -36,12 +34,7 @@ export class SigninComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private _unsubscribeAll: Subject<any>;
 
-  constructor(
-    private jwtAuth: JwtAuthService,
-    private loader: AppLoaderService,
-    private router: Router,
-    private route: ActivatedRoute,
-  ) {
+  constructor() {
     this._unsubscribeAll = new Subject();
   }
 

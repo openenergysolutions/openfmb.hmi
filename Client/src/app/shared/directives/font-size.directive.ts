@@ -2,17 +2,15 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Directive, ElementRef, Attribute, OnInit } from "@angular/core";
+import { Directive, ElementRef, OnInit, HostAttributeToken, inject } from "@angular/core";
 
 @Directive({
-    selector: "[fontSize]",
-    standalone: false
+    selector: "[fontSize]"
 })
 export class FontSizeDirective implements OnInit {
-  constructor(
-    @Attribute("fontSize") public fontSize: string,
-    private el: ElementRef,
-  ) {}
+  fontSize = inject(new HostAttributeToken("fontSize"));
+  private el = inject(ElementRef);
+
   ngOnInit() {
     this.el.nativeElement.fontSize = this.fontSize;
   }

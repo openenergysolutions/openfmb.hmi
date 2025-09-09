@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import {
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
@@ -12,10 +12,9 @@ import { JwtAuthService } from "../services/auth/jwt-auth.service";
 
 @Injectable()
 export class AuthGuard {
-  constructor(
-    private router: Router,
-    private jwtAuth: JwtAuthService,
-  ) {}
+  private router = inject(Router);
+  private jwtAuth = inject(JwtAuthService);
+
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     if (this.jwtAuth.isLoggedIn()) {

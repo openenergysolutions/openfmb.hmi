@@ -7,8 +7,7 @@ import { Component } from "@angular/core";
 @Component({
     selector: "app-document-toolbar",
     templateUrl: "./document-toolbar.component.html",
-    styleUrls: ["./document-toolbar.component.scss"],
-    standalone: false
+    styleUrls: ["./document-toolbar.component.scss"]
 })
 export class DocumentToolbarComponent {
   constructor() {}

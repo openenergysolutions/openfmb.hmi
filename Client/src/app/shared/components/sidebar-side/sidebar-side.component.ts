@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnInit, OnDestroy, inject } from "@angular/core";
 import { NavigationService } from "../../../shared/services/navigation.service";
 import { ThemeService } from "../../services/theme.service";
 import { Subscription } from "rxjs";
@@ -15,24 +15,21 @@ import { LocalStoreService } from "../../services/local-store.service";
 
 @Component({
     selector: "app-sidebar-side",
-    templateUrl: "./sidebar-side.component.html",
-    standalone: false
+    templateUrl: "./sidebar-side.component.html"
 })
 export class SidebarSideComponent implements OnInit, OnDestroy {
+  private navService = inject(NavigationService);
+  themeService = inject(ThemeService);
+  private layout = inject(LayoutService);
+  jwtAuth = inject(JwtAuthService);
+  private ls = inject(LocalStoreService);
+
   public menuItems: any[] = [];
   public hasIconTypeMenuItem: boolean;
   public iconTypeMenuTitle: string;
   private menuItemsSub: Subscription;
   public layoutConf: ILayoutConf;
   public userDisplayName: string;
-
-  constructor(
-    private navService: NavigationService,
-    public themeService: ThemeService,
-    private layout: LayoutService,
-    public jwtAuth: JwtAuthService,
-    private ls: LocalStoreService,
-  ) {}
 
   ngOnInit() {
     this.iconTypeMenuTitle = this.navService.iconTypeMenuTitle;

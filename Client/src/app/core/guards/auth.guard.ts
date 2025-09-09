@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import {
   CanActivate,
   ActivatedRouteSnapshot,
@@ -20,10 +20,9 @@ import * as fromRoot from "../../store/reducers/index";
   providedIn: "root",
 })
 export class AuthGuard implements CanActivate {
-  constructor(
-    private store: Store<fromRoot.State>,
-    private router: Router,
-  ) {}
+  private store = inject<Store<fromRoot.State>>(Store);
+  private router = inject(Router);
+
 
   canActivate(
     _: ActivatedRouteSnapshot,

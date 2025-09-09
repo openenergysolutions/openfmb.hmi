@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, OnInit, Inject } from "@angular/core";
+import { Component, OnInit, inject } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { CommandAction } from "../../../shared/hmi.constants";
 import { DiagramData } from "../../../shared/models/userobject.model";
@@ -12,10 +12,13 @@ import { JwtAuthService } from "../../../shared/services/auth/jwt-auth.service";
 @Component({
     selector: "app-regulator-dialog",
     templateUrl: "./regulator-dialog.component.html",
-    styleUrls: ["./regulator-dialog.component.scss"],
-    standalone: false
+    styleUrls: ["./regulator-dialog.component.scss"]
 })
 export class RegulatorDialogComponent implements OnInit {
+  dialogRef = inject<MatDialogRef<RegulatorDialogComponent>>(MatDialogRef);
+  private jwtService = inject(JwtAuthService);
+  data = inject(MAT_DIALOG_DATA);
+
   status: string;
   name: string;
   diagramId: string;
@@ -44,12 +47,6 @@ export class RegulatorDialogComponent implements OnInit {
 
   lastUpdate: string;
   hasLastUpdate: boolean = false;
-
-  constructor(
-    public dialogRef: MatDialogRef<RegulatorDialogComponent>,
-    private jwtService: JwtAuthService,
-    @Inject(MAT_DIALOG_DATA) public data: any,
-  ) {}
 
   ngOnInit() {
     const canControl = Authorization.canControl(this.jwtService.getUserRole());

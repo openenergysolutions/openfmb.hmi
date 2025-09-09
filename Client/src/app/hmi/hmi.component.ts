@@ -2,14 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-  Component,
-  ViewChild,
-  ElementRef,
-  AfterViewInit,
-  Renderer2,
-  OnDestroy,
-} from "@angular/core";
+import { Component, ViewChild, ElementRef, AfterViewInit, Renderer2, OnDestroy, inject } from "@angular/core";
 import { DesignerConstant } from "./../core/constants/designer-constant";
 import { mxgraph, mxgraphFactory } from "ts-mxgraph";
 import { Store } from "@ngrx/store";
@@ -64,10 +57,19 @@ const {
 @Component({
     selector: "app-hmi",
     templateUrl: "./hmi.component.html",
-    styleUrls: ["../hmi/hmi.component.scss"],
-    standalone: false
+    styleUrls: ["../hmi/hmi.component.scss"]
 })
 export class HmiComponent implements AfterViewInit, OnDestroy {
+  private renderer = inject(Renderer2);
+  private store = inject<Store<fromRoot.State>>(Store);
+  dialog = inject(MatDialog);
+  private spinner = inject(NgxSpinnerService);
+  private wsService = inject(WebSocketService);
+  private snack = inject(MatSnackBar);
+  private router = inject(ActivatedRoute);
+  private diagramService = inject(DiagramsService);
+  private jwtAuth = inject(JwtAuthService);
+
   @ViewChild("graphContainer", { static: false }) graphContainer: ElementRef;
   @ViewChild("toolbarContainer", { static: false })
   toolbarContainer: ElementRef;
@@ -95,17 +97,7 @@ export class HmiComponent implements AfterViewInit, OnDestroy {
 
   private destroy$ = new Subject();
 
-  constructor(
-    private renderer: Renderer2,
-    private store: Store<fromRoot.State>,
-    public dialog: MatDialog,
-    private spinner: NgxSpinnerService,
-    private wsService: WebSocketService,
-    private snack: MatSnackBar,
-    private router: ActivatedRoute,
-    private diagramService: DiagramsService,
-    private jwtAuth: JwtAuthService,
-  ) {
+  constructor() {
     // Check Auth Token is valid
     this.jwtAuth.checkTokenIsValid().subscribe();
 
@@ -799,7 +791,7 @@ export class HmiComponent implements AfterViewInit, OnDestroy {
     this.graph.popupMenuHandler.factoryMethod = (
       menu: mxgraph.mxPopupMenu,
       cell: mxgraph.mxCell,
-      evt: Event,
+      _evt: Event,
     ) => {
       if (this.mode === this.DESIGNER_CONST.SELECT_MODE) {
         if (cell && cell.vertex) {
@@ -815,7 +807,7 @@ export class HmiComponent implements AfterViewInit, OnDestroy {
     };
 
     const keyHandler = new mxKeyHandler(this.graph);
-    keyHandler.bindKey(46, (evt: Event) => {
+    keyHandler.bindKey(46, (_evt: Event) => {
       if (this.graph.isEnabled()) {
         this.graph.removeCells();
       }
@@ -1273,7 +1265,7 @@ export class HmiComponent implements AfterViewInit, OnDestroy {
                 } else if (Symbol.button === objType) {
                   const cell = this.graph.getModel().getCell(svgId);
                   if (cell) {
-                    const diagramData = cell.value.userObject;
+                    // const diagramData = cell.value.userObject;
                     const state = this.graph.view.getState(cell, false);
                     if (state) {
                       const val = Helpers.convertPos(
@@ -1445,15 +1437,15 @@ export class HmiComponent implements AfterViewInit, OnDestroy {
         topic: t,
       };
 
-      this.diagramService.updateData(data).subscribe(
-        (data) => {
+      this.diagramService.updateData(data).subscribe({
+        next: (_data) => {
           // success
         },
-        (error) => {
+        error: (error) => {
           console.error(error);
           this.snack.open(error, "OK", { duration: 4000 });
         },
-      );
+      });
     }
   }
 

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, OnInit, Input, Renderer2 } from "@angular/core";
+import { Component, OnInit, Input, Renderer2, inject } from "@angular/core";
 import { ThemeService } from "../../services/theme.service";
 import { LayoutService } from "../../services/layout.service";
 import { TranslateService } from "@ngx-translate/core";
@@ -10,10 +10,15 @@ import { JwtAuthService } from "../../services/auth/jwt-auth.service";
 
 @Component({
     selector: "app-header-side",
-    templateUrl: "./header-side.template.html",
-    standalone: false
+    templateUrl: "./header-side.template.html"
 })
 export class HeaderSideComponent implements OnInit {
+  private themeService = inject(ThemeService);
+  private layout = inject(LayoutService);
+  translate = inject(TranslateService);
+  private renderer = inject(Renderer2);
+  jwtAuth = inject(JwtAuthService);
+
   @Input() notificPanel;
   public availableLangs = [
     {
@@ -31,13 +36,6 @@ export class HeaderSideComponent implements OnInit {
 
   public myThemes;
   public layoutConf: any;
-  constructor(
-    private themeService: ThemeService,
-    private layout: LayoutService,
-    public translate: TranslateService,
-    private renderer: Renderer2,
-    public jwtAuth: JwtAuthService,
-  ) {}
   ngOnInit() {
     this.myThemes = this.themeService.mainThemes;
     this.layoutConf = this.layout.layoutConf;

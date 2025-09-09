@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, OnDestroy } from "@angular/core";
+import { Component, OnDestroy, inject } from "@angular/core";
 import { Router, NavigationEnd, ActivatedRoute } from "@angular/router";
 import { RoutePartsService } from "../../../shared/services/route-parts.service";
 import { LayoutService } from "../../../shared/services/layout.service";
@@ -12,19 +12,18 @@ import { filter } from "rxjs/operators";
 @Component({
     selector: "app-breadcrumb",
     templateUrl: "./breadcrumb.component.html",
-    styleUrls: ["./breadcrumb.component.scss"],
-    standalone: false
+    styleUrls: ["./breadcrumb.component.scss"]
 })
 export class BreadcrumbComponent implements OnDestroy {
+  private router = inject(Router);
+  private routePartsService = inject(RoutePartsService);
+  private activeRoute = inject(ActivatedRoute);
+  layout = inject(LayoutService);
+
   routeParts: any[];
   routerEventSub: Subscription;
   // public isEnabled: boolean = true;
-  constructor(
-    private router: Router,
-    private routePartsService: RoutePartsService,
-    private activeRoute: ActivatedRoute,
-    public layout: LayoutService,
-  ) {
+  constructor() {
     this.routeParts = this.routePartsService.generateRouteParts(
       this.activeRoute.snapshot,
     );

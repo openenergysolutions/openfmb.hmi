@@ -2,17 +2,15 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Directive, ElementRef, Attribute, HostListener } from "@angular/core";
+import { Directive, ElementRef, HostListener, HostAttributeToken, inject } from "@angular/core";
 
 @Directive({
-    selector: "[scrollTo]",
-    standalone: false
+    selector: "[scrollTo]"
 })
 export class ScrollToDirective {
-  constructor(
-    @Attribute("scrollTo") public elmID: string,
-    private el: ElementRef,
-  ) {}
+  elmID = inject(new HostAttributeToken("scrollTo"));
+  private el = inject(ElementRef);
+
 
   currentYPosition() {
     // Firefox, Chrome, Opera, Safari

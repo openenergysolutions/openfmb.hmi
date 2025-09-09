@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component, OnInit, OnDestroy, Renderer2 } from "@angular/core";
+import { Component, OnInit, OnDestroy, Renderer2, inject } from "@angular/core";
 import { DiagramsService } from "../shared/services/diagrams.service";
 import { Router } from "@angular/router";
 
@@ -19,24 +19,21 @@ import { Authorization } from "../shared/models/user.model";
 @Component({
     selector: "app-diagrams",
     templateUrl: "./diagrams.component.html",
-    styleUrls: ["./diagrams.component.scss"],
-    standalone: false
+    styleUrls: ["./diagrams.component.scss"]
 })
 export class DiagramsComponent implements OnInit, OnDestroy {
+  private renderer = inject(Renderer2);
+  private service = inject(DiagramsService);
+  private router = inject(Router);
+  private dialog = inject(MatDialog);
+  private snack = inject(MatSnackBar);
+  private jwtAuth = inject(JwtAuthService);
+  private loader = inject(AppLoaderService);
+
   public rows = [];
   temp = [];
   canEditDiagram: boolean = false;
   public getItemSub: Subscription;
-
-  constructor(
-    private renderer: Renderer2,
-    private service: DiagramsService,
-    private router: Router,
-    private dialog: MatDialog,
-    private snack: MatSnackBar,
-    private jwtAuth: JwtAuthService,
-    private loader: AppLoaderService,
-  ) {}
 
   ngOnInit() {
     this.canEditDiagram = Authorization.canEditDiagram(

@@ -4,7 +4,7 @@
 
 import { Observable } from "rxjs";
 import { MatDialogRef, MatDialog } from "@angular/material/dialog";
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 
 import { AppComfirmComponent } from "./app-confirm.component";
 
@@ -15,7 +15,8 @@ interface confirmData {
 
 @Injectable()
 export class AppConfirmService {
-  constructor(private dialog: MatDialog) {}
+  private dialog = inject(MatDialog);
+
 
   public confirm(data: confirmData = {}): Observable<boolean> {
     data.title = data.title || "Confirm";

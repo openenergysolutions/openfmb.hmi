@@ -2,20 +2,12 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-  Directive,
-  HostBinding,
-  Inject,
-  Input,
-  OnInit,
-  OnDestroy,
-} from "@angular/core";
+import { Directive, HostBinding, Input, OnInit, OnDestroy, inject } from "@angular/core";
 
 import { AppDropdownDirective } from "./dropdown.directive";
 
 @Directive({
-    selector: "[appDropdownLink]",
-    standalone: false
+    selector: "[appDropdownLink]"
 })
 export class DropdownLinkDirective implements OnInit, OnDestroy {
   @Input() public group: any;
@@ -36,7 +28,9 @@ export class DropdownLinkDirective implements OnInit, OnDestroy {
   protected _open: boolean;
   protected nav: AppDropdownDirective;
 
-  public constructor(@Inject(AppDropdownDirective) nav: AppDropdownDirective) {
+  public constructor() {
+    const nav = inject<AppDropdownDirective>(AppDropdownDirective);
+
     this.nav = nav;
   }
 

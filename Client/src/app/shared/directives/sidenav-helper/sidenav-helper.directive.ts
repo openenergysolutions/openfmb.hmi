@@ -2,14 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-  Directive,
-  OnInit,
-  OnDestroy,
-  HostBinding,
-  Input,
-  HostListener,
-} from "@angular/core";
+import { Directive, OnInit, OnDestroy, HostBinding, Input, HostListener, inject } from "@angular/core";
 import { takeUntil } from "rxjs/operators";
 import { Subject } from "rxjs";
 import { MatchMediaService } from "../../services/match-media.service";
@@ -18,27 +11,26 @@ import { MatSidenav } from "@angular/material/sidenav";
 import { MediaObserver } from "ngx-flexible-layout";
 
 @Directive({
-    selector: "[sidenavHelper]",
-    standalone: false
+    selector: "[sidenavHelper]"
 })
 export class SidenavHelperDirective implements OnInit, OnDestroy {
+  private matchMediaService = inject(MatchMediaService);
+  private sidenavHelperService = inject(SidenavHelperService);
+  private matSidenav = inject(MatSidenav);
+  private mediaObserver = inject(MediaObserver);
+
   @HostBinding("class.is-open")
   isOpen: boolean;
 
-  @Input("sidenavHelper")
-  id: string;
+  @Input()
+  sidenavHelper: string;
 
-  @Input("isOpen")
+  @Input()
   isOpenBreakpoint: string;
 
   private unsubscribeAll: Subject<any>;
 
-  constructor(
-    private matchMediaService: MatchMediaService,
-    private sidenavHelperService: SidenavHelperService,
-    private matSidenav: MatSidenav,
-    private mediaObserver: MediaObserver,
-  ) {
+  constructor() {
     // Set the default value
     this.isOpen = true;
 
@@ -46,7 +38,7 @@ export class SidenavHelperDirective implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.sidenavHelperService.setSidenav(this.id, this.matSidenav);
+    this.sidenavHelperService.setSidenav(this.sidenavHelper, this.matSidenav);
 
     if (this.mediaObserver.isActive(this.isOpenBreakpoint)) {
       this.isOpen = true;
@@ -79,17 +71,16 @@ export class SidenavHelperDirective implements OnInit, OnDestroy {
 }
 
 @Directive({
-    selector: "[sidenavToggler]",
-    standalone: false
+    selector: "[sidenavToggler]"
 })
 export class SidenavTogglerDirective {
-  @Input("sidenavToggler")
-  public id: any;
+  private sidenavHelperService = inject(SidenavHelperService);
 
-  constructor(private sidenavHelperService: SidenavHelperService) {}
+  @Input()
+  public sidenavToggler: any;
 
   @HostListener("click")
   onClick() {
-    this.sidenavHelperService.getSidenav(this.id).toggle();
+    this.sidenavHelperService.getSidenav(this.sidenavToggler).toggle();
   }
 }

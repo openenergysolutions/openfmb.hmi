@@ -2,17 +2,17 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Component } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { MatDialogRef } from "@angular/material/dialog";
 
 @Component({
     selector: "app-app-loader",
     templateUrl: "./app-loader.component.html",
-    styleUrls: ["./app-loader.component.scss"],
-    standalone: false
+    styleUrls: ["./app-loader.component.scss"]
 })
 export class AppLoaderComponent {
+  dialogRef = inject<MatDialogRef<AppLoaderComponent>>(MatDialogRef);
+
   title;
   message;
-  constructor(public dialogRef: MatDialogRef<AppLoaderComponent>) {}
 }

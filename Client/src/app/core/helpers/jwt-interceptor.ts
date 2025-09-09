@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import {
   HttpRequest,
   HttpHandler,
@@ -15,7 +15,8 @@ import { AuthenticationService } from "./../services/authentication.service";
 
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
-  constructor(private authenticationService: AuthenticationService) {}
+  private authenticationService = inject(AuthenticationService);
+
 
   intercept(
     request: HttpRequest<any>,
