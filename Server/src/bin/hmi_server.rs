@@ -13,11 +13,11 @@ use tokio::sync::RwLock;
 use warp::Filter;
 
 use hmi_server::{
+    Publisher, Subscriber,
     auth::*,
-    configuration::{logging::setup_logger, Configuration},
+    configuration::{Configuration, logging::setup_logger},
     handler::*,
     processor::Processor,
-    Publisher, Subscriber,
 };
 
 #[tokio::main]

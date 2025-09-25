@@ -4,7 +4,7 @@
 
 use crate::error::Error;
 use chrono::prelude::*;
-use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
+use jsonwebtoken::{Algorithm, DecodingKey, EncodingKey, Header, Validation, decode, encode};
 use log::error;
 use pwhash::bcrypt;
 use serde::{Deserialize, Serialize};
@@ -17,12 +17,12 @@ use std::path::Path;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 use warp::{
+    Filter, Rejection, Reply,
     filters::header::headers_cloned,
-    http::header::{HeaderMap, HeaderValue, AUTHORIZATION},
     http::StatusCode,
+    http::header::{AUTHORIZATION, HeaderMap, HeaderValue},
     reject, reply,
     reply::json,
-    Filter, Rejection, Reply,
 };
 
 pub type Result<T> = std::result::Result<T, Rejection>;
