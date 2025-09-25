@@ -14,9 +14,9 @@ use std::io::prelude::*;
 use std::path::Path;
 use std::str::FromStr;
 use std::sync::Arc;
-use tokio::sync::{mpsc, RwLock};
+use tokio::sync::{RwLock, mpsc};
 use tokio_stream::wrappers::UnboundedReceiverStream;
-use warp::{http::StatusCode, reply::json, ws::Message, ws::WebSocket, Rejection, Reply};
+use warp::{Rejection, Reply, http::StatusCode, reply::json, ws::Message, ws::WebSocket};
 
 use microgrid_protobuf as microgrid;
 

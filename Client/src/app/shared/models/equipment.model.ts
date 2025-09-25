@@ -26,4 +26,5 @@ const EQUIPMENT_TYPES = [
   "resource",
   "solar",
   "switch",
+  "evse"
 ];

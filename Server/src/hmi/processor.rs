@@ -2,13 +2,15 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+use crate::Publisher;
 use crate::handler::*;
 use crate::set_ess_csg;
 use crate::set_generation_csg;
 use crate::set_solar_csg;
-use crate::Publisher;
 use log::warn;
+use openfmb::messages::evsemodule::EvseControlProfile;
 use openfmb::prelude::Message;
+use openfmb_messages_ext::EvseControlExt;
 use openfmb_messages_ext::OpenFMBMessage;
 
 use openfmb::messages::commonmodule::ScheduleParameterKind;
@@ -663,6 +665,7 @@ fn get_common_control_profile(mrid: String) -> Option<String> {
             "regulator" => Some("RegulatorDiscreteControlProfile".to_string()),
             "load" => Some("LoadControlProfile".to_string()),
             "resource" => Some("ResourceDiscreteControlProfile".to_string()),
+            "evse" => Some("EVSEControlProfile".to_string()),
             _ => {
                 log::info!(
                     "Unable to get common control profile for device type: {}",
@@ -3832,6 +3835,478 @@ async fn handle_generic_control(processor: &Processor, msg: GenericControl) {
                 }
                 microgrid::generic_control::ControlType::WPhsCMag => {
                     let profile = CapBankControlProfile::schedule_capbank_control(
+                        &msg.mrid,
+                        ScheduleParameterKind::WPhsCMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                _ => {
+                    warn!("Unsupport control type: {:?}", msg.message)
+                }
+            }
+        }
+        "EVSEControlProfile" => {
+            let subject = format!("openfmb.evsemodule.EVSEControlProfile.{}", &msg.mrid);
+            match msg.message {
+                microgrid::generic_control::ControlType::ANetMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::ANetMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::ANeutMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::ANeutMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::APhsAMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::APhsAMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::APhsBMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::APhsBMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::APhsCMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::APhsCMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::HzMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::HzMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::PfNetMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::PfNetMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::PfNeutMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::PfNeutMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::PfPhsAMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::PfPhsAMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::PfPhsBMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::PfPhsBMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::PfPhsCMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::PfPhsCMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::PhVNetAng => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::PhVNetAng,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::PhVNetMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::PhVNetMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::PhVNeutAng => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::PhVNeutAng,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::PhVNeutMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::PhVNeutMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::PhVPhsAAng => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::PhVPhsAAng,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::PhVPhsAMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::PhVPhsAMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::PhVPhsBAng => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::PhVPhsBAng,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::PhVPhsBMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::PhVPhsBMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::PhVPhsCAng => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::PhVPhsCAng,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::PhVPhsCMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::PhVPhsCMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::PpvPhsAbAng => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::PpvPhsAbAng,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::PpvPhsAbMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::PpvPhsAbMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::PpvPhsBcAng => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::PpvPhsBcAng,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::PpvPhsBcMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::PpvPhsBcMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::PpvPhsCaAng => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::PpvPhsCaAng,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::PpvPhsCaMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::PpvPhsCaMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::VaNetMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::VaNetMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::VaNeutMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::VaNeutMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::VaPhsAMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::VaPhsAMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::VaPhsBMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::VaPhsBMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::VaPhsCMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::VaPhsCMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::VArNetMag
+                | microgrid::generic_control::ControlType::SetVarNetMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::VArNetMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::VArNeutMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::VArNeutMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::VArPhsAMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::VArPhsAMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::VArPhsBMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::VArPhsBMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::VArPhsCMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::VArPhsCMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::WNetMag
+                | microgrid::generic_control::ControlType::SetWNetMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::WNetMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::WNeutMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::WNeutMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::WPhsAMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::WPhsAMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::WPhsBMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
+                        &msg.mrid,
+                        ScheduleParameterKind::WPhsBMag,
+                        msg.args.unwrap(),
+                        SystemTime::now(),
+                    );
+                    let mut buffer = Vec::<u8>::new();
+                    profile.encode(&mut buffer).unwrap();
+                    processor.publisher.publish(subject, &mut buffer).await;
+                }
+                microgrid::generic_control::ControlType::WPhsCMag => {
+                    let profile = EvseControlProfile::schedule_evse_control_fscc(
                         &msg.mrid,
                         ScheduleParameterKind::WPhsCMag,
                         msg.args.unwrap(),

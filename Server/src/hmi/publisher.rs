@@ -6,7 +6,7 @@ use async_nats::RequestError;
 use bytes::Bytes;
 
 use openfmb_messages_ext::OpenFMBMessage;
-use prost::{bytes, Message};
+use prost::{Message, bytes};
 
 use crate::configuration::{NatsConfiguration, PubMessage};
 
