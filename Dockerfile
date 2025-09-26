@@ -27,4 +27,8 @@ FROM alpine:3.21 AS final
 WORKDIR /hmi_server
 COPY --from=frontend-build /Client/dist/openfmb-hmi /hmi_server/Client/dist/openfmb-hmi
 COPY --from=backend-build /openfmb.hmi/target/release/hmi_server /usr/local/bin/
+
+ENV APP_CONF=/config/app
+ENV APP_DIR_NAME=/server
+
 ENTRYPOINT ["hmi_server"]
