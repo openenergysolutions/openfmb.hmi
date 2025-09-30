@@ -150,8 +150,11 @@ async fn server_setup() {
             "Accept",
         ]);
 
-    let static_dir = "Client/dist/openfmb-hmi/";
-    let index = "Client/dist/openfmb-hmi/index.html";
+    let static_dir = configuration.hmi.client_dist_dir();
+
+    log::info!("Serving static files from: {}", static_dir);
+
+    let index = format!("{}/index.html", static_dir.clone());
 
     let static_route = warp::fs::dir(static_dir);
     let is_spa = true;
@@ -165,7 +168,7 @@ async fn server_setup() {
                 Err(warp::reject::not_found())
             }
         })
-        .and(warp::fs::file(index))
+        .and(warp::fs::file(index.clone()))
         .map(|_, file| file);
 
     let hmi = warp::path("hmi")
@@ -176,7 +179,7 @@ async fn server_setup() {
                 Err(warp::reject::not_found())
             }
         })
-        .and(warp::fs::file(index))
+        .and(warp::fs::file(index.clone()))
         .map(|_, file| file);
 
     let diagrams = warp::path("diagrams")
@@ -187,7 +190,7 @@ async fn server_setup() {
                 Err(warp::reject::not_found())
             }
         })
-        .and(warp::fs::file(index))
+        .and(warp::fs::file(index.clone()))
         .map(|_, file| file);
 
     let data_connect = warp::path("data-connect")
@@ -198,7 +201,7 @@ async fn server_setup() {
                 Err(warp::reject::not_found())
             }
         })
-        .and(warp::fs::file(index))
+        .and(warp::fs::file(index.clone()))
         .map(|_, file| file);
 
     let designer = warp::path("designer")
@@ -209,7 +212,7 @@ async fn server_setup() {
                 Err(warp::reject::not_found())
             }
         })
-        .and(warp::fs::file(index))
+        .and(warp::fs::file(index.clone()))
         .map(|_, file| file);
 
     let inspector = warp::path("inspector")
@@ -220,7 +223,7 @@ async fn server_setup() {
                 Err(warp::reject::not_found())
             }
         })
-        .and(warp::fs::file(index))
+        .and(warp::fs::file(index.clone()))
         .map(|_, file| file);
 
     let settings = warp::path("settings")
@@ -231,7 +234,7 @@ async fn server_setup() {
                 Err(warp::reject::not_found())
             }
         })
-        .and(warp::fs::file(index))
+        .and(warp::fs::file(index.clone()))
         .map(|_, file| file);
 
     let sessions = warp::path("sessions")
@@ -242,7 +245,7 @@ async fn server_setup() {
                 Err(warp::reject::not_found())
             }
         })
-        .and(warp::fs::file(index))
+        .and(warp::fs::file(index.clone()))
         .map(|_, file| file);
 
     let routes = static_route

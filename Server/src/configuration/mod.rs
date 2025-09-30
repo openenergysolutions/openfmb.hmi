@@ -31,6 +31,7 @@ pub struct HmiConfig {
     server_host: Option<String>,
     ssl_cert: Option<String>,
     ssl_key: Option<String>,
+    pub client_dist_dir: Option<String>,
 }
 
 impl Default for HmiConfig {
@@ -40,6 +41,7 @@ impl Default for HmiConfig {
             server_host: Some("0.0.0.0".to_string()),
             ssl_cert: None,
             ssl_key: None,
+            client_dist_dir: Some("Client/dist/openfmb-hmi".to_string()),
         }
     }
 }
@@ -56,6 +58,11 @@ impl HmiConfig {
     }
     pub fn ssl_key(&self) -> String {
         self.ssl_key.clone().unwrap_or("".to_string())
+    }
+    pub fn client_dist_dir(&self) -> String {
+        self.client_dist_dir
+            .clone()
+            .unwrap_or("Client/dist/openfmb-hmi".to_string())
     }
 }
 

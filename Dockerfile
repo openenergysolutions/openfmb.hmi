@@ -30,6 +30,6 @@ COPY --from=backend-build /openfmb.hmi/target/release/hmi_server /usr/local/bin/
 
 ENV APP_CONF=/config/app
 ENV APP_DIR_NAME=/server
-ENV RUST_LOG=info
+ENV CLIENT_DIST_DIR=/hmi_server/Client/dist/openfmb-hmi
 
 ENTRYPOINT ["hmi_server"]
