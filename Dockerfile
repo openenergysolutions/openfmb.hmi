@@ -25,6 +25,10 @@ RUN yarn run build
 
 FROM alpine:3.20 AS final
 WORKDIR /hmi_server
+
+COPY --from=backend-build /openfmb.hmi/scripts/health /usr/local/bin/health
+RUN chmod +x /usr/local/bin/health
+
 COPY --from=frontend-build /Client/dist/openfmb-hmi /hmi_server/Client/dist/openfmb-hmi
 COPY --from=backend-build /openfmb.hmi/target/release/hmi_server /usr/local/bin/
 ENTRYPOINT ["hmi_server"]

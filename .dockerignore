@@ -13,3 +13,6 @@ Dockerfile*
 **/node_modules
 **/target
 Cargo.lock
+
+# Allow files
+!scripts/health
