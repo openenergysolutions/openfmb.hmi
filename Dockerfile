@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-FROM rust:1.85-alpine3.21 AS backend-build
+FROM rust:1.88-alpine3.21 AS backend-build
 WORKDIR /openfmb.hmi
 COPY Cargo.toml ./
 COPY Server/ ./Server
