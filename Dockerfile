@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-FROM rust:1.85-alpine3.20 AS backend-build
+FROM rust:1.85-alpine3.21 AS backend-build
 WORKDIR /openfmb.hmi
 COPY Cargo.toml ./
 COPY Server/ ./Server
@@ -23,7 +23,7 @@ RUN yarn config set network-concurrency 2 -g
 RUN yarn install
 RUN yarn run build
 
-FROM alpine:3.20 AS final
+FROM alpine:3.21 AS final
 WORKDIR /hmi_server
 
 COPY --from=backend-build /openfmb.hmi/scripts/health /usr/local/bin/health
