@@ -1,0 +1,29 @@
+#!/usr/bin/env sh
+# health.sh — POSIX-compatible process health check
+# Works in ash, bash, dash, zsh
+# Usage: ./health.sh <executable_name> [more_names...]
+
+# Enable safer script defaults
+set -eu
+# Try to enable pipefail if supported (ash may not have it)
+( set -o pipefail ) 2>/dev/null && set -o pipefail || true
+
+if [ $# -lt 1 ]; then
+  echo "Usage: $0 <executable_name> [more_names...]" >&2
+  exit 2
+fi
+
+# Loop over all process names provided as arguments
+for name in "$@"; do
+  # Prefer exact executable-name match using /proc/<pid>/comm (Linux only)
+  for f in /proc/[0-9]*/comm; do
+    [ -r "$f" ] || continue
+    read comm < "$f" || continue
+    if [ "$comm" = "$name" ]; then
+      exit 0
+    fi
+  done
+done
+
+# No matches found
+exit 1
